@@ -54,4 +54,4 @@ async def mlbd(team :str, year:int, month:int, day:int):
 		await bot.say(s)
 		#await bot.say(box.print_scoreboard())
 
-bot.run('MzY5ODUzMTY2NjU5MDQzMzMw.DMekKA.VstpZrkpj7YdvwFWf1zzfuq86fs')
+bot.run('token')
