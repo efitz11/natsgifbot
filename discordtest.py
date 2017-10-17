@@ -4,6 +4,7 @@ import random
 import mlbgame
 import datetime
 import praw
+import re
 
 description = '''An example bot to showcase the discord.ext.commands extension
 module.
@@ -18,48 +19,68 @@ async def on_ready():
     print('------')
 	
 @bot.command()
-async def gif(name : str):
-	if name == "electricchair":
+async def gif(*name : str):
+	if name[0] == "electricchair":
 		await bot.say('https://gfycat.com/ClearHauntingHoverfly')
-	elif name == "boo":
-		await bot.say('https://gfycat.com/IllustriousOpulentGoldfish')
-	elif name == "murder":
+	elif name[0] == "murder":
 		await bot.say('https://gfycat.com/FondVibrantHousefly')
+	else:
+		matches = []
+		patterns = []
+		query = ""
+		for s in name:
+			patterns.append(re.compile(s,re.IGNORECASE))
+			query = query + " " + s
+		f = open('postlist.csv','r')
+		for line in f:
+			matched = True
+			for pat in patterns:
+				if not re.search(pat,line):
+					matched = False
+					break
+			if matched:
+				matches.append(line)
+		f.close()
+		print ("query: " + query.strip())
+		print (matches)
+		if len(matches) == 0:
+			return
+		num = random.randint(0,len(matches)-1)
+		await bot.say(matches[num].split(',')[-1].strip())
+			
 	return
 	
 @bot.command()
 async def mlb(team :str):
 	team = team.title()
-	print("team: %s" % team)
 	now = datetime.datetime.now()
-	print(now.year, now.month, now.day)
 	day = mlbgame.day(now.year, now.month, now.day, home=team, away=team)
-	print(day)
+	
 	if len(day) > 0 :
 		game = day[0]
 		id = game.game_id
-		print (id)
-		#print(mlbgame.game.box_score(id))
 		await bot.say(game)
 
 @bot.command()
 async def mlbd(team :str, year:int, month:int, day:int):
 	team = team.title()
-	print("team: %s" % team)
 	gameday = mlbgame.day(year, month, day, home=team, away=team)
+	
 	if len(gameday) > 0 :
 		game = gameday[0]
 		id = game.game_id
 		box = mlbgame.game.GameBoxScore(mlbgame.game.box_score(id))
 		s = game.nice_score() + "\n" + box.print_scoreboard()
 		await bot.say(s)
-		#await bot.say(box.print_scoreboard())
 
 def sub(subreddit, selfpost=False):
 	list = []
 	for submission in reddit.subreddit(subreddit).hot(limit=25):
 		if submission.is_self == selfpost:
-			list.append(submission.url)
+			if submission.is_self:
+				list.append(submission.title)
+			else:
+				list.append(submission.url)
 	num = random.randint(0,len(list)-1)
 	return (list[num])
 	
