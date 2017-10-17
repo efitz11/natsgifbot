@@ -3,6 +3,7 @@ from discord.ext import commands
 import random
 import mlbgame
 import datetime
+import praw
 
 description = '''An example bot to showcase the discord.ext.commands extension
 module.
@@ -54,4 +55,33 @@ async def mlbd(team :str, year:int, month:int, day:int):
 		await bot.say(s)
 		#await bot.say(box.print_scoreboard())
 
-bot.run('token')
+def sub(subreddit, selfpost=False):
+	list = []
+	for submission in reddit.subreddit(subreddit).hot(limit=25):
+		if submission.is_self == selfpost:
+			list.append(submission.url)
+	num = random.randint(0,len(list)-1)
+	return (list[num])
+	
+		
+@bot.command()
+async def pup():
+	await bot.say(sub('puppies'))
+
+@bot.command()
+async def kit():
+	await bot.say(sub('kittens'))
+
+@bot.command()
+async def corg():
+	await bot.say(sub('corgi'))	
+
+@bot.command()
+async def fp():
+	await bot.say(sub('justFPthings',selfpost=True))	
+	
+reddit = praw.Reddit(client_id='gFy19-aFuFdAdQ',
+                     client_secret='',
+                     user_agent='windows:natsgifbot (by /u/efitz11)')
+print(reddit.read_only)
+bot.run('')
