@@ -46,10 +46,12 @@ async def gif(*name : str):
 		if len(matches) == 0:
 			return
 		num = random.randint(0,len(matches)-1)
-		await bot.say(matches[num].split(',')[-1].strip())
+		comma = matches[num].rfind(',')
+		await bot.say(matches[num][:comma] + ' ' + matches[num][comma+1:])
+		#await bot.say(matches[num].split(',')[-1].strip())
 			
 	return
-	
+		
 @bot.command()
 async def mlb(team :str):
 	team = team.title()
@@ -59,7 +61,21 @@ async def mlb(team :str):
 	if len(day) > 0 :
 		game = day[0]
 		id = game.game_id
-		await bot.say(game)
+		overview = mlbgame.game.overview(id)
+		print(overview)
+		
+		hometeam = overview['home_name_abbrev']
+		homeruns = overview['home_team_runs']
+		awayteam = overview['away_name_abbrev']
+		awayruns = overview['away_team_runs']
+		outs     = overview['outs']
+		inning   = overview['inning']
+		top_inn  = "Top" if overview['top_inning'] == 'N' else "Bot"
+		outs = outs + " out" + ("" if outs == "1" else "s")
+		output = "%s %s @ %s %s" % (awayteam, awayruns, hometeam, homeruns)
+		output = output + ":  %s %s - %s" % (top_inn, inning, outs)
+		
+		await bot.say(output)
 
 @bot.command()
 async def mlbd(team :str, year:int, month:int, day:int):
@@ -100,6 +116,10 @@ async def corg():
 @bot.command()
 async def fp():
 	await bot.say(sub('justFPthings',selfpost=True))	
+
+@bot.command()
+async def pajokie():
+	await bot.say("https://cdn.discordapp.com/attachments/328677264566910977/343555639227842571/image.jpg")
 	
 reddit = praw.Reddit(client_id='gFy19-aFuFdAdQ',
                      client_secret='',
