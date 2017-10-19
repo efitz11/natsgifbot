@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 import random
 import mlbgame
-import datetime
+from datetime import datetime, timedelta
 import praw
 import re
 
@@ -50,29 +50,49 @@ async def gif(*name : str):
 			
 	return
 	
+def get_game_str(gameid):
+	overview = mlbgame.game.overview(gameid)
+	print(overview)
+	
+	hometeam = overview['home_name_abbrev']
+	homeruns = overview['home_team_runs']
+	awayteam = overview['away_name_abbrev']
+	awayruns = overview['away_team_runs']
+	outs     = overview['outs']
+	inning   = overview['inning']
+	top_inn  = "Top" if overview['top_inning'] == 'N' else "Bot"
+	outs = outs + " out" + ("" if outs == "1" else "s")
+	status   = overview['status']
+	
+	output = "%s %s @ %s %s" % (awayteam, awayruns, hometeam, homeruns)
+	if status != 'Final':
+		output = output + ":  %s %s - %s" % (top_inn, inning, outs)
+	else:
+		output = output + " (F)"
+	if 'pbp_last' in overview:
+		lplay    = overview['pbp_last']
+		output = output + "\n\tLast play: " + lplay
+	return output
+	
 @bot.command()
-async def mlb(team :str):
-	team = team.title()
-	now = datetime.datetime.now()
-	day = mlbgame.day(now.year, now.month, now.day, home=team, away=team)
+async def mlb(*team :str):
+	now = datetime.now() - timedelta(hours=3)
+	if len(team) == 0:
+		day = mlbgame.day(now.year, now.month, now.day)
+		output = "Today's scores:\n"
+		for game in day:
+			output = output + get_game_str(game.game_id) +'\n'
+		await bot.say(output.strip())
+		return
+	print ("eh?")
+	
+	teamname = team[0].title()
+	day = mlbgame.day(now.year, now.month, now.day, home=teamname, away=teamname)
 	
 	if len(day) > 0 :
 		game = day[0]
 		id = game.game_id
-		overview = mlbgame.game.overview(id)
-		print(overview)
-		
-		hometeam = overview['home_name_abbrev']
-		homeruns = overview['home_team_runs']
-		awayteam = overview['away_name_abbrev']
-		awayruns = overview['away_team_runs']
-		outs     = overview['outs']
-		inning   = overview['inning']
-		top_inn  = "Top" if overview['top_inning'] == 'N' else "Bot"
-		outs = outs + " out" + ("" if outs == "1" else "s")
-		output = "%s %s @ %s %s" % (awayteam, awayruns, hometeam, homeruns)
-		output = output + ":  %s %s - %s" % (top_inn, inning, outs)
-		
+		output = get_game_str(id)
 		await bot.say(output)
 
 @bot.command()
@@ -141,9 +161,15 @@ async def fuck():
 @bot.command()
 async def pajokie():
 	await bot.say("https://cdn.discordapp.com/attachments/328677264566910977/343555639227842571/image.jpg")
-	
+
+# get tokens from file
+f = open('tokens.txt','r')
+reddit_token = f.readline().strip()
+discord_token = f.readline().strip()
+f.close()
+
 reddit = praw.Reddit(client_id='gFy19-aFuFdAdQ',
-                     client_secret='',
+                     client_secret=reddit_token,
                      user_agent='windows:natsgifbot (by /u/efitz11)')
 print(reddit.read_only)
-bot.run('')
+bot.run(discord_token)
