@@ -151,7 +151,7 @@ def sub(subreddit, selfpost=False):
 			if submission.is_self:
 				list.append(submission.title)
 			else:
-				list.append(submission.title + "\n" + submission.url)
+				list.append(submission.title + "\n" + submission.url + "  \t<" + submission.shortlink+">")
 	num = random.randint(0,len(list)-1)
 	return (list[num])
 
