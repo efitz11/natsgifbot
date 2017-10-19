@@ -185,6 +185,16 @@ async def fuck():
 async def pajokie():
 	await bot.say("https://cdn.discordapp.com/attachments/328677264566910977/343555639227842571/image.jpg")
 
+@bot.command()
+async def roll(num:int):
+	n = random.randint(1,num)
+	await bot.say(n)
+	
+@bot.command()
+async def flip():
+	res = "heads" if random.randint(0,1) == 0 else "tails"
+	await bot.say(res)
+	
 # get tokens from file
 f = open('tokens.txt','r')
 reddit_token = f.readline().strip()
