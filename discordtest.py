@@ -84,6 +84,15 @@ def get_game_str(gameid, lastplay=False):
 	
 	
 	output = "**%s %s** @ **%s %s**" % (awayteam, awayruns, hometeam, homeruns)
+	if status == 'Pre-Game':
+		firstpitch = overview['first_pitch_et']
+		awins = overview['away_win']
+		aloss = overview['away_loss']
+		hwins = overview['home_win']
+		hloss = overview['home_loss']
+		output = "**%s** (%s-%s) @ **%s** (%s-%s) - %s ET - %s\n\t" % (awayteam, awins, aloss, hometeam, hwins,hloss, firstpitch,status)
+		output = output + overview['away_probable_pitcher'] + " v " + overview['home_probable_pitcher']
+		return output
 	if status != 'Final':
 		bases = ""
 		if 'runner_on_base_status' in overview:
