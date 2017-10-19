@@ -146,7 +146,7 @@ async def mlbd(year:int, month:int, day:int, *team:str):
 def sub(subreddit, selfpost=False):
 	list = []
 	for submission in reddit.subreddit(subreddit).hot(limit=25):
-		if submission.is_self == selfpost:
+		if submission.is_self == selfpost and not submission.stickied:
 			if submission.is_self:
 				list.append(submission.title)
 			else:
@@ -197,6 +197,10 @@ async def corg():
 @bot.command()
 async def fp():
 	await bot.say(sub('justFPthings',selfpost=True))	
+	
+@bot.command()
+async def subr(text:str):
+	await bot.say(sub(text))
 	
 @bot.command()
 async def fuck():
