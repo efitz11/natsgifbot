@@ -3,7 +3,7 @@ from discord.ext import commands
 import random
 import mlbgame
 from datetime import datetime, timedelta
-import praw
+import praw, prawcore.exceptions
 import re
 
 import mymlbgame
@@ -145,15 +145,18 @@ async def mlbd(year:int, month:int, day:int, *team:str):
 
 def sub(subreddit, selfpost=False):
 	list = []
-	for submission in reddit.subreddit(subreddit).hot(limit=25):
-#		if submission.is_self == selfpost and not submission.stickied and not submission.over_18:
-		if submission.is_self == selfpost and not submission.stickied:
-			if submission.is_self:
-				list.append(submission.title)
-			else:
-				list.append(submission.title + "\n" + submission.url + "  \t<" + submission.shortlink+">")
-	num = random.randint(0,len(list)-1)
-	return (list[num])
+	try:
+		for submission in reddit.subreddit(subreddit).hot(limit=25):
+	#		if submission.is_self == selfpost and not submission.stickied and not submission.over_18:
+			if submission.is_self == selfpost and not submission.stickied:
+				if submission.is_self:
+					list.append(submission.title)
+				else:
+					list.append(submission.title + "\n" + submission.url + "  \t<" + submission.shortlink+">")
+		num = random.randint(0,len(list)-1)
+		return (list[num])
+	except prawcore.exceptions.Redirect:
+		return ("Error: subreddit not found")
 
 @bot.command()
 async def mockify(*text:str):
