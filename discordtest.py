@@ -67,7 +67,11 @@ def get_game_str(gameid, lastplay=False):
 	status   = overview['status']
 	if status == 'Preview':
 		firstpitch = overview['first_pitch_et']
-		output = "**%s** @ **%s** - %s\n\t" % (awayteam, hometeam, firstpitch)
+		awins = overview['away_win']
+		aloss = overview['away_loss']
+		hwins = overview['home_win']
+		hloss = overview['home_loss']
+		output = "**%s** (%s-%s) @ **%s** (%s-%s) - %s ET\n\t" % (awayteam, awins, aloss, hometeam, hwins,hloss, firstpitch)
 		output = output + overview['away_probable_pitcher'] + " v " + overview['home_probable_pitcher']
 		return output
 		
@@ -116,15 +120,24 @@ async def mlb(*team :str):
 		await bot.say(output)
 
 @bot.command()
-async def mlbd(team :str, year:int, month:int, day:int):
-	team = team.title()
-	gameday = mlbgame.day(year, month, day, home=team, away=team)
-	
+async def mlbd(year:int, month:int, day:int, *team:str):
+	if len(team) == 0:
+		gameday = mlbgame.day(year, month, day)
+		output = "Today's scores:\n"
+		print(output)
+		for game in gameday:
+			output = output + get_game_str(game.game_id) +'\n'
+		await bot.say(output.strip())
+		return
+	else:
+		team = team[0].title()
+		gameday = mlbgame.day(year, month, day, home=team, away=team)
+
 	if len(gameday) > 0 :
 		game = gameday[0]
 		id = game.game_id
 		box = mlbgame.game.GameBoxScore(mlbgame.game.box_score(id))
-		s = game.nice_score() + "\n" + box.print_scoreboard()
+		s = game.nice_score() #+ "\n```" + box.print_scoreboard() + "```"
 		await bot.say(s)
 
 def sub(subreddit, selfpost=False):
