@@ -54,7 +54,7 @@ async def gif(*name : str):
 		if len(matches) == 0:
 			return
 		num = random.randint(0,len(matches)-1)
-		await bot.say(matches[num].split(',')[-1].strip())
+		await bot.say(matches[num].strip())
 			
 	return
 	
