@@ -46,12 +46,10 @@ async def gif(*name : str):
 		if len(matches) == 0:
 			return
 		num = random.randint(0,len(matches)-1)
-		comma = matches[num].rfind(',')
-		await bot.say(matches[num][:comma] + ' ' + matches[num][comma+1:])
-		#await bot.say(matches[num].split(',')[-1].strip())
+		await bot.say(matches[num].split(',')[-1].strip())
 			
 	return
-		
+	
 @bot.command()
 async def mlb(team :str):
 	team = team.title()
@@ -99,7 +97,24 @@ def sub(subreddit, selfpost=False):
 				list.append(submission.url)
 	num = random.randint(0,len(list)-1)
 	return (list[num])
-	
+
+@bot.command()
+async def mockify(*text:str):
+	input = ""
+	for s in text:
+		input = input + " " + s
+	input = input.strip()
+	last = False
+	output = ""
+	for s in input:
+		num = random.randint(0,100)
+		if not last and num > 20:
+			output = output + (s.upper())
+			last = True
+		else:
+			output = output + (s)
+			last = False
+	await bot.say(output)
 		
 @bot.command()
 async def pup():
@@ -116,7 +131,13 @@ async def corg():
 @bot.command()
 async def fp():
 	await bot.say(sub('justFPthings',selfpost=True))	
-
+	
+@bot.command()
+async def fuck():
+	l = ['barves','cubs','dh','dodgers','mets','yankees']
+	num = random.randint(0,len(l)-1)
+	await bot.say(('the '+ l[num]).upper())
+	
 @bot.command()
 async def pajokie():
 	await bot.say("https://cdn.discordapp.com/attachments/328677264566910977/343555639227842571/image.jpg")
