@@ -146,6 +146,7 @@ async def mlbd(year:int, month:int, day:int, *team:str):
 def sub(subreddit, selfpost=False):
 	list = []
 	for submission in reddit.subreddit(subreddit).hot(limit=25):
+#		if submission.is_self == selfpost and not submission.stickied and not submission.over_18:
 		if submission.is_self == selfpost and not submission.stickied:
 			if submission.is_self:
 				list.append(submission.title)
