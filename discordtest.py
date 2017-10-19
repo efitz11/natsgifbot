@@ -91,6 +91,10 @@ def get_game_str(gameid, lastplay=False):
 		output = output + ":  %s %s - %s %s" % (top_inn, inning, outs, bases)
 	else:
 		output = output + " (F)"
+		wp = overview['winning_pitcher']
+		lp = overview['losing_pitcher']
+		sp = overview['save_pitcher']
+		output = output + "\tWP: " + wp + "\tLP: " + lp + (("\tSV: " + sp) if sp != "" else "")
 	if lastplay and 'pbp_last' in overview:
 		pitcher = overview['current_pitcher']
 		batter = overview['current_batter']
@@ -123,8 +127,7 @@ async def mlb(*team :str):
 async def mlbd(year:int, month:int, day:int, *team:str):
 	if len(team) == 0:
 		gameday = mlbgame.day(year, month, day)
-		output = "Today's scores:\n"
-		print(output)
+		output = "The day's scores:\n"
 		for game in gameday:
 			output = output + get_game_str(game.game_id) +'\n'
 		await bot.say(output.strip())

@@ -40,4 +40,8 @@ def retoverview(game_id):
     if parsed.find('home_probable_pitcher') != None:
         output['home_probable_pitcher'] = parsed.find('home_probable_pitcher').get("last_name")
         output['away_probable_pitcher'] = parsed.find('away_probable_pitcher').get("last_name")
+    if parsed.find('winning_pitcher') != None:
+        output['winning_pitcher'] = parsed.find('winning_pitcher').get("last_name")
+        output['losing_pitcher'] = parsed.find('losing_pitcher').get("last_name")
+        output['save_pitcher'] = parsed.find('save_pitcher').get("last_name")
     return output
