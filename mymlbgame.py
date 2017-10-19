@@ -37,4 +37,7 @@ def retoverview(game_id):
     if parsed.find("current_batter") != None:
         output['current_batter'] = parsed.find("current_batter").get("last_name")
         output['current_pitcher'] = parsed.find("current_pitcher").get("last_name")
+    if parsed.find('home_probable_pitcher') != None:
+        output['home_probable_pitcher'] = parsed.find('home_probable_pitcher').get("last_name")
+        output['away_probable_pitcher'] = parsed.find('away_probable_pitcher').get("last_name")
     return output

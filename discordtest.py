@@ -63,14 +63,21 @@ def get_game_str(gameid, lastplay=False):
 	#print(overview)
 	
 	hometeam = overview['home_name_abbrev']
-	homeruns = overview['home_team_runs']
 	awayteam = overview['away_name_abbrev']
+	status   = overview['status']
+	if status == 'Preview':
+		firstpitch = overview['first_pitch_et']
+		output = "**%s** @ **%s** - %s\n\t" % (awayteam, hometeam, firstpitch)
+		output = output + overview['away_probable_pitcher'] + " v " + overview['home_probable_pitcher']
+		return output
+		
+	homeruns = overview['home_team_runs']
 	awayruns = overview['away_team_runs']
 	outs     = overview['outs']
 	inning   = overview['inning']
 	top_inn  = "Top" if overview['top_inning'] == 'N' else "Bot"
 	outs = outs + " out" + ("" if outs == "1" else "s")
-	status   = overview['status']
+	
 	
 	output = "**%s %s** @ **%s %s**" % (awayteam, awayruns, hometeam, homeruns)
 	if status != 'Final':
