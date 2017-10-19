@@ -29,11 +29,12 @@ def retoverview(game_id):
     # parse data
     parsed = etree.parse(data)
     root = parsed.getroot()
-    print(parsed.find("current_batter").get("last_name"))
+    #print(parsed.find("current_batter").get("last_name"))
     output = {}
     # get overview attributes
     for x in root.attrib:
         output[x] = root.attrib[x]
-    output['current_batter'] = parsed.find("current_batter").get("last_name")
-    output['current_pitcher'] = parsed.find("current_pitcher").get("last_name")
+    if parsed.find("current_batter") != None:
+        output['current_batter'] = parsed.find("current_batter").get("last_name")
+        output['current_pitcher'] = parsed.find("current_pitcher").get("last_name")
     return output

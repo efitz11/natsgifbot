@@ -60,7 +60,7 @@ async def gif(*name : str):
 	
 def get_game_str(gameid, lastplay=False):
 	overview = mymlbgame.retoverview(gameid)
-	print(overview)
+	#print(overview)
 	
 	hometeam = overview['home_name_abbrev']
 	homeruns = overview['home_team_runs']
@@ -71,10 +71,12 @@ def get_game_str(gameid, lastplay=False):
 	top_inn  = "Top" if overview['top_inning'] == 'N' else "Bot"
 	outs = outs + " out" + ("" if outs == "1" else "s")
 	status   = overview['status']
-	bases    = basesmap[overview['runner_on_base_status']]
 	
 	output = "**%s %s** @ **%s %s**" % (awayteam, awayruns, hometeam, homeruns)
 	if status != 'Final':
+		bases = ""
+		if 'runner_on_base_status' in overview:
+			bases = basesmap[overview['runner_on_base_status']]
 		output = output + ":  %s %s - %s %s" % (top_inn, inning, outs, bases)
 	else:
 		output = output + " (F)"
