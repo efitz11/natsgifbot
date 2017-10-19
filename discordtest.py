@@ -6,10 +6,18 @@ from datetime import datetime, timedelta
 import praw
 import re
 
-description = '''An example bot to showcase the discord.ext.commands extension
-module.
-There are a number of utility commands being showcased here.'''
-bot = commands.Bot(command_prefix='!', description=description)
+import mymlbgame
+
+bot = commands.Bot(command_prefix='!')
+
+basesmap = {'0':'---',
+			'1':'1--',
+			'2':'-2-',
+			'3':'--3',
+			'4':'12-',
+			'5':'1-3',
+			'6':'-23',
+			'7':'123'}
 
 @bot.event
 async def on_ready():
@@ -50,8 +58,8 @@ async def gif(*name : str):
 			
 	return
 	
-def get_game_str(gameid):
-	overview = mlbgame.game.overview(gameid)
+def get_game_str(gameid, lastplay=False):
+	overview = mymlbgame.retoverview(gameid)
 	print(overview)
 	
 	hometeam = overview['home_name_abbrev']
@@ -63,15 +71,19 @@ def get_game_str(gameid):
 	top_inn  = "Top" if overview['top_inning'] == 'N' else "Bot"
 	outs = outs + " out" + ("" if outs == "1" else "s")
 	status   = overview['status']
+	bases    = basesmap[overview['runner_on_base_status']]
 	
-	output = "%s %s @ %s %s" % (awayteam, awayruns, hometeam, homeruns)
+	output = "**%s %s** @ **%s %s**" % (awayteam, awayruns, hometeam, homeruns)
 	if status != 'Final':
-		output = output + ":  %s %s - %s" % (top_inn, inning, outs)
+		output = output + ":  %s %s - %s %s" % (top_inn, inning, outs, bases)
 	else:
 		output = output + " (F)"
-	if 'pbp_last' in overview:
+	if lastplay and 'pbp_last' in overview:
+		pitcher = overview['current_pitcher']
+		batter = overview['current_batter']
 		lplay    = overview['pbp_last']
-		output = output + "\n\tLast play: " + lplay
+		output = output + "\n\tPitching: **%s** \tBatting: **%s**" % (pitcher, batter)
+		output = output + "\n\tLast play: *" + lplay.strip() + "*"
 	return output
 	
 @bot.command()
@@ -84,7 +96,6 @@ async def mlb(*team :str):
 			output = output + get_game_str(game.game_id) +'\n'
 		await bot.say(output.strip())
 		return
-	print ("eh?")
 	
 	teamname = team[0].title()
 	day = mlbgame.day(now.year, now.month, now.day, home=teamname, away=teamname)
@@ -92,7 +103,7 @@ async def mlb(*team :str):
 	if len(day) > 0 :
 		game = day[0]
 		id = game.game_id
-		output = get_game_str(id)
+		output = get_game_str(id,lastplay=True)
 		await bot.say(output)
 
 @bot.command()
@@ -136,6 +147,16 @@ async def mockify(*text:str):
 			last = False
 	await bot.say(output)
 		
+@bot.command()
+async def memeify(*text:str):
+	input = ""
+	for s in text:
+		input = input + " " + s
+	output = ""
+	for s in input:
+		output = output + " " + s
+	await bot.say(output.strip().upper())
+	
 @bot.command()
 async def pup():
 	await bot.say(sub('puppies'))
