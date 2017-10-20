@@ -79,7 +79,7 @@ def get_game_str(gameid, lastplay=False):
 	awayruns = overview['away_team_runs']
 	outs     = overview['outs']
 	inning   = overview['inning']
-	top_inn  = "Top" if overview['top_inning'] == 'N' else "Bot"
+	top_inn  = "Top" if overview['top_inning'] == 'Y' else "Bot"
 	outs = outs + " out" + ("" if outs == "1" else "s")
 	
 	
