@@ -25,7 +25,10 @@ def get_game(team):
     scoreData = urlopen(req).read().decode("utf-8")
     scoreData = scoreData[scoreData.find('window.espn.scoreboardData 	= ')+len('window.espn.scoreboardData 	= '):]
     scoreData = json.loads(scoreData[:scoreData.find('};')+1])
-    #print(scoreData)
+    print(scoreData)
+    #f = open('espnout.txt','w')
+    #f.write(json.dumps(scoreData))
+    #f.close()
 
     games = []
     for event in scoreData['events']:
@@ -35,10 +38,13 @@ def get_game(team):
         status = event['status']['type']['state']
         if status == "pre":
             game['status'] = GAME_STATUS_PRE
+            game['time'] = event['status']['type']['shortDetail']
         elif status == "in":
             game['status'] = GAME_STATUS_IN
+            game['time'] = event['status']['type']['shortDetail']
         else:
             game['status'] = GAME_STATUS_POST
+            game['time'] = "FINAL"
         team1 = html.unescape(event['competitions'][0]['competitors'][0]['team']['location'])
         tid1 = event['competitions'][0]['competitors'][0]['id']
         score1 = int(event['competitions'][0]['competitors'][0]['score'])
@@ -66,5 +72,5 @@ def get_game(team):
         games.append(game)
     for game in games:
         if game['hometeam'].lower() == team.lower() or game['homeabv'].lower() == team.lower() or game['awayteam'].lower() == team.lower() or game['awayabv'].lower() == team.lower():
-            return "**%s %s** @ **%s %s**" % (game['awayabv'], game['awayscore'], game['homeabv'], game['homescore'])
+            return "**%s %s** @ **%s %s** - %s" % (game['awayabv'], game['awayscore'], game['homeabv'], game['homescore'], game['time'])
     return "game not found"
