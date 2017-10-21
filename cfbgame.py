@@ -65,6 +65,6 @@ def get_game(team):
         #print (game)
         games.append(game)
     for game in games:
-        if game['hometeam'] == team or game['homeabv'] == team or game['awayteam'] == team or game['awayabv'] == team:
+        if game['hometeam'].lower() == team.lower() or game['homeabv'].lower() == team.lower() or game['awayteam'].lower() == team.lower() or game['awayabv'].lower() == team.lower():
             return "**%s %s** @ **%s %s**" % (game['awayabv'], game['awayscore'], game['homeabv'], game['homescore'])
     return "game not found"
