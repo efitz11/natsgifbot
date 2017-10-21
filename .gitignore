@@ -3,3 +3,4 @@ tokens.txt
 tokens-dev.txt
 tokens-rel.txt
 *.pyc
+cfbtest.py

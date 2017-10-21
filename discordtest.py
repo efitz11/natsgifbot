@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 import praw, prawcore.exceptions
 import re
 
-import mymlbgame
+import mymlbgame, cfbgame
 
 bot = commands.Bot(command_prefix='!')
 
@@ -234,6 +234,10 @@ async def roll(num:int):
 async def flip():
     res = "heads" if random.randint(0,1) == 0 else "tails"
     await bot.say(res)
+    
+@bot.command()
+async def cfb(team:str):
+    await bot.say(cfbgame.get_game(team))
     
 # get tokens from file
 f = open('tokens.txt','r')
