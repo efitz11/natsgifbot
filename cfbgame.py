@@ -25,7 +25,7 @@ def get_game(team):
     scoreData = urlopen(req).read().decode("utf-8")
     scoreData = scoreData[scoreData.find('window.espn.scoreboardData 	= ')+len('window.espn.scoreboardData 	= '):]
     scoreData = json.loads(scoreData[:scoreData.find('};')+1])
-    print(scoreData)
+    #print(scoreData)
     #f = open('espnout.txt','w')
     #f.write(json.dumps(scoreData))
     #f.close()
