@@ -236,8 +236,9 @@ async def flip():
     await bot.say(res)
     
 @bot.command()
-async def cfb(team:str):
-    await bot.say(cfbgame.get_game(team))
+async def cfb(*team:str):
+    t = ' '.join(team)
+    await bot.say(cfbgame.get_game(t))
     
 # get tokens from file
 f = open('tokens.txt','r')
