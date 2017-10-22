@@ -1,11 +1,5 @@
 from urllib.request import urlopen, Request
-import time, json,html, datetime
-
-'''
-borrowed some code from /r/cfb's IRC bot, thank you
-https://github.com/diagonalfish/FootballBotX2
-'''
-
+import time, json,html
 
 #Constants
 MODE_ACTIVE = 0
@@ -18,9 +12,7 @@ type = "80" # 80 = FBS
 # Other leagues go here
 
 def get_game(team):
-    now = datetime.now()
-    req = Request("http://espn.go.com/college-football/scoreboard/_/group/" +
-                  type + "/year/"+now.year+"/seasontype/2/?t=" + str(time.time()))
+    req = Request("http://espn.go.com/nfl/scoreboard")
     req.headers["User-Agent"] = "windows 10 bot"
     # Load data
     scoreData = urlopen(req).read().decode("utf-8")
@@ -30,7 +22,7 @@ def get_game(team):
     #f = open('espnout.txt','w')
     #f.write(json.dumps(scoreData))
     #f.close()
-
+    
     games = []
     for event in scoreData['events']:
         game = dict()
@@ -54,30 +46,22 @@ def get_game(team):
         tid2 = event['competitions'][0]['competitors'][1]['id']
         score2 = int(event['competitions'][0]['competitors'][1]['score'])
         team2abv = event['competitions'][0]['competitors'][1]['team']['abbreviation']
-        
-        rank1 = event['competitions'][0]['competitors'][0]['curatedRank']
-        rank2 = event['competitions'][0]['competitors'][1]['curatedRank']
-        
-        # Hawaii workaround
-        if team1 == "Hawai'i":
-            team1 = "Hawaii"
-        if team2 == "Hawai'i":
-            team2 = "Hawaii"
             
         homestatus = event['competitions'][0]['competitors'][0]['homeAway']
+        name1 = event['competitions'][0]['competitors'][0]['team']['name']
+        name2 = event['competitions'][0]['competitors'][1]['team']['name']
         
         if homestatus == 'home':
-            game['hometeam'], game['homeid'], game['homeabv'], game['homescore'], game['awayteam'], game['awayid'], game['awayabv'], game['awayscore'], game['homerank'], game['awayrank']=\
-                team1, tid1, team1abv, score1, team2, tid2, team2abv, score2, rank1, rank2
+            game['hometeam'], game['homeid'], game['homeabv'], game['homescore'], game['awayteam'], game['awayid'], game['awayabv'], game['awayscore'], game['homename'], game['awayname'] =\
+                team1, tid1, team1abv, score1, team2, tid2, team2abv, score2, name1, name2
         else:
-            game['hometeam'], game['homeid'], game['homeabv'], game['homescore'], game['awayteam'], game['awayid'], game['awayabv'], game['awayscore'], game['homerank'], game['awayrank'] = \
-                team2, tid2, team2abv, score2, team1, tid1, team1abv, score1, rank2, rank1
+            game['hometeam'], game['homeid'], game['homeabv'], game['homescore'], game['awayteam'], game['awayid'], game['awayabv'], game['awayscore'], game['homename'], game['awayname'] = \
+                team2, tid2, team2abv, score2, team1, tid1, team1abv, score1, name2, name1
             
         #print (game)
         games.append(game)
     for game in games:
-        if game['hometeam'].lower() == team.lower() or game['homeabv'].lower() == team.lower() or game['awayteam'].lower() == team.lower() or game['awayabv'].lower() == team.lower():
-            awayr = "("+str(game['awayrank']['current'])+") " if game['awayrank']['current'] <= 25 else ""
-            homer = "("+str(game['homerank']['current'])+") " if game['homerank']['current'] <= 25 else ""
-            return "%s**%s %s** @ %s**%s %s** - %s" % (awayr,game['awayabv'], game['awayscore'], homer,game['homeabv'], game['homescore'], game['time'])
+        if game['hometeam'].lower() == team.lower() or game['homeabv'].lower() == team.lower() or game['awayteam'].lower() == team.lower() or game['awayabv'].lower() == team.lower() or game['homename'].lower() == team.lower() or game['awayname'].lower() == team.lower():
+            return "**%s %s** @ **%s %s** - %s" % (game['awayabv'], game['awayscore'],game['homeabv'], game['homescore'], game['time'])
+    
     return "game not found"
