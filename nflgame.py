@@ -11,8 +11,8 @@ GAME_STATUS_POST = 2
 type = "80" # 80 = FBS
 # Other leagues go here
 
-def get_game(team):
-    req = Request("http://espn.go.com/nfl/scoreboard")
+def get_game(team, sport):
+    req = Request("http://espn.go.com/"+sport+"/scoreboard")
     req.headers["User-Agent"] = "windows 10 bot"
     # Load data
     scoreData = urlopen(req).read().decode("utf-8")
@@ -60,6 +60,11 @@ def get_game(team):
             
         #print (game)
         games.append(game)
+    if len(team) == 0:
+        output = ""
+        for game in games:
+            output = output + "**%s %s** @ **%s %s** - %s\n" % (game['awayabv'], game['awayscore'],game['homeabv'], game['homescore'], game['time'])
+        return output
     for game in games:
         if game['hometeam'].lower() == team.lower() or game['homeabv'].lower() == team.lower() or game['awayteam'].lower() == team.lower() or game['awayabv'].lower() == team.lower() or game['homename'].lower() == team.lower() or game['awayname'].lower() == team.lower():
             return "**%s %s** @ **%s %s** - %s" % (game['awayabv'], game['awayscore'],game['homeabv'], game['homescore'], game['time'])

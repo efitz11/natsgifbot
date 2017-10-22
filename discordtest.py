@@ -243,15 +243,26 @@ async def cfb(*team:str):
 @bot.command()
 async def nfl(*team:str):
     t = ' '.join(team)
-    await bot.say(nflgame.get_game(t))
+    await bot.say(nflgame.get_game(t,'nfl'))
     
+@bot.command()
+async def nba(*team:str):
+    t = ' '.join(team)
+    await bot.say(nflgame.get_game(t,'nba'))
+'''  
+@bot.command()
+async def nhl(*team:str):
+    t = ' '.join(team)
+    await bot.say(nflgame.get_game(t,'nhl'))
+'''    
 # get tokens from file
 f = open('tokens.txt','r')
+reddit_clientid = f.readline().strip()
 reddit_token = f.readline().strip()
 discord_token = f.readline().strip()
 f.close()
 
-reddit = praw.Reddit(client_id='gFy19-aFuFdAdQ',
+reddit = praw.Reddit(client_id=reddit_clientid,
                      client_secret=reddit_token,
                      user_agent='windows:natsgifbot (by /u/efitz11)')
 print(reddit.read_only)
