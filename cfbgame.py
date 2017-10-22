@@ -76,7 +76,6 @@ def get_game(team):
         games.append(game)
     for game in games:
         if game['hometeam'].lower() == team.lower() or game['homeabv'].lower() == team.lower() or game['awayteam'].lower() == team.lower() or game['awayabv'].lower() == team.lower():
-            print(game['awayrank'])
             awayr = "("+str(game['awayrank']['current'])+") " if game['awayrank']['current'] <= 25 else ""
             homer = "("+str(game['homerank']['current'])+") " if game['homerank']['current'] <= 25 else ""
             return "%s**%s %s** @ %s**%s %s** - %s" % (awayr,game['awayabv'], game['awayscore'], homer,game['homeabv'], game['homescore'], game['time'])
