@@ -53,6 +53,10 @@ def get_game(team):
         tid2 = event['competitions'][0]['competitors'][1]['id']
         score2 = int(event['competitions'][0]['competitors'][1]['score'])
         team2abv = event['competitions'][0]['competitors'][1]['team']['abbreviation']
+        
+        rank1 = event['competitions'][0]['competitors'][0]['curatedRank']
+        rank2 = event['competitions'][0]['competitors'][1]['curatedRank']
+        
         # Hawaii workaround
         if team1 == "Hawai'i":
             team1 = "Hawaii"
@@ -62,15 +66,18 @@ def get_game(team):
         homestatus = event['competitions'][0]['competitors'][0]['homeAway']
         
         if homestatus == 'home':
-            game['hometeam'], game['homeid'], game['homeabv'], game['homescore'], game['awayteam'], game['awayid'], game['awayabv'], game['awayscore'] =\
-                team1, tid1, team1abv, score1, team2, tid2, team2abv, score2
+            game['hometeam'], game['homeid'], game['homeabv'], game['homescore'], game['awayteam'], game['awayid'], game['awayabv'], game['awayscore'], game['homerank'], game['awayrank']=\
+                team1, tid1, team1abv, score1, team2, tid2, team2abv, score2, rank1, rank2
         else:
-            game['hometeam'], game['homeid'], game['homeabv'], game['homescore'], game['awayteam'], game['awayid'], game['awayabv'], game['awayscore'] = \
-                team2, tid2, team2abv, score2, team1, tid1, team1abv, score1    
+            game['hometeam'], game['homeid'], game['homeabv'], game['homescore'], game['awayteam'], game['awayid'], game['awayabv'], game['awayscore'], game['homerank'], game['awayrank'] = \
+                team2, tid2, team2abv, score2, team1, tid1, team1abv, score1, rank2, rank1
             
         #print (game)
         games.append(game)
     for game in games:
         if game['hometeam'].lower() == team.lower() or game['homeabv'].lower() == team.lower() or game['awayteam'].lower() == team.lower() or game['awayabv'].lower() == team.lower():
-            return "**%s %s** @ **%s %s** - %s" % (game['awayabv'], game['awayscore'], game['homeabv'], game['homescore'], game['time'])
+            print(game['awayrank'])
+            awayr = "("+str(game['awayrank']['current'])+") " if game['awayrank']['current'] <= 25 else ""
+            homer = "("+str(game['homerank']['current'])+") " if game['homerank']['current'] <= 25 else ""
+            return "%s**%s %s** @ %s**%s %s** - %s" % (awayr,game['awayabv'], game['awayscore'], homer,game['homeabv'], game['homescore'], game['time'])
     return "game not found"
