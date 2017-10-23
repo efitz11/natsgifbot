@@ -169,10 +169,7 @@ def sub(subreddit, selfpost=False):
 
 @bot.command()
 async def mockify(*text:str):
-    input = ""
-    for s in text:
-        input = input + " " + s
-    input = input.strip()
+    input = ' '.join(text)
     last = False
     output = ""
     for s in input:
@@ -187,9 +184,7 @@ async def mockify(*text:str):
         
 @bot.command()
 async def memeify(*text:str):
-    input = ""
-    for s in text:
-        input = input + " " + s
+    input = ' '.join(text)
     output = ""
     for s in input:
         output = output + " " + s
