@@ -253,6 +253,18 @@ async def nhl(*team:str):
     t = ' '.join(team)
     await bot.say(nflgame.get_game(t,'nhl'))
 '''    
+
+@bot.event
+async def on_message(message):
+    #stuff
+    if message.author == bot.user:
+        return
+    if message.content.startswith(bot.command_prefix):
+        await bot.process_commands(message)
+    else:
+        if message.content.find(' 69 '):
+            await bot.send_message(message.channel, 'Nice.')
+
 # get tokens from file
 f = open('tokens.txt','r')
 reddit_clientid = f.readline().strip()
