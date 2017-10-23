@@ -221,8 +221,11 @@ async def pajokie():
     await bot.say("https://cdn.discordapp.com/attachments/328677264566910977/343555639227842571/image.jpg")
 
 @bot.command()
-async def roll(num:int):
-    n = random.randint(1,num)
+async def roll(*num:int):
+    nu = 6
+    if len(num) != 0:
+        nu = num[0]
+    n = random.randint(1,nu)
     await bot.say(n)
     
 @bot.command()
