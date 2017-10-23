@@ -8,9 +8,6 @@ GAME_STATUS_PRE = 0
 GAME_STATUS_IN = 1
 GAME_STATUS_POST = 2
 
-type = "80" # 80 = FBS
-# Other leagues go here
-
 def get_game(team, sport):
     req = Request("http://espn.go.com/"+sport+"/scoreboard")
     req.headers["User-Agent"] = "windows 10 bot"
@@ -61,7 +58,7 @@ def get_game(team, sport):
         #print (game)
         games.append(game)
     if len(team) == 0:
-        output = ""
+        output = "Today's games:\n"
         for game in games:
             output = output + "**%s %s** @ **%s %s** - %s\n" % (game['awayabv'], game['awayscore'],game['homeabv'], game['homescore'], game['time'])
         return output
