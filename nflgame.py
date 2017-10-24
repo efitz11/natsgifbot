@@ -8,6 +8,12 @@ GAME_STATUS_PRE = 0
 GAME_STATUS_IN = 1
 GAME_STATUS_POST = 2
 
+NBA_TEAM_WIDTH = 4
+NBA_SCORE_WIDTH = 3
+NFL_TEAM_WIDTH = 3
+NFL_SCORE_WIDTH = 2
+
+
 def get_game(team, sport):
     req = Request("http://espn.go.com/"+sport+"/scoreboard")
     req.headers["User-Agent"] = "windows 10 bot"
@@ -19,6 +25,12 @@ def get_game(team, sport):
     #f = open('espnout.txt','w')
     #f.write(json.dumps(scoreData))
     #f.close()
+    if sport == "nba":
+        scorew = NBA_SCORE_WIDTH
+        teamw = NBA_TEAM_WIDTH
+    elif sport == "nfl":
+        scorew = NFL_SCORE_WIDTH
+        teamw = NFL_TEAM_WIDTH
     
     games = []
     for event in scoreData['events']:
@@ -62,12 +74,13 @@ def get_game(team, sport):
         #print (game)
         games.append(game)
     if len(team) == 0:
-        output = "Today's games:\n"
+        output = "Today's games:\n```python\n"
         for game in games:
-            output = output + "**%s %s** @ **%s %s** - %s%s\n" % (game['awayabv'], game['awayscore'],game['homeabv'], game['homescore'], game['time'],game['odds'])
-        return output
+            output = output + "%s %s @ %s %s # %s%s\n" % (game['awayabv'].ljust(teamw), str(game['awayscore']).rjust(scorew),game['homeabv'].ljust(teamw), str(game['homescore']).rjust(scorew), game['time'],game['odds'])
+        return output + "```"
     for game in games:
         if game['hometeam'].lower() == team.lower() or game['homeabv'].lower() == team.lower() or game['awayteam'].lower() == team.lower() or game['awayabv'].lower() == team.lower() or game['homename'].lower() == team.lower() or game['awayname'].lower() == team.lower():
-            return "**%s %s** @ **%s %s** - %s%s" % (game['awayabv'], game['awayscore'],game['homeabv'], game['homescore'], game['time'], game['odds'])
+            return "```python\n%s %s @ %s %s # %s%s```" % (game['awayabv'], game['awayscore'],game['homeabv'], game['homescore'], game['time'], game['odds'])
+            #return "**%s %s** @ **%s %s** - %s%s" % (game['awayabv'], game['awayscore'],game['homeabv'], game['homescore'], game['time'], game['odds'])
     
     return "game not found"
