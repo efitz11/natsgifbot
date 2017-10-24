@@ -19,7 +19,8 @@ basesmap = {'0':'---',
             '5':'1-3',
             '6':'-23',
             '7':'123'}
-            
+
+pattern69 = re.compile('(^|[\s\.])[6][9]([\s\.]|$)')
     
 # get tokens from file
 f = open('tokens.txt','r')
@@ -275,9 +276,9 @@ async def on_message(message):
         return
     if message.content.startswith(bot.command_prefix):
         await bot.process_commands(message)
-    #else:
-    #    if message.content.find(' 69 '):
-    #        await bot.send_message(message.channel, 'Nice.')
+    else:
+        if pattern69.search(message.content):
+            await bot.send_message(message.channel, 'Nice.')
 
     
 async def my_bg_task():
