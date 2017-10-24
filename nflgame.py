@@ -48,6 +48,10 @@ def get_game(team, sport):
         name1 = event['competitions'][0]['competitors'][0]['team']['name']
         name2 = event['competitions'][0]['competitors'][1]['team']['name']
         
+        game['odds'] = ""
+        if 'odds' in event['competitions'][0]:
+            game['odds'] = " - " + event['competitions'][0]['odds'][0]['details']
+        
         if homestatus == 'home':
             game['hometeam'], game['homeid'], game['homeabv'], game['homescore'], game['awayteam'], game['awayid'], game['awayabv'], game['awayscore'], game['homename'], game['awayname'] =\
                 team1, tid1, team1abv, score1, team2, tid2, team2abv, score2, name1, name2
@@ -60,10 +64,10 @@ def get_game(team, sport):
     if len(team) == 0:
         output = "Today's games:\n"
         for game in games:
-            output = output + "**%s %s** @ **%s %s** - %s\n" % (game['awayabv'], game['awayscore'],game['homeabv'], game['homescore'], game['time'])
+            output = output + "**%s %s** @ **%s %s** - %s%s\n" % (game['awayabv'], game['awayscore'],game['homeabv'], game['homescore'], game['time'],game['odds'])
         return output
     for game in games:
         if game['hometeam'].lower() == team.lower() or game['homeabv'].lower() == team.lower() or game['awayteam'].lower() == team.lower() or game['awayabv'].lower() == team.lower() or game['homename'].lower() == team.lower() or game['awayname'].lower() == team.lower():
-            return "**%s %s** @ **%s %s** - %s" % (game['awayabv'], game['awayscore'],game['homeabv'], game['homescore'], game['time'])
+            return "**%s %s** @ **%s %s** - %s%s" % (game['awayabv'], game['awayscore'],game['homeabv'], game['homescore'], game['time'], game['odds'])
     
     return "game not found"

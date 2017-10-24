@@ -261,9 +261,9 @@ async def on_message(message):
         return
     if message.content.startswith(bot.command_prefix):
         await bot.process_commands(message)
-    else:
-        if message.content.find(' 69 '):
-            await bot.send_message(message.channel, 'Nice.')
+    #else:
+    #    if message.content.find(' 69 '):
+    #        await bot.send_message(message.channel, 'Nice.')
 
 # get tokens from file
 f = open('tokens.txt','r')
