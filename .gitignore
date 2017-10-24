@@ -4,3 +4,4 @@ tokens-dev.txt
 tokens-rel.txt
 *.pyc
 cfbtest.py
+channelids.txt

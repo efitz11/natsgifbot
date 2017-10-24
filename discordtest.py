@@ -5,6 +5,7 @@ import mlbgame
 from datetime import datetime, timedelta
 import praw, prawcore.exceptions
 import re
+import asyncio
 
 import mymlbgame, cfbgame, nflgame
 
@@ -18,6 +19,19 @@ basesmap = {'0':'---',
             '5':'1-3',
             '6':'-23',
             '7':'123'}
+            
+    
+# get tokens from file
+f = open('tokens.txt','r')
+reddit_clientid = f.readline().strip()
+reddit_token = f.readline().strip()
+discord_token = f.readline().strip()
+f.close()
+
+f = open('channelids.txt')
+main_chid = f.readline().strip()
+f.close()
+
 
 @bot.event
 async def on_ready():
@@ -265,15 +279,16 @@ async def on_message(message):
     #    if message.content.find(' 69 '):
     #        await bot.send_message(message.channel, 'Nice.')
 
-# get tokens from file
-f = open('tokens.txt','r')
-reddit_clientid = f.readline().strip()
-reddit_token = f.readline().strip()
-discord_token = f.readline().strip()
-f.close()
+    
+async def my_bg_task():
+    await bot.wait_until_ready()
+    channel = discord.Object(id = main_chid)
+    while not bot.is_closed:
+        await asyncio.sleep(100)
 
 reddit = praw.Reddit(client_id=reddit_clientid,
                      client_secret=reddit_token,
                      user_agent='windows:natsgifbot (by /u/efitz11)')
 print(reddit.read_only)
+#bot.loop.create_task(my_bg_task())
 bot.run(discord_token)
