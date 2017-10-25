@@ -83,13 +83,14 @@ def get_game_status(overview, lastplay=False):
     inning   = overview['inning']
     top_inn  = "Top" if overview['top_inning'] == 'Y' else "Bot"
     outs = outs + " out" + ("" if outs == "1" else "s")
+    count = "Count: (" + overview['balls'] + "-" + overview['strikes'] + ")"
     
     output = "%s %s @ %s %s" % (awayteam, awayruns, hometeam, homeruns)
-    if status != 'Final':
+    if status != 'Final' and status != 'Game Over':
         bases = ""
         if 'runner_on_base_status' in overview:
             bases = basesmap[overview['runner_on_base_status']]
-        output = output + ":  %s %s - %s %s" % (top_inn, inning, outs, bases)
+        output = output + ":  %s %s - %s %s %s" % (top_inn, inning, outs, bases, count)
     else:
         output = output + " (F) "
         wp = overview['winning_pitcher']
