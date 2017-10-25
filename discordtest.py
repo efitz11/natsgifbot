@@ -34,6 +34,7 @@ async def on_ready():
     
 @bot.command()
 async def gif(*name : str):
+    """returns a nationals gif matching the search query"""
     if name[0] == "electricchair":
         await bot.say('https://gfycat.com/ClearHauntingHoverfly')
     elif name[0] == "murder":
@@ -67,6 +68,7 @@ async def gif(*name : str):
     
 @bot.command()
 async def mlb(*team :str):
+    """<team> to show today's game, or blank to show all games"""
     now = datetime.now() - timedelta(hours=3)
     if len(team) == 0:
         day = mlbgame.day(now.year, now.month, now.day)
@@ -87,6 +89,7 @@ async def mlb(*team :str):
 
 @bot.command()
 async def mlbd(year:int, month:int, day:int, *team:str):
+    """<yyyy mm dd> to show all of that day's games; add a team for just one"""
     if len(team) == 0:
         gameday = mlbgame.day(year, month, day)
         output = "The day's scores:\n```python\n"
@@ -122,6 +125,7 @@ def sub(subreddit, selfpost=False):
 
 @bot.command()
 async def mockify(*text:str):
+    """MocKiFy aNy sTrIng of tExT"""
     input = ' '.join(text)
     last = False
     output = ""
@@ -137,6 +141,7 @@ async def mockify(*text:str):
         
 @bot.command()
 async def memeify(*text:str):
+    """M E M E I F Y   A N Y   S T R I N G   O F   T E X T"""
     input = ' '.join(text)
     output = ""
     for s in input:
@@ -145,22 +150,27 @@ async def memeify(*text:str):
     
 @bot.command()
 async def pup():
+    """show a random pic of a pupper"""
     await bot.say(sub('puppies'))
 
 @bot.command()
 async def kit():
+    """show a random pic of a kitten"""
     await bot.say(sub('kittens'))
 
 @bot.command()
 async def corg():
+    """show a random pic of a corgi"""
     await bot.say(sub('corgi'))    
 
 @bot.command()
 async def fp():
+    """get a random FP quote"""
     await bot.say(sub('justFPthings',selfpost=True))    
     
 @bot.command()
 async def subr(text:str):
+    """<subreddit> get a random link post from a subreddit"""
     await bot.say(sub(text))
     
 @bot.command()
@@ -175,6 +185,7 @@ async def pajokie():
 
 @bot.command()
 async def roll(*num:int):
+    """roll an n-sided die (6 default)"""
     nu = 6
     if len(num) != 0:
         nu = num[0]
@@ -183,21 +194,25 @@ async def roll(*num:int):
     
 @bot.command()
 async def flip():
+    """flip a coin"""
     res = "heads" if random.randint(0,1) == 0 else "tails"
     await bot.say(res)
     
 @bot.command()
 async def cfb(*team:str):
+    """<team> display score of team's cfb game"""
     t = ' '.join(team)
     await bot.say(cfbgame.get_game(t))
     
 @bot.command()
 async def nfl(*team:str):
+    """<optional team> display score(s) of nfl game"""
     t = ' '.join(team)
     await bot.say(nflgame.get_game(t,'nfl'))
     
 @bot.command()
 async def nba(*team:str):
+    """<optional team> display score(s) of nba game"""
     t = ' '.join(team)
     await bot.say(nflgame.get_game(t,'nba'))
 '''  
