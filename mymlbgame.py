@@ -1,4 +1,3 @@
-import mlbgame
 from datetime import datetime, timedelta
 from urllib.error import HTTPError
 from urllib.request import urlopen
