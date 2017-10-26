@@ -51,7 +51,7 @@ def get_game(team):
     elif team.lower() in groupmap:
         url = "http://www.espn.com/college-football/scoreboard/_/group/" + groupmap[team.lower()] + "/year/2017/seasontype/2/"
         all = True
-    print(url)
+    
     req = Request(url)
     req.headers["User-Agent"] = "windows 10 bot"
     # Load data
