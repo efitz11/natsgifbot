@@ -126,16 +126,19 @@ def sub(subreddit, selfpost=False):
 @bot.command()
 async def mockify(*text:str):
     """MocKiFy aNy sTrIng of tExT"""
-    input = ' '.join(text)
+    input = ' '.join(text).lower()
     last = False
     output = ""
+    prob = 20
     for s in input:
         num = random.randint(0,100)
-        if not last and num > 20:
+        if not last and num > prob:
             output = output + (s.upper())
+            prob = 20
             last = True
         else:
             output = output + (s)
+            prob = prob - 4
             last = False
     await bot.say(output)
         
