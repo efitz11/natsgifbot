@@ -18,7 +18,7 @@ type = "80" # 80 = FBS
 # Other leagues go here
 
 groupmap = {"acc":"1", 
-            "american":"151", 
+            "american":"151", "aac":"151",
             "big 12":"4", 
             "big ten":"5", "big 10":"5",
             "c-usa":"12", "cusa":"12",
