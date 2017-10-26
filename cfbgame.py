@@ -1,6 +1,6 @@
 from urllib.request import urlopen, Request
-import time, json,html, datetime
-
+import time, json,html
+from datetime import datetime
 '''
 borrowed some code from /r/cfb's IRC bot, thank you
 https://github.com/diagonalfish/FootballBotX2
@@ -20,7 +20,7 @@ type = "80" # 80 = FBS
 def get_game(team):
     now = datetime.now()
     req = Request("http://espn.go.com/college-football/scoreboard/_/group/" +
-                  type + "/year/"+now.year+"/seasontype/2/?t=" + str(time.time()))
+                  type + "/year/"+str(now.year)+"/seasontype/2/?t=" + str(time.time()))
     req.headers["User-Agent"] = "windows 10 bot"
     # Load data
     scoreData = urlopen(req).read().decode("utf-8")
