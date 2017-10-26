@@ -172,7 +172,7 @@ async def fp():
     await bot.say(sub('justFPthings',selfpost=True))    
     
 @bot.command()
-async def subr(text:str):
+async def r(text:str):
     """<subreddit> get a random link post from a subreddit"""
     await bot.say(sub(text))
     
