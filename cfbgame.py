@@ -17,10 +17,42 @@ GAME_STATUS_POST = 2
 type = "80" # 80 = FBS
 # Other leagues go here
 
+groupmap = {"acc":"1", 
+            "american":"151", 
+            "big 12":"4", 
+            "big ten":"5", "big 10":"5",
+            "c-usa":"12", "cusa":"12",
+            "independent":"18","indep":"18",
+            "mac":"15",
+            "mw":"17",
+            "pac 12":"9", "pac-12":"9",
+            "sec":"8",
+            "sun belt":"37",
+            "big south":"40",
+            "caa":"48",
+            "ivy":"22",
+            "meac":"24",
+            "mvfc":"21",
+            "nec":"25",
+            "ovc":"26",
+            "patriot":"27",
+            "pioneer":"28",
+            "swac":"31",
+            "southern":"29",
+            "southland":"30"}
+
 def get_game(team):
     now = datetime.now()
-    req = Request("http://espn.go.com/college-football/scoreboard/_/group/" +
-                  type + "/year/"+str(now.year)+"/seasontype/2/?t=" + str(time.time()))
+    url = "http://espn.go.com/college-football/scoreboard/_/group/" + type + "/year/"+str(now.year)+"/seasontype/2/?t=" + str(time.time())
+    all = False
+    if team == None or team == "":
+        url = "http://www.espn.com/college-football/scoreboard/_/year/" + str(now.year)+"/seasontype/2"
+        all = True
+    elif team.lower() in groupmap:
+        url = "http://www.espn.com/college-football/scoreboard/_/group/" + groupmap[team.lower()] + "/year/2017/seasontype/2/"
+        all = True
+    print(url)
+    req = Request(url)
     req.headers["User-Agent"] = "windows 10 bot"
     # Load data
     scoreData = urlopen(req).read().decode("utf-8")
@@ -75,6 +107,13 @@ def get_game(team):
             
         #print (game)
         games.append(game)
+    if all:
+        output = ""
+        for game in games:
+            awayr = "("+str(game['awayrank']['current'])+") " if game['awayrank']['current'] <= 25 else ""
+            homer = "("+str(game['homerank']['current'])+") " if game['homerank']['current'] <= 25 else ""
+            output = output +  "%s**%s %s** @ %s**%s %s** - %s\n" % (awayr,game['awayabv'], game['awayscore'], homer,game['homeabv'], game['homescore'], game['time'])
+        return output
     for game in games:
         if game['hometeam'].lower() == team.lower() or game['homeabv'].lower() == team.lower() or game['awayteam'].lower() == team.lower() or game['awayabv'].lower() == team.lower():
             awayr = "("+str(game['awayrank']['current'])+") " if game['awayrank']['current'] <= 25 else ""
