@@ -126,16 +126,16 @@ def sub(subreddit, selfpost=False):
 def mockify_text(text):
     last = False
     output = ""
-    prob = 20
+    prob = 25
     for s in text:
         num = random.randint(0,100)
         if not last and num > prob:
             output = output + (s.upper())
-            prob = 20
+            prob = 25
             last = True
         else:
             output = output + (s)
-            prob = prob - 4
+            prob = prob - 5
             last = False
     return output
     
@@ -145,7 +145,7 @@ class mocker():
     def update(self,msg):
         self.lastmsg = msg
     def mock(self):
-        return mockify_text(self.lastmsg)
+        return mockify_text(self.lastmsg.lower())
         
 @bot.command()
 async def mockify(*text:str):
