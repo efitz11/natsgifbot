@@ -7,7 +7,7 @@ import praw, prawcore.exceptions
 import re
 import asyncio
 
-import mymlbgame, cfbgame, nflgame
+import mymlbgame, cfbgame, nflgame, xmlreader
 
 bot = commands.Bot(command_prefix='!')
 
@@ -278,12 +278,22 @@ async def my_bg_task():
                 await bot.send_message(channel,output)
         await asyncio.sleep(15)
 
+async def update_mlbtr():
+    await bot.wait_until_ready()
+    channel = discord.Object(id = main_chid)
+    while not bot.is_closed:
+        out = mlbtr.mlbtr()
+        if out != None:
+            await bot.send_message(channel,out)
+        await asyncio.sleep(60*5)
         
 mockobj = mocker()
+mlbtr = xmlreader.XmlReader()
 
 reddit = praw.Reddit(client_id=reddit_clientid,
                      client_secret=reddit_token,
                      user_agent='windows:natsgifbot (by /u/efitz11)')
 print(reddit.read_only)
 bot.loop.create_task(my_bg_task())
+bot.loop.create_task(update_mlbtr())
 bot.run(discord_token)
