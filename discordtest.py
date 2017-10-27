@@ -225,6 +225,10 @@ async def nhl(*team:str):
     await bot.say(nflgame.get_game(t,'nhl'))
 '''    
 
+@bot.command()
+async def giflist():
+    await bot.say("https://github.com/efitz11/natsgifbot/blob/master/postlist.csv")
+
 @bot.event
 async def on_message(message):
     #stuff
