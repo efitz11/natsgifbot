@@ -126,16 +126,16 @@ def sub(subreddit, selfpost=False):
 def mockify_text(text):
     last = False
     output = ""
-    prob = 25
+    prob = 30
     for s in text:
         num = random.randint(0,100)
         if not last and num > prob:
             output = output + (s.upper())
-            prob = 25
+            prob = 30
             last = True
         else:
             output = output + (s)
-            prob = prob - 5
+            prob = prob - 10
             last = False
     return output
     
