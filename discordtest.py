@@ -123,14 +123,11 @@ def sub(subreddit, selfpost=False):
     except prawcore.exceptions.Redirect:
         return ("Error: subreddit not found")
 
-@bot.command()
-async def mockify(*text:str):
-    """MocKiFy aNy sTrIng of tExT"""
-    input = ' '.join(text).lower()
+def mockify_text(text):
     last = False
     output = ""
     prob = 20
-    for s in input:
+    for s in text:
         num = random.randint(0,100)
         if not last and num > prob:
             output = output + (s.upper())
@@ -140,7 +137,27 @@ async def mockify(*text:str):
             output = output + (s)
             prob = prob - 4
             last = False
-    await bot.say(output)
+    return output
+    
+class mocker():
+    def __init__(self):
+        self.lastmsg = ""
+    def update(self,msg):
+        self.lastmsg = msg
+    def mock(self):
+        return mockify_text(self.lastmsg)
+        
+@bot.command()
+async def mockify(*text:str):
+    """MocKiFy aNy sTrIng of tExT"""
+    input = ' '.join(text).lower()
+    await bot.say(mockify_text(input))
+
+
+@bot.command()
+async def mock():
+    """mOcKiFy tHe pReViOuS MeSsaGe"""
+    await bot.say(mockobj.mock())
         
 @bot.command()
 async def memeify(*text:str):
@@ -239,6 +256,7 @@ async def on_message(message):
     else:
         if pattern69.search(message.content):
             await bot.send_message(message.channel, 'Nice.')
+    mockobj.update(str(message.content))
 
 updater = mymlbgame.Updater()
 
@@ -259,6 +277,9 @@ async def my_bg_task():
                 output = "```python\n" + output + "```"
                 await bot.send_message(channel,output)
         await asyncio.sleep(15)
+
+        
+mockobj = mocker()
 
 reddit = praw.Reddit(client_id=reddit_clientid,
                      client_secret=reddit_token,
