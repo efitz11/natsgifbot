@@ -90,6 +90,10 @@ def get_game(team):
         rank1 = event['competitions'][0]['competitors'][0]['curatedRank']
         rank2 = event['competitions'][0]['competitors'][1]['curatedRank']
         
+        game['odds'] = ""
+        if 'odds' in event['competitions'][0]:
+            game['odds'] = " - " + event['competitions'][0]['odds'][0]['details']
+        
         # Hawaii workaround
         if team1 == "Hawai'i":
             team1 = "Hawaii"
@@ -112,11 +116,11 @@ def get_game(team):
         for game in games:
             awayr = "("+str(game['awayrank']['current'])+")" if game['awayrank']['current'] <= 25 else ""
             homer = "("+str(game['homerank']['current'])+")" if game['homerank']['current'] <= 25 else ""
-            output = output +  "%s %s %s @ %s %s %s # %s\n" % (awayr.rjust(4),game['awayabv'].rjust(5), game['awayscore'].rjust(2), homer.rjust(4),game['homeabv'].rjust(5), game['homescore'].rjust(2), game['time'])
+            output = output +  "%s %s %s @ %s %s %s # %s%s\n" % (awayr.rjust(4),game['awayabv'].rjust(5), game['awayscore'].rjust(2), homer.rjust(4),game['homeabv'].rjust(5), game['homescore'].rjust(2), game['time'],game['odds'])
         return (output+"```")
     for game in games:
         if game['hometeam'].lower() == team.lower() or game['homeabv'].lower() == team.lower() or game['awayteam'].lower() == team.lower() or game['awayabv'].lower() == team.lower():
             awayr = "("+str(game['awayrank']['current'])+") " if game['awayrank']['current'] <= 25 else ""
             homer = "("+str(game['homerank']['current'])+") " if game['homerank']['current'] <= 25 else ""
-            return "```python\n%s%s %s @ %s%s %s # %s```" % (awayr,game['awayabv'], game['awayscore'], homer,game['homeabv'], game['homescore'], game['time'])
+            return "```python\n%s%s %s @ %s%s %s # %s%s```" % (awayr,game['awayabv'], game['awayscore'], homer,game['homeabv'], game['homescore'], game['time'], game['odds'])
     return "game not found"
