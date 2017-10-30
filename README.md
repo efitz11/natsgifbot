@@ -23,4 +23,5 @@ Supported commands:
   nfl     <optional team> display score(s) of nfl game
   nba     <optional team> display score(s) of nba game
   giflist 
+  youtube get the first youtube video for a query
 ```
