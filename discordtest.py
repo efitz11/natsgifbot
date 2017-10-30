@@ -4,10 +4,9 @@ import random
 import mlbgame
 from datetime import datetime, timedelta
 import praw, prawcore.exceptions
-import re
+import re, json
 import asyncio
-from bs4 import BeautifulSoup
-from urllib.request import urlopen
+from urllib.request import urlopen, Request
 
 import mymlbgame, cfbgame, nflgame, xmlreader
 
@@ -253,13 +252,16 @@ async def youtube(*query:str):
     """get the first youtube video for a query"""
     q = '+'.join(query)
     url = "https://www.youtube.com/results?search_query=" + q
-    file = urlopen(url)
-    soup = BeautifulSoup(file,"lxml")
-    for vid in soup.findAll(attrs={'class':'yt-uix-tile-link'}):
-        print ('https://www.youtube.com' + vid['href'])
-        if vid['href'].find("watch") >= 0:
-            await bot.say('https://www.youtube.com'+vid['href'])
-            return
+    
+    req = Request(url)
+    req.headers["User-Agent"] = "windows 10 bot"
+    resource = urlopen(req)
+    content = resource.read().decode(resource.headers.get_content_charset())
+    
+    findstr = "<li><div class=\"yt-lockup yt-lockup-tile yt-lockup-video vve-check clearfix\" data-context-item-id=\""
+    contents = content[content.find(findstr)+len(findstr):]
+    vid = contents[:contents.find("\"")]
+    await bot.say("https://youtube.com/watch?v="+vid)
 
 @bot.event
 async def on_message(message):
