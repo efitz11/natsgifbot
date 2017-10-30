@@ -6,6 +6,8 @@ from datetime import datetime, timedelta
 import praw, prawcore.exceptions
 import re
 import asyncio
+from bs4 import BeautifulSoup
+from urllib.request import urlopen
 
 import mymlbgame, cfbgame, nflgame, xmlreader
 
@@ -245,6 +247,19 @@ async def nhl(*team:str):
 @bot.command()
 async def giflist():
     await bot.say("https://github.com/efitz11/natsgifbot/blob/master/postlist.csv")
+    
+@bot.command()
+async def youtube(*query:str):
+    """get the first youtube video for a query"""
+    q = '+'.join(query)
+    url = "https://www.youtube.com/results?search_query=" + q
+    file = urlopen(url)
+    soup = BeautifulSoup(file,"lxml")
+    for vid in soup.findAll(attrs={'class':'yt-uix-tile-link'}):
+        print ('https://www.youtube.com' + vid['href'])
+        if vid['href'].find("watch") >= 0:
+            await bot.say('https://www.youtube.com'+vid['href'])
+            return
 
 @bot.event
 async def on_message(message):

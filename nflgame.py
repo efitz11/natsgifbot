@@ -84,3 +84,12 @@ def get_game(team, sport):
             #return "**%s %s** @ **%s %s** - %s%s" % (game['awayabv'], game['awayscore'],game['homeabv'], game['homescore'], game['time'], game['odds'])
     
     return "game not found"
+    
+#def get_nfl_standings():
+#    req = Request("http://espn.go.com/nfl/standings")
+#    req.headers["User-Agent"] = "windows 10 bot"
+#    # Load data
+#    scoreData = urlopen(req).read().decode("utf-8")
+#    rowclass = "<tr class=\" standings-row\">"
+#    teamclass = "<span class=\"team-names\">"
+#    scoreData = scoreData[scoreData.find(rowclass)]
