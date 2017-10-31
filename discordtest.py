@@ -8,7 +8,7 @@ import re, json
 import asyncio
 from urllib.request import urlopen, Request
 
-import mymlbgame, cfbgame, nflgame, xmlreader
+import mymlbgame, cfbgame, nflgame, xmlreader, nhlscores
 
 bot = commands.Bot(command_prefix='!')
 
@@ -239,12 +239,12 @@ async def nba(*team:str):
     """<optional team> display score(s) of nba game"""
     t = ' '.join(team)
     await bot.say(nflgame.get_game(t,'nba'))
-'''  
+
 @bot.command()
 async def nhl(*team:str):
+    """<optional team> display score(s) of nhl game"""
     t = ' '.join(team)
-    await bot.say(nflgame.get_game(t,'nhl'))
-'''    
+    await bot.say(nhlscores.get_scores())
 
 @bot.command()
 async def giflist():
