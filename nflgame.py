@@ -19,7 +19,7 @@ def get_game(team, sport):
     req.headers["User-Agent"] = "windows 10 bot"
     # Load data
     scoreData = urlopen(req).read().decode("utf-8")
-    scoreData = scoreData[scoreData.find('window.espn.scoreboardData 	= ')+len('window.espn.scoreboardData 	= '):]
+    scoreData = scoreData[scoreData.find('window.espn.scoreboardData     = ')+len('window.espn.scoreboardData     = '):]
     scoreData = json.loads(scoreData[:scoreData.find('};')+1])
     #print(scoreData)
     #f = open('espnout.txt','w')
@@ -93,3 +93,32 @@ def get_game(team, sport):
 #    rowclass = "<tr class=\" standings-row\">"
 #    teamclass = "<span class=\"team-names\">"
 #    scoreData = scoreData[scoreData.find(rowclass)]
+
+def get_nfl_scores(team):
+    req = Request("http://www.nfl.com/liveupdate/scores/scores.json")
+    req.headers["User-Agent"] = "windows 10 bot"
+    # Load data
+    games = json.loads(urlopen(req).read().decode("utf-8"))
+    output = "```python\n"
+    for game in games:
+        game = games[game]
+        homet = game['home']['abbr'].rjust(NFL_TEAM_WIDTH)
+        awayt = game['away']['abbr'].rjust(NFL_TEAM_WIDTH)
+        homes = str(game['home']['score']['T']).rjust(NFL_SCORE_WIDTH)
+        aways = str(game['away']['score']['T']).rjust(NFL_SCORE_WIDTH)
+        qtr   = game['qtr']
+        clock = game['clock']
+        rz = game['redzone']
+        post = game['posteam']
+        down = game['down']
+        togo = game['togo']
+        yl = game['yl']
+        output = output + "%s %s @ %s %s" % (awayt, aways, homet, homes)
+        if qtr != "Final": #todo replace with game in progress status
+            output = output + " - %sQ %s\n" % (qtr, clock)
+            output = output + "\tPos: %s, %s and %d from %s" % (post,down,togo,yl)
+        else:
+            output = output + " - %s\n" %(qtr)
+    return output + "```"
+
+    
