@@ -12,7 +12,7 @@ import mymlbgame, cfbgame, nflgame, xmlreader
 
 bot = commands.Bot(command_prefix='!')
 
-pattern69 = re.compile('(^|[\s\.])[6][9]([\s\.]|$)')
+pattern69 = re.compile('(^|[\s\.])[6][9]([\s\.]|$|th)')
     
 # get tokens from file
 f = open('tokens.txt','r')
