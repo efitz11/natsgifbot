@@ -22,6 +22,7 @@ Supported commands:
   cfb     <team> display score of team's cfb game
   nfl     <optional team> display score(s) of nfl game
   nba     <optional team> display score(s) of nba game
+  nhl     <optional team> display score(s) of nhl game
   giflist 
   youtube get the first youtube video for a query
 ```
