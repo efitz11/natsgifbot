@@ -244,7 +244,7 @@ async def nba(*team:str):
 async def nhl(*team:str):
     """<optional team> display score(s) of nhl game"""
     t = ' '.join(team)
-    await bot.say(nhlscores.get_scores())
+    await bot.say(nhlscores.get_scores(t))
 
 @bot.command()
 async def giflist():

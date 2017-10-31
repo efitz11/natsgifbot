@@ -13,8 +13,7 @@ def get_scores(team):
     
     if len(games) == 0:
         return
-    
-    if team != None:
+    if len(team) != 0:
         team = team.lower()
         for game in games:
             awayt = game['teams']['away']['team']['abbreviation'].lower()
