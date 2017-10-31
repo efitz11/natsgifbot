@@ -73,6 +73,9 @@ async def mlb(*team :str):
     now = datetime.now() - timedelta(hours=3)
     if len(team) == 0:
         day = mlbgame.day(now.year, now.month, now.day)
+        if len(day) == 0:
+            await bot.say("No games today.")
+            return
         output = "Today's scores:\n```python\n"
         for game in day:
             output = output + mymlbgame.get_game_str(game.game_id) +'\n'
