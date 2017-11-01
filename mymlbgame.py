@@ -96,11 +96,12 @@ def get_game_status(overview, lastplay=False):
         lp = overview['losing_pitcher']
         sp = overview['save_pitcher']
         output = output + "# WP: " + wp.ljust(10) + "\tLP: " + lp.ljust(10) + (("\tSV: " + sp.ljust(10)) if sp != "" else "")
-    if lastplay and 'pbp_last' in overview:
+    if 'current_batter' in overview:
         pitcher = overview['current_pitcher']
         batter = overview['current_batter']
-        lplay    = overview['pbp_last']
         output = output + "\n\tPitching: %s \tBatting: %s" % (pitcher, batter)
+    if lastplay and 'pbp_last' in overview:
+        lplay    = overview['pbp_last']
         output = output + "\n\tLast play: " + lplay.strip()
     return output
     
