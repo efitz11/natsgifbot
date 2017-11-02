@@ -276,7 +276,7 @@ async def on_message(message):
     else:
         if pattern69.search(message.content):
             await bot.send_message(message.channel, 'Nice.')
-    mockobj.update(str(message.content))
+        mockobj.update(str(message.content))
 
 updater = mymlbgame.Updater()
 
