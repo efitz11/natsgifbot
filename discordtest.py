@@ -9,6 +9,7 @@ import asyncio
 from urllib.request import urlopen, Request
 
 import mymlbgame, cfbgame, nflgame, xmlreader, nhlscores
+import weather as weathermodule
 
 bot = commands.Bot(command_prefix='!')
 
@@ -58,7 +59,7 @@ async def gif(*name : str):
                 matches.append(line)
         f.close()
         print ("query: " + query.strip())
-        print (matches)
+        #print (matches)
         if len(matches) == 0:
             return
         num = random.randint(0,len(matches)-1)
@@ -268,6 +269,11 @@ async def youtube(*query:str):
     contents = content[content.find(findstr)+len(findstr):]
     vid = contents[:contents.find("\"")]
     await bot.say("https://youtube.com/watch?v="+vid)
+
+@bot.command()
+async def weather(*location:str):
+    output = weathermodule.get_current_weather('%2C'.join(location))
+    await bot.say(output)
 
 @bot.event
 async def on_message(message):
