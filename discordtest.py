@@ -133,6 +133,9 @@ def mockify_text(text):
     prob = 30
     for s in text:
         num = random.randint(0,100)
+        if not s.isalpha():
+            output = output + s
+            continue
         if not last and num > prob:
             output = output + (s.upper())
             prob = 30
