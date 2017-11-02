@@ -317,6 +317,6 @@ reddit = praw.Reddit(client_id=reddit_clientid,
                      client_secret=reddit_token,
                      user_agent='windows:natsgifbot (by /u/efitz11)')
 print(reddit.read_only)
-bot.loop.create_task(my_bg_task())
+#bot.loop.create_task(my_bg_task())
 bot.loop.create_task(update_mlbtr())
 bot.run(discord_token)
