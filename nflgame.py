@@ -19,12 +19,19 @@ def get_game(team, sport):
     req.headers["User-Agent"] = "windows 10 bot"
     # Load data
     scoreData = urlopen(req).read().decode("utf-8")
-    scoreData = scoreData[scoreData.find('window.espn.scoreboardData     = ')+len('window.espn.scoreboardData     = '):]
+    f = open('espnout.txt','w',encoding="utf-8")
+    f.write(json.dumps(scoreData))
+    f.close()
+    searchstr = 'window.espn.scoreboardData'
+    scoreData = scoreData[scoreData.find(searchstr)+len(searchstr):]
+    scoreData = scoreData[scoreData.find('= ')+len('= '):]    
     scoreData = json.loads(scoreData[:scoreData.find('};')+1])
+    
     #print(scoreData)
     #f = open('espnout.txt','w')
     #f.write(json.dumps(scoreData))
     #f.close()
+    
     if sport == "nba":
         scorew = NBA_SCORE_WIDTH
         teamw = NBA_TEAM_WIDTH
