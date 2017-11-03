@@ -58,7 +58,7 @@ async def gif(*name : str):
             if matched:
                 matches.append(line)
         f.close()
-        print ("query: " + query.strip())
+        #print ("query: " + query.strip())
         #print (matches)
         if len(matches) == 0:
             return
@@ -196,6 +196,13 @@ async def kit():
 async def corg():
     """show a random pic of a corgi"""
     await bot.say(sub('corgi'))    
+
+@bot.command()
+async def car():
+    """show a random pic of a car"""
+    l = ["cars","carporn","autos","shitty_car_mods"]
+    i =  random.randint(0,len(l)-1)
+    await bot.say(sub(l[i]))
 
 @bot.command()
 async def fp():
