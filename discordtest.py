@@ -176,7 +176,7 @@ async def mock():
 @bot.command()
 async def memeify(*text:str):
     """M E M E I F Y   A N Y   S T R I N G   O F   T E X T"""
-    input = ' '.join(text)
+    input = ''.join(text)
     output = ""
     for s in input:
         output = output + " " + s
