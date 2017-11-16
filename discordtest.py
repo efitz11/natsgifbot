@@ -171,6 +171,33 @@ async def rn(text:str, num:int=1):
                 output = submission.title + "\n" + submission.url + "  \t<" + submission.shortlink+">"
             await bot.say(output)
             
+@bot.command()
+async def rs(subreddit:str, *query:str):
+    """<subreddit> get the first post (by hot) matching the query"""
+    patterns = []
+    for s in query:
+        patterns.append(re.compile(s,re.IGNORECASE))
+    if subreddit.endswith("/new"):
+        list = reddit.subreddit(subreddit[:subreddit.find("/")]).new(limit=100)
+    else:
+        i = subreddit.find("/")
+        if i != -1:
+            subreddit = subreddit[:i]
+        list = reddit.subreddit(subreddit).hot(limit=100)
+    for submission in list:
+        matched = True
+        for pat in patterns:
+            if not re.search(pat,submission.title):
+                matched = False
+                break
+            if matched:
+                if submission.is_self:
+                    output = submission.title + "\n" + submission.shortlink
+                else:
+                    output = submission.title + "\n" + submission.url + "  \t<" + submission.shortlink+">"
+                await bot.say(output)
+                return
+                
 def mockify_text(text):
     last = False
     output = ""
