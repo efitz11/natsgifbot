@@ -126,7 +126,44 @@ def sub(subreddit, selfpost=False):
         return (list[num])
     except prawcore.exceptions.Redirect:
         return ("Error: subreddit not found")
+    
+@bot.command()
+async def r(text:str):
+    """<subreddit> get a random link post from a subreddit"""
+    await bot.say(sub(text))
+    
+@bot.command()
+async def rh(text:str, num:int=1):
+    """<num> <subreddit> get the #num post from subreddit/hot"""
+    #subreddit = ''.join(text).lower()
+    subreddit = text
+    count = 0
+    for submission in reddit.subreddit(subreddit).hot(limit=(num+2)):
+        if submission.stickied:
+            continue
+        count += 1
+        if count == num:
+            if submission.is_self:
+                output = submission.title + "\n" + submission.shortlink
+            else:
+                output = submission.title + "\n" + submission.url + "  \t<" + submission.shortlink+">"
+            await bot.say(output)
 
+@bot.command()
+async def rn(text:str, num:int=1):
+    """<num> <subreddit> get the #num post from subreddit/new"""
+    #subreddit = ''.join(text).lower()
+    subreddit = text
+    count = 0
+    for submission in reddit.subreddit(subreddit).new(limit=(num+2)):
+        count += 1
+        if count == num:
+            if submission.is_self:
+                output = submission.title + "\n" + submission.shortlink
+            else:
+                output = submission.title + "\n" + submission.url + "  \t<" + submission.shortlink+">"
+            await bot.say(output)
+            
 def mockify_text(text):
     last = False
     output = ""
@@ -194,12 +231,7 @@ async def corg():
 async def fp():
     """get a random FP quote"""
     await bot.say(sub('justFPthings',selfpost=True))    
-    
-@bot.command()
-async def r(text:str):
-    """<subreddit> get a random link post from a subreddit"""
-    await bot.say(sub(text))
-    
+
 @bot.command()
 async def fuck():
     l = ['barves','cubs','dh','dodgers','mets','yankees']
