@@ -12,7 +12,7 @@ def get_current_weather(text):
 		output = output + data['item']['condition']['temp'] + ' ' + data['units']['temperature'] + " - "
 		output = output + data['item']['condition']['text'] + "\n"
 		output = output + data['item']['forecast'][0]['day'] + "'s forecast: " + data['item']['forecast'][0]['high'] + "/" + data['item']['forecast'][0]['low'] + ", " + data['item']['forecast'][0]['text']
-	print(output)
+	return output
 	
 	
 #get_current_weather('%2C'.join(("fairfax,","va")))
