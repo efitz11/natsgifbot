@@ -185,11 +185,15 @@ def mockify_text(text):
     
 class mocker():
     def __init__(self):
-        self.lastmsg = ""
-    def update(self,msg):
-        self.lastmsg = msg
-    def mock(self):
-        return mockify_text(self.lastmsg.lower())
+        self.lastmsg = {}
+    def update(self,msg,channel):
+        self.lastmsg[channel] = msg
+    def mock(self,channel):
+        try:
+            text = mockify_text(self.lastmsg[channel].lower())
+        except KeyError:
+            text = "Error: no previous message for this channel"
+        return text
         
 @bot.command()
 async def mockify(*text:str):
@@ -197,11 +201,10 @@ async def mockify(*text:str):
     input = ' '.join(text).lower()
     await bot.say(mockify_text(input))
 
-
-@bot.command()
-async def mock():
+@bot.command(pass_context=True)
+async def mock(ctx):
     """mOcKiFy tHe pReViOuS MeSsaGe"""
-    await bot.say(mockobj.mock())
+    await bot.say(mockobj.mock(ctx.message.channel))
         
 @bot.command()
 async def memeify(*text:str):
@@ -311,7 +314,7 @@ async def on_message(message):
     else:
         if pattern69.search(message.content):
             await bot.send_message(message.channel, 'Nice.')
-        mockobj.update(str(message.content))
+        mockobj.update(str(message.content),message.channel)
 
 updater = mymlbgame.Updater()
 
