@@ -125,7 +125,7 @@ def sub(subreddit, selfpost=False):
                     url = submission.url
                     s = ""
                     if submission.over_18:
-                        s = "post is NSFW; embed hidden\n"
+                        s = "**post is NSFW; embed hidden**\n"
                         url = "<" + url + ">"
                     s = s + submission.title + "\n" + url + "  \t<" + submission.shortlink+">"
                     list.append(s)
@@ -150,10 +150,15 @@ async def rh(text:str, num:int=1):
             continue
         count += 1
         if count == num:
+            url = submission.url
+            s = ""
+            if submission.over_18:
+                s = "**post is NSFW; embed hidden**\n"
+                url = "<" + url + ">"
             if submission.is_self:
                 output = submission.title + "\n" + submission.shortlink
             else:
-                output = submission.title + "\n" + submission.url + "  \t<" + submission.shortlink+">"
+                output = s+submission.title + "\n" + url + "  \t<" + submission.shortlink+">"
             await bot.say(output)
 
 @bot.command()
