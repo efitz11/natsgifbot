@@ -9,6 +9,7 @@ import asyncio
 from urllib.request import urlopen, Request
 
 import mymlbgame, cfbgame, nflgame, xmlreader, nhlscores
+import weather as weathermodule
 
 bot = commands.Bot(command_prefix='!')
 
@@ -57,8 +58,8 @@ async def gif(*name : str):
             if matched:
                 matches.append(line)
         f.close()
-        print ("query: " + query.strip())
-        print (matches)
+        #print ("query: " + query.strip())
+        #print (matches)
         if len(matches) == 0:
             return
         num = random.randint(0,len(matches)-1)
@@ -121,7 +122,13 @@ def sub(subreddit, selfpost=False):
                 if submission.is_self:
                     list.append(submission.title)
                 else:
-                    list.append(submission.title + "\n" + submission.url + "  \t<" + submission.shortlink+">")
+                    url = submission.url
+                    s = ""
+                    if submission.over_18:
+                        s = "post is NSFW; embed hidden\n"
+                        url = "<" + url + ">"
+                    s = s + submission.title + "\n" + url + "  \t<" + submission.shortlink+">"
+                    list.append(s)
         num = random.randint(0,len(list)-1)
         return (list[num])
     except prawcore.exceptions.Redirect:
@@ -209,7 +216,7 @@ async def mock(ctx):
 @bot.command()
 async def memeify(*text:str):
     """M E M E I F Y   A N Y   S T R I N G   O F   T E X T"""
-    input = ' '.join(text)
+    input = ''.join(text)
     output = ""
     for s in input:
         output = output + " " + s
@@ -229,6 +236,13 @@ async def kit():
 async def corg():
     """show a random pic of a corgi"""
     await bot.say(sub('corgi'))    
+
+@bot.command()
+async def car():
+    """show a random pic of a car"""
+    l = ["cars","carporn","autos","shitty_car_mods"]
+    i =  random.randint(0,len(l)-1)
+    await bot.say(sub(l[i]))
 
 @bot.command()
 async def fp():
@@ -303,6 +317,11 @@ async def youtube(*query:str):
     contents = content[content.find(findstr)+len(findstr):]
     vid = contents[:contents.find("\"")]
     await bot.say("https://youtube.com/watch?v="+vid)
+
+@bot.command()
+async def weather(*location:str):
+    output = weathermodule.get_current_weather('%2C'.join(location))
+    await bot.say(output)
 
 @bot.event
 async def on_message(message):
