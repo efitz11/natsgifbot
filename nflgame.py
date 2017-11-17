@@ -69,7 +69,8 @@ def get_game(team, sport):
         
         game['odds'] = ""
         if 'odds' in event['competitions'][0]:
-            game['odds'] = " - " + event['competitions'][0]['odds'][0]['details']
+            if 'details' in event['competitions'][0]['odds'][0]:
+                game['odds'] = " - " + event['competitions'][0]['odds'][0]['details']
         
         if homestatus == 'home':
             game['hometeam'], game['homeid'], game['homeabv'], game['homescore'], game['awayteam'], game['awayid'], game['awayabv'], game['awayscore'], game['homename'], game['awayname'] =\

@@ -92,7 +92,8 @@ def get_game(team):
         
         game['odds'] = ""
         if 'odds' in event['competitions'][0]:
-            game['odds'] = " - " + event['competitions'][0]['odds'][0]['details']
+            if 'details' in event['competitions'][0]['odds'][0]:
+                game['odds'] = " - " + event['competitions'][0]['odds'][0]['details']
         
         # Hawaii workaround
         if team1 == "Hawai'i":
