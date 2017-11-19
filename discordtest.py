@@ -364,6 +364,11 @@ async def weather(*location:str):
     output = weathermodule.get_current_weather('%2C'.join(location))
     await bot.say(output)
 
+@bot.command()
+async def countdown():
+    delta = datetime(2018,3,29) - datetime.now()
+    await bot.say("%s days until Opening Day, 2018" % delta.days)
+    
 @bot.event
 async def on_message(message):
     #stuff
