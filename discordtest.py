@@ -8,7 +8,7 @@ import re, json
 import asyncio
 from urllib.request import urlopen, Request
 
-import mymlbgame, cfbgame, nflgame, xmlreader, nhlscores
+import mymlbgame, cfbgame, nflgame, xmlreader, nhlscores, cbbgame
 import weather as weathermodule
 
 bot = commands.Bot(command_prefix='!')
@@ -320,6 +320,12 @@ async def cfb(*team:str):
     """<team> display score of team's cfb game"""
     t = ' '.join(team)
     await bot.say(cfbgame.get_game(t))
+    
+@bot.command()
+async def cbb(*team:str):
+    """<team> display score of team's cfb game"""
+    t = ' '.join(team)
+    await bot.say(cbbgame.get_game(t))
     
 @bot.command()
 async def nfl(*team:str):
