@@ -43,13 +43,13 @@ groupmap = {"acc":"1",
 
 def get_game(team):
     now = datetime.now()
-    url = "http://espn.go.com/college-football/scoreboard/_/group/" + type + "/year/"+str(now.year)+"/seasontype/2/?t=" + str(time.time())
+    url = "http://espn.go.com/mens-college-basketball/scoreboard/_/group/" + type + "/year/"+str(now.year)+"/seasontype/2/?t=" + str(time.time())
     all = False
     if team == None or team == "":
-        url = "http://www.espn.com/college-football/scoreboard/_/year/" + str(now.year)+"/seasontype/2"
+        url = "http://www.espn.com/mens-college-basketball/scoreboard/_/year/" + str(now.year)+"/seasontype/2"
         all = True
     elif team.lower() in groupmap:
-        url = "http://www.espn.com/college-football/scoreboard/_/group/" + groupmap[team.lower()] + "/year/"+str(now.year)+"/seasontype/2/"
+        url = "http://www.espn.com/mens-college-basketball/scoreboard/_/group/" + groupmap[team.lower()] + "/year/"+str(now.year)+"/seasontype/2/"
         all = True
     
     req = Request(url)
