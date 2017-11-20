@@ -13,9 +13,6 @@ def get_quote(symbol):
     if change > 0:
         ch = "+" + ch
         chper = "+" + chper
-    elif change < 0:
-        ch = "-" + ch
-        chper = "-" + chper
-    output = "%s quote:```python\n Last price: %s (%s, %s" % (symbol.upper(),quote['latestPrice'],ch,chper)+"%)"
+    output = "%s - %s:```python\n Last price: %s (%s, %s" % (symbol.upper(),quote['companyName'],quote['latestPrice'],ch,chper)+"%)"
     output = output + "```"
     return output
