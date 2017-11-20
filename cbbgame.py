@@ -31,7 +31,7 @@ groupmap = {
             "big west":"9",
             "c-usa":"11", "cusa":"11",
             "caa":"10",
-            "horizon":"45"
+            "horizon":"45",
             "ivy":"12",
             "maac":"13",
             "mac":"14",
