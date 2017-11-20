@@ -14,32 +14,42 @@ GAME_STATUS_PRE = 0
 GAME_STATUS_IN = 1
 GAME_STATUS_POST = 2
 
-type = "80" # 80 = FBS
+type = "50"
 # Other leagues go here
 
-groupmap = {"acc":"1", 
-            "american":"151", "aac":"151",
-            "big 12":"4", 
-            "big ten":"5", "big 10":"5",
-            "c-usa":"12", "cusa":"12",
-            "independent":"18","indep":"18",
-            "mac":"15",
-            "mw":"17",
-            "pac 12":"9", "pac-12":"9",
-            "sec":"8",
-            "sun belt":"37",
-            "big south":"40",
-            "caa":"48",
-            "ivy":"22",
-            "meac":"24",
-            "mvfc":"21",
-            "nec":"25",
-            "ovc":"26",
-            "patriot":"27",
-            "pioneer":"28",
-            "swac":"31",
-            "southern":"29",
-            "southland":"30"}
+groupmap = {
+            "atlantic 10":"3", "a10":"3",
+            "asun":"46","a-sun":"46",
+            "acc":"2", 
+            "am-east":"1","ameast":"1",
+            "american":"62", "aac":"62",
+            "big 12":"8", 
+            "big east":"4",
+            "big sky":"5",
+            "big south":"6",
+            "big ten":"7", "big 10":"7",
+            "big west":"9",
+            "c-usa":"11", "cusa":"11",
+            "caa":"10",
+            "horizon":"45"
+            "ivy":"12",
+            "maac":"13",
+            "mac":"14",
+            "meac":"16",
+            "mvc":"18",
+            "mw":"44",
+            "nec":"19",
+            "ovc":"20",
+            "pac 12":"21", "pac-12":"21",
+            "patriot":"22",
+            "sec":"23",
+            "swac":"26",
+            "southern":"24",
+            "southland":"25",
+            "summit":"49",
+            "sun belt":"27",
+            "wac":"30",
+            "wcc":"29"}
 
 def get_game(team):
     now = datetime.now()
