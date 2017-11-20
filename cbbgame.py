@@ -52,6 +52,12 @@ groupmap = {
             "wcc":"29"}
 
 def get_game(team):
+    if team == "conferences":
+        output = ""
+        for t in groupmap:
+            output = output + t + ", "
+        return output
+        
     now = datetime.now()
     url = "http://espn.go.com/mens-college-basketball/scoreboard/_/group/" + type + "/year/"+str(now.year)+"/seasontype/2/?t=" + str(time.time())
     all = False
@@ -125,13 +131,17 @@ def get_game(team):
     if all:
         output = "```python\n"
         for game in games:
-            awayr = "("+str(game['awayrank']['current'])+")" if game['awayrank']['current'] <= 25 else ""
-            homer = "("+str(game['homerank']['current'])+")" if game['homerank']['current'] <= 25 else ""
+            ar = game['awayrank']['current']
+            hr = game['homerank']['current']
+            awayr = "("+str(ar)+")" if (ar <= 25 and ar > 0) else ""
+            homer = "("+str(hr)+")" if (hr <= 25 and hr > 0) else ""
             output = output +  "%s %s %s @ %s %s %s # %s%s\n" % (awayr.rjust(4),game['awayabv'].rjust(5), game['awayscore'].rjust(2), homer.rjust(4),game['homeabv'].rjust(5), game['homescore'].rjust(2), game['time'],game['odds'])
         return (output+"```")
     for game in games:
         if game['hometeam'].lower() == team.lower() or game['homeabv'].lower() == team.lower() or game['awayteam'].lower() == team.lower() or game['awayabv'].lower() == team.lower():
-            awayr = "("+str(game['awayrank']['current'])+") " if game['awayrank']['current'] <= 25 else ""
-            homer = "("+str(game['homerank']['current'])+") " if game['homerank']['current'] <= 25 else ""
+            ar = game['awayrank']['current']
+            hr = game['homerank']['current']
+            awayr = "("+str(ar)+")" if (ar <= 25 and ar > 0) else ""
+            homer = "("+str(hr)+")" if (hr <= 25 and hr > 0) else ""
             return "```python\n%s%s %s @ %s%s %s # %s%s```" % (awayr,game['awayabv'], game['awayscore'], homer,game['homeabv'], game['homescore'], game['time'], game['odds'])
     return "game not found"

@@ -42,6 +42,12 @@ groupmap = {"acc":"1",
             "southland":"30"}
 
 def get_game(team):
+    if team == "conferences":
+        output = ""
+        for t in groupmap:
+            output = output + t + ", "
+        return output
+       
     now = datetime.now()
     url = "http://espn.go.com/college-football/scoreboard/_/group/" + type + "/year/"+str(now.year)+"/seasontype/2/?t=" + str(time.time())
     all = False
