@@ -8,7 +8,7 @@ import re, json
 import asyncio
 from urllib.request import urlopen, Request
 
-import mymlbgame, cfbgame, nflgame, xmlreader, nhlscores, cbbgame
+import mymlbgame, cfbgame, nflgame, xmlreader, nhlscores, cbbgame, stocks
 import weather as weathermodule
 
 bot = commands.Bot(command_prefix='!')
@@ -374,6 +374,11 @@ async def weather(*location:str):
 async def countdown():
     delta = datetime(2018,3,29) - datetime.now()
     await bot.say("%s days until Opening Day, 2018" % delta.days)
+
+@bot.command()
+async def stock(symbol:str):
+    out = stocks.get_quote(symbol)
+    await bot.say(out)
     
 @bot.event
 async def on_message(message):
