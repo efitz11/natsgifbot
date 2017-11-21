@@ -1,5 +1,6 @@
 from urllib.request import urlopen, Request
 import time, json,html
+from datetime import datetime
 
 #Constants
 MODE_ACTIVE = 0
@@ -15,7 +16,20 @@ NFL_SCORE_WIDTH = 2
 
 
 def get_game(team, sport):
-    req = Request("http://espn.go.com/"+sport+"/scoreboard")
+    #see if team is actually a week number
+    isint = False
+    try:
+        w = int(team)
+        isint = True
+        team = ""
+    except ValueError:
+        pass
+    if isint:
+        link = "http://espn.go.com/"+sport+"/scoreboard/_/year/" + str(datetime.now().year) + "/seasontype/2/week/" + str(w)
+    else:
+        link = "http://espn.go.com/"+sport+"/scoreboard"
+        
+    req = Request(link)
     req.headers["User-Agent"] = "windows 10 bot"
     # Load data
     scoreData = urlopen(req).read().decode("utf-8")
@@ -82,7 +96,12 @@ def get_game(team, sport):
         #print (game)
         games.append(game)
     if len(team) == 0:
-        output = "Today's games:\n```python\n"
+        if sport == "nfl":
+            week = scoreData['week']['number']
+            output = "Week %s games:" % week
+        else:
+            output = "Today's games:"
+        output = output + "\n```python\n"
         for game in games:
             output = output + "%s %s @ %s %s # %s%s\n" % (game['awayabv'].ljust(teamw), str(game['awayscore']).rjust(scorew),game['homeabv'].ljust(teamw), str(game['homescore']).rjust(scorew), game['time'],game['odds'])
         return output + "```"
