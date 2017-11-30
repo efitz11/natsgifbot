@@ -13,7 +13,7 @@ import weather as weathermodule
 
 bot = commands.Bot(command_prefix='!')
 
-pattern69 = re.compile('(^|[\s\.])[6][9]([\s\.]|$|th)')
+pattern69 = re.compile('(^|[\s\.])[6][\.]*[9]([\s\.]|x|%|$|th)')
     
 # get tokens from file
 f = open('tokens.txt','r')
