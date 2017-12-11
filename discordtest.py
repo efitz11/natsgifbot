@@ -386,8 +386,12 @@ async def stock(symbol:str):
     
 @bot.command()
 async def frink(*query:str):
-    query = ' '.join(query)
-    await bot.say(frinkiac.get_meme(query))
+    if query[0] == 'gif':
+        query = query[1:]
+        await bot.say(frinkiac.get_gif(query))
+    else:
+        query = ' '.join(query)
+        await bot.say(frinkiac.get_meme(query))
     
 @bot.event
 async def on_message(message):
