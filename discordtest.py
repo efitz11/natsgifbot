@@ -10,6 +10,7 @@ from urllib.request import urlopen, Request
 
 import mymlbgame, cfbgame, nflgame, xmlreader, nhlscores, cbbgame, stocks
 import weather as weathermodule
+import frinkiac
 
 bot = commands.Bot(command_prefix='!')
 
@@ -382,6 +383,11 @@ async def countdown():
 async def stock(symbol:str):
     out = stocks.get_quote(symbol)
     await bot.say(out)
+    
+@bot.command()
+async def frink(*query:str):
+    query = ' '.join(query)
+    await bot.say(frinkiac.get_meme(query))
     
 @bot.event
 async def on_message(message):
