@@ -388,6 +388,7 @@ async def stock(symbol:str):
 async def frink(*query:str):
     if query[0] == 'gif':
         query = query[1:]
+        query = ' '.join(query)
         await bot.say(frinkiac.get_gif(query))
     else:
         query = ' '.join(query)

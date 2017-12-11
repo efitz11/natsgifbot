@@ -5,7 +5,7 @@ import json
 def get_response(url):
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     #req.headers["User-Agent"] = "windows 10 bot"
-    return urlopen(req).read().decode("utf-8")
+    return urlopen(req).read().decode('utf-8')
     
 def get_ep_ts(query):
     url = "https://frinkiac.com/api/search?q="+urllib.parse.quote_plus(query)
@@ -25,10 +25,8 @@ def get_context_frames(ep,ts):
     response = json.loads(get_response(url))
     return response
     
-def get_meme(query):
-    ep,ts = get_ep_ts(query)
-    subs = get_lines(ep,ts)
-    
+def combine_lines(subtitles):
+    subs = ""
     for s in subtitles:
         line = s["Content"]
         words = line.split(' ')
@@ -41,13 +39,25 @@ def get_meme(query):
                 subs = subs + l + "\n"
                 l = words.pop(0)
         subs = subs + l + "\n"
-    subs = subs.strip()
+    return subs.strip()
+    
+def get_meme(query):
+    ep,ts = get_ep_ts(query)
+    subtitles = get_lines(ep,ts)
+    subs = combine_lines(subtitles)
     url = "https://frinkiac.com/meme/%s/%s.jpg?lines=%s" % (ep,ts,urllib.parse.quote_plus(subs))
     return(url)
 
 def get_gif(query):
+    print(query)
     ep,ts = get_ep_ts(query)
-    subs = get_lines(ep,ts)
+    subtitles = get_lines(ep,ts)
+    subs = combine_lines(subtitles)
     context = get_context_frames(ep,ts)
     url = "https://frinkiac.com/gif/%s/%s/%s.gif?lines=%s" %(ep,context[0]['Timestamp'],context[-1]['Timestamp'],urllib.parse.quote_plus(subs))
-    return url
+    req = Request(url, headers={'User-Agent' : "ubuntu"})
+    res = urlopen(req)
+    print(res.url)
+    return res.url
+
+    
