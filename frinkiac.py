@@ -3,8 +3,8 @@ import urllib.parse
 import json
 
 def get_response(url):
-    req = Request(url)
-    req.headers["User-Agent"] = "windows 10 bot"
+    req = Request(url, headers={'User-Agent' : "ubuntu"})
+    #req.headers["User-Agent"] = "windows 10 bot"
     return urlopen(req).read().decode("utf-8")
     
 def get_meme(query):
