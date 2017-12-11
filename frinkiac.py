@@ -3,8 +3,8 @@ import urllib.parse
 import json
 
 def get_response(url):
-    req = Request(url)
-    req.headers["User-Agent"] = "windows 10 bot"
+    req = Request(url, headers={'User-Agent' : "ubuntu"})
+    #req.headers["User-Agent"] = "windows 10 bot"
     return urlopen(req).read().decode("utf-8")
     
 def get_ep_ts(query):
@@ -51,5 +51,3 @@ def get_gif(query):
     context = get_context_frames(ep,ts)
     url = "https://frinkiac.com/gif/%s/%s/%s.gif?lines=%s" %(ep,context[0]['Timestamp'],context[-1]['Timestamp'],urllib.parse.quote_plus(subs))
     return url
-    
-    
