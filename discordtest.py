@@ -7,6 +7,7 @@ import praw, prawcore.exceptions
 import re, json
 import asyncio
 from urllib.request import urlopen, Request
+import urllib.parse
 
 import mymlbgame, cfbgame, nflgame, xmlreader, nhlscores, cbbgame, stocks
 import weather as weathermodule
@@ -397,7 +398,7 @@ async def frink(*query:str):
 @bot.command()
 async def br(*query:str):
     """get link to a player's Baseball-Reference page"""
-    url = "http://www.baseball-reference.com/search/search.fcgi?search=%s&results=" % ' '.join(query)
+    url = "http://www.baseball-reference.com/search/search.fcgi?search=%s&results=" % urllib.parse.quote_plus(' '.join(query))
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     res = urlopen(req)
     await bot.say(res.url)
@@ -405,10 +406,10 @@ async def br(*query:str):
 @bot.command()
 async def fg(*query:str):
     """get a link to a player's Fangraphs page"""
-    url = "http://www.fangraphs.com/players.aspx?lastname=%s" % ' '.join(query)
+    url = "http://www.fangraphs.com/players.aspx?lastname=%s" % urllib.parse.quote_plus(' '.join(query))
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     res = urlopen(req)
-    await bot.say(res.url)
+    await bot.say("<"+res.url+">")#disable embed because it's shit
     
 @bot.event
 async def on_message(message):
