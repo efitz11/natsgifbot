@@ -393,6 +393,22 @@ async def frink(*query:str):
     else:
         query = ' '.join(query)
         await bot.say(frinkiac.get_meme(query))
+
+@bot.command()
+async def br(*query:str):
+    """get link to a player's Baseball-Reference page"""
+    url = "http://www.baseball-reference.com/search/search.fcgi?search=%s&results=" % ' '.join(query)
+    req = Request(url, headers={'User-Agent' : "ubuntu"})
+    res = urlopen(req)
+    await bot.say(res.url)
+    
+@bot.command()
+async def fg(*query:str):
+    """get a link to a player's Fangraphs page"""
+    url = "http://www.fangraphs.com/players.aspx?lastname=%s" % ' '.join(query)
+    req = Request(url, headers={'User-Agent' : "ubuntu"})
+    res = urlopen(req)
+    await bot.say(res.url)
     
 @bot.event
 async def on_message(message):
