@@ -147,11 +147,20 @@ def getsubmissiontext(submission):
     if submission.over_18:
         s = "**post is NSFW; embed hidden**\n"
         url = "<" + url + ">"
+    score = getsubmissionscore(submission)
     if submission.is_self:
         output = submission.title + "\n" + submission.shortlink
     else:
-        output = s+submission.title + "\n" + url + "  \t<" + submission.shortlink+">"
+        output = s+"["+ score + "]\t " + submission.title + "\n" + url + "  \t<" + submission.shortlink+">"
     return output
+    
+def getsubmissionscore(submission):
+    score = submission.score
+    if score > 999:
+        score = str(int(score/100)/10.0) + "k"
+    else:
+        score = str(score)
+    return score
     
 @bot.command()
 async def rh(text:str, num:int=-1):
@@ -170,7 +179,8 @@ async def rh(text:str, num:int=-1):
     else:
         output = "10 hottest posts from r/%s\n" % text
         for submission in reddit.subreddit(subreddit).hot(limit=10):
-            output = output + submission.title + "\n\t\t<" + submission.shortlink + ">\n"
+            score = getsubmissionscore(submission)
+            output = output + "["+ score + "]\t " + submission.title + "\n\t\t<" + submission.shortlink + ">\n"
         await bot.say(output)
 
 @bot.command()
@@ -187,7 +197,8 @@ async def rn(text:str, num:int=-1):
     else:
         output = "10 newest posts from r/%s\n" % text
         for submission in reddit.subreddit(subreddit).new(limit=10):
-            output = output + submission.title + "\n\t\t<" + submission.shortlink + ">\n"
+            score = getsubmissionscore(submission)
+            output = output + "["+ score + "]\t " + submission.title + "\n\t\t<" + submission.shortlink + ">\n"
         await bot.say(output)
             
 @bot.command()
