@@ -52,9 +52,10 @@ async def gif(*name : str):
             query = query + " " + s
         f = open('postlist.csv','r')
         for line in f:
+            search = ','.join(line.split(',')[:-1])
             matched = True
             for pat in patterns:
-                if not re.search(pat,line):
+                if not re.search(pat,search):
                     matched = False
                     break
             if matched:
@@ -63,6 +64,7 @@ async def gif(*name : str):
         #print ("query: " + query.strip())
         #print (matches)
         if len(matches) == 0:
+            await bot.say("No matches")
             return
         num = random.randint(0,len(matches)-1)
         await bot.say(matches[num].strip())
