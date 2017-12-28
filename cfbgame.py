@@ -17,6 +17,8 @@ GAME_STATUS_POST = 2
 type = "80" # 80 = FBS
 # Other leagues go here
 
+seasontype = "2"
+
 groupmap = {"acc":"1", 
             "american":"151", "aac":"151",
             "big 12":"4", 
@@ -49,13 +51,15 @@ def get_game(team):
         return output
        
     now = datetime.now()
-    url = "http://espn.go.com/college-football/scoreboard/_/group/" + type + "/year/"+str(now.year)+"/seasontype/2/?t=" + str(time.time())
+    if (now.month == 12 and now.day > 10) or (now.month == 1):
+        seasontype = "3"
+    url = "http://espn.go.com/college-football/scoreboard/_/group/" + type + "/year/"+str(now.year)+"/seasontype/"+seasontype+"/?t=" + str(time.time())
     all = False
     if team == None or team == "":
-        url = "http://www.espn.com/college-football/scoreboard/_/year/" + str(now.year)+"/seasontype/2"
+        url = "http://www.espn.com/college-football/scoreboard/_/year/" + str(now.year)+"/seasontype/"+seasontype
         all = True
     elif team.lower() in groupmap:
-        url = "http://www.espn.com/college-football/scoreboard/_/group/" + groupmap[team.lower()] + "/year/"+str(now.year)+"/seasontype/2/"
+        url = "http://www.espn.com/college-football/scoreboard/_/group/" + groupmap[team.lower()] + "/year/"+str(now.year)+"/seasontype/"+seasontype
         all = True
     
     req = Request(url)
