@@ -54,7 +54,8 @@ def get_game(team):
     year = now.year
     if (now.month == 12 and now.day > 10) or (now.month == 1):
         seasontype = "3"
-        year = now.year-1
+        if now.month == 1:
+            year = now.year-1
     url = "http://espn.go.com/college-football/scoreboard/_/group/" + type + "/year/"+str(year)+"/seasontype/"+seasontype+"/?t=" + str(time.time())
     all = False
     if team == None or team == "":
