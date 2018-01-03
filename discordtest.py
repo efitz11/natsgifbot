@@ -11,7 +11,7 @@ import urllib.parse
 
 import mymlbgame, cfbgame, nflgame, xmlreader, nhlscores, cbbgame, stocks
 import weather as weathermodule
-import frinkiac
+import frinkiac, cryptocurrency
 
 bot = commands.Bot(command_prefix='!')
 
@@ -397,6 +397,11 @@ async def countdown():
 async def stock(symbol:str):
     out = stocks.get_quote(symbol)
     await bot.say(out)
+    
+@bot.command()
+async def crypto(*symbol:str):
+    sym = '-'.join(symbol)
+    await bot.say(cryptocurrency.get_cryptocurrency_data(sym))
     
 @bot.command()
 async def frink(*query:str):
