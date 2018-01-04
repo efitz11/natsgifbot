@@ -436,6 +436,10 @@ async def on_message(message):
         return
     if message.content.startswith(bot.command_prefix):
         await bot.process_commands(message)
+    elif message.content.startswith('?'):
+        message.content = '!'+message.content[1:]
+        await bot.process_commands(message)
+        await bot.delete_message(message)
     else:
         if pattern69.search(message.content):
             await bot.add_reaction(message, u"\U0001F1F3")
