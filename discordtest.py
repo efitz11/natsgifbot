@@ -438,7 +438,11 @@ async def on_message(message):
         await bot.process_commands(message)
     else:
         if pattern69.search(message.content):
-            await bot.send_message(message.channel, 'Nice.')
+            await bot.add_reaction(message, u"\U0001F1F3")
+            await bot.add_reaction(message, u"\U0001F1EE")
+            await bot.add_reaction(message, u"\U0001F1E8")
+            await bot.add_reaction(message, u"\U0001F1EA")
+            #await bot.send_message(message.channel, 'Nice.')
         mockobj.update(str(message.content),message.channel)
 
 updater = mymlbgame.Updater()
