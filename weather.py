@@ -6,6 +6,7 @@ emojimap = {'Sunny':':sunny:',
             'Partly Cloudy':':white_sun_small_cloud:',
             'Cloudy':':cloud:',
             'Snow':':cloud_snow:',
+            'Snow Showers':':cloud_snow:',
             'Showers':':cloud_rain:',
             'Thunderstorms':':thunder_cloud_rain:',
             'Severe Thunderstorms':'Severe :thunder_cloud_rain:'}
