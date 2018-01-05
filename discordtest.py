@@ -411,6 +411,10 @@ async def youtube(*query:str):
 async def weather(*location:str):
     output = weathermodule.get_current_weather('%2C'.join(location))
     await bot.say(output)
+@bot.command()
+async def forecast(*location:str):
+    output = weathermodule.get_forecast('%2C'.join(location))
+    await bot.say(output)
 
 @bot.command()
 async def countdown():
