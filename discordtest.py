@@ -416,9 +416,11 @@ async def weather(*location:str):
 async def countdown():
     od = datetime(2018,3,29) - datetime.now()
     st = datetime(2018,2,23) - datetime.now()
+    pc = datetime(2018,2,14) - datetime.now()
 
-    await bot.say("%s days until Spring Training, 2018" % st.days)
-    await bot.say("%s days until Opening Day, 2018" % od.days)
+    await bot.say("%s days until pitchers and catchers report" % (pc.days+1))
+    await bot.say("%s days until Spring Training, 2018" % (st.days+1))
+    await bot.say("%s days until Opening Day, 2018" % (od.days+1))
 
 @bot.command()
 async def stock(symbol:str):
