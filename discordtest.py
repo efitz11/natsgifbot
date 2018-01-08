@@ -476,8 +476,8 @@ async def on_message(message):
         await bot.process_commands(message)
     elif message.content.startswith('?'):
         message.content = '!'+message.content[1:]
-        await bot.process_commands(message)
         await bot.delete_message(message)
+        await bot.process_commands(message)
     else:
         if pattern69.search(message.content):
             await bot.add_reaction(message, emoji_letter_map['n'])
