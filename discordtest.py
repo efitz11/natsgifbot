@@ -462,6 +462,11 @@ async def fg(*query:str):
     res = urlopen(req)
     await bot.say("<"+res.url+">")#disable embed because it's shit
     
+@bot.command()
+async def nice():
+    """bot says 'nice''"""
+    await bot.say("nice")
+    
 @bot.event
 async def on_message(message):
     #stuff
