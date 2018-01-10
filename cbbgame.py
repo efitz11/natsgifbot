@@ -1,6 +1,6 @@
 from urllib.request import urlopen, Request
 import time, json,html
-from datetime import datetime
+from datetime import datetime, timedelta
 '''
 borrowed some code from /r/cfb's IRC bot, thank you
 https://github.com/diagonalfish/FootballBotX2
@@ -13,6 +13,8 @@ MODE_INACTIVE = 1
 GAME_STATUS_PRE = 0
 GAME_STATUS_IN = 1
 GAME_STATUS_POST = 2
+
+base_url = "http://espn.go.com/mens-college-basketball/scoreboard/_/"
 
 type = "50"
 # Other leagues go here
@@ -51,7 +53,7 @@ groupmap = {
             "wac":"30",
             "wcc":"29"}
 
-def get_game(team):
+def get_game(team,date=None):
     if team == "conferences":
         output = ""
         for t in groupmap:
@@ -59,14 +61,28 @@ def get_game(team):
         return output
         
     now = datetime.now()
-    url = "http://espn.go.com/mens-college-basketball/scoreboard/_/group/" + type + "/year/"+str(now.year)+"/seasontype/2/?t=" + str(time.time())
+    
     all = False
-    if team == None or team == "":
-        url = "http://www.espn.com/mens-college-basketball/scoreboard/_/year/" + str(now.year)+"/seasontype/2"
-        all = True
-    elif team.lower() in groupmap:
-        url = "http://www.espn.com/mens-college-basketball/scoreboard/_/group/" + groupmap[team.lower()] + "/year/"+str(now.year)+"/seasontype/2/"
-        all = True
+    if date != None:
+        if date.startswith('-') or date.startswith('+'):
+            print(date[1:])
+            if date.startswith('-'):
+                now = now - timedelta(days=int(date[1:]))
+            else:
+                now = now + timedelta(days=int(date[1:]))
+            url = base_url + "date/"+ str(now.year) + str(now.month).zfill(2) + str(now.day).zfill(2)
+            print(url)
+            if team.lower() == "none" or team.lower() == "all":
+                all = True
+                print('all')
+    else:        
+        url = "http://espn.go.com/mens-college-basketball/scoreboard/_/group/" + type + "/year/"+str(now.year)+"/seasontype/2/?t=" + str(time.time())
+        if team == None or team == "" or team.lower == "none":
+            url = "http://www.espn.com/mens-college-basketball/scoreboard/_/year/" + str(now.year)+"/seasontype/2"
+            all = True
+        elif team.lower() in groupmap:
+            url = "http://www.espn.com/mens-college-basketball/scoreboard/_/group/" + groupmap[team.lower()] + "/year/"+str(now.year)+"/seasontype/2/"
+            all = True
     
     req = Request(url)
     req.headers["User-Agent"] = "windows 10 bot"
