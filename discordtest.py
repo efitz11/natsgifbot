@@ -366,8 +366,15 @@ async def cfb(*team:str):
 @bot.command()
 async def cbb(*team:str):
     """<team> display score of team's cfb game"""
-    t = ' '.join(team)
-    await bot.say(cbbgame.get_game(t))
+    #t = ' '.join(team)
+    if len(team) > 0:
+        t = team[0]
+    else:
+        t = None
+    if len(team) == 2:
+        await bot.say(cbbgame.get_game(t,date=team[1]))
+    else:
+        await bot.say(cbbgame.get_game(t))
     
 @bot.command()
 async def nfl(*team:str):
