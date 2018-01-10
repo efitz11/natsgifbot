@@ -65,16 +65,13 @@ def get_game(team,date=None):
     all = False
     if date != None:
         if date.startswith('-') or date.startswith('+'):
-            print(date[1:])
             if date.startswith('-'):
                 now = now - timedelta(days=int(date[1:]))
             else:
                 now = now + timedelta(days=int(date[1:]))
             url = base_url + "date/"+ str(now.year) + str(now.month).zfill(2) + str(now.day).zfill(2)
-            print(url)
             if team.lower() == "none" or team.lower() == "all":
                 all = True
-                print('all')
     else:        
         url = "http://espn.go.com/mens-college-basketball/scoreboard/_/group/" + type + "/year/"+str(now.year)+"/seasontype/2/?t=" + str(time.time())
         if team == None or team == "" or team.lower == "none":
