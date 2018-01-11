@@ -481,7 +481,6 @@ async def nice():
 async def react(ctx, id:str, msg:str):
     """<message id> message - turn string into emoji and react to the message specified"""
     message = await bot.get_message(ctx.message.channel, id)
-    print(message)
     for s in msg:
         await bot.add_reaction(message, emoji_letter_map[s])
     
