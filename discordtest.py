@@ -368,9 +368,12 @@ async def cbb(*team:str):
     """<team> display score of team's cfb game"""
     delta = None
     if len(team) > 0:
-        if len(team) > 1 and (team[-1].startswith('-') or team[-1].startswith('+')):
-            t = ' '.join(team[:-1])
+        if team[-1].startswith('-') or team[-1].startswith('+'):
             delta = team[-1]
+            if len(team) > 1:
+                t = ' '.join(team[:-1])
+            else:
+                t = None
         else:
             t = ' '.join(team)
     else:
