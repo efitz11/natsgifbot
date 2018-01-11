@@ -53,7 +53,7 @@ groupmap = {
             "wac":"30",
             "wcc":"29"}
 
-def get_game(team,date=None):
+def get_game(team,delta=None):
     if team == "conferences":
         output = ""
         for t in groupmap:
@@ -63,15 +63,15 @@ def get_game(team,date=None):
     now = datetime.now()
     
     all = False
-    if date != None:
-        if date.startswith('-') or date.startswith('+'):
-            if date.startswith('-'):
-                now = now - timedelta(days=int(date[1:]))
-            else:
-                now = now + timedelta(days=int(date[1:]))
-            url = base_url + "date/"+ str(now.year) + str(now.month).zfill(2) + str(now.day).zfill(2)
-            if team.lower() == "none" or team.lower() == "all":
-                all = True
+    if delta is not None:
+        now = now + timedelta(days=delta)
+        group = type
+        if team.lower() == "none" or team.lower() == "all":
+            all = True
+        elif team.lower() in groupmap:
+            group = groupmap[team.lower()]
+            all = True 
+        url = base_url + "group/" + group + "/date/"+ str(now.year) + str(now.month).zfill(2) + str(now.day).zfill(2)
     else:        
         url = "http://espn.go.com/mens-college-basketball/scoreboard/_/group/" + type + "/year/"+str(now.year)+"/seasontype/2/?t=" + str(time.time())
         if team == None or team == "" or team.lower == "none":

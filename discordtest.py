@@ -366,16 +366,21 @@ async def cfb(*team:str):
 @bot.command()
 async def cbb(*team:str):
     """<team> display score of team's cfb game"""
-    #t = ' '.join(team)
+    delta = None
     if len(team) > 0:
-        t = team[0]
+        if len(team) > 1 and (team[-1].startswith('-') or team[-1].startswith('+')):
+            t = ' '.join(team[:-1])
+            delta = team[-1]
+        else:
+            t = ' '.join(team)
     else:
         t = None
-    if len(team) == 2:
-        await bot.say(cbbgame.get_game(t,date=team[1]))
-    else:
+        
+    if delta is None:
         await bot.say(cbbgame.get_game(t))
-    
+    else:
+        await bot.say(cbbgame.get_game(t,delta=int(delta)))
+        
 @bot.command()
 async def nfl(*team:str):
     """<optional team> display score(s) of nfl game"""
