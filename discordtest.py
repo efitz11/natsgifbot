@@ -66,36 +66,31 @@ async def on_ready():
 @bot.command()
 async def gif(*name : str):
     """returns a nationals gif matching the search query"""
-    if name[0] == "electricchair":
-        await bot.say('https://gfycat.com/ClearHauntingHoverfly')
-    elif name[0] == "murder":
-        await bot.say('https://gfycat.com/FondVibrantHousefly')
-    else:
-        matches = []
-        patterns = []
-        query = ""
-        for s in name:
-            patterns.append(re.compile(s,re.IGNORECASE))
-            query = query + " " + s
-        f = open('postlist.csv','r')
-        for line in f:
-            search = ','.join(line.split(',')[:-1])
-            matched = True
-            for pat in patterns:
-                if not re.search(pat,search):
-                    matched = False
-                    break
-            if matched:
-                matches.append(line)
-        f.close()
-        #print ("query: " + query.strip())
-        #print (matches)
-        if len(matches) == 0:
-            await bot.say("No matches")
-            return
-        num = random.randint(0,len(matches)-1)
-        await bot.say(matches[num].strip())
-            
+    matches = []
+    patterns = []
+    query = ""
+    for s in name:
+        patterns.append(re.compile(s,re.IGNORECASE))
+        query = query + " " + s
+    f = open('postlist.csv','r')
+    for line in f:
+        search = ','.join(line.split(',')[:-1])
+        matched = True
+        for pat in patterns:
+            if not re.search(pat,search):
+                matched = False
+                break
+        if matched:
+            matches.append(line)
+    f.close()
+    #print ("query: " + query.strip())
+    #print (matches)
+    if len(matches) == 0:
+        await bot.say("No matches")
+        return
+    num = random.randint(0,len(matches)-1)
+    await bot.say(matches[num].strip())
+        
     return
 
     
