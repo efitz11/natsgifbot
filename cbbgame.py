@@ -65,13 +65,14 @@ def get_game(team,delta=None):
     all = False
     if delta is not None:
         now = now + timedelta(days=delta)
-        group = type
-        if team.lower() == "none" or team.lower() == "all":
+        url = base_url + "group/" + type + "/date/"+ str(now.year) + str(now.month).zfill(2) + str(now.day).zfill(2)
+        if team is None or team.lower() == "none" or team.lower() == "all":
             all = True
+            url = base_url + "date/"+ str(now.year) + str(now.month).zfill(2) + str(now.day).zfill(2)
         elif team.lower() in groupmap:
             group = groupmap[team.lower()]
+            url = base_url + "group/" + group + "/date/"+ str(now.year) + str(now.month).zfill(2) + str(now.day).zfill(2)
             all = True 
-        url = base_url + "group/" + group + "/date/"+ str(now.year) + str(now.month).zfill(2) + str(now.day).zfill(2)
     else:        
         url = "http://espn.go.com/mens-college-basketball/scoreboard/_/group/" + type + "/year/"+str(now.year)+"/seasontype/2/?t=" + str(time.time())
         if team == None or team == "" or team.lower == "none":
@@ -141,8 +142,9 @@ def get_game(team,delta=None):
             
         #print (game)
         games.append(game)
+    output = "Games on " + str(now.month) + "/" + str(now.day) + "/" + str(now.year)
     if all:
-        output = "```python\n"
+        output = output + "\n```python\n"
         for game in games:
             ar = game['awayrank']['current']
             hr = game['homerank']['current']
@@ -156,5 +158,5 @@ def get_game(team,delta=None):
             hr = game['homerank']['current']
             awayr = "("+str(ar)+")" if (ar <= 25 and ar > 0) else ""
             homer = "("+str(hr)+")" if (hr <= 25 and hr > 0) else ""
-            return "```python\n%s%s %s @ %s%s %s # %s%s```" % (awayr,game['awayabv'], game['awayscore'], homer,game['homeabv'], game['homescore'], game['time'], game['odds'])
+            return output + "\n```python\n%s%s %s @ %s%s %s # %s%s```" % (awayr,game['awayabv'], game['awayscore'], homer,game['homeabv'], game['homescore'], game['time'], game['odds'])
     return "game not found"
