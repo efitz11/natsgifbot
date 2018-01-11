@@ -290,7 +290,7 @@ async def mockify(*text:str):
 async def mock(ctx):
     """mOcKiFy tHe pReViOuS MeSsaGe"""
     await bot.say(mockobj.mock(ctx.message.channel))
-        
+    
 @bot.command()
 async def memeify(*text:str):
     """M E M E I F Y   A N Y   S T R I N G   O F   T E X T"""
@@ -476,6 +476,14 @@ async def fg(*query:str):
 async def nice():
     """bot says 'nice''"""
     await bot.say("nice")
+    
+@bot.command(pass_context=True)
+async def react(ctx, id:str, msg:str):
+    """<message id> message - turn string into emoji and react to the message specified"""
+    message = await bot.get_message(ctx.message.channel, id)
+    print(message)
+    for s in msg:
+        await bot.add_reaction(message, emoji_letter_map[s])
     
 @bot.event
 async def on_message(message):
