@@ -116,15 +116,16 @@ async def gifall(*name:str):
     if len(matches) == 0:
         await bot.say("No matches")
         return
-    elif len(matches) > 100:
-        await bot.say("Too many matches, please narrow your search")
     else:
         output = ""
         for m in matches:
             m=m.strip()
             cpos = m.rfind(',') + 1
             output = output + m[:cpos] + "<" + m[cpos:] + ">\n"
-        
+            if len(output) > 1850:
+                output = output + "... more gifs not displayed due to char limit"
+                break
+        print(output)
         await bot.say(output.strip())
         
     return
