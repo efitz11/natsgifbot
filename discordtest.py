@@ -92,7 +92,42 @@ async def gif(*name : str):
     await bot.say(matches[num].strip())
         
     return
-
+    
+@bot.command()
+async def gifall(*name:str):
+    """returns all gifs matching the search query"""
+    matches = []
+    patterns = []
+    query = ""
+    for s in name:
+        patterns.append(re.compile(s,re.IGNORECASE))
+        query = query + " " + s
+    f = open('postlist.csv','r')
+    for line in f:
+        search = ','.join(line.split(',')[:-1])
+        matched = True
+        for pat in patterns:
+            if not re.search(pat,search):
+                matched = False
+                break
+        if matched:
+            matches.append(line)
+    f.close()
+    if len(matches) == 0:
+        await bot.say("No matches")
+        return
+    elif len(matches) > 100:
+        await bot.say("Too many matches, please narrow your search")
+    else:
+        output = ""
+        for m in matches:
+            m=m.strip()
+            cpos = m.rfind(',') + 1
+            output = output + m[:cpos] + "<" + m[cpos:] + ">\n"
+        
+        await bot.say(output.strip())
+        
+    return
     
 @bot.command()
 async def mlb(*team :str):
