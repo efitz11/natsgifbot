@@ -478,10 +478,12 @@ async def nice():
     await bot.say("nice")
     
 @bot.command(pass_context=True)
-async def react(ctx, id:str, msg:str):
+async def react(ctx, id:str, *msg:str):
     """turn string into emoji and react to the message specified
         you can retrieve the message id if you have developer mode on"""
+    msg = ' '.join(msg)
     message = await bot.get_message(ctx.message.channel, id)
+    msg = msg.lower()
     for s in msg:
         if s in emoji_letter_map:
             await bot.add_reaction(message, emoji_letter_map[s])
