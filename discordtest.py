@@ -11,7 +11,7 @@ import urllib.parse
 
 import mymlbgame, cfbgame, nflgame, xmlreader, nhlscores, cbbgame, stocks
 import weather as weathermodule
-import frinkiac, cryptocurrency
+import frinkiac, cryptocurrency, wikipedia
 
 bot = commands.Bot(command_prefix='!')
 
@@ -523,6 +523,11 @@ async def react(ctx, id:str, *msg:str):
     for s in msg:
         if s in emoji_letter_map:
             await bot.add_reaction(message, emoji_letter_map[s])
+            
+@bot.command()
+async def wiki(*query:str):
+    """get a link to wikipedia's first search result for your query"""
+    await bot.say(wikipedia.get_wiki_page(' '.join(query)))
     
 @bot.event
 async def on_message(message):
