@@ -81,6 +81,8 @@ def get_game(team, sport):
         name1 = event['competitions'][0]['competitors'][0]['team']['name']
         name2 = event['competitions'][0]['competitors'][1]['team']['name']
         
+        game['link'] = event['links'][0]['href']
+        
         game['odds'] = ""
         if 'odds' in event['competitions'][0]:
             if 'details' in event['competitions'][0]['odds'][0]:
@@ -107,7 +109,7 @@ def get_game(team, sport):
         return output + "```"
     for game in games:
         if game['hometeam'].lower() == team.lower() or game['homeabv'].lower() == team.lower() or game['awayteam'].lower() == team.lower() or game['awayabv'].lower() == team.lower() or game['homename'].lower() == team.lower() or game['awayname'].lower() == team.lower():
-            return "```python\n%s %s @ %s %s # %s%s```" % (game['awayabv'], game['awayscore'],game['homeabv'], game['homescore'], game['time'], game['odds'])
+            return "<%s>```python\n%s %s @ %s %s # %s%s```" % (game['link'], game['awayabv'], game['awayscore'],game['homeabv'], game['homescore'], game['time'], game['odds'])
             #return "**%s %s** @ **%s %s** - %s%s" % (game['awayabv'], game['awayscore'],game['homeabv'], game['homescore'], game['time'], game['odds'])
     
     return "game not found"
