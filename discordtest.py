@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 import random
 import mlbgame
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, time
 import praw, prawcore.exceptions
 import re, json
 import asyncio
@@ -575,10 +575,28 @@ async def my_bg_task():
                 await bot.send_message(channel,output)
         await asyncio.sleep(15)
 
+def check_hq():
+    dayst = time(14,55,0)
+    dayet = time(15,0,0)
+    nightst = time(20,55,0)
+    nightst = time(21,0,0)
+    
+    dayofweek = datetime.today().weekday()
+    now = datetime.time(datetime.now())
+    if dayofweek > 5 and (now<nightst): #weekends are nights only
+        return False
+    else:
+        if (now>dayst and now<dayet)  or (now>nightst and now<nightet):
+            return True
+    return False
+        
 async def update_mlbtr():
     await bot.wait_until_ready()
     channel = discord.Object(id = main_chid)
     while not bot.is_closed:
+        if check_hq():
+            await bot.send_message(channel,":rotating_light: HQ is starting soon :rotating_light: ")
+            
         out = mlbtr.mlbtr()
         if out != None:
             await bot.send_message(channel,out)
