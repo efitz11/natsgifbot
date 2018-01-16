@@ -579,7 +579,7 @@ def check_hq():
     dayst = time(14,55,0)
     dayet = time(15,0,0)
     nightst = time(20,55,0)
-    nightst = time(21,0,0)
+    nightet = time(21,0,0)
     
     dayofweek = datetime.today().weekday()
     now = datetime.time(datetime.now())
