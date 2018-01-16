@@ -15,5 +15,6 @@ def get_cryptocurrency_data(text):
         name = coin["name"]
         price = coin["price_usd"]
         change = coin["percent_change_24h"]
-        output = output + name.ljust(12) + " $" + price.ljust(10) + change.rjust(5) + "% last 24h\n"
+        change7 = coin["percent_change_7d"]
+        output = output + name.ljust(12) + " $" + price.ljust(10) + change.rjust(6) + "% last 24h\t" + change7.rjust(6) + "% last 7d\n"
     return output+"```"
