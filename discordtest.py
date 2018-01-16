@@ -17,6 +17,7 @@ bot = commands.Bot(command_prefix='!')
 
 pattern69 = re.compile('(^|[\s\.])[6][\.]*[9]([\s\.]|x|%|$|th)')
 patterncheer = re.compile('cheer', re.IGNORECASE)
+patternsolis = re.compile('solis', re.IGNORECASE)
     
 # get tokens from file
 f = open('tokens.txt','r')
@@ -553,6 +554,8 @@ async def on_message(message):
             await bot.add_reaction(message, emoji_letter_map['a'])
             await bot.add_reaction(message, emoji_letter_map['t'])
             await bot.add_reaction(message, emoji_letter_map['s'])
+        if patternsolis.search(message.content):
+            await bot.add_reaction(message, u"\U0001F528")
         mockobj.update(str(message.content),message.channel)
 
 updater = mymlbgame.Updater()
