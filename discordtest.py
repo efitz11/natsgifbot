@@ -15,7 +15,7 @@ import frinkiac, cryptocurrency, wikipedia
 
 bot = commands.Bot(command_prefix='!')
 
-pattern69 = re.compile('(^|[\s\.])[6][\.]*[9]([\s\.]|x|%|$|th)')
+pattern69 = re.compile('(^|[\s\.]|\$)[6][\.]*[9]([\s\.]|x|%|$|th)')
 patterncheer = re.compile('cheer', re.IGNORECASE)
 patternsolis = re.compile('solis', re.IGNORECASE)
     
