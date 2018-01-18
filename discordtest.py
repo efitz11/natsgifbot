@@ -15,6 +15,8 @@ import frinkiac, cryptocurrency, wikipedia
 
 bot = commands.Bot(command_prefix='!')
 
+extensions = ["baseball","sports"]
+
 pattern69 = re.compile('(^|[\s\.]|\$)[6][\.]*[9]([\s\.]|x|%|$|th)')
 patterncheer = re.compile('cheer', re.IGNORECASE)
 patternsolis = re.compile('solis', re.IGNORECASE)
@@ -130,51 +132,6 @@ async def gifall(*name:str):
         await bot.say(output.strip())
         
     return
-    
-@bot.command()
-async def mlb(*team :str):
-    """<team> to show today's game, or blank to show all games"""
-    now = datetime.now() - timedelta(hours=3)
-    if len(team) == 0:
-        day = mlbgame.day(now.year, now.month, now.day)
-        if len(day) == 0:
-            await bot.say("No games today.")
-            return
-        output = "Today's scores:\n```python\n"
-        for game in day:
-            output = output + mymlbgame.get_game_str(game.game_id) +'\n'
-        await bot.say(output.strip() + "```")
-        return
-    
-    teamname = team[0].title()
-    day = mlbgame.day(now.year, now.month, now.day, home=teamname, away=teamname)
-    
-    if len(day) > 0 :
-        game = day[0]
-        id = game.game_id
-        output = mymlbgame.get_game_str(id,lastplay=True)
-        await bot.say("```python\n" + output + "```")
-
-@bot.command()
-async def mlbd(year:int, month:int, day:int, *team:str):
-    """<yyyy mm dd> to show all of that day's games; add a team for just one"""
-    if len(team) == 0:
-        gameday = mlbgame.day(year, month, day)
-        output = "The day's scores:\n```python\n"
-        for game in gameday:
-            output = output + mymlbgame.get_game_str(game.game_id) +'\n'
-        await bot.say(output.strip() + "```")
-        return
-    else:
-        team = team[0].title()
-        gameday = mlbgame.day(year, month, day, home=team, away=team)
-
-    if len(gameday) > 0 :
-        game = gameday[0]
-        id = game.game_id
-        box = mlbgame.game.GameBoxScore(mlbgame.game.box_score(id))
-        s = game.nice_score() #+ "\n```" + box.print_scoreboard() + "```"
-        await bot.say(s)
 
 def sub(subreddit, selfpost=False):
     list = []
@@ -390,51 +347,6 @@ async def flip():
     await bot.say(res)
     
 @bot.command()
-async def cfb(*team:str):
-    """<team> display score of team's cfb game"""
-    t = ' '.join(team)
-    await bot.say(cfbgame.get_game(t))
-    
-@bot.command()
-async def cbb(*team:str):
-    """<team> display score of team's cfb game"""
-    delta = None
-    if len(team) > 0:
-        if team[-1].startswith('-') or team[-1].startswith('+'):
-            delta = team[-1]
-            if len(team) > 1:
-                t = ' '.join(team[:-1])
-            else:
-                t = None
-        else:
-            t = ' '.join(team)
-    else:
-        t = None
-        
-    if delta is None:
-        await bot.say(cbbgame.get_game(t))
-    else:
-        await bot.say(cbbgame.get_game(t,delta=int(delta)))
-        
-@bot.command()
-async def nfl(*team:str):
-    """<optional team> display score(s) of nfl game"""
-    t = ' '.join(team)
-    await bot.say(nflgame.get_game(t,'nfl'))
-    
-@bot.command()
-async def nba(*team:str):
-    """<optional team> display score(s) of nba game"""
-    t = ' '.join(team)
-    await bot.say(nflgame.get_game(t,'nba'))
-
-@bot.command()
-async def nhl(*team:str):
-    """<optional team> display score(s) of nhl game"""
-    t = ' '.join(team)
-    await bot.say(nhlscores.get_scores(t))
-
-@bot.command()
 async def giflist():
     await bot.say("https://github.com/efitz11/natsgifbot/blob/master/postlist.csv")
     
@@ -494,22 +406,6 @@ async def frink(*query:str):
     else:
         query = ' '.join(query)
         await bot.say(frinkiac.get_meme(query))
-
-@bot.command()
-async def br(*query:str):
-    """get link to a player's Baseball-Reference page"""
-    url = "http://www.baseball-reference.com/search/search.fcgi?search=%s&results=" % urllib.parse.quote_plus(' '.join(query))
-    req = Request(url, headers={'User-Agent' : "ubuntu"})
-    res = urlopen(req)
-    await bot.say(res.url)
-    
-@bot.command()
-async def fg(*query:str):
-    """get a link to a player's Fangraphs page"""
-    url = "http://www.fangraphs.com/players.aspx?lastname=%s" % urllib.parse.quote_plus(' '.join(query))
-    req = Request(url, headers={'User-Agent' : "ubuntu"})
-    res = urlopen(req)
-    await bot.say("<"+res.url+">")#disable embed because it's shit
     
 @bot.command()
 async def nice():
@@ -614,4 +510,6 @@ reddit = praw.Reddit(client_id=reddit_clientid,
 print(reddit.read_only)
 #bot.loop.create_task(my_bg_task())
 bot.loop.create_task(update_mlbtr())
+for ext in extensions:
+    bot.load_extension(ext)
 bot.run(discord_token)
