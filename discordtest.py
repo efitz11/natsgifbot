@@ -20,6 +20,7 @@ extensions = ["baseball","sports","reddit"]
 pattern69 = re.compile('(^|[\s\.]|\$)[6][\.]*[9]([\s\.]|x|%|$|th)')
 patterncheer = re.compile('cheer', re.IGNORECASE)
 patternsolis = re.compile('solis', re.IGNORECASE)
+patternpoop = re.compile('mets|phillies',re.IGNORECASE)
     
 # get tokens from file
 f = open('tokens.txt','r')
@@ -342,6 +343,8 @@ async def on_message(message):
             await bot.add_reaction(message, emoji_letter_map['s'])
         if patternsolis.search(message.content):
             await bot.add_reaction(message, u"\U0001F528")
+        if patternpoop.search(message.content):
+            await bot.add_reaction(message, u"\U0001F4A9")
         mockobj.update(str(message.content),message.channel)
 
 updater = mymlbgame.Updater()
