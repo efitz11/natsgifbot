@@ -20,7 +20,7 @@ extensions = ["baseball","sports","reddit"]
 pattern69 = re.compile('(^|[\s\.]|\$)[6][\.]*[9]([\s\.]|x|%|$|th)')
 patterncheer = re.compile('cheer', re.IGNORECASE)
 patternsolis = re.compile('solis', re.IGNORECASE)
-patternpoop = re.compile('mets|phillies',re.IGNORECASE)
+patternpoop = re.compile('mets|phillies|braves',re.IGNORECASE)
     
 # get tokens from file
 f = open('tokens.txt','r')
