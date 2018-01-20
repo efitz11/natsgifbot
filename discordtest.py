@@ -375,7 +375,7 @@ def check_hq():
     
     dayofweek = datetime.today().weekday()
     now = datetime.time(datetime.now())
-    if dayofweek > 5 and (now<nightst): #weekends are nights only
+    if dayofweek >= 5 and (now<nightst): #weekends are nights only
         return False
     else:
         if (now>dayst and now<dayet)  or (now>nightst and now<nightet):
