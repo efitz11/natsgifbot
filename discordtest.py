@@ -319,6 +319,20 @@ async def wiki(*query:str):
     """get a link to wikipedia's first search result for your query"""
     await bot.say(wikipedia.get_wiki_page(' '.join(query)))
     
+@bot.command()
+async def poll(question, *answers):
+    """Start a poll - the bot will post the question with the possible answers
+       List the answers after the question, if any argument has spaces, remember
+       to "quote the argument" to keep it as one entry"""
+    output = "**POLL**```python\n#" + question + "\n"
+    a = ord('A')
+    for i in range(len(answers)):
+        output = output + "\t" + chr(a+i) + " - " + answers[i] + "\n"
+    m = await bot.say(output + "```")
+    a = ord('a')
+    for i in range(len(answers)):
+        await bot.add_reaction(m,emoji_letter_map[chr(a+i)])
+    
 @bot.event
 async def on_message(message):
     #stuff
