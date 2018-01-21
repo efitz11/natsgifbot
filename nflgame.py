@@ -109,10 +109,20 @@ def get_game(team, sport):
         return output + "```"
     for game in games:
         if game['hometeam'].lower() == team.lower() or game['homeabv'].lower() == team.lower() or game['awayteam'].lower() == team.lower() or game['awayabv'].lower() == team.lower() or game['homename'].lower() == team.lower() or game['awayname'].lower() == team.lower():
-            return "<%s>```python\n%s %s @ %s %s # %s%s```" % (game['link'], game['awayabv'], game['awayscore'],game['homeabv'], game['homescore'], game['time'], game['odds'])
+            return "<%s>```python\n" % (game['link']) + pretty_print_game(game) + "```"
+            #return "<%s>```python\n%s %s @ %s %s # %s%s```" % (game['link'], game['awayabv'], game['awayscore'],game['homeabv'], game['homescore'], game['time'], game['odds'])
             #return "**%s %s** @ **%s %s** - %s%s" % (game['awayabv'], game['awayscore'],game['homeabv'], game['homescore'], game['time'], game['odds'])
     
     return "game not found"
+
+def pretty_print_game(game):
+    namejust = max(len(game['awayabv']), len(game['homeabv']))
+    odds = game['odds']
+    if len(odds) > 0:
+        odds = odds[3:]
+    output = "%s %s # %s\n%s %s # %s\n" % (game['awayabv'].rjust(namejust), str(game['awayscore']).rjust(2), odds, game['homeabv'].rjust(namejust), str(game['homescore']).rjust(2), game['time'])
+    return output
+    
     
 #def get_nfl_standings():
 #    req = Request("http://espn.go.com/nfl/standings")
