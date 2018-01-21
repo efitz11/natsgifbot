@@ -88,6 +88,13 @@ def get_game(team, sport):
             if 'details' in event['competitions'][0]['odds'][0]:
                 game['odds'] = " - " + event['competitions'][0]['odds'][0]['details']
         
+        leaders = event['competitions'][0]['leaders'][0]['leaders']
+        game['passleader'] = leaders[0]['athlete']['displayName'] + " - " + str(leaders[0]['value']) + " yds"
+        leaders = event['competitions'][0]['leaders'][1]['leaders']
+        game['rushleader'] = leaders[0]['athlete']['displayName'] + " - " + str(leaders[0]['value']) + " yds"
+        leaders = event['competitions'][0]['leaders'][2]['leaders']
+        game['recleader'] = leaders[0]['athlete']['displayName'] + " - " + str(leaders[0]['value']) + " yds"
+                
         if homestatus == 'home':
             game['hometeam'], game['homeid'], game['homeabv'], game['homescore'], game['awayteam'], game['awayid'], game['awayabv'], game['awayscore'], game['homename'], game['awayname'] =\
                 team1, tid1, team1abv, score1, team2, tid2, team2abv, score2, name1, name2
@@ -121,6 +128,9 @@ def pretty_print_game(game):
     if len(odds) > 0:
         odds = odds[3:]
     output = "%s %s # %s\n%s %s # %s\n" % (game['awayabv'].rjust(namejust), str(game['awayscore']).rjust(2), odds, game['homeabv'].rjust(namejust), str(game['homescore']).rjust(2), game['time'])
+    output = output + "Pass leader: " + game['passleader'] + "\n"
+    output = output + "Rush leader: " + game['rushleader'] + "\n"
+    output = output + "Recv leader: " + game['recleader'] + "\n"
     return output
     
     
