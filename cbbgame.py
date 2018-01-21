@@ -94,9 +94,12 @@ def get_game(team,delta=None):
     #f.close()
 
     games = []
-    date = scoreData['events'][0]['date']
-    date = date[:date.find('T')].split('-')
-    date = date[1] + "/" + date[2] + "/" + date[0]
+    if delta is None:
+        date = scoreData['events'][0]['date']
+        date = date[:date.find('T')].split('-')
+        date = date[1] + "/" + date[2] + "/" + date[0]
+    else:
+        date = str(now.month) + "/" + str(now.day) + "/" + str(now.year)
     for event in scoreData['events']:
         game = dict()
 
