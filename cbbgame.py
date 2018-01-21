@@ -146,21 +146,46 @@ def get_game(team,delta=None):
         #print (game)
         games.append(game)
     #output = "Games on " + str(now.month) + "/" + str(now.day) + "/" + str(now.year)
-    output = "Games on " + date
+    dateline = "Games on " + date
     if all:
-        output = output + "\n```python\n"
+        output = ""
         for game in games:
             ar = game['awayrank']['current']
             hr = game['homerank']['current']
             awayr = "("+str(ar)+")" if (ar <= 25 and ar > 0) else ""
             homer = "("+str(hr)+")" if (hr <= 25 and hr > 0) else ""
             output = output +  "%s %s %s @ %s %s %s # %s%s\n" % (awayr.rjust(4),game['awayabv'].rjust(5), game['awayscore'].rjust(2), homer.rjust(4),game['homeabv'].rjust(5), game['homescore'].rjust(2), game['time'],game['odds'])
-        return (output+"```")
+            #output = output + pretty_print_game(game)
+        return (dateline + "\n```python\n" + output+"```")
     for game in games:
         if game['hometeam'].lower() == team.lower() or game['homeabv'].lower() == team.lower() or game['awayteam'].lower() == team.lower() or game['awayabv'].lower() == team.lower():
-            ar = game['awayrank']['current']
-            hr = game['homerank']['current']
-            awayr = "("+str(ar)+")" if (ar <= 25 and ar > 0) else ""
-            homer = "("+str(hr)+")" if (hr <= 25 and hr > 0) else ""
-            return output + "\n```python\n%s%s %s @ %s%s %s # %s%s```" % (awayr,game['awayabv'], game['awayscore'], homer,game['homeabv'], game['homescore'], game['time'], game['odds'])
+            # ar = game['awayrank']['current']
+            # hr = game['homerank']['current']
+            # awayr = "("+str(ar)+")" if (ar <= 25 and ar > 0) else ""
+            # homer = "("+str(hr)+")" if (hr <= 25 and hr > 0) else ""
+            # return output + "\n```python\n%s%s %s @ %s%s %s # %s%s```" % (awayr,game['awayabv'], game['awayscore'], homer,game['homeabv'], game['homescore'], game['time'], game['odds'])
+            output = pretty_print_game(game)
+            return (dateline + "\n```python\n" + output + "```")
     return "game not found"
+
+def pretty_print_game(game):
+    ar = game['awayrank']['current']
+    hr = game['homerank']['current']
+    awayr = "("+str(ar)+")" if (ar <= 25 and ar > 0) else ""
+    homer = "("+str(hr)+")" if (hr <= 25 and hr > 0) else ""
+    namejust = max(len(game['awayabv']), len(game['homeabv']))
+    gdate = game['time'].split('-')[0]
+    gtime = game['time'].split('- ')[1]
+    output = "%s %s %s # %s\n%s %s %s # %s%s\n" % (awayr.rjust(4),game['awayabv'].rjust(namejust), game['awayscore'].rjust(2), gdate, homer.rjust(4),game['homeabv'].rjust(namejust), game['homescore'].rjust(2), gtime, game['odds'])
+    return output
+    
+def pretty_print_games(games):
+    started = []
+    pregame = []
+    final = []
+    for game in games:
+        if game['status'] == GAME_STATUS_PRE:
+            started.append(game)
+        else:
+            pregame.append(game)
+    
