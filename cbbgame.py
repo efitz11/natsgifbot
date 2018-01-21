@@ -94,6 +94,9 @@ def get_game(team,delta=None):
     #f.close()
 
     games = []
+    date = scoreData['events'][0]['date']
+    date = date[:date.find('T')].split('-')
+    date = date[1] + "/" + date[2] + "/" + date[0]
     for event in scoreData['events']:
         game = dict()
 
@@ -142,7 +145,8 @@ def get_game(team,delta=None):
             
         #print (game)
         games.append(game)
-    output = "Games on " + str(now.month) + "/" + str(now.day) + "/" + str(now.year)
+    #output = "Games on " + str(now.month) + "/" + str(now.day) + "/" + str(now.year)
+    output = "Games on " + date
     if all:
         output = output + "\n```python\n"
         for game in games:
