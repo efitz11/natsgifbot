@@ -87,13 +87,13 @@ def get_game(team, sport):
         if 'odds' in event['competitions'][0]:
             if 'details' in event['competitions'][0]['odds'][0]:
                 game['odds'] = " - " + event['competitions'][0]['odds'][0]['details']
-        
-        leaders = event['competitions'][0]['leaders'][0]['leaders']
-        game['passleader'] = leaders[0]['athlete']['displayName'] + " - " + str(leaders[0]['value']) + " yds"
-        leaders = event['competitions'][0]['leaders'][1]['leaders']
-        game['rushleader'] = leaders[0]['athlete']['displayName'] + " - " + str(leaders[0]['value']) + " yds"
-        leaders = event['competitions'][0]['leaders'][2]['leaders']
-        game['recleader'] = leaders[0]['athlete']['displayName'] + " - " + str(leaders[0]['value']) + " yds"
+        if sport == "nfl":
+            leaders = event['competitions'][0]['leaders'][0]['leaders']
+            game['passleader'] = leaders[0]['athlete']['displayName'] + " - " + str(leaders[0]['value']) + " yds"
+            leaders = event['competitions'][0]['leaders'][1]['leaders']
+            game['rushleader'] = leaders[0]['athlete']['displayName'] + " - " + str(leaders[0]['value']) + " yds"
+            leaders = event['competitions'][0]['leaders'][2]['leaders']
+            game['recleader'] = leaders[0]['athlete']['displayName'] + " - " + str(leaders[0]['value']) + " yds"
                 
         if homestatus == 'home':
             game['hometeam'], game['homeid'], game['homeabv'], game['homescore'], game['awayteam'], game['awayid'], game['awayabv'], game['awayscore'], game['homename'], game['awayname'] =\
@@ -116,21 +116,22 @@ def get_game(team, sport):
         return output + "```"
     for game in games:
         if game['hometeam'].lower() == team.lower() or game['homeabv'].lower() == team.lower() or game['awayteam'].lower() == team.lower() or game['awayabv'].lower() == team.lower() or game['homename'].lower() == team.lower() or game['awayname'].lower() == team.lower():
-            return "<%s>```python\n" % (game['link']) + pretty_print_game(game) + "```"
+            return "<%s>```python\n" % (game['link']) + pretty_print_game(game,sport) + "```"
             #return "<%s>```python\n%s %s @ %s %s # %s%s```" % (game['link'], game['awayabv'], game['awayscore'],game['homeabv'], game['homescore'], game['time'], game['odds'])
             #return "**%s %s** @ **%s %s** - %s%s" % (game['awayabv'], game['awayscore'],game['homeabv'], game['homescore'], game['time'], game['odds'])
     
     return "game not found"
 
-def pretty_print_game(game):
+def pretty_print_game(game,sport):
     namejust = max(len(game['awayabv']), len(game['homeabv']))
     odds = game['odds']
     if len(odds) > 0:
         odds = odds[3:]
     output = "%s %s # %s\n%s %s # %s\n" % (game['awayabv'].rjust(namejust), str(game['awayscore']).rjust(2), odds, game['homeabv'].rjust(namejust), str(game['homescore']).rjust(2), game['time'])
-    output = output + "Pass leader: " + game['passleader'] + "\n"
-    output = output + "Rush leader: " + game['rushleader'] + "\n"
-    output = output + "Recv leader: " + game['recleader'] + "\n"
+    if sport == "nfl":
+        output = output + "Pass leader: " + game['passleader'] + "\n"
+        output = output + "Rush leader: " + game['rushleader'] + "\n"
+        output = output + "Recv leader: " + game['recleader'] + "\n"
     return output
     
     
