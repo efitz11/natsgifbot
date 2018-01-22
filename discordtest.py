@@ -21,6 +21,8 @@ pattern69 = re.compile('(^|[\s\.]|\$)[6][\.]*[9]([\s\.]|x|%|$|th)')
 patterncheer = re.compile('cheer', re.IGNORECASE)
 patternsolis = re.compile('solis', re.IGNORECASE)
 patternpoop = re.compile('mets|phillies|braves',re.IGNORECASE)
+patternperf = re.compile('perfect game',re.IGNORECASE)
+
     
 # get tokens from file
 f = open('tokens.txt','r')
@@ -359,6 +361,8 @@ async def on_message(message):
             await bot.add_reaction(message, u"\U0001F528")
         if patternpoop.search(message.content):
             await bot.add_reaction(message, u"\U0001F4A9")
+        if patternperf.search(message.content):
+            await bot.send_message(message.channel,"FUCK JOSE TABATA")
         mockobj.update(str(message.content),message.channel)
 
 updater = mymlbgame.Updater()
