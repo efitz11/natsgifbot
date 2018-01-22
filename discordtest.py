@@ -386,9 +386,9 @@ async def my_bg_task():
         await asyncio.sleep(15)
 
 def check_hq():
-    dayst = time(14,55,0)
+    dayst = time(14,57,0)
     dayet = time(15,0,0)
-    nightst = time(20,55,0)
+    nightst = time(20,57,0)
     nightet = time(21,0,0)
     
     dayofweek = datetime.today().weekday()
@@ -412,7 +412,7 @@ async def update_mlbtr():
         out = mlbtr.mlbtr()
         if out != None:
             await bot.send_message(channel,out)
-        await asyncio.sleep(60*5)
+        await asyncio.sleep(60*3)
         
 mockobj = mocker()
 mlbtr = xmlreader.XmlReader()
