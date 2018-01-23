@@ -329,6 +329,11 @@ async def poll(question, *answers):
     a = ord('a')
     for i in range(len(answers)):
         await bot.add_reaction(m,emoji_letter_map[chr(a+i)])
+        
+@bot.command(pass_context=True)
+async def terminate(ctx):
+    """no"""
+    await bot.say("%s is not in the terminators file. This incident will be reported." % ctx.message.author.mention)
     
 @bot.event
 async def on_message(message):
