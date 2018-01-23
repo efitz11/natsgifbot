@@ -210,11 +210,6 @@ async def car():
     await bot.say(sub(l[i]))
 
 @bot.command()
-async def fp():
-    """get a random FP quote"""
-    await bot.say(sub('justFPthings',selfpost=True))    
-
-@bot.command()
 async def fuck():
     l = ['barves','cubs','dh','dodgers','mets','yankees']
     num = random.randint(0,len(l)-1)

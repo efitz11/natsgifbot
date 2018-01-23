@@ -130,6 +130,11 @@ class Reddit():
                     output = self.getsubmissiontext(submission)
                     await self.bot.say(output)
                     return
+
+    @commands.command()
+    async def fp(self):
+        """get a random FP quote"""
+        await self.bot.say(self.sub('justFPthings',selfpost=True))    
         
 def setup(bot):
     bot.add_cog(Reddit(bot))
