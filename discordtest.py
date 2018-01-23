@@ -320,7 +320,9 @@ async def wiki(*query:str):
 async def poll(question, *answers):
     """Start a poll - the bot will post the question with the possible answers
        List the answers after the question, if any argument has spaces, remember
-       to "quote the argument" to keep it as one entry"""
+       to "quote the argument" to keep it as one entry
+       
+       if you don't enter any answers, the answers will default to yes/no"""
     output = "**POLL**```python\n#" + question + "\n"
     a = ord('A')
     for i in range(len(answers)):
