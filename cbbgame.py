@@ -177,8 +177,12 @@ def pretty_print_game(game):
     awayr = "("+str(ar)+")" if (ar <= 25 and ar > 0) else ""
     homer = "("+str(hr)+")" if (hr <= 25 and hr > 0) else ""
     namejust = max(len(game['awayabv']), len(game['homeabv']))
-    gdate = game['time'].split('-')[0]
-    gtime = game['time'].split('- ')[1]
+    if '-' in game['time']:
+        gdate = game['time'].split('-')[0]
+        gtime = game['time'].split('- ')[1]
+    else:
+        gdate = ""
+        gtime = game['time']
     output = "%s %s %s # %s\n%s %s %s # %s%s\n" % (awayr.rjust(4),game['awayabv'].rjust(namejust), game['awayscore'].rjust(2), gdate, homer.rjust(4),game['homeabv'].rjust(namejust), game['homescore'].rjust(2), gtime, game['odds'])
     return output
     
