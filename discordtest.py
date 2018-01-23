@@ -325,8 +325,17 @@ async def poll(question, *answers):
     a = ord('A')
     for i in range(len(answers)):
         output = output + "\t" + chr(a+i) + " - " + answers[i] + "\n"
+        
+    if len(answers) == 0:
+        output = output + "\tYes or No\n"
+        m = await bot.say(output + "```")
+        await bot.add_reaction(m,emoji_letter_map['y'])
+        await bot.add_reaction(m,emoji_letter_map['n'])
+        return
+        
     m = await bot.say(output + "```")
     a = ord('a')
+    
     for i in range(len(answers)):
         await bot.add_reaction(m,emoji_letter_map[chr(a+i)])
         
