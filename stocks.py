@@ -10,9 +10,10 @@ def get_quote(symbol):
     change = float(quote['change'])
     ch = "%0.2f" %(change)
     chper = "%0.2f" %(quote['changePercent'])
+    chytd = "%0.2f" % (quote['ytdChange'])
     if change > 0:
         ch = "+" + ch
         chper = "+" + chper
-    output = "%s - %s:```python\n Last price: %s (%s, %s" % (symbol.upper(),quote['companyName'],quote['latestPrice'],ch,chper)+"%)"
+    output = "%s - %s:```python\n Last price: %s (%s, %s%%, %s%% YTD" % (symbol.upper(),quote['companyName'],quote['latestPrice'],ch,chper,chytd)+")"
     output = output + "```"
     return output
