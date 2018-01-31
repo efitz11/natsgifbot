@@ -345,6 +345,20 @@ async def poll(question, *answers):
 async def terminate(ctx):
     """no"""
     await bot.say("%s is not in the terminators file. This incident will be reported." % ctx.message.author.mention)
+
+@bot.command(pass_context=True)
+async def slap(ctx, *text:str):
+    """Slap a user with a wet trout"""
+    slappee = ' '.join(text)
+    server = ctx.message.server
+    for member in server.members:
+        if slappee in member.name:
+            slappee = member.mention
+            break
+
+    slapper = ctx.message.author
+
+    await bot.say('*%s slaps %s around a bit with a large trout*' % (slapper.mention, slappee))
     
 @bot.event
 async def on_message(message):
