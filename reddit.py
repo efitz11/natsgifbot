@@ -136,5 +136,28 @@ class Reddit():
         """get a random FP quote"""
         await self.bot.say(self.sub('justFPthings',selfpost=True))    
         
+            
+    @commands.command()
+    async def pup(self):
+        """show a random pic of a pupper"""
+        await self.bot.say(self.sub('puppies'))
+
+    @commands.command()
+    async def kit(self):
+        """show a random pic of a kitten"""
+        await self.bot.say(self.sub('kittens'))
+
+    @commands.command()
+    async def corg(self):
+        """show a random pic of a corgi"""
+        await self.bot.say(self.sub('corgi'))    
+
+    @commands.command()
+    async def car(self):
+        """show a random pic of a car"""
+        l = ["cars","carporn","autos","shitty_car_mods"]
+        i =  random.randint(0,len(l)-1)
+        await self.bot.say(self.sub(l[i]))
+        
 def setup(bot):
     bot.add_cog(Reddit(bot))

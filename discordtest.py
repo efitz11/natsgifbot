@@ -186,28 +186,6 @@ async def memeify(*text:str):
     for s in input:
         output = output + " " + s
     await bot.say(output.strip().upper())
-    
-@bot.command()
-async def pup():
-    """show a random pic of a pupper"""
-    await bot.say(sub('puppies'))
-
-@bot.command()
-async def kit():
-    """show a random pic of a kitten"""
-    await bot.say(sub('kittens'))
-
-@bot.command()
-async def corg():
-    """show a random pic of a corgi"""
-    await bot.say(sub('corgi'))    
-
-@bot.command()
-async def car():
-    """show a random pic of a car"""
-    l = ["cars","carporn","autos","shitty_car_mods"]
-    i =  random.randint(0,len(l)-1)
-    await bot.say(sub(l[i]))
 
 @bot.command()
 async def fuck():
