@@ -254,8 +254,11 @@ async def countdown():
     await bot.say("%s days until National's Home Opener, 2018" % (ho.days+1))
 
 @bot.command()
-async def stock(symbol:str):
-    out = stocks.get_quote(symbol)
+async def stock(*symbol:str):
+    if len(symbol) == 0:
+        await bot.say(stocks.get_stocks())
+        return
+    out = stocks.get_quote(symbol[0])
     await bot.say(out)
     
 @bot.command()
