@@ -80,6 +80,8 @@ def get_game(team, sport):
         homestatus = event['competitions'][0]['competitors'][0]['homeAway']
         name1 = event['competitions'][0]['competitors'][0]['team']['name']
         name2 = event['competitions'][0]['competitors'][1]['team']['name']
+        game['homeid'] = event['competitions'][0]['competitors'][0]['id']
+        game['awayid'] = event['competitions'][0]['competitors'][1]['id']
         
         game['link'] = event['links'][0]['href']
         
@@ -88,12 +90,17 @@ def get_game(team, sport):
             if 'details' in event['competitions'][0]['odds'][0]:
                 game['odds'] = " - " + event['competitions'][0]['odds'][0]['details']
         if sport == "nfl":
+            try:
+                game['possteam'] = event['competitions'][0]['situation']['possession']
+            except:
+                game['possteam'] = None
             leaders = event['competitions'][0]['leaders'][0]['leaders']
             game['passleader'] = leaders[0]['athlete']['displayName'] + " - " + str(leaders[0]['value']) + " yds"
             leaders = event['competitions'][0]['leaders'][1]['leaders']
             game['rushleader'] = leaders[0]['athlete']['displayName'] + " - " + str(leaders[0]['value']) + " yds"
             leaders = event['competitions'][0]['leaders'][2]['leaders']
             game['recleader'] = leaders[0]['athlete']['displayName'] + " - " + str(leaders[0]['value']) + " yds"
+            game['situation'] = event['competitions'][0]['situation']['downDistanceText']
                 
         if homestatus == 'home':
             game['hometeam'], game['homeid'], game['homeabv'], game['homescore'], game['awayteam'], game['awayid'], game['awayabv'], game['awayscore'], game['homename'], game['awayname'] =\
@@ -129,9 +136,15 @@ def pretty_print_game(game,sport):
         odds = odds[3:]
     output = "%s %s # %s\n%s %s # %s\n" % (game['awayabv'].rjust(namejust), str(game['awayscore']).rjust(2), odds, game['homeabv'].rjust(namejust), str(game['homescore']).rjust(2), game['time'])
     if sport == "nfl":
-        output = output + "Pass leader: " + game['passleader'] + "\n"
-        output = output + "Rush leader: " + game['rushleader'] + "\n"
-        output = output + "Recv leader: " + game['recleader'] + "\n"
+        if game['possteam'] is not None:
+            if game['possteam'] == game['homeid']:
+                output = output[:output.rfind('#')] + '🏈' + output[output.rfind('#')+1:]
+            else:
+                output = output[:output.find('#')] + '🏈' + output[output.find('#')+1:]
+        output = output + game['situation'] + "\n" 
+        #output = output + "Pass leader: " + game['passleader'] + "\n"
+        #output = output + "Rush leader: " + game['rushleader'] + "\n"
+        #output = output + "Recv leader: " + game['recleader'] + "\n"
     return output
     
     

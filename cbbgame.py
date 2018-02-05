@@ -138,6 +138,7 @@ def get_game(team,delta=None):
             team2 = "Hawaii"
             
         homestatus = event['competitions'][0]['competitors'][0]['homeAway']
+        game['link'] = event['links'][0]['href']
         
         if homestatus == 'home':
             game['hometeam'], game['homeid'], game['homeabv'], game['homescore'], game['awayteam'], game['awayid'], game['awayabv'], game['awayscore'], game['homerank'], game['awayrank']=\
@@ -168,7 +169,7 @@ def get_game(team,delta=None):
             # homer = "("+str(hr)+")" if (hr <= 25 and hr > 0) else ""
             # return output + "\n```python\n%s%s %s @ %s%s %s # %s%s```" % (awayr,game['awayabv'], game['awayscore'], homer,game['homeabv'], game['homescore'], game['time'], game['odds'])
             output = pretty_print_game(game)
-            return (dateline + "\n```python\n" + output + "```")
+            return (dateline + " - " + game['link'] + "\n```python\n" + output + "```")
     return "game not found"
 
 def pretty_print_game(game):
