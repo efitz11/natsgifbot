@@ -100,7 +100,10 @@ def get_game(team, sport):
             game['rushleader'] = leaders[0]['athlete']['displayName'] + " - " + str(leaders[0]['value']) + " yds"
             leaders = event['competitions'][0]['leaders'][2]['leaders']
             game['recleader'] = leaders[0]['athlete']['displayName'] + " - " + str(leaders[0]['value']) + " yds"
-            game['situation'] = event['competitions'][0]['situation']['downDistanceText']
+            try:
+                game['situation'] = event['competitions'][0]['situation']['downDistanceText']
+            except:
+                game['situation'] = ""
                 
         if homestatus == 'home':
             game['hometeam'], game['homeid'], game['homeabv'], game['homescore'], game['awayteam'], game['awayid'], game['awayabv'], game['awayscore'], game['homename'], game['awayname'] =\
