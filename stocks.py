@@ -17,3 +17,23 @@ def get_quote(symbol):
     output = "%s - %s:```python\n Last price: %s (%s, %s%%, %s%% YTD" % (symbol.upper(),quote['companyName'],quote['latestPrice'],ch,chper,chytd)+")"
     output = output + "```"
     return output
+
+def get_stocks():
+    output = "Latest quotes:\n```python\n"
+    for symbol in ["DIA","VOO","VTI","VXUS"]:
+        url = "https://api.iextrading.com/1.0/stock/"+symbol+"/quote?displayPercent=true"
+        req = Request(url)
+        req.headers["User-Agent"] = "windows 10 bot"
+        # Load data
+        quote = json.loads(urlopen(req).read().decode("utf-8"))
+        change = float(quote['change'])
+        ch = "%0.2f" %(change)
+        chper = "%0.2f" %(quote['changePercent'])
+        chytd = "%0.2f" % (quote['ytdChange'])
+        if change > 0:
+            ch = "+" + ch
+            chper = "+" + chper
+        output = output + "%s - %s (%s, %s%%, %s%% YTD) - %s\n" % (symbol.upper(),quote['latestPrice'],ch,chper,chytd,quote['companyName'])
+#    output = "%s - %s:```python\n Last price: %s (%s, %s%%, %s%% YTD" % (symbol.upper(),quote['companyName'],quote['latestPrice'],ch,chper,chytd)+")"
+    output = output + "```"
+    return output
