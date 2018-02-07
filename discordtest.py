@@ -4,7 +4,7 @@ import random
 import mlbgame
 from datetime import datetime, timedelta, time
 import praw, prawcore.exceptions
-import re, json
+import re, json, os
 import asyncio
 from urllib.request import urlopen, Request
 import urllib.parse
@@ -340,6 +340,23 @@ async def slap(ctx, *text:str):
     slapper = ctx.message.author
 
     await bot.say('*%s slaps %s around a bit with a large trout*' % (slapper.mention, slappee))
+
+@bot.command()
+async def big(text:str):
+    """bot posts the requested image"""
+    basepath = '/home/ubuntu/images/'
+    filelist = os.listdir(basepath)
+    filelist.sort()
+    if text == "list":
+        output = ""
+        for f in filelist:
+            output = output + f[:f.find('.')] + ", "
+        await bot.say(output[:-2])
+    else:
+        for f in filelist:
+            fname = f[:f.find('.')]
+            if fname == text:
+                await bot.upload(basepath+f)
     
 @bot.event
 async def on_message(message):
