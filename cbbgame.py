@@ -169,7 +169,7 @@ def get_game(team,delta=None):
             # homer = "("+str(hr)+")" if (hr <= 25 and hr > 0) else ""
             # return output + "\n```python\n%s%s %s @ %s%s %s # %s%s```" % (awayr,game['awayabv'], game['awayscore'], homer,game['homeabv'], game['homescore'], game['time'], game['odds'])
             output = pretty_print_game(game)
-            return (dateline + " - " + game['link'] + "\n```python\n" + output + "```")
+            return (dateline + " - <" + game['link'] + ">\n```python\n" + output + "```")
     return "game not found"
 
 def pretty_print_game(game):
