@@ -11,7 +11,7 @@ import urllib.parse
 
 import mymlbgame, cfbgame, nflgame, xmlreader, nhlscores, cbbgame, stocks
 import weather as weathermodule
-import frinkiac, cryptocurrency, wikipedia
+import frinkiac, cryptocurrency, wikipedia, hq
 
 bot = commands.Bot(command_prefix='!')
 
@@ -357,6 +357,29 @@ async def big(text:str):
             fname = f[:f.find('.')]
             if fname == text:
                 await bot.upload(basepath+f)
+                
+@bot.command(pass_context=True)
+async def reghq(ctx):
+    """register yourself to get pinged for HQ"""
+    hq.register_user(ctx.message.author)
+    
+@bot.command(pass_context=True)
+async def unreghq(ctx):
+    """unregister yourself from getting pings for HQ"""
+    hq.unregister_user(ctx.message.author)
+    
+@bot.command(pass_context=True)
+async def amireghq(ctx):
+    """check to see if you are registered for HQ pings"""
+    b = hq.is_user_registered(ctx.message.author)
+    if b:
+        await bot.say(ctx.message.author.name + "is registered for hq pings.")
+    else:
+        await bot.say(ctx.message.author.name + "is NOT registered for hq pings.")
+    
+@bot.command()
+async def pinghq():
+    await bot.say(hq.ping_users())
     
 @bot.event
 async def on_message(message):
@@ -407,30 +430,16 @@ async def my_bg_task():
                 output = "```python\n" + output + "```"
                 await bot.send_message(channel,output)
         await asyncio.sleep(15)
-
-def check_hq():
-    dayst = time(14,57,0)
-    dayet = time(15,0,0)
-    nightst = time(20,57,0)
-    nightet = time(21,0,0)
-    
-    dayofweek = datetime.today().weekday()
-    now = datetime.time(datetime.now())
-    if dayofweek >= 5 and (now<nightst): #weekends are nights only
-        return False
-    else:
-        if (now>dayst and now<dayet)  or (now>nightst and now<nightet):
-            return True
-    return False
         
 async def update_mlbtr():
     await bot.wait_until_ready()
     channel = bot.get_channel(id = main_chid)
     triviach = discord.utils.find(lambda m: m.name == 'trivia', channel.server.channels)
     while not bot.is_closed:
-        if check_hq():
+        if hq.check_hq():
             await bot.send_message(channel,":rotating_light: HQ is starting soon :rotating_light: --- head to %s" % (triviach.mention))
             await bot.send_message(triviach,":rotating_light: HQ is starting soon :rotating_light:")
+            await bot.send_message(triviach, hq.ping_users())
             
         out = mlbtr.mlbtr()
         if out != None:
