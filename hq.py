@@ -27,13 +27,21 @@ def __load_map():
     
 def register_user(user):
     map = __load_map()
-    map.append(user)
-    pickle.dump(map, open(f,"wb"))
+    if not is_user_registered(user):
+        map.append(user)
+        pickle.dump(map, open(f,"wb"))
+        return "registered successfully"
+    else:
+        return "user already registered"
     
 def unregister_user(user):
     map = __load_map()
-    map.remove(user)
-    pickle.dump(map, open(f,"wb"))
+    if is_user_registered(user):
+        map.remove(user)
+        pickle.dump(map, open(f,"wb"))
+        return "unregistered successfully"
+    else:
+        return "user already unregistered"
     
 def is_user_registered(user):
     map = __load_map()
