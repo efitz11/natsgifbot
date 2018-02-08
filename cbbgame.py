@@ -138,7 +138,9 @@ def get_game(team,delta=None):
             team2 = "Hawaii"
             
         homestatus = event['competitions'][0]['competitors'][0]['homeAway']
-        game['link'] = event['links'][0]['href']
+        for l in event['links']:
+            if l['text'] == "Summary":
+                game['link'] = l['href']
         
         if homestatus == 'home':
             game['hometeam'], game['homeid'], game['homeabv'], game['homescore'], game['awayteam'], game['awayid'], game['awayabv'], game['awayscore'], game['homerank'], game['awayrank']=\
