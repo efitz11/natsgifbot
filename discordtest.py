@@ -373,9 +373,9 @@ async def amireghq(ctx):
     """check to see if you are registered for HQ pings"""
     b = hq.is_user_registered(ctx.message.author)
     if b:
-        await bot.say(ctx.message.author.name + " is registered for hq pings.")
+        await bot.say(ctx.message.author.display_name + " is registered for hq pings.")
     else:
-        await bot.say(ctx.message.author.name + " is NOT registered for hq pings.")
+        await bot.say(ctx.message.author.display_name + " is NOT registered for hq pings.")
     
 @bot.command()
 async def pinghq():
