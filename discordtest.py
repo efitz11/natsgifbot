@@ -361,12 +361,12 @@ async def big(text:str):
 @bot.command(pass_context=True)
 async def reghq(ctx):
     """register yourself to get pinged for HQ"""
-    hq.register_user(ctx.message.author)
+    await bot.say(hq.register_user(ctx.message.author))
     
 @bot.command(pass_context=True)
 async def unreghq(ctx):
     """unregister yourself from getting pings for HQ"""
-    hq.unregister_user(ctx.message.author)
+    await bot.say(hq.unregister_user(ctx.message.author))
     
 @bot.command(pass_context=True)
 async def amireghq(ctx):
