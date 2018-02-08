@@ -380,6 +380,16 @@ async def amireghq(ctx):
 @bot.command()
 async def pinghq():
     await bot.say(hq.ping_users())
+
+@bot.command()
+async def hqhelp():
+    """display only hq commands"""
+    s = ( "Available commands:\n"
+          "* !reghq - register\n"
+          "* !unreghq - unregister\n"
+          "* !amireghq - check if registered\n"
+          "* !pinghq - ping all hqsers")
+    await bot.say(s)
     
 @bot.event
 async def on_message(message):
