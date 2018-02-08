@@ -83,7 +83,9 @@ def get_game(team, sport):
         game['homeid'] = event['competitions'][0]['competitors'][0]['id']
         game['awayid'] = event['competitions'][0]['competitors'][1]['id']
         
-        game['link'] = event['links'][0]['href']
+        for l in event['links']:
+            if l['text'] == "Summary":
+                game['link'] = l['href']
         
         game['odds'] = ""
         if 'odds' in event['competitions'][0]:
