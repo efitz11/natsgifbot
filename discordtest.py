@@ -444,7 +444,7 @@ async def update_mlbtr():
         if hqmod.check_hq():
             await bot.send_message(channel,":rotating_light: HQ is starting soon :rotating_light: --- head to %s" % (triviach.mention))
             await bot.send_message(triviach,":rotating_light: HQ is starting soon :rotating_light:")
-            await bot.send_message(triviach, hq.ping_users())
+            await bot.send_message(triviach, hqmod.ping_users())
             
         out = mlbtr.mlbtr()
         if out != None:
