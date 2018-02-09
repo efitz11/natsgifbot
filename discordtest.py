@@ -11,7 +11,8 @@ import urllib.parse
 
 import mymlbgame, cfbgame, nflgame, xmlreader, nhlscores, cbbgame, stocks
 import weather as weathermodule
-import frinkiac, cryptocurrency, wikipedia, hq
+import frinkiac, cryptocurrency, wikipedia
+import hq as hqmod
 
 bot = commands.Bot(command_prefix='!')
 
@@ -359,38 +360,32 @@ async def big(text:str):
                 await bot.upload(basepath+f)
                 
 @bot.command(pass_context=True)
-async def reghq(ctx):
-    """register yourself to get pinged for HQ"""
-    await bot.say(hq.register_user(ctx.message.author))
-    
-@bot.command(pass_context=True)
-async def unreghq(ctx):
-    """unregister yourself from getting pings for HQ"""
-    await bot.say(hq.unregister_user(ctx.message.author))
-    
-@bot.command(pass_context=True)
-async def amireghq(ctx):
-    """check to see if you are registered for HQ pings"""
-    b = hq.is_user_registered(ctx.message.author)
-    if b:
-        await bot.say(ctx.message.author.display_name + " is registered for hq pings.")
+async def hq(ctx, *text:str):
+    """commands for getting notified about hq games
+       !hq register - register yourself for pings
+       !hq unregister - take yourself off the list
+       !hq check - check if you are registered
+       !hq ping - ping everyone registered"""
+    helpstring = "use '!help hq' to get help about this command"
+    if len(text) == 0:
+        await bot.say(helpstring)
     else:
-        await bot.say(ctx.message.author.display_name + " is NOT registered for hq pings.")
-    
-@bot.command()
-async def pinghq():
-    await bot.say(hq.ping_users())
-
-@bot.command()
-async def hqhelp():
-    """display only hq commands"""
-    s = ( "Available commands:\n"
-          "* !reghq - register\n"
-          "* !unreghq - unregister\n"
-          "* !amireghq - check if registered\n"
-          "* !pinghq - ping all hqsers")
-    await bot.say(s)
-    
+        t = ''.join(text)
+        if t == "register":
+            await bot.say(hqmod.register_user(ctx.message.author))
+        elif t == "unregister":
+            await bot.say(hqmod.unregister_user(ctx.message.author))
+        elif t == "check":
+            if hqmod.is_user_registered(ctx.message.author):
+                await bot.say(ctx.message.author.display_name + " is registered for hq pings.")
+            else:
+                await bot.say(ctx.message.author.display_name + " is **NOT** registered for hq pings.")
+        elif t == "ping":
+            await bot.say(hqmod.list_users(mention=True))
+        elif t == "list":
+            await bot.say(hqmod.list_users())
+        else:
+            await bot.say(helpstring)
 @bot.event
 async def on_message(message):
     #stuff
@@ -446,7 +441,7 @@ async def update_mlbtr():
     channel = bot.get_channel(id = main_chid)
     triviach = discord.utils.find(lambda m: m.name == 'trivia', channel.server.channels)
     while not bot.is_closed:
-        if hq.check_hq():
+        if hqmod.check_hq():
             await bot.send_message(channel,":rotating_light: HQ is starting soon :rotating_light: --- head to %s" % (triviach.mention))
             await bot.send_message(triviach,":rotating_light: HQ is starting soon :rotating_light:")
             await bot.send_message(triviach, hq.ping_users())
