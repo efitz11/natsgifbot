@@ -61,7 +61,17 @@ emoji_letter_map = {'a':u"\U0001F1E6",
 					'w':u"\U0001F1FC",
 					'x':u"\U0001F1FD",
 					'y':u"\U0001F1FE",
-					'z':u"\U0001F1FF",}
+					'z':u"\U0001F1FF",
+                    '0':u"\u0030" + u"\u20E3",
+                    '1':u"\u0031" + u"\u20E3",
+                    '2':u"\u0032" + u"\u20E3",
+                    '3':u"\u0033" + u"\u20E3",
+                    '4':u"\u0034" + u"\u20E3",
+                    '5':u"\u0035" + u"\u20E3",
+                    '6':u"\u0036" + u"\u20E3",
+                    '7':u"\u0037" + u"\u20E3",
+                    '8':u"\u0038" + u"\u20E3",
+                    '9':u"\u0039" + u"\u20E3"}
 
 @bot.event
 async def on_ready():
@@ -242,17 +252,26 @@ async def forecast(*location:str):
     output = weathermodule.get_forecast('%2C'.join(location))
     await bot.say(output)
 
+def convert_number_to_emoji(num):
+    snum = str(num)
+    out = ""
+    for s in snum:
+        out = out + emoji_letter_map[s]
+    return out
+    
 @bot.command()
 async def countdown():
     od = datetime(2018,3,29) - datetime.now()
     st = datetime(2018,2,23) - datetime.now()
+    bc = datetime(2018,2,25) - datetime.now()
     pc = datetime(2018,2,14) - datetime.now()
     ho = datetime(2018,4,5) - datetime.now()
 
-    await bot.say("%s days until pitchers and catchers report" % (pc.days+1))
-    await bot.say("%s days until Spring Training, 2018" % (st.days+1))
-    await bot.say("%s days until Opening Day, 2018" % (od.days+1))
-    await bot.say("%s days until National's Home Opener, 2018" % (ho.days+1))
+    await bot.say("%s days until pitchers and catchers report" % (convert_number_to_emoji(pc.days+1)))
+    await bot.say("%s days until Spring Training, 2018" % (convert_number_to_emoji(st.days+1)))
+    await bot.say("%s days until the first MASN game" % (convert_number_to_emoji(bc.days+1)))
+    await bot.say("%s days until Opening Day, 2018" % (convert_number_to_emoji(od.days+1)))
+    await bot.say("%s days until National's Home Opener, 2018" % (convert_number_to_emoji(ho.days+1)))
 
 @bot.command()
 async def stock(*symbol:str):
