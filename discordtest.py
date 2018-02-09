@@ -362,9 +362,11 @@ async def big(text:str):
 @bot.command(pass_context=True)
 async def hq(ctx, *text:str):
     """commands for getting notified about hq games
+    
        !hq register - register yourself for pings
        !hq unregister - take yourself off the list
        !hq check - check if you are registered
+       !hq list - list everyone registered
        !hq ping - ping everyone registered"""
     helpstring = "use '!help hq' to get help about this command"
     if len(text) == 0:
