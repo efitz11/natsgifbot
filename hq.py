@@ -47,12 +47,18 @@ def is_user_registered(user):
     map = __load_map()
     return user in map
     
-def ping_users():
+def list_users(mention=False):
     map = __load_map()
     output = ""
     for u in map:
-        output = output + u.mention + ", "
+        if mention:
+            output = output + u.mention + ", "
+        else:
+            output = output + u.display_name + ", "
     if len(output) > 0:
         return output[:-2]
     else:
-        return "No one to ping"
+        if mention:
+            return "No one to ping"
+        else:
+            return "No one to list"
