@@ -411,6 +411,14 @@ async def hq(ctx, *text:str):
 @bot.command()
 async def medals():
     await bot.say(olympics.get_medal_count())
+
+@bot.command()
+async def daymedals(*delta:int):
+    if len(delta)==0:
+        d = 0
+    else:
+        d = delta[0]
+    await bot.say(olympics.get_days_medals(delta=d))
     
 @bot.event
 async def on_message(message):
