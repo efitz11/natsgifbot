@@ -28,8 +28,8 @@ def get_days_medals(delta=0):
     now = datetime.now()
     now = now - timedelta(days=delta)
     url = "https://www.pyeongchang2018.com/en/game-time/results/OWG2018/en/general/daily-medallists-date=2018-02-"+str(now.day).zfill(2)+".htm"
-    req = Request(url)
-    req.headers["User-Agent"] = "windows 10 bot"
+    req = Request(url, headers={'User-Agent' : "ubuntu"})
+    #req.headers["User-Agent"] = "windows 10 bot"
     s = urlopen(req).read().decode("utf-8")
 
     tabledata = s[s.find("<table class=\"ResTableFull\">"):]
