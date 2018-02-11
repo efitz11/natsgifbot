@@ -3,8 +3,8 @@ from urllib.request import urlopen, Request
 
 def get_medal_count():
     url = "https://www.pyeongchang2018.com/en/game-time/results/OWG2018/en/general/medal-standings.htm"
-    req = Request(url)
-    req.headers["User-Agent"] = "windows 10 bot"
+    req = Request(url, headers={'User-Agent' : "ubuntu"})
+    #req.headers["User-Agent"] = "windows 10 bot"
     s = urlopen(req).read().decode("utf-8")
 
     tabledata = s[s.find("<table class=\"ResTableFull\">"):]
