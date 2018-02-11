@@ -9,7 +9,7 @@ import asyncio
 from urllib.request import urlopen, Request
 import urllib.parse
 
-import mymlbgame, cfbgame, nflgame, xmlreader, nhlscores, cbbgame, stocks
+import mymlbgame, cfbgame, nflgame, xmlreader, nhlscores, cbbgame, stocks, olympics
 import weather as weathermodule
 import frinkiac, cryptocurrency, wikipedia
 import hq as hqmod
@@ -407,6 +407,11 @@ async def hq(ctx, *text:str):
             await bot.say(hqmod.list_users())
         else:
             await bot.say(helpstring)
+            
+@bot.command()
+async def medals():
+    await bot.say(olympics.get_medal_count())
+    
 @bot.event
 async def on_message(message):
     #stuff
