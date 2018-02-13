@@ -267,11 +267,16 @@ async def countdown():
     pc = datetime(2018,2,14) - datetime.now()
     ho = datetime(2018,4,5) - datetime.now()
 
-    await bot.say("%s days until pitchers and catchers report" % (convert_number_to_emoji(pc.days+1)))
-    await bot.say("%s days until Spring Training, 2018" % (convert_number_to_emoji(st.days+1)))
-    await bot.say("%s days until the first MASN game" % (convert_number_to_emoji(bc.days+1)))
-    await bot.say("%s days until Opening Day, 2018" % (convert_number_to_emoji(od.days+1)))
-    await bot.say("%s days until National's Home Opener, 2018" % (convert_number_to_emoji(ho.days+1)))
+    if pc.days >= -1:
+        await bot.say("%s %s until pitchers and catchers report" % (convert_number_to_emoji(pc.days+1), "day" if (pc.days+1 == 1) else "days"))
+    if st.days >= -1:
+        await bot.say("%s %s until Spring Training, 2018" % (convert_number_to_emoji(st.days+1), "day" if (st.days+1 == 1) else "days"))
+    if bc.days >= -1:
+        await bot.say("%s %s until the first MASN game" % (convert_number_to_emoji(bc.days+1), "day" if (bc.days+1 == 1) else "days"))
+    if od.days >= -1:
+        await bot.say("%s %s until Opening Day, 2018" % (convert_number_to_emoji(od.days+1), "day" if (od.days+1 == 1) else "days"))
+    if ho.days >= -1:
+        await bot.say("%s %s until Nationals Home Opener, 2018" % (convert_number_to_emoji(ho.days+1), "day" if (ho.days+1 == 1) else "days"))
 
 @bot.command()
 async def stock(*symbol:str):
