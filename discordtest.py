@@ -165,18 +165,6 @@ def mockify_text(text):
             prob = prob - 10
             last = False
     return output
-    
-class mocker():
-    def __init__(self):
-        self.lastmsg = {}
-    def update(self,msg,channel):
-        self.lastmsg[channel] = msg
-    def mock(self,channel):
-        try:
-            text = mockify_text(self.lastmsg[channel].lower())
-        except KeyError:
-            text = "Error: no previous message for this channel"
-        return text
         
 @bot.command()
 async def mockify(*text:str):
@@ -187,7 +175,15 @@ async def mockify(*text:str):
 @bot.command(pass_context=True)
 async def mock(ctx):
     """mOcKiFy tHe pReViOuS MeSsaGe"""
-    await bot.say(mockobj.mock(ctx.message.channel))
+    async for m in bot.logs_from(ctx.message.channel,limit=2):
+        if "mock" not in m.clean_content and bot.command_prefix not in m.clean_content:
+            await bot.say(mockify_text(m.clean_content))
+            return
+    
+@bot.command(pass_context=True)
+async def logs(ctx):
+    async for m in bot.logs_from(ctx.message.channel,limit=5):
+        await bot.say(m.clean_content)
     
 @bot.command()
 async def memeify(*text:str):
@@ -451,8 +447,6 @@ async def on_message(message):
             await bot.add_reaction(message, emoji_letter_map['s'])
         if patternsolis.search(message.content):
             await bot.add_reaction(message, u"\U0001F528")
-        if patternpoop.search(message.content):
-            await bot.add_reaction(message, u"\U0001F4A9")
         if patternperf.search(message.content):
             await bot.send_message(message.channel,"FUCK JOSE TABATA")
         mockobj.update(str(message.content),message.channel)
@@ -492,7 +486,6 @@ async def update_mlbtr():
             await bot.send_message(channel,out)
         await asyncio.sleep(60*3)
         
-mockobj = mocker()
 mlbtr = xmlreader.XmlReader()
 
 #print(reddit.read_only)
