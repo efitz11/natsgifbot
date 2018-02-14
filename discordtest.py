@@ -9,7 +9,7 @@ import asyncio
 from urllib.request import urlopen, Request
 import urllib.parse
 
-import mymlbgame, cfbgame, nflgame, xmlreader, nhlscores, cbbgame, stocks, olympics, instagram
+import mymlbgame, cfbgame, nflgame, xmlreader, nhlscores, cbbgame, stocks, olympics, instagram, gifs
 import weather as weathermodule
 import frinkiac, cryptocurrency, wikipedia
 import hq as hqmod
@@ -83,32 +83,7 @@ async def on_ready():
 @bot.command()
 async def gif(*name : str):
     """returns a nationals gif matching the search query"""
-    matches = []
-    patterns = []
-    query = ""
-    for s in name:
-        patterns.append(re.compile(s,re.IGNORECASE))
-        query = query + " " + s
-    f = open('postlist.csv','r')
-    for line in f:
-        search = ','.join(line.split(',')[:-1])
-        matched = True
-        for pat in patterns:
-            if not re.search(pat,search):
-                matched = False
-                break
-        if matched:
-            matches.append(line)
-    f.close()
-    #print ("query: " + query.strip())
-    #print (matches)
-    if len(matches) == 0:
-        await bot.say("No matches")
-        return
-    num = random.randint(0,len(matches)-1)
-    await bot.say(matches[num].strip())
-        
-    return
+    await bot.say(gifs.gif(' '.join(name)))
     
 @bot.command()
 async def gifall(*name:str):
