@@ -9,7 +9,7 @@ import asyncio
 from urllib.request import urlopen, Request
 import urllib.parse
 
-import mymlbgame, cfbgame, nflgame, xmlreader, nhlscores, cbbgame, stocks, olympics
+import mymlbgame, cfbgame, nflgame, xmlreader, nhlscores, cbbgame, stocks, olympics, instagram
 import weather as weathermodule
 import frinkiac, cryptocurrency, wikipedia
 import hq as hqmod
@@ -420,6 +420,10 @@ async def daymedals(*delta:int):
     else:
         d = delta[0]
     await bot.say(olympics.get_days_medals(delta=d))
+    
+@bot.command()
+async def ig(username:str):
+    await bot.say(instagram.get_latest_post(username))
     
 @bot.event
 async def on_message(message):
