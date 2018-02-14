@@ -21,10 +21,10 @@ class Reddit():
                      client_secret=reddit_token,
                      user_agent='windows:natsgifbot (by /u/efitz11)')
         
-    def sub(self, subreddit, selfpost=False):
+    def sub(self, subreddit, selfpost=False,limit=25):
         list = []
         try:
-            for submission in self.reddit.subreddit(subreddit).hot(limit=25):
+            for submission in self.reddit.subreddit(subreddit).hot(limit=limit):
         #        if submission.is_self == selfpost and not submission.stickied and not submission.over_18:
                 if submission.is_self == selfpost and not submission.stickied:
                     if submission.is_self:
@@ -134,7 +134,7 @@ class Reddit():
     @commands.command()
     async def fp(self):
         """get a random FP quote"""
-        await self.bot.say(self.sub('justFPthings',selfpost=True))    
+        await self.bot.say(self.sub('justFPthings',selfpost=True, limit=250))    
         
             
     @commands.command()
