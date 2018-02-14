@@ -411,10 +411,12 @@ async def hq(ctx, *text:str):
             
 @bot.command()
 async def medals():
+    """get the current 2018 medal count"""
     await bot.say(olympics.get_medal_count())
 
 @bot.command()
 async def daymedals(*delta:int):
+    """detailed list of the medals handed out for the day"""
     if len(delta)==0:
         d = 0
     else:
@@ -423,6 +425,7 @@ async def daymedals(*delta:int):
     
 @bot.command()
 async def ig(username:str):
+    """get the latest instagram post by the user"""
     await bot.say(instagram.get_latest_post(username))
     
 @bot.event
