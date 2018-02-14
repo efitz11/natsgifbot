@@ -431,7 +431,6 @@ async def on_message(message):
             await bot.add_reaction(message, u"\U0001F528")
         if patternperf.search(message.content):
             await bot.send_message(message.channel,"FUCK JOSE TABATA")
-        mockobj.update(str(message.content),message.channel)
 
 updater = mymlbgame.Updater()
 
