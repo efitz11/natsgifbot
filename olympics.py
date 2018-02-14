@@ -25,7 +25,7 @@ def get_medal_count():
 def get_days_medals(delta=0):
     """delta is a date modifier - the number of days ago to look up"""
 
-    now = datetime.now()
+    now = datetime.now() + timedelta(hours=14)
     now = now - timedelta(days=delta)
     url = "https://www.pyeongchang2018.com/en/game-time/results/OWG2018/en/general/daily-medallists-date=2018-02-"+str(now.day).zfill(2)+".htm"
     req = Request(url, headers={'User-Agent' : "ubuntu"})
