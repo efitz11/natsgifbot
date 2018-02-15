@@ -24,8 +24,8 @@ class RedditBot():
                 text = comment.body.lower()
                 if mention_str in text:
                     text = text.replace(mention_str,'').strip()
-                    #if text.startswith("gif"):
-                    #text = text.replace("gif",'').strip()
+                    if text.startswith("gif"):
+                        text = text.replace("gif",'').strip()
                     reply = gifs.gif(text)
                     lastcomma = reply.rfind(',')
                     reply = reply[:lastcomma] + "\n\n" + reply[index+1]
