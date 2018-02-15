@@ -27,8 +27,9 @@ class RedditBot():
                     if text.startswith("gif"):
                         text = text.replace("gif",'').strip()
                     reply = gifs.gif(text)
-                    lastcomma = reply.rfind(',')
-                    reply = reply[:lastcomma] + "\n\n" + reply[lastcomma+1:]
+                    if "no matches" != reply:
+                        lastcomma = reply.rfind(',')
+                        reply = reply[:lastcomma] + "\n\n" + reply[lastcomma+1:]
                     comment.reply(reply)
             comment.mark_read()
             
