@@ -18,7 +18,6 @@ class RedditBot():
                      username="computer-dude",password=password)
                      
     def check_mentions(self):
-        print("checking messages")
         mention_str = "/u/computer-dude"
         for comment in self.reddit.inbox.unread(limit=100):
             if comment.subreddit.display_name.lower() in self.enabled_subs:
