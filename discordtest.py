@@ -182,6 +182,7 @@ async def fuck():
     
 @bot.command()
 async def pajokie():
+    """GO HOKIES!"""
     await bot.say("https://cdn.discordapp.com/attachments/328677264566910977/343555639227842571/image.jpg")
 
 @bot.command()
@@ -221,6 +222,7 @@ async def youtube(*query:str):
 
 @bot.command()
 async def weather(*location:str):
+    """oh the weather outside is weather"""
     output = weathermodule.get_current_weather('%2C'.join(location))
     await bot.say(output)
 @bot.command()
@@ -256,6 +258,7 @@ async def countdown():
 
 @bot.command()
 async def stock(*symbol:str):
+    """Get a stock quote. Only works for stocks and ETFs"""
     if len(symbol) == 0:
         await bot.say(stocks.get_stocks())
         return
@@ -264,11 +267,13 @@ async def stock(*symbol:str):
     
 @bot.command()
 async def crypto(*symbol:str):
+    """list the top 10 crypto prices, or a specific coin. from coinmarketcap"""
     sym = '-'.join(symbol)
     await bot.say(cryptocurrency.get_cryptocurrency_data(sym))
     
 @bot.command()
 async def frink(*query:str):
+    """generate a gif from frinkiac"""
     if query[0] == 'gif':
         query = query[1:]
         query = ' '.join(query)
@@ -348,7 +353,7 @@ async def slap(ctx, *text:str):
 
 @bot.command()
 async def big(text:str):
-    """bot posts the requested image"""
+    """bot posts the requested image. use \"!big list\" to get the current list"""
     basepath = '/home/ubuntu/images/'
     filelist = os.listdir(basepath)
     filelist.sort()
