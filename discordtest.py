@@ -86,6 +86,11 @@ async def gif(*name : str):
     await bot.say(gifs.gif(' '.join(name)))
     
 @bot.command()
+async def mlbgif(*name : str):
+    """returns a nationals gif matching the search query"""
+    await bot.say(gifs.get_mlb_gif(' '.join(name)))    
+    
+@bot.command()
 async def gifall(*name:str):
     """returns all gifs matching the search query"""
     matches = []

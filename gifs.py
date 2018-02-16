@@ -1,4 +1,7 @@
 import re, random
+from urllib.request import urlopen, Request
+import urllib.parse
+import json
 
 def gif(query):
     matches = []
@@ -24,3 +27,10 @@ def gif(query):
         return "no matches"
     num = random.randint(0,len(matches)-1)
     return matches[num].strip()
+    
+def get_mlb_gif(query):
+    url = "https://search-api.mlb.com/svc/search/v2/mlb_global_embed/query?expand=partner.media.photo&type=gif&q="+\
+            urllib.parse.quote_plus("nationals " +query)+"&page=1&sort=new"
+    req = Request(url, headers={'User-Agent' : "ubuntu"})
+    data = json.loads(urlopen(req).read().decode("utf-8"))
+    return data['docs'][0]['url']
