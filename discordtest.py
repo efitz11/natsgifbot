@@ -326,7 +326,11 @@ async def poll(question, *answers):
 @bot.command(pass_context=True)
 async def terminate(ctx):
     """no"""
-    await bot.say("%s is not in the terminators file. This incident will be reported." % ctx.message.author.mention)
+    if ctx.message.author.display_name == "Fungo":
+        await bot.kick(ctx.message.author)
+        await bot.say("User %s has been kicked for his/her actions." % ctx.message.author.mention)
+    else:
+        await bot.say("%s is not in the terminators file. This incident will be reported." % ctx.message.author.mention)
 
 @bot.command(pass_context=True)
 async def slap(ctx, *text:str):
