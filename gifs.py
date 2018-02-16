@@ -33,4 +33,6 @@ def get_mlb_gif(query):
             urllib.parse.quote_plus("nationals " +query)+"&page=1&sort=new"
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     data = json.loads(urlopen(req).read().decode("utf-8"))
+    if len(data['docs']) == 0:
+        return "no matches"
     return data['docs'][0]['url']
