@@ -42,8 +42,26 @@ class RedditBot():
                 if len(reply) > 0:
                     comment.reply(reply)
             comment.mark_read()
-            
+    def update_postlist(self):
+        with open("lastgif.txt", "r") as f:
+            lastgif = f.readline().strip()
+        first = True
+        for submission in self.reddit.subreddit("nationalsgifs").new(limit=10):
+            if submission.url == lastgif:
+                break
+            else:
+                with open("postlist.csv", "a") as f:
+                    f.write("%s,%s\n" % (submission.title,submission.url))
+                    print("added new gif %s,%s" % (submission.title,submission.url))
+                #only write the first new gif as it'll be first in the list next time
+                if first:
+                    with open("lastgif.txt","w") as f:
+                        f.write(submission.url)
+            first = False
 
 if __name__ == "__main__":
     r = RedditBot()
+    # see if new gifs have been submitted to /r/nationalsgifs
+    r.update_postlist()
+    # respond to gif requests
     r.check_mentions()
