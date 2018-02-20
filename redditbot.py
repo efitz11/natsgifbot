@@ -25,7 +25,6 @@ class RedditBot():
                 textbody = comment.body.lower()
                 lines = textbody.split('\n')
                 reply = ""
-                first = True
                 for text in lines:
                     if mention_str in text:
                         text = text.replace(mention_str,'').strip()
@@ -33,13 +32,16 @@ class RedditBot():
                             text = text.replace("gif",'').strip()
                         rep = gifs.gif(text)
                         if "no matches" != rep:
-                            lastcomma = rep.rfind(',')
-                            if first:
-                                first = False
-                            else:
-                                reply = reply + "\n*****\n"
-                            reply = reply + rep[:lastcomma] + "  \n" + rep[lastcomma+1:]
+                            split = rep.split(',') 
+                            link = split[-1]
+                            text = ','.join(split[:-1])
+                            reply = reply + "[%s](%s)" % (text,link)
+                            reply = reply + "\n*****\n"
+                if len(reply) == 0:
+                    reply = "[Sorry, I couldn't find a matching gif.](https://gfycat.com/CandidHeartfeltDuck)\n*****\n"
                 if len(reply) > 0:
+                    reply = reply + "^^computer-dude ^^bot ^^made ^^by ^^[/u\/efitz11](/user/efitz11) ^^--- "
+                    reply = reply + "[^^more ^^info ^^on ^^computer-dude](https://github.com/efitz11/natsgifbot/blob/master/computer-dude.md)"
                     comment.reply(reply)
             comment.mark_read()
     def update_postlist(self):
