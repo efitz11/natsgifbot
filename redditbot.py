@@ -4,7 +4,7 @@ import gifs
 
 class RedditBot():
     def __init__(self):
-        self.enabled_subs = ["computerdudetest"]
+        self.enabled_subs = ["computerdudetest","nationals"]
     
         # get tokens from file
         f = open('reddittokens.txt','r')
