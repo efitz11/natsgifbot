@@ -38,7 +38,7 @@ class RedditBot():
                             reply = reply + "[%s](%s)" % (text,link)
                             reply = reply + "\n*****\n"
                         else:
-                            reply = "[Sorry, I couldn't find a matching gif.](https://gfycat.com/CandidHeartfeltDuck)\n*****\n"
+                            reply = reply + "[Sorry, I couldn't find a matching gif.](https://gfycat.com/CandidHeartfeltDuck)\n*****\n"
                 if len(reply) > 0:
                     reply = reply + "^^computer-dude ^^bot ^^made ^^by ^^[/u\/efitz11](/user/efitz11) ^^--- "
                     reply = reply + "[^^more ^^info ^^on ^^computer-dude](https://github.com/efitz11/natsgifbot/blob/master/computer-dude.md)"
