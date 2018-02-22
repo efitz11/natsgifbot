@@ -38,7 +38,11 @@ class Baseball():
                 return
             output = "Today's scores:\n```python\n"
             for game in day:
-                output = output + mymlbgame.get_game_str(game.game_id) +'\n'
+                try:
+                    output = output + mymlbgame.get_game_str(game.game_id) +'\n'
+                except Exception as e:
+                    print(e)
+                    continue
             await self.bot.say(output.strip() + "```")
             return
         
