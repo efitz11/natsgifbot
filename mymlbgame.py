@@ -5,7 +5,7 @@ import lxml.etree as etree
 
 BASE_URL = ('http://gd2.mlb.com/components/game/mlb/'
             'year_{0}/month_{1:02d}/day_{2:02d}/')
-GAME_URL = BASE_URL + '/gid_{3}/{4}'
+GAME_URL = BASE_URL + 'gid_{3}/{4}'
 
 basesmap = {'0':'---',
             '1':'1--',
