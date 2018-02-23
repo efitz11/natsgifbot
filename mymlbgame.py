@@ -24,6 +24,9 @@ def get_overview(game_id):
     """Return the linescore file of a game with matching id."""
     year, month, day = get_date_from_game_id(game_id)
     try:
+        #print(GAME_URL.format(year, month, day,
+        #                               game_id,
+        #                               'linescore.xml'))
         return urlopen(GAME_URL.format(year, month, day,
                                        game_id,
                                        'linescore.xml'))
@@ -64,7 +67,7 @@ def get_game_status(overview, lastplay=False):
     awayteam = overview['away_name_abbrev']
     status   = overview['status']
     
-    if status == 'Pre-Game' or status == 'Warmup' or status == 'Preview':
+    if status == 'Pre-Game' or status == 'Warmup' or status == 'Preview' or status == 'Scheduled':
         firstpitch = overview['first_pitch_et']
         awins = overview['away_win']
         aloss = overview['away_loss']
