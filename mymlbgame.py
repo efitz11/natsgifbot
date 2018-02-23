@@ -68,7 +68,7 @@ def get_game_status(overview, lastplay=False):
     status   = overview['status']
     
     if status == 'Pre-Game' or status == 'Warmup' or status == 'Preview' or status == 'Scheduled':
-        firstpitch = overview['first_pitch_et']
+        firstpitch = overview['time']
         awins = overview['away_win']
         aloss = overview['away_loss']
         hwins = overview['home_win']
