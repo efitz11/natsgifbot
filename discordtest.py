@@ -11,7 +11,7 @@ import urllib.parse
 
 import mymlbgame, cfbgame, nflgame, xmlreader, nhlscores, cbbgame, stocks, olympics, instagram, gifs
 import weather as weathermodule
-import frinkiac, cryptocurrency, wikipedia
+import frinkiac, cryptocurrency, web
 import hq as hqmod
 
 bot = commands.Bot(command_prefix='!')
@@ -302,7 +302,12 @@ async def react(ctx, id:str, *msg:str):
 @bot.command()
 async def wiki(*query:str):
     """get a link to wikipedia's first search result for your query"""
-    await bot.say(wikipedia.get_wiki_page(' '.join(query)))
+    await bot.say(web.get_wiki_page(' '.join(query)))
+
+@bot.command()
+async def untappd(*beer_name):
+    """get untappd info on a beer"""
+    await bot.say(web.search_untappd(' '.join(beer_name)))
     
 @bot.command()
 async def poll(question, *answers):
