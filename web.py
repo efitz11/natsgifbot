@@ -19,6 +19,8 @@ def search_untappd(beer_name):
     divs = soup.findAll(class_= 'beer-item')    
     div = divs[0]
     soup1 = BeautifulSoup(str(div), 'html.parser')
+    href = soup1.find('a')['href']
+    
     ps = soup1.findAll('p')
     beer_name = ps[0].get_text().strip()
     brewery =   ps[1].get_text().strip()
@@ -26,7 +28,7 @@ def search_untappd(beer_name):
     beer_abv =  ps[3].get_text().strip()
     beer_ibu =  ps[4].get_text().strip()
     rating =    ps[5].get_text().strip()
-    return  "%s - %s\nType: %s\t ABV: %s\t IBU: %s\t Rating: %s" % (beer_name,brewery,beer_type,beer_abv,beer_ibu,rating)
+    return  "%s - %s \t<https://untappd.com%s>\nType: %s\t ABV: %s\t IBU: %s\t Rating: %s" % (beer_name,brewery,href,beer_type,beer_abv,beer_ibu,rating)
     
 if __name__ == "__main__":
-    search_untappd("heineken")
+    print(search_untappd("heineken"))
