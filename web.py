@@ -28,7 +28,7 @@ def search_untappd(beer_name):
     beer_abv =  soup1.find('p',class_='abv').get_text().strip()
     beer_ibu =  soup1.find('p',class_='ibu').get_text().strip()
     rating =    soup1.find('p',class_='rating').get_text().strip()
-    return  "%s - %s \t<https://untappd.com%s>\nType: %s\t ABV: %s\t IBU: %s\t Rating: %s" % (beer_name,brewery,href,beer_type,beer_abv,beer_ibu,rating)
+    return  "**%s** - %s \t<https://untappd.com%s>\n%s\t %s\t %s\t Rating: %s" % (beer_name,brewery,href,beer_type,beer_abv,beer_ibu,rating)
     
 if __name__ == "__main__":
     print(search_untappd("heineken"))
