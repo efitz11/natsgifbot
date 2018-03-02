@@ -305,7 +305,7 @@ async def wiki(*query:str):
     await bot.say(web.get_wiki_page(' '.join(query)))
 
 @bot.command()
-async def untappd(*beer_name):
+async def beer(*beer_name):
     """get untappd info on a beer"""
     await bot.say(web.search_untappd(' '.join(beer_name)))
     
