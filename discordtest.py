@@ -154,12 +154,14 @@ async def mockify(*text:str):
     await bot.say(mockify_text(input))
 
 @bot.command(pass_context=True)
-async def mock(ctx):
+async def mock(ctx, *search:str):
     """mOcKiFy tHe pReViOuS MeSsaGe"""
-    async for m in bot.logs_from(ctx.message.channel,limit=2):
-        if "mock" not in m.clean_content and bot.command_prefix not in m.clean_content:
-            await bot.say(mockify_text(m.clean_content))
-            return
+    srch = ' '.join(search)
+    async for m in bot.logs_from(ctx.message.channel,limit=10):
+        if not m.clean_content.startswith(bot.command_prefix):
+            if srch in m.clean_content:
+                await bot.say(mockify_text(m.clean_content.lower()))
+                return
     
 @bot.command(pass_context=True)
 async def logs(ctx):
@@ -289,15 +291,16 @@ async def nice():
     await bot.say("nice")
     
 @bot.command(pass_context=True)
-async def react(ctx, id:str, *msg:str):
-    """turn string into emoji and react to the message specified
-        you can retrieve the message id if you have developer mode on"""
-    msg = ' '.join(msg)
-    message = await bot.get_message(ctx.message.channel, id)
-    msg = msg.lower()
-    for s in msg:
-        if s in emoji_letter_map:
-            await bot.add_reaction(message, emoji_letter_map[s])
+async def react(ctx, reactionstr:str, *search:str):
+    """turn string into emoji and react to the most recent message that matches"""
+    search = ' '.join(search)
+    msg = reactionstr.lower()
+    async for m in bot.logs_from(ctx.message.channel,limit=10):
+        if not m.clean_content.startswith('!') and search in m.clean_content:
+            for s in msg:
+                if s in emoji_letter_map:
+                    await bot.add_reaction(m, emoji_letter_map[s])
+            return
             
 @bot.command()
 async def wiki(*query:str):
