@@ -20,7 +20,7 @@ def get_quote(symbol):
 
 def get_stocks():
     output = "Latest quotes:\n```python\n"
-    for symbol in ["DIA","VOO","VTI","VXUS"]:
+    for symbol in ["DIA","VOO","VTI","ONEQ","VXUS"]:
         url = "https://api.iextrading.com/1.0/stock/"+symbol+"/quote?displayPercent=true"
         req = Request(url)
         req.headers["User-Agent"] = "windows 10 bot"
