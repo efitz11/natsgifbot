@@ -159,7 +159,7 @@ async def mock(ctx, *search:str):
     srch = ' '.join(search)
     async for m in bot.logs_from(ctx.message.channel,limit=10):
         if not m.clean_content.startswith(bot.command_prefix):
-            if srch in m.clean_content:
+            if srch.lower() in m.clean_content.lower():
                 await bot.say(mockify_text(m.clean_content.lower()))
                 return
     
@@ -296,7 +296,7 @@ async def react(ctx, reactionstr:str, *search:str):
     search = ' '.join(search)
     msg = reactionstr.lower()
     async for m in bot.logs_from(ctx.message.channel,limit=10):
-        if not m.clean_content.startswith('!') and search in m.clean_content:
+        if not m.clean_content.startswith('!') and search in m.clean_content.lower():
             for s in msg:
                 if s in emoji_letter_map:
                     await bot.add_reaction(m, emoji_letter_map[s])
