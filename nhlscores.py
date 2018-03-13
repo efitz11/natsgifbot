@@ -11,6 +11,9 @@ def get_scores(team):
     games = scoreData['dates'][0]['games']
     #print (games)
     
+    if team == 'caps':
+        team = 'capitals'
+    
     if len(games) == 0:
         return
     if len(team) != 0:
