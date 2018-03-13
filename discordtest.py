@@ -25,6 +25,7 @@ patternpoop = re.compile('mets|phillies|braves',re.IGNORECASE)
 patternperf = re.compile('perfect game',re.IGNORECASE)
 patternbenoit = re.compile('benoit$',re.IGNORECASE)
 
+pidfile = 'discordbotpid.txt'
     
 # get tokens from file
 f = open('tokens.txt','r')
@@ -35,6 +36,11 @@ f.close()
 
 f = open('channelids.txt')
 main_chid = f.readline().strip()
+f.close()
+
+#write pid file
+f = open(pidfile,'w')
+f.write(str(os.getpid()))
 f.close()
 
 emoji_letter_map = {'a':u"\U0001F1E6",
