@@ -43,8 +43,9 @@ class Reddit():
             return ("Error: subreddit not found")
         
     @commands.command()
-    async def r(self,text:str):
+    async def r(self,*text:str):
         """<subreddit> get a random link post from a subreddit"""
+        text = ''.join(text)
         await self.bot.say(self.sub(text))
         
     def getsubmissiontext(self, submission):
