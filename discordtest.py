@@ -361,6 +361,10 @@ async def slap(ctx, *text:str):
     slapper = ctx.message.author
 
     await bot.say('*%s slaps %s around a bit with a large trout*' % (slapper.mention, slappee))
+    
+@bot.command()
+async def clap(*text:str):
+    await bot.say('👏'.join(text).upper() + '👏')
 
 @bot.command()
 async def big(text:str):
