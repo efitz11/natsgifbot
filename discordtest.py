@@ -248,18 +248,9 @@ def convert_number_to_emoji(num):
     
 @bot.command()
 async def countdown():
-    od = datetime(2018,3,29) - datetime.now()
-    st = datetime(2018,2,23) - datetime.now()
-    bc = datetime(2018,2,25) - datetime.now()
-    pc = datetime(2018,2,14) - datetime.now()
+    od = datetime(2018,3,30) - datetime.now()
     ho = datetime(2018,4,5) - datetime.now()
 
-    if pc.days >= -1:
-        await bot.say("%s %s until pitchers and catchers report" % (convert_number_to_emoji(pc.days+1), "day" if (pc.days+1 == 1) else "days"))
-    if st.days >= -1:
-        await bot.say("%s %s until Spring Training, 2018" % (convert_number_to_emoji(st.days+1), "day" if (st.days+1 == 1) else "days"))
-    if bc.days >= -1:
-        await bot.say("%s %s until the first MASN game" % (convert_number_to_emoji(bc.days+1), "day" if (bc.days+1 == 1) else "days"))
     if od.days >= -1:
         await bot.say("%s %s until Opening Day, 2018" % (convert_number_to_emoji(od.days+1), "day" if (od.days+1 == 1) else "days"))
     if ho.days >= -1:
