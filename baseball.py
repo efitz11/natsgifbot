@@ -37,9 +37,13 @@ class Baseball():
                 await self.bot.say("No games today.")
                 return
             output = "Today's scores:\n```python\n"
+            day_sorted = []
             for game in day:
+                day_sorted.append((game.game_start_time,game))
+            day_sorted.sort(key=lambda tup: tup[0])
+            for game in day_sorted:
                 try:
-                    output = output + mymlbgame.get_game_str(game.game_id) +'\n'
+                    output = output + mymlbgame.get_game_str(game[1].game_id) +'\n'
                 except Exception as e:
                     print(e)
                     continue
