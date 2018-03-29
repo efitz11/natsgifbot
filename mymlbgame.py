@@ -88,11 +88,14 @@ def get_game_status(overview, lastplay=False):
     count = "Count: (" + overview['balls'] + "-" + overview['strikes'] + ")"
     
     output = "%s %s @ %s %s" % (awayteam, awayruns, hometeam, homeruns)
-    if status != 'Final' and status != 'Game Over':
+    overstatuses = ['Final', 'Game Over', 'Postponed']
+    if status not in overstatuses:
         bases = ""
         if 'runner_on_base_status' in overview:
             bases = basesmap[overview['runner_on_base_status']]
         output = output + ":  %s %s - %s %s %s" % (top_inn, inning, outs, bases, count)
+    elif status == 'Postponed':
+        output = output + " #Postponed"
     else:
         output = output + " (F) "
         wp = overview['winning_pitcher']
