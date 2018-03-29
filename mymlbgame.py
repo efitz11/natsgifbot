@@ -87,7 +87,7 @@ def get_game_status(overview, lastplay=False):
     outs = outs + " out" + ("" if outs == "1" else "s")
     count = "Count: (" + overview['balls'] + "-" + overview['strikes'] + ")"
     
-    output = "%s %s @ %s %s" % (awayteam, awayruns, hometeam, homeruns)
+    output = "%s %s @ %s %s" % (awayteam.ljust(3), awayruns, hometeam.ljust(3), homeruns)
     overstatuses = ['Final', 'Game Over', 'Postponed']
     if status not in overstatuses:
         bases = ""
@@ -103,7 +103,7 @@ def get_game_status(overview, lastplay=False):
         sp = overview['save_pitcher']
         output = output + "# WP: " + wp.ljust(10) + "\tLP: " + lp.ljust(10) + (("\tSV: " + sp.ljust(10)) if sp != "" else "")
     if 'current_batter' in overview:
-        pitcher = overview['current_pitcher']
+        pitcher = overview['current_pitcher'].ljust(12)
         batter = overview['current_batter']
         output = output + "\n\tPitching: %s \tBatting: %s" % (pitcher, batter)
     if lastplay and 'pbp_last' in overview:
