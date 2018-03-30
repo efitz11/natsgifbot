@@ -382,11 +382,21 @@ async def hq(ctx, *text:str):
        !hq unregister - take yourself off the list
        !hq check - check if you are registered
        !hq list - list everyone registered
-       !hq ping - ping everyone registered"""
+       !hq ping - ping everyone registered
+       !hq <number of people left> - get the payout for this number of people, assuming $5000 prize
+       !hq <prize> <number of people> - get the payout for the number of people and the corresponding prize"""
     helpstring = "use '!help hq' to get help about this command"
     if len(text) == 0:
         await bot.say(helpstring)
     else:
+        if len(text) == 2 and text[0].isdigit() and text[1].isdigit():
+            money = round(int(text[0]) / int(text[1]),2)
+            await bot.say("$" + str(money))
+            return
+        elif len(text) == 1 and text[0].isdigit():
+            money = round(5000 / int(text[0]),2)
+            await bot.say("$" + str(money))
+            return
         t = ''.join(text)
         if t == "register":
             await bot.say(hqmod.register_user(ctx.message.author))
