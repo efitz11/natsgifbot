@@ -51,8 +51,8 @@ class Baseball():
             return
         
         teamname = team[0].title()
-        if teamname == "nats":
-            teamname = "nationals"
+        if teamname == "Nats":
+            teamname = "Nationals"
         day = mlbgame.day(now.year, now.month, now.day, home=teamname, away=teamname)
         
         if len(day) > 0 :
