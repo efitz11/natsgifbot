@@ -7,3 +7,4 @@ cfbtest.py
 channelids.txt
 *.txt
 *.log
+.idea/*
