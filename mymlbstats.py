@@ -31,7 +31,7 @@ def make_mlb_schedule(date=None):
         for line in f:
             teams.append(line.strip().split(','))
 
-    print(teams)
+    #print(teams)
     url = "https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=" + date
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     s = json.loads(urlopen(req).read().decode("utf-8"))
@@ -158,7 +158,7 @@ def get_game_feed(gamepk):
     s = json.loads(urlopen(req).read().decode("utf-8"))
     return s
 
-def get_schedule():
+def get_day_schedule():
     now = datetime.now() - timedelta(hours=5)
     date = str(now.year) + "-" + str(now.month).zfill(2) + "-" + str(now.day).zfill(2)
     url = "https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=" + date
@@ -167,7 +167,7 @@ def get_schedule():
     return s
 
 def get_pbp(gamepk):
-    url = "https://statsapi.mlb.com/api/v1/game/" + gamepk + "playByPlay"
+    url = "https://statsapi.mlb.com/api/v1/game/" + gamepk + "/playByPlay"
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     s = json.loads(urlopen(req).read().decode("utf-8"))
     return s
@@ -181,21 +181,27 @@ def get_single_game(team):
         for line in f:
             if team.lower() in line.lower():
                 game = line.strip()
-    print(game)
     if game != "":
         gamepk = game.split(':')[0]
-        print(gamepk)
         teams = []
         with open('mlb/teams.txt','r') as f:
             for line in f:
                 teams.append(line.strip().split(','))
-        output = get_single_game_info(gamepk,)
-
-
+        schedule = get_day_schedule()
+        for game in schedule['dates'][0]['games']:
+            if str(game['gamePk']) == gamepk:
+                output = get_single_game_info(gamepk,game,teams)
+                pbp = get_pbp(gamepk)
+                if 'description' not in pbp['allPlays'][-1]:
+                    lastplay = pbp['allPlays'][-2]
+                else:
+                    lastplay = pbp['allplays'][-1]
+                output = output + "\tLast Play: " + lastplay['result']['description'] + "\n"
+        print(output)
 
 if __name__ == "__main__":
     #make_mlb_schedule()
     #get_mlb_teams()
-    #get_single_game("nym")
-    get_all_game_info()
+    get_single_game("nationals")
+    #get_all_game_info()
     #get_ET_from_timestamp("2018-03-31T20:05:00Z")
