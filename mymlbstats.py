@@ -201,12 +201,14 @@ def get_single_game(team):
         for game in schedule['dates'][0]['games']:
             if str(game['gamePk']) == gamepk:
                 output = get_single_game_info(gamepk,game,teams)
-                pbp = get_pbp(gamepk)
-                if 'description' not in pbp['allPlays'][-1]:
-                    lastplay = pbp['allPlays'][-2]
-                else:
-                    lastplay = pbp['allplays'][-1]
-                output = output + "\tLast Play: " + lastplay['result']['description'] + "\n"
+                abstractstatus = game['status']['abstractGameState']
+                if abstractstatus == "Live":
+                    pbp = get_pbp(gamepk)
+                    if 'description' not in pbp['allPlays'][-1]:
+                        lastplay = pbp['allPlays'][-2]
+                    else:
+                        lastplay = pbp['allplays'][-1]
+                    output = output + "\tLast Play: " + lastplay['result']['description'] + "\n"
     return(output)
 
 if __name__ == "__main__":
