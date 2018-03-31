@@ -6,6 +6,7 @@ import urllib.parse
 from datetime import datetime, timedelta, time
 
 import mlbgame, mymlbgame
+import mymlbstats
 
 class Baseball():
     def __init__(self,bot):
@@ -26,12 +27,16 @@ class Baseball():
         req = Request(url, headers={'User-Agent' : "ubuntu"})
         res = urlopen(req)
         await self.bot.say("<"+res.url+">")#disable embed because it's shit
-        
+
     @commands.command()
     async def mlb(self,*team :str):
         """<team> to show today's game, or blank to show all games"""
         now = datetime.now() - timedelta(hours=3)
         if len(team) == 0:
+            output = mymlbstats.get_all_game_info()
+            await self.bot.say("```python\n" + output + "```")
+            return
+
             day = mlbgame.day(now.year, now.month, now.day)
             if len(day) == 0:
                 await self.bot.say("No games today.")
@@ -53,13 +58,15 @@ class Baseball():
         teamname = team[0].title()
         if teamname == "Nats":
             teamname = "Nationals"
-        day = mlbgame.day(now.year, now.month, now.day, home=teamname, away=teamname)
-        
-        if len(day) > 0 :
-            game = day[0]
-            id = game.game_id
-            output = mymlbgame.get_game_str(id,lastplay=True)
-            await self.bot.say("```python\n" + output + "```")
+
+        output = mymlbstats.get_single_game(teamname)
+        #day = mlbgame.day(now.year, now.month, now.day, home=teamname, away=teamname)
+        #
+        #if len(day) > 0 :
+        #    game = day[0]
+        #    id = game.game_id
+        #    output = mymlbgame.get_game_str(id,lastplay=True)
+        await self.bot.say("```python\n" + output + "```")
 
     @commands.command()
     async def mlbd(self, year:int, month:int, day:int, *team:str):

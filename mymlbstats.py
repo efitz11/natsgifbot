@@ -118,6 +118,15 @@ def get_single_game_info(gamepk, gamejson, teams):
         time = get_ET_from_timestamp(game['gameDate'])
         output = output + "%s %s @ %s %s # %s - %s\n" % (awayabv, arecord, homeabv, hrecord, time,detailstatus)
         output = output + "\t%s v %s\n" % (probaway, probhome)
+    elif abstractstatus == "Final":
+        awaywins = game['teams']['away']['leagueRecord']['wins']
+        awayloss = game['teams']['away']['leagueRecord']['losses']
+        homewins = game['teams']['home']['leagueRecord']['wins']
+        homeloss = game['teams']['home']['leagueRecord']['losses']
+        arecord = "(%s-%s)" % (awaywins, awayloss)
+        hrecord = "(%s-%s)" % (homewins, homeloss)
+        output = output + "%s %s @ %s %s # %s\n" % (awayabv, arecord, homeabv, hrecord, detailstatus)
+
     return output
 
 def get_all_game_info():
@@ -138,7 +147,7 @@ def get_all_game_info():
     for game in games:
         gamepk = str(game['gamePk'])
         output = output + get_single_game_info(gamepk, game, teams)
-    print(output)
+    return output
 
 def get_linescore(gamepk):
     url = "https://statsapi.mlb.com/api/v1/game/" + gamepk + "/linescore"
@@ -181,6 +190,7 @@ def get_single_game(team):
         for line in f:
             if team.lower() in line.lower():
                 game = line.strip()
+    output = ""
     if game != "":
         gamepk = game.split(':')[0]
         teams = []
@@ -197,7 +207,7 @@ def get_single_game(team):
                 else:
                     lastplay = pbp['allplays'][-1]
                 output = output + "\tLast Play: " + lastplay['result']['description'] + "\n"
-        print(output)
+    return(output)
 
 if __name__ == "__main__":
     #make_mlb_schedule()
