@@ -13,15 +13,14 @@ def get_gamepk_from_team(team):
     schd = get_schedule()
     if not os.path.isfile(schd):
         make_mlb_schedule()
-    game = ""
+    games = []
     with open(schd,'r') as f:
         for line in f:
             if team.lower() in line.lower():
                 game = line.strip()
-    if game != "":
-        gamepk = game.split(':')[0]
-        return gamepk
-    return None
+                gamepk = game.split(':')[0]
+                games.append(gamepk)
+    return games
 
 def get_last_name(fullname):
     if "Jr." in fullname:
@@ -212,29 +211,34 @@ def get_pbp(gamepk):
     return s
 
 def get_single_game(team):
-    gamepk = get_gamepk_from_team(team)
+    gamepks = get_gamepk_from_team(team)
     teams = []
     with open('mlb/teams.txt','r') as f:
         for line in f:
             teams.append(line.strip().split(','))
     schedule = get_day_schedule()
+    output = ""
     for game in schedule['dates'][0]['games']:
-        if str(game['gamePk']) == gamepk:
-            output = get_single_game_info(gamepk,game,teams)
-            abstractstatus = game['status']['abstractGameState']
-            if abstractstatus == "Live":
-                pbp = get_pbp(gamepk)
-                try:
-                    if 'description' not in pbp['allPlays'][-1]['result']:
-                        lastplay = pbp['allPlays'][-2]
-                    else:
-                        lastplay = pbp['allPlays'][-1]
-                    desc = lastplay['result']['description']
-                    pitch = lastplay['matchup']['pitcher']['fullName']
-                    output = output + "\tLast Play: With " + pitch + " pitching, " + desc + "\n"
-                except Exception as e:
-                    print(e)
-    return(output)
+        try:
+            idx = gamepks.index(str(game['gamePk']))
+        except ValueError:
+            continue
+        gamepk = gamepks[idx]
+        output = output + get_single_game_info(gamepk,game,teams)
+        abstractstatus = game['status']['abstractGameState']
+        if abstractstatus == "Live":
+            pbp = get_pbp(gamepk)
+            try:
+                if 'description' not in pbp['allPlays'][-1]['result']:
+                    lastplay = pbp['allPlays'][-2]
+                else:
+                    lastplay = pbp['allPlays'][-1]
+                desc = lastplay['result']['description']
+                pitch = lastplay['matchup']['pitcher']['fullName']
+                output = output + "\tLast Play: With " + pitch + " pitching, " + desc + "\n"
+            except Exception as e:
+                print(e)
+    return output
 
 def list_scoring_plays(team):
     gamepk = get_gamepk_from_team(team)
