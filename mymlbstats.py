@@ -293,18 +293,20 @@ def get_div_standings(div):
     standings = get_lg_standings(id)
     div = standings['records'][idx]
     output = "```python\n"
-    output = output + "%s %s %s %s\n" %(' '.rjust(3),'W'.rjust(3),'L'.rjust(3),'PCT'.rjust(5))
+    output = output + "%s %s %s %s %s %s\n" %\
+             (' '.rjust(3),'W'.rjust(3),'L'.rjust(3),'PCT'.rjust(5), 'GB'.rjust(4), 'STK')
     for team in div['teamRecords']:
         teamid = team['team']['id']
         abbrev = get_abbrev(teamid)
-        streak = team['streak']['streakCode']
+        streak = team['streak']['streakCode'].ljust(3)
         wins = str(team['wins']).rjust(3)
         loss = str(team['losses']).rjust(3)
         pct = team['leagueRecord']['pct'].rjust(5)
         rundiff = team['runDifferential']
         runall = team['runsAllowed']
         runscored = team['runsScored']
-        output = output + "%s %s %s %s\n" % (abbrev, wins, loss, pct)
+        gb = team['gamesBack'].rjust(4)
+        output = output + "%s %s %s %s %s %s\n" % (abbrev, wins, loss, pct, gb, streak)
     output = output + "```"
     print(output)
     return output
@@ -315,6 +317,4 @@ if __name__ == "__main__":
     #get_single_game("nationals")
     #get_all_game_info()
     #get_ET_from_timestamp("2018-03-31T20:05:00Z")
-    get_div_standings("ale")
-    get_div_standings("alc")
-    get_div_standings("alw")
+    get_div_standings("nle")
