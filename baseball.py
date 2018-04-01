@@ -66,6 +66,7 @@ class Baseball():
                 for play in scoring_plays:
                     if play[0] != lastinning:
                         output = output + play[0] + "\n"
+                        lastinning = play[0]
                     output = output + "\t" + play[1] + "\n"
                 output = output + "```"
                 await self.bot.say(output)
