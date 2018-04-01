@@ -214,11 +214,14 @@ def get_single_game(team):
             abstractstatus = game['status']['abstractGameState']
             if abstractstatus == "Live":
                 pbp = get_pbp(gamepk)
-                if 'description' not in pbp['allPlays'][-1]:
-                    lastplay = pbp['allPlays'][-2]
-                else:
-                    lastplay = pbp['allplays'][-1]
-                output = output + "\tLast Play: " + lastplay['result']['description'] + "\n"
+                try:
+                    if 'description' not in pbp['allPlays'][-1]:
+                        lastplay = pbp['allPlays'][-2]
+                    else:
+                        lastplay = pbp['allplays'][-1]
+                    output = output + "\tLast Play: " + lastplay['result']['description'] + "\n"
+                except:
+                    pass
     return(output)
 
 def list_scoring_plays(team):
