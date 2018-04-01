@@ -100,6 +100,8 @@ def get_single_game_info(gamepk, gamejson, teams):
         balls = ls['balls']
         awayruns = ls['teams']['away']['runs']
         homeruns = ls['teams']['home']['runs']
+        awayhits = ls['teams']['away']['hits']
+        homehits = ls['teams']['home']['hits']
         bases = "---"
         if 'first' in ls['offense']:
             bases = "1" + bases[1:]
@@ -114,6 +116,14 @@ def get_single_game_info(gamepk, gamejson, teams):
             pitcher = ""
         output = output + "%s %s @ %s %s: %s - %s outs %s Count: (%s-%s)\n" % (awayabv, awayruns, homeabv, homeruns, inning, outs, bases, balls, strikes)
         output = output + "\t" + "Pitching: %s \tBatting: %s\n" % (pitcher, batter)
+        if ls['currentInning'] >= 6 and awayhits == 0:
+            output = output + "\t##############################\n"
+            output = output + "\t" + awayabv + "  HAS NO HITS SO FAR\n"
+            output = output + "\t##############################\n"
+        if ls['currentInning'] >= 6 and homehits == 0:
+            output = output + "\t##############################\n"
+            output = output + "\t" + homeabv + "  HAS NO HITS SO FAR\n"
+            output = output + "\t##############################\n"
     elif abstractstatus == "Preview":
         awaywins = game['teams']['away']['leagueRecord']['wins']
         awayloss = game['teams']['away']['leagueRecord']['losses']
