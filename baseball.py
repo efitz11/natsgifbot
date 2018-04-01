@@ -75,9 +75,14 @@ class Baseball():
                 await self.bot.say("No scoring plays")
         else:
             teamname = ' '.join(team).title()
-        print(teamname)
         if teamname == "Nats":
             teamname = "Nationals"
+
+        if teamname in ['Nle','Nlc','Nlw','Ale','Alc','Alw']:
+            output = mymlbstats.get_div_standings(teamname)
+            await self.bot.say(output)
+            return
+
 
         output = mymlbstats.get_single_game(teamname)
         #day = mlbgame.day(now.year, now.month, now.day, home=teamname, away=teamname)
