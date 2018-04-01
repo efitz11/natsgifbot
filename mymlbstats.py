@@ -228,7 +228,7 @@ def get_single_game(team):
                     if 'description' not in pbp['allPlays'][-1]['result']:
                         lastplay = pbp['allPlays'][-2]
                     else:
-                        lastplay = pbp['allplays'][-1]
+                        lastplay = pbp['allPlays'][-1]
                     desc = lastplay['result']['description']
                     pitch = lastplay['matchup']['pitcher']['fullName']
                     output = output + "\tLast Play: With " + pitch + " pitching, " + desc + "\n"
