@@ -31,7 +31,7 @@ class Baseball():
     @commands.command()
     async def mlb(self,*team :str):
         """<team> to show today's game, or blank to show all games"""
-        now = datetime.now() - timedelta(hours=3)
+        now = datetime.now() - timedelta(hours=5)
         if len(team) == 0:
             output = mymlbstats.get_all_game_info()
             await self.bot.say("```python\n" + output + "```")
@@ -54,8 +54,27 @@ class Baseball():
                     continue
             await self.bot.say(output.strip() + "```")
             return
-        
-        teamname = team[0].title()
+
+        if team[0] == "sp":
+            teamname = ' '.join(team[1:]).title()
+            if teamname == "Nats":
+                teamname = "Nationals"
+            scoring_plays = mymlbstats.list_scoring_plays(teamname)
+            if len(scoring_plays) > 0:
+                output = "```"
+                lastinning = ""
+                for play in scoring_plays:
+                    if play[0] != lastinning:
+                        output = output + play[0] + "\n"
+                    output = output + "\t" + play[1] + "\n"
+                output = output + "```"
+                await self.bot.say(output)
+                return
+            else:
+                await self.bot.say("No scoring plays")
+        else:
+            teamname = ' '.join(team).title()
+        print(teamname)
         if teamname == "Nats":
             teamname = "Nationals"
 

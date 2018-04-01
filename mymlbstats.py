@@ -9,6 +9,20 @@ def get_schedule():
     schd = "mlb" + os.sep + date + ".txt"
     return schd
 
+def get_gamepk_from_team(team):
+    schd = get_schedule()
+    if not os.path.isfile(schd):
+        make_mlb_schedule()
+    game = ""
+    with open(schd,'r') as f:
+        for line in f:
+            if team.lower() in line.lower():
+                game = line.strip()
+    if game != "":
+        gamepk = game.split(':')[0]
+        return gamepk
+    return None
+
 def get_last_name(fullname):
     if "Jr." in fullname:
         fullname = fullname[:-4]
@@ -182,34 +196,35 @@ def get_pbp(gamepk):
     return s
 
 def get_single_game(team):
-    schd = get_schedule()
-    if not os.path.isfile(schd):
-        make_mlb_schedule()
-    game = ""
-    with open(schd,'r') as f:
+    gamepk = get_gamepk_from_team(team)
+    teams = []
+    with open('mlb/teams.txt','r') as f:
         for line in f:
-            if team.lower() in line.lower():
-                game = line.strip()
-    output = ""
-    if game != "":
-        gamepk = game.split(':')[0]
-        teams = []
-        with open('mlb/teams.txt','r') as f:
-            for line in f:
-                teams.append(line.strip().split(','))
-        schedule = get_day_schedule()
-        for game in schedule['dates'][0]['games']:
-            if str(game['gamePk']) == gamepk:
-                output = get_single_game_info(gamepk,game,teams)
-                abstractstatus = game['status']['abstractGameState']
-                if abstractstatus == "Live":
-                    pbp = get_pbp(gamepk)
-                    if 'description' not in pbp['allPlays'][-1]:
-                        lastplay = pbp['allPlays'][-2]
-                    else:
-                        lastplay = pbp['allplays'][-1]
-                    output = output + "\tLast Play: " + lastplay['result']['description'] + "\n"
+            teams.append(line.strip().split(','))
+    schedule = get_day_schedule()
+    for game in schedule['dates'][0]['games']:
+        if str(game['gamePk']) == gamepk:
+            output = get_single_game_info(gamepk,game,teams)
+            abstractstatus = game['status']['abstractGameState']
+            if abstractstatus == "Live":
+                pbp = get_pbp(gamepk)
+                if 'description' not in pbp['allPlays'][-1]:
+                    lastplay = pbp['allPlays'][-2]
+                else:
+                    lastplay = pbp['allplays'][-1]
+                output = output + "\tLast Play: " + lastplay['result']['description'] + "\n"
     return(output)
+
+def list_scoring_plays(team):
+    gamepk = get_gamepk_from_team(team)
+    if gamepk == None:
+        return []
+    pbp = get_pbp(gamepk)
+    plays = []
+    for i in pbp['scoringPlays']:
+        inning = pbp['allPlays'][i]['about']['halfInning'].upper() + " " + str(pbp['allPlays'][i]['about']['inning'])
+        plays.append((inning, pbp['allPlays'][i]['result']['description']))
+    return plays
 
 if __name__ == "__main__":
     #make_mlb_schedule()
