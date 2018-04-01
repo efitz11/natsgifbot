@@ -225,13 +225,15 @@ def get_single_game(team):
             if abstractstatus == "Live":
                 pbp = get_pbp(gamepk)
                 try:
-                    if 'description' not in pbp['allPlays'][-1]:
+                    if 'description' not in pbp['allPlays'][-1]['result']:
                         lastplay = pbp['allPlays'][-2]
                     else:
                         lastplay = pbp['allplays'][-1]
-                    output = output + "\tLast Play: " + lastplay['result']['description'] + "\n"
-                except:
-                    pass
+                    desc = lastplay['result']['description']
+                    pitch = lastplay['matchup']['pitcher']['fullName']
+                    output = output + "\tLast Play: With " + pitch + " pitching, " + desc + "\n"
+                except Exception as e:
+                    print(e)
     return(output)
 
 def list_scoring_plays(team):
