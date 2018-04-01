@@ -139,7 +139,13 @@ def get_single_game_info(gamepk, gamejson, teams):
         homeloss = game['teams']['home']['leagueRecord']['losses']
         arecord = "(%s-%s)" % (awaywins, awayloss)
         hrecord = "(%s-%s)" % (homewins, homeloss)
-        output = output + "%s %s @ %s %s # %s\n" % (awayabv, arecord, homeabv, hrecord, detailstatus)
+        try:
+            aruns = game['teams']['away']['score']
+            hruns = game['teams']['home']['score']
+        except:
+            aruns = ""
+            hruns = ""
+        output = output + "%s %s %s @ %s %s %s # %s\n" % (awayabv, aruns, arecord, homeabv, hruns, hrecord, detailstatus)
 
     return output
 
