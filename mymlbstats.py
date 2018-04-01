@@ -27,6 +27,15 @@ def get_last_name(fullname):
         fullname = fullname[:-4]
     return fullname.split(' ')[-1]
 
+def get_abbrev(teamid):
+    teamid = str(teamid)
+    teams = []
+    with open('mlb/teams.txt','r') as f:
+        for line in f:
+            teams.append(line.strip().split(','))
+    abbrev = [item for item in teams if teamid in item][0][1].ljust(3)
+    return abbrev
+
 def get_ET_from_timestamp(timestamp):
     utc = datetime.strptime(timestamp,"%Y-%m-%dT%H:%M:00Z") #"2018-03-31T20:05:00Z",
     nowtime = time.time()
@@ -210,6 +219,13 @@ def get_pbp(gamepk):
     s = json.loads(urlopen(req).read().decode("utf-8"))
     return s
 
+def get_lg_standings(lgid):
+    now = datetime.now()
+    url = "https://statsapi.mlb.com/api/v1/standings/regularSeason?leagueId=" + str(lgid) + "&season=" + str(now.year)
+    req = Request(url, headers={'User-Agent' : "ubuntu"})
+    s = json.loads(urlopen(req).read().decode("utf-8"))
+    return s
+
 def get_single_game(team):
     gamepks = get_gamepk_from_team(team)
     teams = []
@@ -251,9 +267,54 @@ def list_scoring_plays(team):
         plays.append((inning, pbp['allPlays'][i]['result']['description']))
     return plays
 
+def get_div_standings(div):
+    div = div.lower()
+    if div == "ale":
+        id = 103
+        idx = 1
+    elif div == "alc":
+        id = 103
+        idx = 2
+    elif div == "alw":
+        id = 103
+        idx = 0
+    elif div == "nle":
+        id = 104
+        idx = 2
+    elif div == "nlc":
+        id = 104
+        idx = 0
+    elif div == "nlw":
+        id = 104
+        idx = 1
+    else:
+        return
+
+    standings = get_lg_standings(id)
+    div = standings['records'][idx]
+    output = "```python\n"
+    output = output + "%s %s %s %s\n" %(' '.rjust(3),'W'.rjust(3),'L'.rjust(3),'PCT'.rjust(5))
+    for team in div['teamRecords']:
+        teamid = team['team']['id']
+        abbrev = get_abbrev(teamid)
+        streak = team['streak']['streakCode']
+        wins = str(team['wins']).rjust(3)
+        loss = str(team['losses']).rjust(3)
+        pct = team['leagueRecord']['pct'].rjust(5)
+        rundiff = team['runDifferential']
+        runall = team['runsAllowed']
+        runscored = team['runsScored']
+        output = output + "%s %s %s %s\n" % (abbrev, wins, loss, pct)
+    output = output + "```"
+    print(output)
+    return output
+
 if __name__ == "__main__":
     #make_mlb_schedule()
     #get_mlb_teams()
-    get_single_game("nationals")
+    #get_single_game("nationals")
     #get_all_game_info()
     #get_ET_from_timestamp("2018-03-31T20:05:00Z")
+    get_div_standings("ale")
+    get_div_standings("alc")
+    get_div_standings("alw")
