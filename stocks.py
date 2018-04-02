@@ -11,10 +11,23 @@ def get_quote(symbol):
     ch = "%0.2f" %(change)
     chper = "%0.2f" %(quote['changePercent'])
     chytd = "%0.2f" % (quote['ytdChange'])
+    mcap = quote['marketCap']
+    if mcap >= 1e12:
+        cap = round(mcap/1e12, 1)
+        cap = str(cap) + "T"
+    elif mcap >= 1e9:
+        cap = round(mcap/1e9, 1)
+        cap = str(cap) + "B"
+    elif mcap >= 1e6:
+        cap = round(mcap/1e6, 1)
+        cap = str(cap) + "M"
+    else:
+        cap = str(round(map/1e3),1) + "k"
     if change > 0:
         ch = "+" + ch
         chper = "+" + chper
     output = "%s - %s:```python\n Last price: %s (%s, %s%%, %s%% YTD" % (symbol.upper(),quote['companyName'],quote['latestPrice'],ch,chper,chytd)+")"
+    output = output + " %s mkt cap" % cap
     output = output + "```"
     return output
 
@@ -37,3 +50,6 @@ def get_stocks():
 #    output = "%s - %s:```python\n Last price: %s (%s, %s%%, %s%% YTD" % (symbol.upper(),quote['companyName'],quote['latestPrice'],ch,chper,chytd)+")"
     output = output + "```"
     return output
+
+if __name__ == "__main__":
+    print(get_quote("msft"))
