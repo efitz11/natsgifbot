@@ -32,7 +32,7 @@ class Baseball():
     async def mlb(self,*team :str):
         """<team> to show today's game, or blank to show all games"""
         delta=None
-        if team[-1].startswith('-') or team[-1].startswith('+'):
+        if len(team)>0 and (team[-1].startswith('-') or team[-1].startswith('+')):
             delta = team[-1]
             team = team[:-1]
 
