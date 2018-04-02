@@ -49,13 +49,7 @@ def make_mlb_schedule(date=None):
         now = datetime.now() - timedelta(hours=5)
         date = str(now.year) + "-" + str(now.month).zfill(2) + "-" + str(now.day).zfill(2)
     schd = "mlb" + os.sep + date + ".txt"
-    teams = []
-    with open('mlb/teams.txt','r') as f:
-        for line in f:
-            teams.append(line.strip().split(','))
-
-    #print(teams)
-    url = "https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=" + date
+    url = "https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=" + date + "&expand=schedule.teams,schedule.decisions"
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     s = json.loads(urlopen(req).read().decode("utf-8"))
     games = s['dates'][0]['games']
@@ -64,8 +58,8 @@ def make_mlb_schedule(date=None):
         awayid = str(game['teams']['away']['team']['id'])
         homeid = str(game['teams']['home']['team']['id'])
         print(awayid,homeid)
-        awayt = [item for item in teams if awayid in item][0]
-        homet = [item for item in teams if homeid in item][0]
+        awayt = game['teams']['away']['team']['abbreviation']
+        homet = game['teams']['home']['team']['abbreviation']
         print(awayt)
         print(homet)
 
@@ -87,15 +81,13 @@ def get_mlb_teams():
     for s in sorted(teammap):
         print(s,teammap[s])
 
-def get_single_game_info(gamepk, gamejson, teams):
+def get_single_game_info(gamepk, gamejson):
     game = gamejson
     output = ""
     abstractstatus = game['status']['abstractGameState']
     detailstatus = game['status']['detailedState']
-    awayid = str(game['teams']['away']['team']['id'])
-    homeid = str(game['teams']['home']['team']['id'])
-    awayabv = [item for item in teams if awayid in item][0][1].ljust(3)
-    homeabv = [item for item in teams if homeid in item][0][1].ljust(3)
+    awayabv = game['teams']['away']['team']['abbreviation']
+    homeabv = game['teams']['home']['team']['abbreviation']
     #print(gamepk)
     if abstractstatus == "Live":
         ls = get_linescore(gamepk)
@@ -139,9 +131,8 @@ def get_single_game_info(gamepk, gamejson, teams):
         homewins = game['teams']['home']['leagueRecord']['wins']
         homeloss = game['teams']['home']['leagueRecord']['losses']
         if detailstatus == "Scheduled":
-            feed = get_game_feed(gamepk)
-            probaway = feed['gameData']['probablePitchers']['away']['fullName'].split(',')[0]
-            probhome = feed['gameData']['probablePitchers']['home']['fullName'].split(',')[0]
+            probaway = game['teams']['away']['probablePitcher']['fullName'].split(',')[0]
+            probhome = game['teams']['home']['probablePitcher']['fullName'].split(',')[0]
         elif detailstatus == "Pre-Game":
             ls = get_linescore(gamepk)
             probaway = get_last_name(ls['offense']['pitcher']['fullName'])
@@ -161,31 +152,32 @@ def get_single_game_info(gamepk, gamejson, teams):
         try:
             aruns = game['teams']['away']['score']
             hruns = game['teams']['home']['score']
-        except:
-            aruns = ""
-            hruns = ""
-        output = output + "%s %s %s @ %s %s %s # %s\n" % (awayabv, aruns, arecord, homeabv, hruns, hrecord, detailstatus)
+            output = output + "%s %s %s @ %s %s %s # %s\n" % (awayabv, aruns, arecord, homeabv, hruns, hrecord, detailstatus)
+            decisions = game['decisions']
+            wp = get_last_name(decisions['winner']['fullName'])
+            lp = get_last_name(decisions['loser']['fullName'])
+            output = output + "\t WP: %s \t LP: %s" % (wp, lp)
+            if 'save' in decisions:
+                output = output + "\t SV: %s" % (get_last_name(decisions['save']['fullName']))
+            output = output + "\n"
+        except KeyError:
+            # no score - game was probably postponed
+            output = output + "%s %s @ %s %s # %s\n" % (awayabv, arecord, homeabv, hrecord, detailstatus)
 
     return output
 
 def get_all_game_info():
     now = datetime.now() - timedelta(hours=5)
     date = str(now.year) + "-" + str(now.month).zfill(2) + "-" + str(now.day).zfill(2)
-    url = "https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=" + date
+    url = "https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=" + date + "&expand=schedule.teams,schedule.decisions"
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     s = json.loads(urlopen(req).read().decode("utf-8"))
     games = s['dates'][0]['games']
 
-    #load team info
-    teams = []
-    with open('mlb/teams.txt','r') as f:
-        for line in f:
-            teams.append(line.strip().split(','))
-
     output = ""
     for game in games:
         gamepk = str(game['gamePk'])
-        output = output + get_single_game_info(gamepk, game, teams)
+        output = output + get_single_game_info(gamepk, game)
     return output
 
 def get_linescore(gamepk):
@@ -209,7 +201,7 @@ def get_game_feed(gamepk):
 def get_day_schedule():
     now = datetime.now() - timedelta(hours=5)
     date = str(now.year) + "-" + str(now.month).zfill(2) + "-" + str(now.day).zfill(2)
-    url = "https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=" + date
+    url = "https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=" + date + "&expand=schedule.teams,schedule.decisions"
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     s = json.loads(urlopen(req).read().decode("utf-8"))
     return s
@@ -229,10 +221,6 @@ def get_lg_standings(lgid):
 
 def get_single_game(team):
     gamepks = get_gamepk_from_team(team)
-    teams = []
-    with open('mlb/teams.txt','r') as f:
-        for line in f:
-            teams.append(line.strip().split(','))
     schedule = get_day_schedule()
     output = ""
     for game in schedule['dates'][0]['games']:
@@ -241,7 +229,7 @@ def get_single_game(team):
         except ValueError:
             continue
         gamepk = gamepks[idx]
-        output = output + get_single_game_info(gamepk,game,teams)
+        output = output + get_single_game_info(gamepk,game)
         abstractstatus = game['status']['abstractGameState']
         if abstractstatus == "Live":
             pbp = get_pbp(gamepk)
@@ -322,8 +310,8 @@ if __name__ == "__main__":
     #make_mlb_schedule()
     #get_mlb_teams()
     #get_single_game("nationals")
-    #get_all_game_info()
+    print(get_all_game_info())
     #get_ET_from_timestamp("2018-03-31T20:05:00Z")
-    get_div_standings("nle")
+    #get_div_standings("nle")
     #bs = BoxScore.BoxScore(get_boxscore('529456'))
     #bs.print_box()
