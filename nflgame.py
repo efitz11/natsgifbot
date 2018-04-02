@@ -91,6 +91,11 @@ def get_game(team, sport):
         if 'odds' in event['competitions'][0]:
             if 'details' in event['competitions'][0]['odds'][0]:
                 game['odds'] = " - " + event['competitions'][0]['odds'][0]['details']
+        game['broadcast'] = ""
+        for b in event['competitions'][0]['broadcasts']:
+            if b['market'] == 'national':
+                game['broadcast'] = " - " + b['names'][0]
+                break
         if sport == "nfl":
             try:
                 game['possteam'] = event['competitions'][0]['situation']['possession']
@@ -124,7 +129,7 @@ def get_game(team, sport):
             output = "Today's games:"
         output = output + "\n```python\n"
         for game in games:
-            output = output + "%s %s @ %s %s # %s%s\n" % (game['awayabv'].ljust(teamw), str(game['awayscore']).rjust(scorew),game['homeabv'].ljust(teamw), str(game['homescore']).rjust(scorew), game['time'],game['odds'])
+            output = output + "%s %s @ %s %s # %s%s%s\n" % (game['awayabv'].ljust(teamw), str(game['awayscore']).rjust(scorew),game['homeabv'].ljust(teamw), str(game['homescore']).rjust(scorew), game['time'], game['broadcast'], game['odds'])
         return output + "```"
     for game in games:
         if game['hometeam'].lower() == team.lower() or game['homeabv'].lower() == team.lower() or game['awayteam'].lower() == team.lower() or game['awayabv'].lower() == team.lower() or team.lower() in game['homename'].lower() or team.lower() in game['awayname'].lower():
@@ -143,7 +148,7 @@ def pretty_print_game(game,sport):
     odds = game['odds']
     if len(odds) > 0:
         odds = odds[3:]
-    output = "%s %s # %s\n%s %s # %s\n" % (game['awayabv'].rjust(namejust), str(game['awayscore']).rjust(2), odds, game['homeabv'].rjust(namejust), str(game['homescore']).rjust(2), game['time'])
+    output = "%s %s # %s\n%s %s # %s%s\n" % (game['awayabv'].rjust(namejust), str(game['awayscore']).rjust(2), odds, game['homeabv'].rjust(namejust), str(game['homescore']).rjust(2), game['broadcast'], game['time'])
     if sport == "nfl":
         if game['possteam'] is not None:
             if game['possteam'] == game['homeid']:
