@@ -24,6 +24,7 @@ patternsolis = re.compile('solis', re.IGNORECASE)
 patternpoop = re.compile('mets|phillies|braves',re.IGNORECASE)
 patternperf = re.compile('perfect game',re.IGNORECASE)
 patternbenoit = re.compile('benoit$',re.IGNORECASE)
+patterneaton = re.compile('(?<!(Miami University Great ))(Adam Eaton)', re.IGNORECASE)
 
 pidfile = 'discordbotpid.txt'
     
@@ -463,6 +464,8 @@ async def on_message(message):
             await bot.send_message(message.channel,"FUCK JOSE TABATA")
         if patternbenoit.search(message.content):
             await bot.send_message(message.channel,"balls.")
+        if patterneaton.search(message.content):
+            await bot.send_message(message.channel,"Miami University Great Adam Eaton*")
 
 updater = mymlbgame.Updater()
 
