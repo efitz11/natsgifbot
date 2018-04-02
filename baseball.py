@@ -32,14 +32,14 @@ class Baseball():
     async def mlb(self,*team :str):
         """<team> to show today's game, or blank to show all games"""
         delta=None
-        if len(team)>0 and (team[-1].startswith('-') or team[-1].startswith('+')):
-            delta = team[-1]
-            team = team[:-1]
-
         if len(team) == 0:
             output = mymlbstats.get_all_game_info(delta=delta)
             await self.bot.say("```python\n" + output + "```")
             return
+
+        if team[-1].startswith('-') or team[-1].startswith('+'):
+            delta = team[-1]
+            team = team[:-1]
 
         if team[0] == "sp":
             teamname = ' '.join(team[1:]).title()
@@ -77,26 +77,26 @@ class Baseball():
         else:
             await self.bot.say("no games found")
 
-    @commands.command()
-    async def mlbd(self, year:int, month:int, day:int, *team:str):
-        """<yyyy mm dd> to show all of that day's games; add a team for just one"""
-        if len(team) == 0:
-            gameday = mlbgame.day(year, month, day)
-            output = "The day's scores:\n```python\n"
-            for game in gameday:
-                output = output + mymlbgame.get_game_str(game.game_id) +'\n'
-            await self.bot.say(output.strip() + "```")
-            return
-        else:
-            team = team[0].title()
-            gameday = mlbgame.day(year, month, day, home=team, away=team)
+    # @commands.command()
+    # async def mlbd(self, year:int, month:int, day:int, *team:str):
+    #     """<yyyy mm dd> to show all of that day's games; add a team for just one"""
+    #     if len(team) == 0:
+    #         gameday = mlbgame.day(year, month, day)
+    #         output = "The day's scores:\n```python\n"
+    #         for game in gameday:
+    #             output = output + mymlbgame.get_game_str(game.game_id) +'\n'
+    #         await self.bot.say(output.strip() + "```")
+    #         return
+    #     else:
+    #         team = team[0].title()
+    #         gameday = mlbgame.day(year, month, day, home=team, away=team)
 
-        if len(gameday) > 0 :
-            game = gameday[0]
-            id = game.game_id
-            box = mlbgame.game.GameBoxScore(mlbgame.game.box_score(id))
-            s = game.nice_score() #+ "\n```" + box.print_scoreboard() + "```"
-            await self.bot.say(s)
+        # if len(gameday) > 0 :
+        #     game = gameday[0]
+        #     id = game.game_id
+        #     box = mlbgame.game.GameBoxScore(mlbgame.game.box_score(id))
+        #     s = game.nice_score() #+ "\n```" + box.print_scoreboard() + "```"
+        #     await self.bot.say(s)
         
 def setup(bot):
     bot.add_cog(Baseball(bot))
