@@ -65,6 +65,8 @@ class Baseball():
                 lastinning = ""
                 for play in scoring_plays:
                     if play[0] != lastinning:
+                        if len(lastinning) != 0:
+                            output = output + "```\n```"
                         output = output + play[0] + "\n"
                         lastinning = play[0]
                     output = output + "\t" + play[1] + "\n"
