@@ -85,13 +85,10 @@ class Baseball():
 
 
         output = mymlbstats.get_single_game(teamname)
-        #day = mlbgame.day(now.year, now.month, now.day, home=teamname, away=teamname)
-        #
-        #if len(day) > 0 :
-        #    game = day[0]
-        #    id = game.game_id
-        #    output = mymlbgame.get_game_str(id,lastplay=True)
-        await self.bot.say("```python\n" + output + "```")
+        if len(output) > 0:
+            await self.bot.say("```python\n" + output + "```")
+        else:
+            await self.bot.say("no games found")
 
     @commands.command()
     async def mlbd(self, year:int, month:int, day:int, *team:str):
