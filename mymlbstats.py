@@ -257,14 +257,17 @@ def get_single_game(team):
     return output
 
 def list_scoring_plays(team):
-    gamepk = get_gamepk_from_team(team)
-    if gamepk == None:
+    gamepks = get_gamepk_from_team(team)
+    if len(gamepks) == 0:
         return []
-    pbp = get_pbp(gamepk)
     plays = []
-    for i in pbp['scoringPlays']:
-        inning = pbp['allPlays'][i]['about']['halfInning'].upper() + " " + str(pbp['allPlays'][i]['about']['inning'])
-        plays.append((inning, pbp['allPlays'][i]['result']['description']))
+    for gamepk in gamepks:
+        pbp = get_pbp(gamepk)
+        for i in pbp['scoringPlays']:
+            play = pbp['allPlays'][i]
+            inning = play['about']['halfInning'].upper() + " " + str(play['about']['inning'])
+            desc = "With " + play['matchup']['pitcher']['fullName'] + " pitching, " + play['result']['description']
+            plays.append((inning, desc))
     return plays
 
 def get_div_standings(div):
