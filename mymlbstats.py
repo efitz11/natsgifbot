@@ -2,6 +2,7 @@ from urllib.request import urlopen, Request
 from datetime import datetime, timedelta
 import time
 import json, os
+import mlb.BoxScore as BoxScore
 
 def get_schedule():
     now = datetime.now() - timedelta(hours=5)
@@ -320,4 +321,6 @@ if __name__ == "__main__":
     #get_single_game("nationals")
     #get_all_game_info()
     #get_ET_from_timestamp("2018-03-31T20:05:00Z")
-    get_div_standings("nle")
+    #get_div_standings("nle")
+    bs = BoxScore.BoxScore(get_boxscore('529456'))
+    bs.print_box()
