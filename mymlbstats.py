@@ -4,38 +4,17 @@ import time
 import json, os
 import mlb.BoxScore as BoxScore
 
-def get_schedule():
+def _get_date_from_delta(delta=None):
     now = datetime.now() - timedelta(hours=5)
-    date = str(now.year) + "-" + str(now.month).zfill(2) + "-" + str(now.day).zfill(2)
-    schd = "mlb" + os.sep + date + ".txt"
-    return schd
-
-def get_gamepk_from_team(team):
-    schd = get_schedule()
-    if not os.path.isfile(schd):
-        make_mlb_schedule()
-    games = []
-    with open(schd,'r') as f:
-        for line in f:
-            if team.lower() in line.lower():
-                game = line.strip()
-                gamepk = game.split(':')[0]
-                games.append(gamepk)
-    return games
+    if delta is not None and (delta.startswith('+') or delta.startswith('-')):
+        delta = int(delta)
+        now = now + timedelta(days=delta)
+    return now
 
 def get_last_name(fullname):
     if "Jr." in fullname:
         fullname = fullname[:-4]
     return fullname.split(' ')[-1]
-
-def get_abbrev(teamid):
-    teamid = str(teamid)
-    teams = []
-    with open('mlb/teams.txt','r') as f:
-        for line in f:
-            teams.append(line.strip().split(','))
-    abbrev = [item for item in teams if teamid in item][0][1].ljust(3)
-    return abbrev
 
 def get_ET_from_timestamp(timestamp):
     utc = datetime.strptime(timestamp,"%Y-%m-%dT%H:%M:00Z") #"2018-03-31T20:05:00Z",
@@ -168,20 +147,12 @@ def get_single_game_info(gamepk, gamejson):
 
 def get_all_game_info(delta=None):
     """delta is + or - a number of days"""
-    now = datetime.now() - timedelta(hours=5)
-    if delta is not None and (delta.startswith('+') or delta.startswith('-')):
-        delta = int(delta)
-        now = now + timedelta(days=delta)
-
-    date = str(now.year) + "-" + str(now.month).zfill(2) + "-" + str(now.day).zfill(2)
-
-    url = "https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=" + date + "&expand=schedule.teams,schedule.decisions"
-    req = Request(url, headers={'User-Agent' : "ubuntu"})
-    s = json.loads(urlopen(req).read().decode("utf-8"))
+    s = get_day_schedule(delta)
     games = s['dates'][0]['games']
 
     output = ""
     if delta is not None:
+        now = _get_date_from_delta(delta)
         output = "For %d/%d/%d:\n\n" % (now.month,now.day,now.year)
     for game in games:
         gamepk = str(game['gamePk'])
@@ -206,8 +177,8 @@ def get_game_feed(gamepk):
     s = json.loads(urlopen(req).read().decode("utf-8"))
     return s
 
-def get_day_schedule():
-    now = datetime.now() - timedelta(hours=5)
+def get_day_schedule(delta=None):
+    now = _get_date_from_delta(delta)
     date = str(now.year) + "-" + str(now.month).zfill(2) + "-" + str(now.day).zfill(2)
     url = "https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=" + date + "&expand=schedule.teams,schedule.decisions"
     req = Request(url, headers={'User-Agent' : "ubuntu"})
@@ -222,26 +193,16 @@ def get_pbp(gamepk):
 
 def get_lg_standings(lgid):
     now = datetime.now()
-    url = "https://statsapi.mlb.com/api/v1/standings/regularSeason?leagueId=" + str(lgid) + "&season=" + str(now.year)
+    url = "https://statsapi.mlb.com/api/v1/standings/regularSeason?" \
+          "leagueId=" + str(lgid) + "&season=" + str(now.year) + "&hydrate=team"
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     s = json.loads(urlopen(req).read().decode("utf-8"))
     return s
 
 def get_single_game(team,delta=None):
     """delta is + or - a number of days"""
-    now = datetime.now() - timedelta(hours=5)
-    if delta is not None and (delta.startswith('+') or delta.startswith('-')):
-        delta = int(delta)
-        now = now + timedelta(days=delta)
-
-    date = str(now.year) + "-" + str(now.month).zfill(2) + "-" + str(now.day).zfill(2)
-
-    url = "https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=" + date + "&expand=schedule.teams,schedule.decisions"
-    req = Request(url, headers={'User-Agent' : "ubuntu"})
-    s = json.loads(urlopen(req).read().decode("utf-8"))
+    s = get_day_schedule(delta)
     games = s['dates'][0]['games']
-    # gamepks = get_gamepk_from_team(team,delta)
-    # schedule = get_day_schedule()
     output = ""
     if delta is not None:
         output = "For %d/%d/%d:\n\n" % (now.month,now.day,now.year)
@@ -269,9 +230,9 @@ def get_single_game(team,delta=None):
     return output
 
 def list_scoring_plays(team):
-    gamepks = get_gamepk_from_team(team)
-    if len(gamepks) == 0:
-        return []
+    # gamepks = get_gamepk_from_team(team)
+    # if len(gamepks) == 0:
+    #     return []
     plays = []
     for gamepk in gamepks:
         pbp = get_pbp(gamepk)
@@ -312,8 +273,7 @@ def get_div_standings(div):
              (' '.rjust(3),'W'.rjust(3),'L'.rjust(3),'PCT'.rjust(5), 'GB'.rjust(4), ' WCGB', 'STK',
               'RS'.rjust(3),'RA'.rjust(3))
     for team in div['teamRecords']:
-        teamid = team['team']['id']
-        abbrev = get_abbrev(teamid)
+        abbrev = team['team']['abbreviation']
         streak = team['streak']['streakCode'].ljust(3)
         wins = str(team['wins']).rjust(3)
         loss = str(team['losses']).rjust(3)
@@ -333,8 +293,8 @@ if __name__ == "__main__":
     #make_mlb_schedule()
     #get_mlb_teams()
     #print(get_single_game("nationals",delta="+1"))
-    print(get_all_game_info(delta='-1'))
+    # print(get_all_game_info(delta='-1'))
     #get_ET_from_timestamp("2018-03-31T20:05:00Z")
-    #get_div_standings("nle")
+    get_div_standings("nle")
     #bs = BoxScore.BoxScore(get_boxscore('529456'))
     #bs.print_box()
