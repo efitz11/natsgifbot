@@ -58,15 +58,14 @@ class Baseball():
             else:
                 await self.bot.say("No scoring plays")
         else:
-            teamname = ' '.join(team).title()
-        if teamname == "Nats":
-            teamname = "Nationals"
+            teamname = ' '.join(team).lower()
+        if teamname == "nats":
+            teamname = "nationals"
 
-        if teamname in ['Nle','Nlc','Nlw','Ale','Alc','Alw']:
+        if teamname in ['nle','nlc','nlw','ale','alc','alw']:
             output = mymlbstats.get_div_standings(teamname)
             await self.bot.say(output)
             return
-
 
         output = mymlbstats.get_single_game(teamname)
         if len(output) > 0:
