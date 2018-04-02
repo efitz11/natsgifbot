@@ -141,7 +141,12 @@ def get_game(team,delta=None):
         for l in event['links']:
             if l['text'] == "Summary":
                 game['link'] = l['href']
-        
+        game['broadcast'] = ""
+        for b in event['competitions'][0]['broadcasts']:
+            if b['market'] == 'national':
+                game['broadcast'] = " - " + b['names'][0]
+                break
+
         if homestatus == 'home':
             game['hometeam'], game['homeid'], game['homeabv'], game['homescore'], game['awayteam'], game['awayid'], game['awayabv'], game['awayscore'], game['homerank'], game['awayrank']=\
                 team1, tid1, team1abv, score1, team2, tid2, team2abv, score2, rank1, rank2
@@ -160,7 +165,7 @@ def get_game(team,delta=None):
             hr = game['homerank']['current']
             awayr = "("+str(ar)+")" if (ar <= 25 and ar > 0) else ""
             homer = "("+str(hr)+")" if (hr <= 25 and hr > 0) else ""
-            output = output +  "%s %s %s @ %s %s %s # %s%s\n" % (awayr.rjust(4),game['awayabv'].rjust(5), game['awayscore'].rjust(2), homer.rjust(4),game['homeabv'].rjust(5), game['homescore'].rjust(2), game['time'],game['odds'])
+            output = output +  "%s %s %s @ %s %s %s # %s%s%s\n" % (awayr.rjust(4),game['awayabv'].rjust(5), game['awayscore'].rjust(2), homer.rjust(4),game['homeabv'].rjust(5), game['homescore'].rjust(2), game['time'],game['broadcast'],game['odds'])
             #output = output + pretty_print_game(game)
         return (dateline + "\n```python\n" + output+"```")
     for game in games:
@@ -190,7 +195,7 @@ def pretty_print_game(game):
     else:
         gdate = ""
         gtime = game['time']
-    output = "%s %s %s # %s\n%s %s %s # %s%s\n" % (awayr.rjust(4),game['awayabv'].rjust(namejust), game['awayscore'].rjust(2), gdate, homer.rjust(4),game['homeabv'].rjust(namejust), game['homescore'].rjust(2), gtime, game['odds'])
+    output = "%s %s %s # %s\n%s %s %s # %s%s%s\n" % (awayr.rjust(4),game['awayabv'].rjust(namejust), game['awayscore'].rjust(2), gdate, homer.rjust(4),game['homeabv'].rjust(namejust), game['homescore'].rjust(2), gtime, game['broadcast'], game['odds'])
     return output
     
 def pretty_print_games(games):
