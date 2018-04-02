@@ -31,9 +31,13 @@ class Baseball():
     @commands.command()
     async def mlb(self,*team :str):
         """<team> to show today's game, or blank to show all games"""
-        now = datetime.now() - timedelta(hours=5)
+        delta=None
+        if team[-1].startswith('-') or team[-1].startswith('+'):
+            delta = team[-1]
+            team = team[:-1]
+
         if len(team) == 0:
-            output = mymlbstats.get_all_game_info()
+            output = mymlbstats.get_all_game_info(delta=delta)
             await self.bot.say("```python\n" + output + "```")
             return
 
@@ -67,7 +71,7 @@ class Baseball():
             await self.bot.say(output)
             return
 
-        output = mymlbstats.get_single_game(teamname)
+        output = mymlbstats.get_single_game(teamname,delta=delta)
         if len(output) > 0:
             await self.bot.say("```python\n" + output + "```")
         else:

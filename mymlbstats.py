@@ -156,7 +156,7 @@ def get_single_game_info(gamepk, gamejson):
             decisions = game['decisions']
             wp = get_last_name(decisions['winner']['fullName'])
             lp = get_last_name(decisions['loser']['fullName'])
-            output = output + "\t WP: %s \t LP: %s" % (wp, lp)
+            output = output + "\t WP: %s LP: %s" % (wp.ljust(12), lp.ljust(12))
             if 'save' in decisions:
                 output = output + "\t SV: %s" % (get_last_name(decisions['save']['fullName']))
             output = output + "\n"
@@ -166,15 +166,23 @@ def get_single_game_info(gamepk, gamejson):
 
     return output
 
-def get_all_game_info():
+def get_all_game_info(delta=None):
+    """delta is + or - a number of days"""
     now = datetime.now() - timedelta(hours=5)
+    if delta is not None and (delta.startswith('+') or delta.startswith('-')):
+        delta = int(delta)
+        now = now + timedelta(days=delta)
+
     date = str(now.year) + "-" + str(now.month).zfill(2) + "-" + str(now.day).zfill(2)
+
     url = "https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=" + date + "&expand=schedule.teams,schedule.decisions"
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     s = json.loads(urlopen(req).read().decode("utf-8"))
     games = s['dates'][0]['games']
 
     output = ""
+    if delta is not None:
+        output = "For %d/%d/%d:\n\n" % (now.month,now.day,now.year)
     for game in games:
         gamepk = str(game['gamePk'])
         output = output + get_single_game_info(gamepk, game)
@@ -219,30 +227,45 @@ def get_lg_standings(lgid):
     s = json.loads(urlopen(req).read().decode("utf-8"))
     return s
 
-def get_single_game(team):
-    gamepks = get_gamepk_from_team(team)
-    schedule = get_day_schedule()
+def get_single_game(team,delta=None):
+    """delta is + or - a number of days"""
+    now = datetime.now() - timedelta(hours=5)
+    if delta is not None and (delta.startswith('+') or delta.startswith('-')):
+        delta = int(delta)
+        now = now + timedelta(days=delta)
+
+    date = str(now.year) + "-" + str(now.month).zfill(2) + "-" + str(now.day).zfill(2)
+
+    url = "https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=" + date + "&expand=schedule.teams,schedule.decisions"
+    req = Request(url, headers={'User-Agent' : "ubuntu"})
+    s = json.loads(urlopen(req).read().decode("utf-8"))
+    games = s['dates'][0]['games']
+    # gamepks = get_gamepk_from_team(team,delta)
+    # schedule = get_day_schedule()
     output = ""
-    for game in schedule['dates'][0]['games']:
-        try:
-            idx = gamepks.index(str(game['gamePk']))
-        except ValueError:
-            continue
-        gamepk = gamepks[idx]
-        output = output + get_single_game_info(gamepk,game)
-        abstractstatus = game['status']['abstractGameState']
-        if abstractstatus == "Live":
-            pbp = get_pbp(gamepk)
-            try:
-                if 'description' not in pbp['allPlays'][-1]['result']:
-                    lastplay = pbp['allPlays'][-2]
-                else:
-                    lastplay = pbp['allPlays'][-1]
-                desc = lastplay['result']['description']
-                pitch = lastplay['matchup']['pitcher']['fullName']
-                output = output + "\tLast Play: With " + pitch + " pitching, " + desc + "\n"
-            except Exception as e:
-                print(e)
+    if delta is not None:
+        output = "For %d/%d/%d:\n\n" % (now.month,now.day,now.year)
+    for game in games:
+        gamepk = str(game['gamePk'])
+        awayabv = game['teams']['away']['team']['abbreviation'].lower()
+        homeabv = game['teams']['home']['team']['abbreviation'].lower()
+        awayname = game['teams']['away']['team']['name'].lower()
+        homename = game['teams']['home']['team']['name'].lower()
+        if team in awayabv or team in homeabv or team in awayname or team in homename:
+            output = output + get_single_game_info(gamepk,game)
+            abstractstatus = game['status']['abstractGameState']
+            if abstractstatus == "Live":
+                pbp = get_pbp(gamepk)
+                try:
+                    if 'description' not in pbp['allPlays'][-1]['result']:
+                        lastplay = pbp['allPlays'][-2]
+                    else:
+                        lastplay = pbp['allPlays'][-1]
+                    desc = lastplay['result']['description']
+                    pitch = lastplay['matchup']['pitcher']['fullName']
+                    output = output + "\tLast Play: With " + pitch + " pitching, " + desc + "\n"
+                except Exception as e:
+                    print(e)
     return output
 
 def list_scoring_plays(team):
@@ -309,8 +332,8 @@ def get_div_standings(div):
 if __name__ == "__main__":
     #make_mlb_schedule()
     #get_mlb_teams()
-    #get_single_game("nationals")
-    print(get_all_game_info())
+    #print(get_single_game("nationals",delta="+1"))
+    print(get_all_game_info(delta='-1'))
     #get_ET_from_timestamp("2018-03-31T20:05:00Z")
     #get_div_standings("nle")
     #bs = BoxScore.BoxScore(get_boxscore('529456'))
