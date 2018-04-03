@@ -73,11 +73,11 @@ def get_single_game_info(gamepk, gamejson):
         output = output + "\t" + "Pitching: %s \tBatting: %s\n" % (pitcher, batter)
         if ls['currentInning'] >= 6 and awayhits == 0:
             output = output + "\t##############################\n"
-            output = output + "\t" + awayabv + "  HAS NO HITS SO FAR\n"
+            output = output + "\t" + awayabv + " HAS NO HITS SO FAR\n"
             output = output + "\t##############################\n"
         if ls['currentInning'] >= 6 and homehits == 0:
             output = output + "\t##############################\n"
-            output = output + "\t" + homeabv + "  HAS NO HITS SO FAR\n"
+            output = output + "\t" + homeabv + " HAS NO HITS SO FAR\n"
             output = output + "\t##############################\n"
     elif abstractstatus == "Preview":
         awaywins = game['teams']['away']['leagueRecord']['wins']
