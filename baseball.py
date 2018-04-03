@@ -32,20 +32,21 @@ class Baseball():
     async def mlb(self,*team :str):
         """<team> to show today's game, or blank to show all games"""
         delta=None
+
+        if len(team) > 0 and (team[-1].startswith('-') or team[-1].startswith('+')):
+            delta = team[-1]
+            team = team[:-1]
+
         if len(team) == 0:
             output = mymlbstats.get_all_game_info(delta=delta)
             await self.bot.say("```python\n" + output + "```")
             return
 
-        if team[-1].startswith('-') or team[-1].startswith('+'):
-            delta = team[-1]
-            team = team[:-1]
-
         if team[0] == "sp":
             teamname = ' '.join(team[1:]).title()
             if teamname == "Nats":
                 teamname = "Nationals"
-            scoring_plays = mymlbstats.list_scoring_plays(teamname)
+            scoring_plays = mymlbstats.list_scoring_plays(teamname, delta)
             if len(scoring_plays) > 0:
                 output = "```"
                 lastinning = ""
