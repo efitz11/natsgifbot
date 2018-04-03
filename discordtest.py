@@ -11,7 +11,7 @@ import urllib.parse
 
 import mymlbgame, cfbgame, nflgame, xmlreader, nhlscores, cbbgame, stocks, olympics, gifs
 import weather as weathermodule
-import frinkiac, cryptocurrency, web
+import frinkiac, web
 import hq as hqmod
 
 bot = commands.Bot(command_prefix='!')
@@ -270,7 +270,7 @@ async def stock(*symbol:str):
 async def crypto(*symbol:str):
     """list the top 10 crypto prices, or a specific coin. from coinmarketcap"""
     sym = '-'.join(symbol)
-    await bot.say(cryptocurrency.get_cryptocurrency_data(sym))
+    await bot.say(web.get_cryptocurrency_data(sym))
     
 @bot.command()
 async def frink(*query:str):
