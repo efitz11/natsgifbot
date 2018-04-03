@@ -182,6 +182,7 @@ def get_single_game(team,delta=None):
     games = s['dates'][0]['games']
     output = ""
     if delta is not None:
+        now = _get_date_from_delta(delta)
         output = "For %d/%d/%d:\n\n" % (now.month,now.day,now.year)
     for game in games:
         gamepk = str(game['gamePk'])
