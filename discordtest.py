@@ -170,11 +170,6 @@ async def mock(ctx, *search:str):
                 await bot.say(mockify_text(m.clean_content.lower()))
                 return
     
-@bot.command(pass_context=True)
-async def logs(ctx):
-    async for m in bot.logs_from(ctx.message.channel,limit=5):
-        await bot.say(m.clean_content)
-    
 @bot.command()
 async def memeify(*text:str):
     """M E M E I F Y   A N Y   S T R I N G   O F   T E X T"""
