@@ -23,31 +23,6 @@ def get_ET_from_timestamp(timestamp):
     utc = utc + diff
     return(datetime.strftime(utc, "%I:%M ET"))
 
-def make_mlb_schedule(date=None):
-    if date is None:
-        now = datetime.now() - timedelta(hours=5)
-        date = str(now.year) + "-" + str(now.month).zfill(2) + "-" + str(now.day).zfill(2)
-    schd = "mlb" + os.sep + date + ".txt"
-    url = "https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=" + date + "&expand=schedule.teams,schedule.decisions"
-    req = Request(url, headers={'User-Agent' : "ubuntu"})
-    s = json.loads(urlopen(req).read().decode("utf-8"))
-    games = s['dates'][0]['games']
-    output = ""
-    for game in games:
-        awayid = str(game['teams']['away']['team']['id'])
-        homeid = str(game['teams']['home']['team']['id'])
-        print(awayid,homeid)
-        awayt = game['teams']['away']['team']['abbreviation']
-        homet = game['teams']['home']['team']['abbreviation']
-        print(awayt)
-        print(homet)
-
-        output += "%s:%s:%s\n" % (game['gamePk'],awayt,homet)
-    with open(schd,'w') as f:
-        f.write(output)
-        print("wrote to ", schd)
-    return games
-
 def get_mlb_teams():
     url = "http://statsapi.mlb.com/api/v1/teams?sportId=1"
     req = Request(url, headers={'User-Agent' : "ubuntu"})
@@ -177,10 +152,12 @@ def get_game_feed(gamepk):
     s = json.loads(urlopen(req).read().decode("utf-8"))
     return s
 
-def get_day_schedule(delta=None):
+def get_day_schedule(delta=None,scoringplays=False):
     now = _get_date_from_delta(delta)
     date = str(now.year) + "-" + str(now.month).zfill(2) + "-" + str(now.day).zfill(2)
     url = "https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=" + date + "&expand=schedule.teams,schedule.decisions"
+    if scoringplays:
+        url = url + ",schedule.scoringplays"
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     s = json.loads(urlopen(req).read().decode("utf-8"))
     return s
@@ -229,18 +206,20 @@ def get_single_game(team,delta=None):
                     print(e)
     return output
 
-def list_scoring_plays(team):
-    # gamepks = get_gamepk_from_team(team)
-    # if len(gamepks) == 0:
-    #     return []
+def list_scoring_plays(team,delta=None):
+    s = get_day_schedule(delta,scoringplays=True)
+    games = s['dates'][0]['games']
     plays = []
-    for gamepk in gamepks:
-        pbp = get_pbp(gamepk)
-        for i in pbp['scoringPlays']:
-            play = pbp['allPlays'][i]
-            inning = play['about']['halfInning'].upper() + " " + str(play['about']['inning'])
-            desc = "With " + play['matchup']['pitcher']['fullName'] + " pitching, " + play['result']['description']
-            plays.append((inning, desc))
+    for game in games:
+        aname = game['teams']['away']['team']['name'].lower()
+        hname = game['teams']['home']['team']['name'].lower()
+        aabrv = game['teams']['away']['team']['abbreviation'].lower()
+        habrv = game['teams']['home']['team']['abbreviation'].lower()
+        if team.lower() in aname or team in hname or team in aabrv or team in habrv:
+            for i in game['scoringPlays']:
+                inning = i['about']['halfInning'].upper() + " " + str(i['about']['inning'])
+                desc = "With " + i['matchup']['pitcher']['fullName'] + " pitching, " + i['result']['description']
+                plays.append((inning, desc))
     return plays
 
 def get_div_standings(div):
@@ -286,7 +265,6 @@ def get_div_standings(div):
         output = output + "%s %s %s %s %s %s %s %s %s\n" %\
                  (abbrev, wins, loss, pct, gb, wcgb, streak, rs, ra)
     output = output + "```"
-    print(output)
     return output
 
 if __name__ == "__main__":
@@ -295,6 +273,7 @@ if __name__ == "__main__":
     #print(get_single_game("nationals",delta="+1"))
     # print(get_all_game_info(delta='-1'))
     #get_ET_from_timestamp("2018-03-31T20:05:00Z")
-    get_div_standings("nle")
+    # get_div_standings("nle")
     #bs = BoxScore.BoxScore(get_boxscore('529456'))
     #bs.print_box()
+    print(list_scoring_plays('nationals'))
