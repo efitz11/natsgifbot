@@ -294,6 +294,7 @@ def get_stat_leader(stat):
                '3b':'triples',
                'bb':'walks',
                'so':'strikeouts',
+               'hr':'homeRuns'
     }
     stat = stat.lower()
     if stat in statmap:
