@@ -7,10 +7,16 @@ def get_quote(symbol):
     req.headers["User-Agent"] = "windows 10 bot"
     # Load data
     quote = json.loads(urlopen(req).read().decode("utf-8"))
-    change = float(quote['change'])
-    ch = "%0.2f" %(change)
-    chper = "%0.2f" %(quote['changePercent'])
-    chytd = "%0.2f" % (quote['ytdChange'])
+    try:
+        change = float(quote['change'])
+        ch = "%0.2f" %(change)
+        chper = "%0.2f" %(quote['changePercent'])
+        chytd = "%0.2f" % (quote['ytdChange'])
+    except TypeError:
+        change = "n/a"
+        ch = "n/a"
+        chper = "n/a"
+        chytd = "n/a"
     mcap = quote['marketCap']
     if mcap >= 1e12:
         cap = round(mcap/1e12, 1)
@@ -22,8 +28,8 @@ def get_quote(symbol):
         cap = round(mcap/1e6, 1)
         cap = str(cap) + "M"
     else:
-        cap = str(round(map/1e3),1) + "k"
-    if change > 0:
+        cap = str(round(mcap/1e3,1))+ "k"
+    if change != "n/a" and change > 0:
         ch = "+" + ch
         chper = "+" + chper
     output = "%s - %s:```python\n Last price: %s (%s, %s%%, %s%% YTD" % (symbol.upper(),quote['companyName'],quote['latestPrice'],ch,chper,chytd)+")"
