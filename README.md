@@ -23,14 +23,13 @@ Sports:
   nba       display score(s) of nba game
   nfl       display score(s) of nfl game
   nhl       display score(s) of nhl game
-​No Category:
+No Category:
   help      Shows this message.
   gif       returns a nationals gif matching the search query
   mlbgif    returns a nationals gif matching the search query
   gifall    returns all gifs matching the search query
   mockify   MocKiFy aNy sTrIng of tExT
   mock      mOcKiFy tHe pReViOuS MeSsaGe
-  logs      
   memeify   M E M E I F Y   A N Y   S T R I N G   O F   T E X T
   fuck      
   pajokie   GO HOKIES!
