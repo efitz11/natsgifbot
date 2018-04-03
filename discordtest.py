@@ -9,9 +9,9 @@ import asyncio
 from urllib.request import urlopen, Request
 import urllib.parse
 
-import mymlbgame, cfbgame, nflgame, xmlreader, nhlscores, cbbgame, stocks, olympics, instagram, gifs
+import mymlbgame, cfbgame, nflgame, xmlreader, nhlscores, cbbgame, stocks, olympics, gifs
 import weather as weathermodule
-import frinkiac, cryptocurrency, web
+import frinkiac, web
 import hq as hqmod
 
 bot = commands.Bot(command_prefix='!')
@@ -170,11 +170,6 @@ async def mock(ctx, *search:str):
                 await bot.say(mockify_text(m.clean_content.lower()))
                 return
     
-@bot.command(pass_context=True)
-async def logs(ctx):
-    async for m in bot.logs_from(ctx.message.channel,limit=5):
-        await bot.say(m.clean_content)
-    
 @bot.command()
 async def memeify(*text:str):
     """M E M E I F Y   A N Y   S T R I N G   O F   T E X T"""
@@ -270,7 +265,7 @@ async def stock(*symbol:str):
 async def crypto(*symbol:str):
     """list the top 10 crypto prices, or a specific coin. from coinmarketcap"""
     sym = '-'.join(symbol)
-    await bot.say(cryptocurrency.get_cryptocurrency_data(sym))
+    await bot.say(web.get_cryptocurrency_data(sym))
     
 @bot.command()
 async def frink(*query:str):
@@ -432,7 +427,7 @@ async def daymedals(*delta:int):
 @bot.command()
 async def ig(username:str):
     """get the latest instagram post by the user"""
-    await bot.say(instagram.get_latest_post(username))
+    await bot.say(web.get_latest_post(username))
     
 @bot.event
 async def on_message(message):
