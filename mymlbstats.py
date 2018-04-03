@@ -42,7 +42,7 @@ def get_single_game_info(gamepk, gamejson):
     detailstatus = game['status']['detailedState']
     awayabv = game['teams']['away']['team']['abbreviation']
     homeabv = game['teams']['home']['team']['abbreviation']
-    #print(gamepk)
+    # print(gamepk)
     if abstractstatus == "Live":
         ls = get_linescore(gamepk)
         if ls['isTopInning']:
@@ -84,13 +84,8 @@ def get_single_game_info(gamepk, gamejson):
         awayloss = game['teams']['away']['leagueRecord']['losses']
         homewins = game['teams']['home']['leagueRecord']['wins']
         homeloss = game['teams']['home']['leagueRecord']['losses']
-        if detailstatus == "Scheduled":
-            probaway = game['teams']['away']['probablePitcher']['fullName'].split(',')[0]
-            probhome = game['teams']['home']['probablePitcher']['fullName'].split(',')[0]
-        elif detailstatus == "Pre-Game":
-            ls = get_linescore(gamepk)
-            probaway = get_last_name(ls['offense']['pitcher']['fullName'])
-            probhome = get_last_name(ls['defense']['pitcher']['fullName'])
+        probaway = game['teams']['away']['probablePitcher']['lastName']
+        probhome = game['teams']['home']['probablePitcher']['lastName']
         arecord = "(%s-%s)" % (awaywins, awayloss)
         hrecord = "(%s-%s)" % (homewins, homeloss)
         time = get_ET_from_timestamp(game['gameDate'])
@@ -155,7 +150,7 @@ def get_game_feed(gamepk):
 def get_day_schedule(delta=None,scoringplays=False):
     now = _get_date_from_delta(delta)
     date = str(now.year) + "-" + str(now.month).zfill(2) + "-" + str(now.day).zfill(2)
-    url = "https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=" + date + "&expand=schedule.teams,schedule.decisions"
+    url = "https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=" + date + "&hydrate=probablePitcher,person,decisions,team"
     if scoringplays:
         url = url + ",schedule.scoringplays"
     req = Request(url, headers={'User-Agent' : "ubuntu"})
