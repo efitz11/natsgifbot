@@ -295,6 +295,7 @@ def get_stat_leader(stat):
                'bb':'walks',
                'so':'strikeouts',
     }
+    stat = stat.lower()
     if stat in statmap:
         cat = statmap[stat]
     else:
