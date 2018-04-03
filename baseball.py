@@ -61,6 +61,21 @@ class Baseball():
                 return
             else:
                 await self.bot.say("No scoring plays")
+        elif team[0] == 'leaders':
+            stat = team[1]
+            output = '```'
+            leaders = mymlbstats.get_stat_leader(stat)
+            if len(leaders) == 0:
+                await self.bot.say('not found')
+                return
+            for p in leaders:
+                name = p[0].ljust(12)
+                team = p[1].ljust(4)
+                val  = p[2].rjust(5)
+                output = output + "%s %s %s\n" % (name, team, val)
+            output = output + "```"
+            await self.bot.say(output)
+            return
         else:
             teamname = ' '.join(team).lower()
         if teamname == "nats":

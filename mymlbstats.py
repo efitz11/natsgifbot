@@ -21,7 +21,7 @@ def get_ET_from_timestamp(timestamp):
     nowtime = time.time()
     diff = datetime.fromtimestamp(nowtime) - datetime.utcfromtimestamp(nowtime)
     utc = utc + diff
-    return(datetime.strftime(utc, "%I:%M ET"))
+    return datetime.strftime(utc, "%I:%M ET")
 
 def get_mlb_teams():
     url = "http://statsapi.mlb.com/api/v1/teams?sportId=1"
@@ -30,7 +30,7 @@ def get_mlb_teams():
     teams = s['teams']
     teammap = {}
     for s in teams:
-        #print("%s - %s" % (s['id'],s['name']))
+        # print("%s - %s" % (s['id'],s['name']))
         teammap[s['id']] = s['name']
     for s in sorted(teammap):
         print(s,teammap[s])
@@ -266,6 +266,37 @@ def get_div_standings(div):
                  (abbrev, wins, loss, pct, gb, wcgb, streak, rs, ra)
     output = output + "```"
     return output
+
+def get_stat_leader(stat):
+    statmap = {'avg':'battingAverage',
+               'obp':'onBasePercentage',
+               'slg':'sluggingPercentage',
+               'ops':'onBasePlusSlugging',
+               'rbi':'runsBattedIn',
+               'r':'runs',
+               'sb':'stolenBases',
+               'cs':'caughtStealing',
+               'h':'hits',
+               '2b':'doubles',
+               '3b':'triples',
+               'bb':'walks',
+               'so':'strikeouts',
+    }
+    if stat in statmap:
+        cat = statmap[stat]
+    else:
+        return []
+
+    url = "https://statsapi.mlb.com/api/v1/stats/leaders?leaderCategories=" + cat + "&hydrate=person,team&limit=10"
+    req = Request(url, headers={'User-Agent' : "ubuntu"})
+    s = json.loads(urlopen(req).read().decode("utf-8"))
+    leaders = s['leagueLeaders'][0]['leaders']
+    players = []
+    for leader in leaders:
+        players.append((leader['person']['lastName'], leader['team']['abbreviation'],
+                        leader['value']))
+    return players
+
 
 if __name__ == "__main__":
     #make_mlb_schedule()
