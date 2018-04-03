@@ -17,7 +17,8 @@ def get_recaps():
             if item['title'].startswith("Recap:"):
                 title = item['title']
                 link = item['playbacks'][3]['url']
-                print("[%s](%s)" % (title,link))
+                duration = item['duration'][3:]
+                print("[%s](%s) - %s\n" % (title,link,duration))
         # highlights.live.items[1].playbacks
 
 if __name__ == "__main__":
