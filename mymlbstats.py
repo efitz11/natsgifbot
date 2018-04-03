@@ -168,9 +168,12 @@ def get_pbp(gamepk):
     s = json.loads(urlopen(req).read().decode("utf-8"))
     return s
 
-def get_lg_standings(lgid):
+def get_lg_standings(lgid, wc=False):
     now = datetime.now()
-    url = "https://statsapi.mlb.com/api/v1/standings/regularSeason?" \
+    type = "regularSeason"
+    if wc:
+        type = "wildCard"
+    url = "https://statsapi.mlb.com/api/v1/standings/" + type + "?" \
           "leagueId=" + str(lgid) + "&season=" + str(now.year) + "&hydrate=team"
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     s = json.loads(urlopen(req).read().decode("utf-8"))
@@ -224,6 +227,7 @@ def list_scoring_plays(team,delta=None):
     return plays
 
 def get_div_standings(div):
+    wc = False
     div = div.lower()
     if div == "ale":
         id = 103
@@ -243,17 +247,25 @@ def get_div_standings(div):
     elif div == "nlw":
         id = 104
         idx = 1
+    elif div == "nlwc":
+        id = 104
+        idx=0
+        wc = True
+    elif div == "alwc":
+        id = 103
+        idx=0
+        wc = True
     else:
         return
 
-    standings = get_lg_standings(id)
+    standings = get_lg_standings(id,wc=wc)
     div = standings['records'][idx]
     output = "```python\n"
     output = output + "%s %s %s %s %s %s %s %s %s\n" %\
              (' '.rjust(3),'W'.rjust(3),'L'.rjust(3),'PCT'.rjust(5), 'GB'.rjust(4), ' WCGB', 'STK',
               'RS'.rjust(3),'RA'.rjust(3))
     for team in div['teamRecords']:
-        abbrev = team['team']['abbreviation']
+        abbrev = team['team']['abbreviation'].ljust(3)
         streak = team['streak']['streakCode'].ljust(3)
         wins = str(team['wins']).rjust(3)
         loss = str(team['losses']).rjust(3)

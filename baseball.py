@@ -81,7 +81,7 @@ class Baseball():
         if teamname == "nats":
             teamname = "nationals"
 
-        if teamname in ['nle','nlc','nlw','ale','alc','alw']:
+        if teamname in ['nle','nlc','nlw','ale','alc','alw','nlwc','alwc']:
             output = mymlbstats.get_div_standings(teamname)
             await self.bot.say(output)
             return
