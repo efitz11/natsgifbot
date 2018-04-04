@@ -2,6 +2,7 @@ import json
 from urllib.request import urlopen, Request
 import urllib.parse
 from bs4 import BeautifulSoup
+import tweepy
 
 def get_wiki_page(query):
     url = "https://en.wikipedia.org/w/api.php?action=opensearch&search="+urllib.parse.quote_plus(query)+"&limit=1&namespace=0&redirects=resolve&format=json"
@@ -59,5 +60,23 @@ def get_cryptocurrency_data(text):
         output = output + name.ljust(12) + " $" + price.ljust(10) + change.rjust(6) + "% last 24h\t" + change7.rjust(6) + "% last 7d\n"
     return output+"```"
 
+def get_latest_tweet(user):
+    with open("keys.json",'r') as f:
+        s = f.read()
+    keys = json.loads(s)['keys']
+    for key in keys:
+        if key['name'] == "twitter":
+            api_key = key['api_key']
+            secret = key['api_secret']
+            token = key['token']
+            token_secret = key['token_secret']
+    auth = tweepy.OAuthHandler(api_key, secret)
+    auth.set_access_token(token, token_secret)
+    api = tweepy.API(auth)
+    tweet = api.user_timeline(screen_name=user,count=1)[0]
+    tid = tweet.id
+    return "https://twitter.com/%s/status/%s" % (user,tid)
+
 if __name__ == "__main__":
-    print(search_untappd("heineken"))
+    # print(search_untappd("heineken"))
+    get_latest_tweet("chelsea_janes")
