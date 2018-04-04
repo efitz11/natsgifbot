@@ -106,6 +106,8 @@ class TwitterBot:
                 for submission in reddit.subreddit("nationals").new(limit=5):
                     if submission.title.lower().startswith("game thread"):
                         comment = tweet.text.replace("\n","\n\n")
+                        index = comment.find("https://t.co")
+                        comment = comment[:index]
                         comment = comment + "\n\n" + tweet.entities['media'][0]['media_url_https']
                         submission.reply(comment)
 
