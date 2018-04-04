@@ -103,12 +103,15 @@ class TwitterBot:
                       user_agent='ubuntu:computer-dude (by /u/efitz11)',
                       username=self.r_user,password=self.r_pw)
 
-                for submission in reddit.subreddit("nationals").new(limit=5):
+                for submission in reddit.subreddit("nationals").new(limit=12):
                     if submission.title.lower().startswith("game thread"):
+                        picture = tweet.entities['media'][0]['media_url_https']
                         comment = tweet.text.replace("\n","\n\n")
                         index = comment.find("https://t.co")
                         comment = comment[:index]
-                        comment = comment + "\n\n" + tweet.entities['media'][0]['media_url_https']
+                        index = comment.find('\n')
+                        comment = "[%s](%s)%s" % (comment[:index], picture, comment[index:])
+                        comment = comment + "\n\nhttps://twitter.com/NationalsUmp/status/%d" % (tweet.id)
                         submission.reply(comment)
 
                         with open('lasttweet.txt','w') as f:
