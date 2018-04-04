@@ -8,3 +8,4 @@ channelids.txt
 *.txt
 *.log
 .idea/*
+keys.json

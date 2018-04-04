@@ -152,7 +152,7 @@ def get_day_schedule(delta=None,scoringplays=False):
     date = str(now.year) + "-" + str(now.month).zfill(2) + "-" + str(now.day).zfill(2)
     url = "https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=" + date + "&hydrate=probablePitcher,person,decisions,team"
     if scoringplays:
-        url = url + ",schedule.scoringplays"
+        url = url + ",scoringplays"
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     s = json.loads(urlopen(req).read().decode("utf-8"))
     return s
