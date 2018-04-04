@@ -153,6 +153,7 @@ def get_day_schedule(delta=None,scoringplays=False):
     url = "https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=" + date + "&hydrate=probablePitcher,person,decisions,team"
     if scoringplays:
         url = url + ",scoringplays"
+    print(url)
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     s = json.loads(urlopen(req).read().decode("utf-8"))
     return s
@@ -207,6 +208,7 @@ def get_single_game(team,delta=None):
 
 def list_scoring_plays(team,delta=None):
     s = get_day_schedule(delta,scoringplays=True)
+    team = team.lower()
     games = s['dates'][0]['games']
     plays = []
     for game in games:
@@ -214,7 +216,7 @@ def list_scoring_plays(team,delta=None):
         hname = game['teams']['home']['team']['name'].lower()
         aabrv = game['teams']['away']['team']['abbreviation'].lower()
         habrv = game['teams']['home']['team']['abbreviation'].lower()
-        if team.lower() in aname or team in hname or team in aabrv or team in habrv:
+        if team in aname or team in hname or team in aabrv or team in habrv:
             for i in game['scoringPlays']:
                 inning = i['about']['halfInning'].upper() + " " + str(i['about']['inning'])
                 desc = "With " + i['matchup']['pitcher']['fullName'] + " pitching, " + i['result']['description']
@@ -317,4 +319,4 @@ if __name__ == "__main__":
     # get_div_standings("nle")
     #bs = BoxScore.BoxScore(get_boxscore('529456'))
     #bs.print_box()
-    print(list_scoring_plays('nationals'))
+    print(list_scoring_plays('Marlins'))
