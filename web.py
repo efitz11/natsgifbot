@@ -1,4 +1,5 @@
-import json
+import json, time
+from datetime import datetime, timedelta
 from urllib.request import urlopen, Request
 import urllib.parse
 from bs4 import BeautifulSoup
@@ -75,8 +76,19 @@ def get_latest_tweet(user):
     api = tweepy.API(auth)
     tweet = api.user_timeline(screen_name=user,count=1)[0]
     tid = tweet.id
-    return "https://twitter.com/%s/status/%s" % (user,tid)
+    t = tweet.created_at
+    nowtime = time.time()
+    diff = datetime.fromtimestamp(nowtime) - datetime.utcfromtimestamp(nowtime)
+    local = t + diff
+    local = local.strftime("%Y-%m-%d %I:%M:%S")
+    print(json.dumps(tweet._json))
+
+    prefix = "Tweet posted at"
+    if "retweeted_status" in tweet._json:
+        prefix = "Retweeted at"
+    return "%s %s: https://twitter.com/%s/status/%s" % (prefix, local, user, tid)
 
 if __name__ == "__main__":
     # print(search_untappd("heineken"))
-    get_latest_tweet("chelsea_janes")
+    print(get_latest_tweet("nationalsump"))
+    print(get_latest_tweet("chelsea_janes"))
