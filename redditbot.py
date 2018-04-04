@@ -97,6 +97,9 @@ class TwitterBot:
         for tweet in new_tweets:
             if str(tweet.id) != last_id:
                 print("new tweet %d" % tweet.id)
+                with open('lasttweet.txt','w') as f:
+                    f.write(str(tweet.id))
+
                 # post on reddit
                 reddit = praw.Reddit(client_id=self.r_cid,
                       client_secret=self.r_token,
@@ -113,9 +116,6 @@ class TwitterBot:
                         comment = "[%s](%s)%s" % (comment[:index], picture, comment[index:])
                         comment = comment + "\n\nhttps://twitter.com/NationalsUmp/status/%d" % (tweet.id)
                         submission.reply(comment)
-
-                        with open('lasttweet.txt','w') as f:
-                            f.write(str(tweet.id))
 
 if __name__ == "__main__":
     r = RedditBot()
