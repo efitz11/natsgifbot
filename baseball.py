@@ -54,6 +54,7 @@ class Baseball():
             if teamname == "Nats":
                 teamname = "Nationals"
             scoring_plays = mymlbstats.list_scoring_plays(teamname, delta)
+            print(teamname,scoring_plays)
             if len(scoring_plays) > 0:
                 output = "```"
                 lastinning = ""
@@ -69,6 +70,7 @@ class Baseball():
                 return
             else:
                 await self.bot.say("No scoring plays")
+                return
         elif team[0] == 'leaders':
             stat = team[1]
             output = '```'
