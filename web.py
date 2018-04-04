@@ -81,7 +81,7 @@ def get_latest_tweet(user):
     diff = datetime.fromtimestamp(nowtime) - datetime.utcfromtimestamp(nowtime)
     local = t + diff
     local = local.strftime("%Y-%m-%d %I:%M:%S")
-    print(json.dumps(tweet._json))
+    # print(json.dumps(tweet._json))
 
     prefix = "Tweet posted at"
     if "retweeted_status" in tweet._json:
