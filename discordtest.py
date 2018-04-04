@@ -428,7 +428,12 @@ async def daymedals(*delta:int):
 async def ig(username:str):
     """get the latest instagram post by the user"""
     await bot.say(web.get_latest_post(username))
-    
+
+@bot.command()
+async def tweet(username:str):
+    """get the latest tweet by the user"""
+    await bot.say(web.get_latest_tweet(username))
+
 @bot.event
 async def on_message(message):
     #stuff
