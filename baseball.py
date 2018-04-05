@@ -36,8 +36,10 @@ class Baseball():
         !mlb <team> - return game info for today for that team
         !mlb <division> - return division standings (ale,alc,alw,nle,nlc,nlw,alwc,nlwc)
         !mlb sp <team> - print scoring plays for today's game
+        !mlb ohtani - get ohtani's stats for the day
         each of the previous commands can end in a number of (+days or -days) to change the date
-        !mlb leaders <stat> - list MLB leaders in that stat"""
+        !mlb leaders <stat> - list MLB leaders in that stat
+        """
         delta=None
 
         if len(team) > 0 and (team[-1].startswith('-') or team[-1].startswith('+')):

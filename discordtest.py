@@ -434,6 +434,11 @@ async def tweet(username:str):
     """get the latest tweet by the user"""
     await bot.say(web.get_latest_tweet(username))
 
+@bot.command()
+async def imdb(*query):
+    """get the first IMDB result for your query"""
+    await bot.say(web.search_imdb(' '.join(query)))
+
 @bot.event
 async def on_message(message):
     #stuff
