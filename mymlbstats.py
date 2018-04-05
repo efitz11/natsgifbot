@@ -351,19 +351,39 @@ def get_player_stats(name, delta=None):
     else:
         opp = game['teams']['away']['team']['abbreviation']
         side = 'home'
+    useDH = False
+    if game['teams']['home']['team']['league']['id'] == 103:
+        useDH = True
     box = get_boxscore(str(gamepk))
     try:
         stats = box['teams'][side]['players']['ID' + str(pid)]['stats']
     except KeyError:
         return "No stats found for player %s" % disp_name
     d = _get_date_from_delta(delta)
-    output = "%s %d/%d vs %s:\n" % (disp_name, d.month, d.day, opp.upper())
-    hasstats=False
-    if 'atBats' in stats['batting']:
+    output = "%s %d/%d vs %s:\n\n" % (disp_name, d.month, d.day, opp.upper())
+    hasstats = False
+    pitcher = False
+    if 'inningsPitched' in stats['pitching']:
+        hasstats = True
+        pitcher = True
+        s = stats['pitching']
+        dec = ""
+        if 'note' in s:
+            dec = s['note']
+        output = output + " IP  H  R ER HR BB SO\n"
+        output = output + "%s %2d %2d %2d %2d %2d %2d %s\n\n" % (s['inningsPitched'],
+                                                               s['hits'],
+                                                               s['runs'],
+                                                               s['earnedRuns'],
+                                                               s['homeRuns'],
+                                                               s['baseOnBalls'],
+                                                               s['strikeOuts'],
+                                                               dec)
+    if 'atBats' in stats['batting'] and (pitcher and not useDH):
         hasstats=True
         s = stats['batting']
         output = output + "AB H 2B 3B HR R RBI BB SO SB CS\n"
-        output = output + " %d %d  %d  %d  %d %d   %d  %d  %d %2d %2d\n\n" % (
+        output = output + " %d %d  %d  %d  %d %d   %d  %d  %d %2d %2d\n" % (
             s['atBats'],
             s['hits'],
             s['doubles'],
@@ -375,21 +395,6 @@ def get_player_stats(name, delta=None):
             s['strikeOuts'],
             s['stolenBases'],
             s['caughtStealing'])
-    if 'inningsPitched' in stats['pitching']:
-        hasstats=True
-        s = stats['pitching']
-        dec = ""
-        if 'note' in s:
-            dec = s['note']
-        output = output + " IP  H  R ER HR BB SO\n"
-        output = output + "%s %2d %2d %2d %2d %2d %2d %s\n" % (s['inningsPitched'],
-                                                               s['hits'],
-                                                               s['runs'],
-                                                               s['earnedRuns'],
-                                                               s['homeRuns'],
-                                                               s['baseOnBalls'],
-                                                               s['strikeOuts'],
-                                                               dec)
     if not hasstats:
         return "No stats for %s on %d/%d vs %s" % (disp_name, d.month, d.day, opp.upper())
     return output
@@ -397,53 +402,7 @@ def get_player_stats(name, delta=None):
 
 
 def get_ohtani_stats(delta=None,pitching=False):
-    s = get_day_schedule(delta)
-    games = s['dates'][0]['games']
-    for game in games:
-        awayabv = game['teams']['away']['team']['abbreviation'].lower()
-        homeabv = game['teams']['home']['team']['abbreviation'].lower()
-        if awayabv == 'laa' or homeabv == 'laa':
-            side = 'home'
-            opp = awayabv
-            if awayabv == 'laa':
-                side = 'away'
-                opp = homeabv
-            gamepk = str(game['gamePk'])
-            print(gamepk)
-            box = get_boxscore(gamepk)
-            # teams.home.players.ID660271
-            stats = box['teams'][side]['players']['ID660271']['stats']
-            d = _get_date_from_delta(delta)
-            output = "Ohtani %d/%d vs %s:\n" % (d.month, d.day, opp.upper())
-            if 'atBats' in stats['batting']:
-                s = stats['batting']
-                output = output + "AB H 2B 3B HR R RBI BB SO\n"
-                output = output + " %d %d  %d  %d  %d %d   %d  %d  %d\n\n" % (
-                                                                  s['atBats'],
-                                                                  s['hits'],
-                                                                  s['doubles'],
-                                                                  s['triples'],
-                                                                  s['homeRuns'],
-                                                                  s['runs'],
-                                                                  s['rbi'],
-                                                                  s['baseOnBalls'],
-                                                                  s['strikeOuts'])
-            if 'inningsPitched' in stats['pitching']:
-                s = stats['pitching']
-                dec = ""
-                if 'note' in s:
-                    dec = s['note']
-                output = output + " IP  H  R ER HR BB SO\n"
-                output = output + "%s %2d %2d %2d %2d %2d %2d %s\n" % (s['inningsPitched'],
-                                                                  s['hits'],
-                                                                  s['runs'],
-                                                                  s['earnedRuns'],
-                                                                  s['homeRuns'],
-                                                                  s['baseOnBalls'],
-                                                                  s['strikeOuts'],
-                                                                  dec)
-            return output
-
+    return get_player_stats("shohei ohtani",delta=delta)
 
 if __name__ == "__main__":
     #make_mlb_schedule()
@@ -456,4 +415,6 @@ if __name__ == "__main__":
     #bs.print_box()
     # print(list_scoring_plays('Marlins'))
     # print(get_ohtani_stats())
-    print(get_player_stats("trea turner"))
+    print(get_player_stats("max scherzer"))
+    print(get_player_stats("felix hernandez"))
+    print(get_player_stats("shohei ohtani",delta="-3"))
