@@ -153,7 +153,7 @@ def get_day_schedule(delta=None,scoringplays=False):
     url = "https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=" + date + "&hydrate=probablePitcher,person,decisions,team"
     if scoringplays:
         url = url + ",scoringplays"
-    print(url)
+    # print(url)
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     s = json.loads(urlopen(req).read().decode("utf-8"))
     return s
@@ -309,7 +309,7 @@ def get_stat_leader(stat):
                         leader['value']))
     return players
 
-def get_ohtani_stats(delta=None):
+def get_ohtani_stats(delta=None,pitching=False):
     s = get_day_schedule(delta)
     games = s['dates'][0]['games']
     for game in games:
@@ -322,18 +322,35 @@ def get_ohtani_stats(delta=None):
             gamepk = str(game['gamePk'])
             box = get_boxscore(gamepk)
             # teams.home.players.ID660271
-            s = box['teams'][side]['players']['ID660271']['stats']['batting']
-            output = "AB H 2B 3B HR R RBI BB SO\n"
-            output = output + " %d %d  %d  %d  %d %d   %d  %d  %d" % (
-                                                              s['atBats'],
-                                                              s['hits'],
-                                                              s['doubles'],
-                                                              s['triples'],
-                                                              s['homeRuns'],
-                                                              s['runs'],
-                                                              s['rbi'],
-                                                              s['baseOnBalls'],
-                                                              s['strikeOuts'])
+            stats = box['teams'][side]['players']['ID660271']['stats']
+            output = ""
+            if 'atBats' in stats['batting']:
+                s = stats['batting']
+                output = output + "AB H 2B 3B HR R RBI BB SO\n"
+                output = output + " %d %d  %d  %d  %d %d   %d  %d  %d\n\n" % (
+                                                                  s['atBats'],
+                                                                  s['hits'],
+                                                                  s['doubles'],
+                                                                  s['triples'],
+                                                                  s['homeRuns'],
+                                                                  s['runs'],
+                                                                  s['rbi'],
+                                                                  s['baseOnBalls'],
+                                                                  s['strikeOuts'])
+            if 'inningsPitched' in stats['pitching']:
+                s = stats['pitching']
+                dec = ""
+                if 'note' in s:
+                    dec = s['note']
+                output = output + " IP  H  R ER HR BB SO\n"
+                output = output + "%s %2d %2d %2d %2d %2d %2d %s\n" % (s['inningsPitched'],
+                                                                  s['hits'],
+                                                                  s['runs'],
+                                                                  s['earnedRuns'],
+                                                                  s['homeRuns'],
+                                                                  s['baseOnBalls'],
+                                                                  s['strikeOuts'],
+                                                                  dec)
             return output
 
 
@@ -347,4 +364,4 @@ if __name__ == "__main__":
     #bs = BoxScore.BoxScore(get_boxscore('529456'))
     #bs.print_box()
     # print(list_scoring_plays('Marlins'))
-    print(get_ohtani_stats())
+    print(get_ohtani_stats(delta='-3'))
