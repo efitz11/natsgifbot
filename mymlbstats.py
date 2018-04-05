@@ -359,8 +359,8 @@ def get_player_stats(name, delta=None):
     if 'atBats' in stats['batting']:
         hasstats=True
         s = stats['batting']
-        output = output + "AB H 2B 3B HR R RBI BB SO\n"
-        output = output + " %d %d  %d  %d  %d %d   %d  %d  %d\n\n" % (
+        output = output + "AB H 2B 3B HR R RBI BB SO SB CS\n"
+        output = output + " %d %d  %d  %d  %d %d   %d  %d  %d %2d %2d\n\n" % (
             s['atBats'],
             s['hits'],
             s['doubles'],
@@ -369,7 +369,9 @@ def get_player_stats(name, delta=None):
             s['runs'],
             s['rbi'],
             s['baseOnBalls'],
-            s['strikeOuts'])
+            s['strikeOuts'],
+            s['stolenBases'],
+            s['caughtStealing'])
     if 'inningsPitched' in stats['pitching']:
         hasstats=True
         s = stats['pitching']
@@ -451,4 +453,4 @@ if __name__ == "__main__":
     #bs.print_box()
     # print(list_scoring_plays('Marlins'))
     # print(get_ohtani_stats())
-    print(get_player_stats("aj cole"))
+    print(get_player_stats("trea turner"))
