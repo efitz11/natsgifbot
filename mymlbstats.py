@@ -137,6 +137,7 @@ def get_linescore(gamepk):
 
 def get_boxscore(gamepk):
     url = "https://statsapi.mlb.com/api/v1/game/" + gamepk + "/boxscore"
+    print(url)
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     s = json.loads(urlopen(req).read().decode("utf-8"))
     return s
@@ -155,9 +156,9 @@ def get_day_schedule(delta=None,teamid=None,scoringplays=False):
         hydrates = hydrates + ",scoringplays"
     team = ""
     if teamid is not None:
-        team = "&teamID=" + str(teamid)
+        team = "&teamId=" + str(teamid)
     url = "https://statsapi.mlb.com/api/v1/schedule?sportId=1" + team + "&date=" + date + hydrates
-    # print(url)
+    print(url)
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     s = json.loads(urlopen(req).read().decode("utf-8"))
     return s
@@ -318,10 +319,12 @@ def _get_player_search(name):
     name = name.upper()
     url = "http://lookup-service-prod.mlb.com/json/named.search_player_all.bam?sport_code=%27mlb%27&name_part=%27"+ \
           name+"%25%27&active_sw=%27Y%27"
+    print(url)
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     s = json.loads(urlopen(req).read().decode("utf-8"))
     result = s['search_player_all']['queryResults']
     size = int(result['totalSize'])
+    print(size)
     if size > 1:
         return result['row'][0]
     elif size == 1:
@@ -331,6 +334,7 @@ def _get_player_search(name):
 
 def get_player_stats(name, delta=None):
     name = name.replace(' ', '+')
+    print(name)
     player = _get_player_search(name.upper())
     if player is None:
         return ""
@@ -340,13 +344,15 @@ def get_player_stats(name, delta=None):
     s = get_day_schedule(delta,teamid=teamid)
     game = s['dates'][0]['games'][0]
     gamepk = game['gamePk']
+    print(gamepk)
     if game['teams']['away']['team']['id'] == teamid:
         opp = game['teams']['home']['team']['abbreviation']
+        side = 'away'
     else:
         opp = game['teams']['away']['team']['abbreviation']
-    url = "https://statsapi.mlb.com/api/v1/people/%s/stats/game/%s" % (pid, gamepk)
-    req = Request(url, headers={'User-Agent' : "ubuntu"})
-    stats = json.loads(urlopen(req).read().decode("utf-8"))
+        side = 'home'
+    box = get_boxscore(str(gamepk))
+    stats = box['teams'][side]['players']['ID' + str(pid)]['stats']
     d = _get_date_from_delta(delta)
     output = "%s %d/%d vs %s:\n" % (disp_name, d.month, d.day, opp.upper())
     if 'atBats' in stats['batting']:
@@ -393,6 +399,7 @@ def get_ohtani_stats(delta=None,pitching=False):
                 side = 'away'
                 opp = homeabv
             gamepk = str(game['gamePk'])
+            print(gamepk)
             box = get_boxscore(gamepk)
             # teams.home.players.ID660271
             stats = box['teams'][side]['players']['ID660271']['stats']
@@ -438,5 +445,5 @@ if __name__ == "__main__":
     #bs = BoxScore.BoxScore(get_boxscore('529456'))
     #bs.print_box()
     # print(list_scoring_plays('Marlins'))
-    # print(get_ohtani_stats(delta='-3'))
-    print(get_player_stats("Trea Turner"))
+    # print(get_ohtani_stats())
+    print(get_player_stats("mike trout"))
