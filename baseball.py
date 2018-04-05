@@ -36,6 +36,7 @@ class Baseball():
         !mlb <team> - return game info for today for that team
         !mlb <division> - return division standings (ale,alc,alw,nle,nlc,nlw,alwc,nlwc)
         !mlb sp <team> - print scoring plays for today's game
+        !mlb line <player> - print the player's line for that day's game
         !mlb ohtani - get ohtani's stats for the day
         each of the previous commands can end in a number of (+days or -days) to change the date
         !mlb leaders <stat> - list MLB leaders in that stat
@@ -73,6 +74,14 @@ class Baseball():
             else:
                 await self.bot.say("No scoring plays")
                 return
+        elif team[0] == 'line':
+            player = '+'.join(team[1:])
+            out = mymlbstats.get_player_stats(player,delta)
+            if len(out) == 0:
+                await self.bot.say("couldn't find stats")
+            else:
+                await self.bot.say("```%s```" % out)
+            return
         elif team[0] == 'leaders':
             stat = team[1]
             output = '```'

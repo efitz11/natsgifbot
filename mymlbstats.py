@@ -332,7 +332,9 @@ def _get_player_search(name):
 def get_player_stats(name, delta=None):
     name = name.replace(' ', '+')
     player = _get_player_search(name.upper())
-    teamid = player['team_id']
+    if player is None:
+        return ""
+    teamid = int(player['team_id'])
     pid = player['player_id']
     disp_name = player['name_display_first_last']
     s = get_day_schedule(delta,teamid=teamid)
