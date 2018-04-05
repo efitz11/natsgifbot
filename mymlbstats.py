@@ -352,7 +352,10 @@ def get_player_stats(name, delta=None):
         opp = game['teams']['away']['team']['abbreviation']
         side = 'home'
     box = get_boxscore(str(gamepk))
-    stats = box['teams'][side]['players']['ID' + str(pid)]['stats']
+    try:
+        stats = box['teams'][side]['players']['ID' + str(pid)]['stats']
+    except KeyError:
+        return "No stats found for player %s" % disp_name
     d = _get_date_from_delta(delta)
     output = "%s %d/%d vs %s:\n" % (disp_name, d.month, d.day, opp.upper())
     hasstats=False
