@@ -355,7 +355,9 @@ def get_player_stats(name, delta=None):
     stats = box['teams'][side]['players']['ID' + str(pid)]['stats']
     d = _get_date_from_delta(delta)
     output = "%s %d/%d vs %s:\n" % (disp_name, d.month, d.day, opp.upper())
+    hasstats=False
     if 'atBats' in stats['batting']:
+        hasstats=True
         s = stats['batting']
         output = output + "AB H 2B 3B HR R RBI BB SO\n"
         output = output + " %d %d  %d  %d  %d %d   %d  %d  %d\n\n" % (
@@ -369,6 +371,7 @@ def get_player_stats(name, delta=None):
             s['baseOnBalls'],
             s['strikeOuts'])
     if 'inningsPitched' in stats['pitching']:
+        hasstats=True
         s = stats['pitching']
         dec = ""
         if 'note' in s:
@@ -382,6 +385,8 @@ def get_player_stats(name, delta=None):
                                                                s['baseOnBalls'],
                                                                s['strikeOuts'],
                                                                dec)
+    if not hasstats:
+        return "No stats for %s on %d/%d vs %s" % (disp_name, d.month, d.day, opp.upper())
     return output
 
 
