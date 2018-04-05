@@ -324,7 +324,6 @@ def _get_player_search(name):
     s = json.loads(urlopen(req).read().decode("utf-8"))
     result = s['search_player_all']['queryResults']
     size = int(result['totalSize'])
-    print(size)
     if size > 1:
         return result['row'][0]
     elif size == 1:
@@ -334,17 +333,18 @@ def _get_player_search(name):
 
 def get_player_stats(name, delta=None):
     name = name.replace(' ', '+')
-    print(name)
     player = _get_player_search(name.upper())
     if player is None:
-        return ""
+        return "No matching player found"
     teamid = int(player['team_id'])
     pid = player['player_id']
     disp_name = player['name_display_first_last']
     s = get_day_schedule(delta,teamid=teamid)
-    game = s['dates'][0]['games'][0]
+    try:
+        game = s['dates'][0]['games'][0]
+    except IndexError:
+        return "Couldn't find a game for player %s" % (disp_name)
     gamepk = game['gamePk']
-    print(gamepk)
     if game['teams']['away']['team']['id'] == teamid:
         opp = game['teams']['home']['team']['abbreviation']
         side = 'away'
@@ -446,4 +446,4 @@ if __name__ == "__main__":
     #bs.print_box()
     # print(list_scoring_plays('Marlins'))
     # print(get_ohtani_stats())
-    print(get_player_stats("mike trout"))
+    print(get_player_stats("aj cole"))
