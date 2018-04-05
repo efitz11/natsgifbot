@@ -147,12 +147,16 @@ def get_game_feed(gamepk):
     s = json.loads(urlopen(req).read().decode("utf-8"))
     return s
 
-def get_day_schedule(delta=None,scoringplays=False):
+def get_day_schedule(delta=None,teamid=None,scoringplays=False):
     now = _get_date_from_delta(delta)
     date = str(now.year) + "-" + str(now.month).zfill(2) + "-" + str(now.day).zfill(2)
-    url = "https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=" + date + "&hydrate=probablePitcher,person,decisions,team"
+    hydrates = "&hydrate=probablePitcher,person,decisions,team"
     if scoringplays:
-        url = url + ",scoringplays"
+        hydrates = hydrates + ",scoringplays"
+    team = ""
+    if teamid is not None:
+        team = "&teamID=" + str(teamid)
+    url = "https://statsapi.mlb.com/api/v1/schedule?sportId=1" + team + "&date=" + date + hydrates
     # print(url)
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     s = json.loads(urlopen(req).read().decode("utf-8"))
@@ -309,6 +313,71 @@ def get_stat_leader(stat):
                         leader['value']))
     return players
 
+def _get_player_search(name):
+    # find player id
+    name = name.upper()
+    url = "http://lookup-service-prod.mlb.com/json/named.search_player_all.bam?sport_code=%27mlb%27&name_part=%27"+ \
+          name+"%25%27&active_sw=%27Y%27"
+    req = Request(url, headers={'User-Agent' : "ubuntu"})
+    s = json.loads(urlopen(req).read().decode("utf-8"))
+    result = s['search_player_all']['queryResults']
+    size = int(result['totalSize'])
+    if size > 1:
+        return result['row'][0]
+    elif size == 1:
+        return result['row']
+    else:
+        return None
+
+def get_player_stats(name, delta=None):
+    name = name.replace(' ', '+')
+    player = _get_player_search(name.upper())
+    teamid = player['team_id']
+    pid = player['player_id']
+    disp_name = player['name_display_first_last']
+    s = get_day_schedule(delta,teamid=teamid)
+    game = s['dates'][0]['games'][0]
+    gamepk = game['gamePk']
+    if game['teams']['away']['team']['id'] == teamid:
+        opp = game['teams']['home']['team']['abbreviation']
+    else:
+        opp = game['teams']['away']['team']['abbreviation']
+    url = "https://statsapi.mlb.com/api/v1/people/%s/stats/game/%s" % (pid, gamepk)
+    req = Request(url, headers={'User-Agent' : "ubuntu"})
+    stats = json.loads(urlopen(req).read().decode("utf-8"))
+    d = _get_date_from_delta(delta)
+    output = "%s %d/%d vs %s:\n" % (disp_name, d.month, d.day, opp.upper())
+    if 'atBats' in stats['batting']:
+        s = stats['batting']
+        output = output + "AB H 2B 3B HR R RBI BB SO\n"
+        output = output + " %d %d  %d  %d  %d %d   %d  %d  %d\n\n" % (
+            s['atBats'],
+            s['hits'],
+            s['doubles'],
+            s['triples'],
+            s['homeRuns'],
+            s['runs'],
+            s['rbi'],
+            s['baseOnBalls'],
+            s['strikeOuts'])
+    if 'inningsPitched' in stats['pitching']:
+        s = stats['pitching']
+        dec = ""
+        if 'note' in s:
+            dec = s['note']
+        output = output + " IP  H  R ER HR BB SO\n"
+        output = output + "%s %2d %2d %2d %2d %2d %2d %s\n" % (s['inningsPitched'],
+                                                               s['hits'],
+                                                               s['runs'],
+                                                               s['earnedRuns'],
+                                                               s['homeRuns'],
+                                                               s['baseOnBalls'],
+                                                               s['strikeOuts'],
+                                                               dec)
+    return output
+
+
+
 def get_ohtani_stats(delta=None,pitching=False):
     s = get_day_schedule(delta)
     games = s['dates'][0]['games']
@@ -367,4 +436,5 @@ if __name__ == "__main__":
     #bs = BoxScore.BoxScore(get_boxscore('529456'))
     #bs.print_box()
     # print(list_scoring_plays('Marlins'))
-    print(get_ohtani_stats(delta='-3'))
+    # print(get_ohtani_stats(delta='-3'))
+    print(get_player_stats("Trea Turner"))
