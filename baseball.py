@@ -86,6 +86,13 @@ class Baseball():
             output = output + "```"
             await self.bot.say(output)
             return
+        elif team[0] == 'ohtani':
+            out = mymlbstats.get_ohtani_stats(delta)
+            if out is not None:
+                await self.bot.say("```%s```" % out)
+            else:
+                await self.bot.say("No stats found")
+            return
         else:
             teamname = ' '.join(team).lower()
         if teamname == "nats":
