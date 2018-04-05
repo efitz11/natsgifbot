@@ -379,7 +379,7 @@ def get_player_stats(name, delta=None):
                                                                s['baseOnBalls'],
                                                                s['strikeOuts'],
                                                                dec)
-    if 'atBats' in stats['batting'] and (pitcher and not useDH):
+    if 'atBats' in stats['batting'] and (not pitcher or (pitcher and not useDH)):
         hasstats=True
         s = stats['batting']
         output = output + "AB H 2B 3B HR R RBI BB SO SB CS\n"
@@ -415,6 +415,7 @@ if __name__ == "__main__":
     #bs.print_box()
     # print(list_scoring_plays('Marlins'))
     # print(get_ohtani_stats())
-    print(get_player_stats("max scherzer"))
+    print(get_player_stats("bryce harper"))
+    print(get_player_stats("shohei ohtani"))
     print(get_player_stats("felix hernandez"))
     print(get_player_stats("shohei ohtani",delta="-3"))
