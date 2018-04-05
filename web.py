@@ -88,7 +88,20 @@ def get_latest_tweet(user):
         prefix = "Retweeted at"
     return "%s %s: https://twitter.com/%s/status/%s" % (prefix, local, user, tid)
 
+def search_imdb(query):
+    url = "http://www.imdb.com/find?ref_=nv_sr_fn&q=" + urllib.parse.quote_plus(query) + "&s=all"
+    req = Request(url, headers={'User-Agent' : "ubuntu"})
+    data = urlopen(req).read().decode('utf-8')
+    soup = BeautifulSoup(data, 'html.parser')
+    divs = soup.findAll(class_="findSection")
+    div = divs[0]
+    soup1 = BeautifulSoup(str(div),'html.parser')
+    href = soup1.find('tr').find('a')['href']
+    out = "https://imdb.com%s" % href
+    return out
+
 if __name__ == "__main__":
     # print(search_untappd("heineken"))
-    print(get_latest_tweet("nationalsump"))
-    print(get_latest_tweet("chelsea_janes"))
+    # print(get_latest_tweet("nationalsump"))
+    # print(get_latest_tweet("chelsea_janes"))
+    search_imdb("ryan reynolds")
