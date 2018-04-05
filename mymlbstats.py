@@ -309,6 +309,33 @@ def get_stat_leader(stat):
                         leader['value']))
     return players
 
+def get_ohtani_stats(delta=None):
+    s = get_day_schedule(delta)
+    games = s['dates'][0]['games']
+    for game in games:
+        awayabv = game['teams']['away']['team']['abbreviation'].lower()
+        homeabv = game['teams']['home']['team']['abbreviation'].lower()
+        if awayabv == 'laa' or homeabv == 'laa':
+            side = 'home'
+            if awayabv == 'laa':
+                side = 'away'
+            gamepk = str(game['gamePk'])
+            box = get_boxscore(gamepk)
+            # teams.home.players.ID660271
+            s = box['teams'][side]['players']['ID660271']['stats']['batting']
+            output = "AB H 2B 3B HR R RBI BB SO\n"
+            output = output + " %d %d  %d  %d  %d %d   %d  %d  %d" % (
+                                                              s['atBats'],
+                                                              s['hits'],
+                                                              s['doubles'],
+                                                              s['triples'],
+                                                              s['homeRuns'],
+                                                              s['runs'],
+                                                              s['rbi'],
+                                                              s['baseOnBalls'],
+                                                              s['strikeOuts'])
+            return output
+
 
 if __name__ == "__main__":
     #make_mlb_schedule()
@@ -319,4 +346,5 @@ if __name__ == "__main__":
     # get_div_standings("nle")
     #bs = BoxScore.BoxScore(get_boxscore('529456'))
     #bs.print_box()
-    print(list_scoring_plays('Marlins'))
+    # print(list_scoring_plays('Marlins'))
+    print(get_ohtani_stats())
