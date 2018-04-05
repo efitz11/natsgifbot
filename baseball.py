@@ -88,7 +88,7 @@ class Baseball():
             return
         elif team[0] == 'ohtani':
             out = mymlbstats.get_ohtani_stats(delta)
-            if out is not None:
+            if len(out) > 0:
                 await self.bot.say("```%s```" % out)
             else:
                 await self.bot.say("No stats found")
