@@ -244,13 +244,21 @@ def convert_number_to_emoji(num):
     
 @bot.command()
 async def countdown():
-    od = datetime(2018,3,30) - datetime.now()
-    ho = datetime(2018,4,5) - datetime.now()
-
-    if od.days >= -1:
-        await bot.say("%s %s until Opening Day, 2018" % (convert_number_to_emoji(od.days+1), "day" if (od.days+1 == 1) else "days"))
-    if ho.days >= -1:
-        await bot.say("%s %s until Nationals Home Opener, 2018" % (convert_number_to_emoji(ho.days+1), "day" if (ho.days+1 == 1) else "days"))
+    # od = datetime(2018,3,30) - datetime.now()
+    # ho = datetime(2018,4,5) - datetime.now()
+    #
+    # if od.days >= -1:
+    #     await bot.say("%s %s until Opening Day, 2018" % (convert_number_to_emoji(od.days+1), "day" if (od.days+1 == 1) else "days"))
+    # if ho.days >= -1:
+    #     await bot.say("%s %s until Nationals Home Opener, 2018" % (convert_number_to_emoji(ho.days+1), "day" if (ho.days+1 == 1) else "days"))
+    with open("misc.json",'r') as f:
+        s = json.loads(f.read())
+    countdown = s['countdown']
+    now = datetime.now()
+    for event in countdown:
+        d = datetime(event['year'], event['month'], event['day']) - now
+        if d.days >= -1:
+            await bot.say("%s %s until %s" % (convert_number_to_emoji(d.days+1), "day" if (d.days+1 == 1) else "days", event['name']))
 
 @bot.command()
 async def stock(*symbol:str):

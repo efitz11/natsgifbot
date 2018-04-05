@@ -400,9 +400,9 @@ def get_player_stats(name, delta=None):
     return output
 
 
+def get_ohtani_stats(delta=None):
+    return get_player_stats("shohei ohtani", delta=delta)
 
-def get_ohtani_stats(delta=None,pitching=False):
-    return get_player_stats("shohei ohtani",delta=delta)
 
 if __name__ == "__main__":
     #make_mlb_schedule()
