@@ -317,13 +317,16 @@ def get_ohtani_stats(delta=None,pitching=False):
         homeabv = game['teams']['home']['team']['abbreviation'].lower()
         if awayabv == 'laa' or homeabv == 'laa':
             side = 'home'
+            opp = awayabv
             if awayabv == 'laa':
                 side = 'away'
+                opp = homeabv
             gamepk = str(game['gamePk'])
             box = get_boxscore(gamepk)
             # teams.home.players.ID660271
             stats = box['teams'][side]['players']['ID660271']['stats']
-            output = ""
+            d = _get_date_from_delta(delta)
+            output = "Ohtani %d/%d vs %s:\n" % (d.month, d.day, opp.upper())
             if 'atBats' in stats['batting']:
                 s = stats['batting']
                 output = output + "AB H 2B 3B HR R RBI BB SO\n"
