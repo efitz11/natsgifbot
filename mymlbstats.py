@@ -389,7 +389,7 @@ def get_player_line(name, delta=None):
         hasstats=True
         s = stats['batting']
         output = output + "AB H 2B 3B HR R RBI BB SO SB CS\n"
-        output = output + " %d %d  %d  %d  %d %d   %d  %d  %d %2d %2d\n" % (
+        output = output + "%2d %d %2d %2d %2d %d %3d %2d %2d %2d %2d\n" % (
             s['atBats'],
             s['hits'],
             s['doubles'],
