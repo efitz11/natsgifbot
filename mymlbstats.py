@@ -341,12 +341,13 @@ def get_stat_leader(stat):
         return []
 
     url = "https://statsapi.mlb.com/api/v1/stats/leaders?leaderCategories=" + cat + "&hydrate=person,team&limit=10"
+    print(url)
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     s = json.loads(urlopen(req).read().decode("utf-8"))
     leaders = s['leagueLeaders'][0]['leaders']
     players = []
     for leader in leaders:
-        players.append((leader['person']['lastName'], leader['team']['abbreviation'],
+        players.append((leader['person']['lastFirstName'], leader['team']['abbreviation'],
                         leader['value']))
     return players
 
@@ -490,11 +491,12 @@ if __name__ == "__main__":
     #get_mlb_teams()
     #print(get_single_game("nationals",delta="+1"))
     # print(get_all_game_info(delta='-1'))
-    print(get_all_game_info())
+    # print(get_all_game_info())
     #get_ET_from_timestamp("2018-03-31T20:05:00Z")
     # get_div_standings("nle")
     #bs = BoxScore.BoxScore(get_boxscore('529456'))
     #bs.print_box()
+    print(get_stat_leader('sb'))
     # print(list_scoring_plays('Marlins'))
     # print(get_ohtani_stats())
     # print(get_player_season_stats("bryce harper"))
