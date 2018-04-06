@@ -44,7 +44,8 @@ def get_single_game_info(gamepk, gamejson):
     homeabv = game['teams']['home']['team']['abbreviation']
     # print(gamepk)
     if abstractstatus == "Live":
-        ls = get_linescore(gamepk)
+        # ls = get_linescore(gamepk)
+        ls = game['linescore']
         if ls['isTopInning']:
             inning = "Top"
         else:
@@ -65,19 +66,25 @@ def get_single_game_info(gamepk, gamejson):
         if 'third' in ls['offense']:
             bases = bases[:2] + "3"
         batter =  get_last_name(ls['offense']['batter']['fullName'])
+        ondeck =  get_last_name(ls['offense']['onDeck']['fullName'])
         try:
             pitcher = get_last_name(ls['defense']['pitcher']['fullName'])
         except:
             pitcher = ""
         output = output + "%s %s @ %s %s: %s - %s outs %s Count: (%s-%s)\n" % (awayabv, awayruns, homeabv, homeruns, inning, outs, bases, balls, strikes)
-        output = output + "\t" + "Pitching: %s \tBatting: %s\n" % (pitcher, batter)
-        if ls['currentInning'] >= 6 and awayhits == 0:
+        output = output + "\t" + "Pitching: %s \tBatting: %s \tOn Deck: %s\n" % (pitcher, batter, ondeck)
+        special = None
+        if game['flags']['noHitter']:
+            special = "NO H*TTER"
+        if game['flags']['perfectGame']:
+            special = "P*RFECT GAME"
+        if special is not None and awayhits == 0:
             output = output + "\t##############################\n"
-            output = output + "\t" + awayabv + " HAS NO HITS SO FAR\n"
+            output = output + "\t" + homeabv + " IS THROWING A %s" % (special)
             output = output + "\t##############################\n"
         if ls['currentInning'] >= 6 and homehits == 0:
             output = output + "\t##############################\n"
-            output = output + "\t" + homeabv + " HAS NO HITS SO FAR\n"
+            output = output + "\t" + awayabv + " IS THROWING A %s" % (special)
             output = output + "\t##############################\n"
     elif abstractstatus == "Preview":
         awaywins = game['teams']['away']['leagueRecord']['wins']
@@ -180,7 +187,7 @@ def get_team_info(teamid):
 def get_day_schedule(delta=None,teamid=None,scoringplays=False):
     now = _get_date_from_delta(delta)
     date = str(now.year) + "-" + str(now.month).zfill(2) + "-" + str(now.day).zfill(2)
-    hydrates = "&hydrate=probablePitcher,person,decisions,team,stats,flags"
+    hydrates = "&hydrate=probablePitcher,person,decisions,team,stats,flags,linescore(matchup,runners)"
     if scoringplays:
         hydrates = hydrates + ",scoringplays"
     team = ""
