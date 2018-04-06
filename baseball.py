@@ -95,10 +95,10 @@ class Baseball():
                 await self.bot.say('not found')
                 return
             for p in leaders:
-                name = p[0].ljust(12)
+                name = p[0].ljust(20)
                 team = p[1].ljust(4)
                 val  = p[2].rjust(5)
-                output = output + "%s %s %s\n" % (name, team, val)
+                output = output + "%s %s %s\n" % (val, name, team)
             output = output + "```"
             await self.bot.say(output)
             return
