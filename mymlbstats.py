@@ -86,17 +86,32 @@ def get_single_game_info(gamepk, gamejson):
         homeloss = game['teams']['home']['leagueRecord']['losses']
         if 'probablePitcher' in game['teams']['away']:
             probaway = game['teams']['away']['probablePitcher']['lastName']
+            for statgroup in game['teams']['away']['probablePitcher']['stats']:
+                if statgroup['type']['displayName'] == "statsSingleSeason" and \
+                        statgroup['group']['displayName'] == "pitching":
+                    wins = statgroup['stats']['wins']
+                    losses = statgroup['stats']['losses']
+                    era = statgroup['stats']['era']
+                    aprecord = "(%d-%d) %s" % (wins,losses,era)
+                    break
         else:
             probaway = "TBD"
         if 'probablePitcher' in game['teams']['home']:
-            probhome = game['teams']['home']['probablePitcher']['lastName']
+            for statgroup in game['teams']['home']['probablePitcher']['stats']:
+                if statgroup['type']['displayName'] == "statsSingleSeason" and \
+                        statgroup['group']['displayName'] == "pitching":
+                    probhome = game['teams']['home']['probablePitcher']['lastName']
+                    wins = statgroup['stats']['wins']
+                    losses = statgroup['stats']['losses']
+                    era = statgroup['stats']['era']
+                    hprecord = "(%d-%d) %s" % (wins,losses,era)
         else:
             probhome = "TBD"
         arecord = "(%s-%s)" % (awaywins, awayloss)
         hrecord = "(%s-%s)" % (homewins, homeloss)
         time = get_ET_from_timestamp(game['gameDate'])
         output = output + "%s %s @ %s %s # %s - %s\n" % (awayabv, arecord, homeabv, hrecord, time,detailstatus)
-        output = output + "\t%s v %s\n" % (probaway, probhome)
+        output = output + "\t%s %s v %s %s\n" % (probaway, aprecord, probhome, hprecord)
     elif abstractstatus == "Final":
         awaywins = game['teams']['away']['leagueRecord']['wins']
         awayloss = game['teams']['away']['leagueRecord']['losses']
@@ -165,7 +180,7 @@ def get_team_info(teamid):
 def get_day_schedule(delta=None,teamid=None,scoringplays=False):
     now = _get_date_from_delta(delta)
     date = str(now.year) + "-" + str(now.month).zfill(2) + "-" + str(now.day).zfill(2)
-    hydrates = "&hydrate=probablePitcher,person,decisions,team"
+    hydrates = "&hydrate=probablePitcher,person,decisions,team,stats,flags"
     if scoringplays:
         hydrates = hydrates + ",scoringplays"
     team = ""
@@ -467,7 +482,8 @@ if __name__ == "__main__":
     #make_mlb_schedule()
     #get_mlb_teams()
     #print(get_single_game("nationals",delta="+1"))
-    print(get_all_game_info(delta='-1'))
+    # print(get_all_game_info(delta='-1'))
+    print(get_all_game_info())
     #get_ET_from_timestamp("2018-03-31T20:05:00Z")
     # get_div_standings("nle")
     #bs = BoxScore.BoxScore(get_boxscore('529456'))
