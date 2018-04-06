@@ -331,7 +331,7 @@ def _get_player_search(name):
     else:
         return None
 
-def get_player_stats(name, delta=None):
+def get_player_line(name, delta=None):
     name = name.replace(' ', '+')
     player = _get_player_search(name.upper())
     if player is None:
@@ -400,8 +400,8 @@ def get_player_stats(name, delta=None):
     return output
 
 
-def get_ohtani_stats(delta=None):
-    return get_player_stats("shohei ohtani", delta=delta)
+def get_ohtani_line(delta=None):
+    return get_player_line("shohei ohtani", delta=delta)
 
 
 if __name__ == "__main__":
@@ -415,7 +415,7 @@ if __name__ == "__main__":
     #bs.print_box()
     # print(list_scoring_plays('Marlins'))
     # print(get_ohtani_stats())
-    print(get_player_stats("bryce harper"))
-    print(get_player_stats("shohei ohtani"))
-    print(get_player_stats("felix hernandez"))
-    print(get_player_stats("shohei ohtani",delta="-3"))
+    print(get_player_line("bryce harper"))
+    print(get_player_line("shohei ohtani"))
+    print(get_player_line("felix hernandez"))
+    print(get_player_line("shohei ohtani", delta="-3"))
