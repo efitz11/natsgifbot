@@ -20,7 +20,11 @@ def get_recaps(return_str=False):
         for item in c['highlights']['live']['items']:
             if item['title'].startswith("Recap:"):
                 title = item['title']
-                link = item['playbacks'][3]['url']
+                for pb in item['playbacks']:
+                    if "2500K" in pb['url']:
+                        link = pb['url']
+                        break
+                # link = item['playbacks'][3]['url']
                 duration = item['duration'][3:]
                 s = "[%s](%s) - %s\n" % (title, link, duration)
                 print(s)
@@ -35,7 +39,7 @@ def get_direct_video_url(indirecturl):
     one=url[-3]
     two=url[-2]
     thr=url[-1]
-    cid = url[url.index('c-')+2:]
+    cid = url[url.rfind('c-')+2:]
     mlburl = "http://www.mlb.com/gen/multimedia/detail/%s/%s/%s/%s.xml"%(one,two,thr,cid)
     try:
         req = Request(mlburl, headers={'User-Agent' : "ubuntu"})
@@ -92,6 +96,33 @@ def find_top_plays(return_str=False):
         return ""
     return None
 
+def find_must_cs(return_str=False):
+    url = "https://search-api.mlb.com/svc/search/v2/mlb_global_sitesearch_en/sitesearch?hl=true&facet=type&expand=partner.media&q=must%2Bc&page=1"
+    req = Request(url, headers={'User-Agent' : "ubuntu"})
+    s = json.loads(urlopen(req).read().decode("utf-8"))
+    results = s['docs']
+    yesterday = datetime.now() - timedelta(days=1)
+    vids = []
+    output = ""
+    for res in results:
+        if res['blurb'].startswith("Must C"):
+            for tag in res['tags']:
+                if tag['type'] == 'event_date':
+                    date = tag['value']
+            if date[:10] == "%d-%02d-%02d" % (yesterday.year, yesterday.month, yesterday.day):
+                blurb = res['blurb']
+                url = get_direct_video_url(res['url'])
+                duration = res['duration'][3:]
+                s = "[%s](%s) - %s\n\n" % (blurb,url,duration)
+                print(s)
+                if return_str:
+                    output = output + s
+                vids.append((blurb,url,duration))
+    if return_str:
+        return output
+    return vids
+
+
 def post_on_reddit(comment):
     import praw
     with open('.fitz.json', 'r') as f:
@@ -116,6 +147,9 @@ def post_on_reddit(comment):
 if __name__ == "__main__":
     output = find_fastcast(return_str=True)
     output = output + find_top_plays(return_str=True)
+    output = output + "****\n"
+    output = output + find_must_cs(return_str=True)
+    output = output + "****\n"
     output = output + get_recaps(return_str=True)
     if len(sys.argv) > 1 and sys.argv[1] == "post":
         post_on_reddit(output)
