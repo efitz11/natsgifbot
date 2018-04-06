@@ -82,7 +82,7 @@ def get_single_game_info(gamepk, gamejson):
             output = output + "\t##############################\n"
             output = output + "\t" + homeabv + " IS THROWING A %s" % (special)
             output = output + "\t##############################\n"
-        if ls['currentInning'] >= 6 and homehits == 0:
+        if special is not None and homehits == 0:
             output = output + "\t##############################\n"
             output = output + "\t" + awayabv + " IS THROWING A %s" % (special)
             output = output + "\t##############################\n"
