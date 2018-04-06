@@ -27,6 +27,7 @@ patternbenoit = re.compile('benoit$',re.IGNORECASE)
 patterneaton = re.compile('(?<!(Miami University Great ))(Adam Eaton)', re.IGNORECASE)
 
 pidfile = 'discordbotpid.txt'
+miscfile = 'misc.json'
     
 # get tokens from file
 f = open('tokens.txt','r')
@@ -181,7 +182,7 @@ async def memeify(*text:str):
 
 @bot.command()
 async def fuck():
-    with open("misc.json", 'r') as f:
+    with open(miscfile, 'r') as f:
         l = json.loads(f.read())['fucklist']
     num = random.randint(0,len(l)-1)
     await bot.say(('the '+ l[num]).upper())
@@ -252,7 +253,7 @@ async def countdown():
     #     await bot.say("%s %s until Opening Day, 2018" % (convert_number_to_emoji(od.days+1), "day" if (od.days+1 == 1) else "days"))
     # if ho.days >= -1:
     #     await bot.say("%s %s until Nationals Home Opener, 2018" % (convert_number_to_emoji(ho.days+1), "day" if (ho.days+1 == 1) else "days"))
-    with open("misc.json",'r') as f:
+    with open(miscfile,'r') as f:
         s = json.loads(f.read())
     countdown = s['countdown']
     now = datetime.now()
