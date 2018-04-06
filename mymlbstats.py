@@ -148,6 +148,13 @@ def get_game_feed(gamepk):
     s = json.loads(urlopen(req).read().decode("utf-8"))
     return s
 
+def get_team_info(teamid):
+    url = "http://statsapi.mlb.com/api/v1/teams/%d/roster?hydrate=person(stats(splits=statsSingleSeason))" % teamid
+    print(url)
+    req = Request(url, headers={'User-Agent' : "ubuntu"})
+    s = json.loads(urlopen(req).read().decode("utf-8"))
+    return s
+
 def get_day_schedule(delta=None,teamid=None,scoringplays=False):
     now = _get_date_from_delta(delta)
     date = str(now.year) + "-" + str(now.month).zfill(2) + "-" + str(now.day).zfill(2)
@@ -316,7 +323,7 @@ def get_stat_leader(stat):
 
 def _get_player_search(name):
     # find player id
-    name = name.upper()
+    name = name.replace(' ', '+').upper()
     url = "http://lookup-service-prod.mlb.com/json/named.search_player_all.bam?sport_code=%27mlb%27&name_part=%27"+ \
           name+"%25%27&active_sw=%27Y%27"
     print(url)
@@ -332,8 +339,7 @@ def _get_player_search(name):
         return None
 
 def get_player_line(name, delta=None):
-    name = name.replace(' ', '+')
-    player = _get_player_search(name.upper())
+    player = _get_player_search()
     if player is None:
         return "No matching player found"
     teamid = int(player['team_id'])
@@ -403,6 +409,51 @@ def get_player_line(name, delta=None):
 def get_ohtani_line(delta=None):
     return get_player_line("shohei ohtani", delta=delta)
 
+def get_player_season_stats(name):
+    player = _get_player_search(name)
+    if player is None:
+        return "No matching player found"
+    teamid = int(player['team_id'])
+    pid = int(player['player_id'])
+    disp_name = player['name_display_first_last']
+    roster = get_team_info(teamid)['roster']
+    for person in roster:
+        p = person['person']
+        if p['id'] == pid:
+            output = "Season stats for %s:\n\n" % disp_name
+            s = p['stats'][0]['splits'][0]['stat']
+            if p['stats'][0]['group']['displayName'] == 'hitting':
+                output = output + " AB   H 2B 3B HR   R RBI  BB  SO SB CS  AVG  OBP  SLG\n"
+                output = output + "%3d %3d %2d %2d %2d %3d %3d %3d %3d %2d %2d %s %s %s" % (s['atBats'],
+                                                                                            s['hits'],
+                                                                                            s['doubles'],
+                                                                                            s['triples'],
+                                                                                            s['homeRuns'],
+                                                                                            s['runs'],
+                                                                                            s['rbi'],
+                                                                                            s['baseOnBalls'],
+                                                                                            s['strikeOuts'],
+                                                                                            s['stolenBases'],
+                                                                                            s['caughtStealing'],
+                                                                                            s['avg'],
+                                                                                            s['obp'],
+                                                                                            s['slg']
+                                                                                            )
+            elif p['stats'][0]['group']['displayName'] == 'pitching':
+                output = output + " W  L  G SV    IP  SO  BB HR  ERA WHIP\n"
+                output = output + "%2d %2d %2d %2d %s %3d %3d %2d %s %s" % (s['wins'],
+                                                                            s['losses'],
+                                                                            s['gamesPitched'],
+                                                                            s['saves'],
+                                                                            s['inningsPitched'].rjust(5),
+                                                                            s['strikeOuts'],
+                                                                            s['baseOnBalls'],
+                                                                            s['homeRuns'],
+                                                                            s['era'],
+                                                                            s['whip']
+                                                                            )
+            return output
+    return "No stats for %s" % disp_name
 
 if __name__ == "__main__":
     #make_mlb_schedule()
@@ -415,7 +466,7 @@ if __name__ == "__main__":
     #bs.print_box()
     # print(list_scoring_plays('Marlins'))
     # print(get_ohtani_stats())
-    print(get_player_line("bryce harper"))
-    print(get_player_line("shohei ohtani"))
-    print(get_player_line("felix hernandez"))
-    print(get_player_line("shohei ohtani", delta="-3"))
+    print(get_player_season_stats("bryce harper"))
+    print(get_player_season_stats("shohei ohtani"))
+    # print(get_player_line("felix hernandez"))
+    # print(get_player_line("shohei ohtani", delta="-3"))
