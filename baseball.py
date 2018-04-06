@@ -39,6 +39,7 @@ class Baseball():
         !mlb line <player> - print the player's line for that day's game
         !mlb ohtani - get ohtani's stats for the day
         each of the previous commands can end in a number of (+days or -days) to change the date
+        !mlb stats <player> - print the player's season stats
         !mlb leaders <stat> - list MLB leaders in that stat
         """
         delta=None
