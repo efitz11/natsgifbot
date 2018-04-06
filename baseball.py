@@ -76,7 +76,7 @@ class Baseball():
                 return
         elif team[0] == 'line':
             player = '+'.join(team[1:])
-            out = mymlbstats.get_player_stats(player,delta)
+            out = mymlbstats.get_player_line(player, delta)
             if len(out) == 0:
                 await self.bot.say("couldn't find stats")
             else:
@@ -98,7 +98,7 @@ class Baseball():
             await self.bot.say(output)
             return
         elif team[0] == 'ohtani':
-            out = mymlbstats.get_ohtani_stats(delta)
+            out = mymlbstats.get_ohtani_line(delta)
             if len(out) > 0:
                 await self.bot.say("```%s```" % out)
             else:
