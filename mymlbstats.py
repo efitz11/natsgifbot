@@ -339,7 +339,7 @@ def _get_player_search(name):
         return None
 
 def get_player_line(name, delta=None):
-    player = _get_player_search()
+    player = _get_player_search(name)
     if player is None:
         return "No matching player found"
     teamid = int(player['team_id'])
