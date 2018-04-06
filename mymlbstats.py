@@ -111,7 +111,7 @@ def get_single_game_info(gamepk, gamejson):
         hrecord = "(%s-%s)" % (homewins, homeloss)
         time = get_ET_from_timestamp(game['gameDate'])
         output = output + "%s %s @ %s %s # %s - %s\n" % (awayabv, arecord, homeabv, hrecord, time,detailstatus)
-        output = output + "\t%s %s v %s %s\n" % (probaway, aprecord, probhome, hprecord)
+        output = output + "\t# %s %s v %s %s\n" % (probaway, aprecord, probhome, hprecord)
     elif abstractstatus == "Final":
         awaywins = game['teams']['away']['leagueRecord']['wins']
         awayloss = game['teams']['away']['leagueRecord']['losses']
