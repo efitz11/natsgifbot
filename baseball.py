@@ -82,6 +82,10 @@ class Baseball():
             else:
                 await self.bot.say("```%s```" % out)
             return
+        elif team[0] == 'stats':
+            player = '+'.join(team[1:])
+            await self.bot.say("```%s```" % mymlbstats.get_player_season_stats(player))
+            return
         elif team[0] == 'leaders':
             stat = team[1]
             output = '```'
