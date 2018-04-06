@@ -414,13 +414,14 @@ def get_player_season_stats(name):
     if player is None:
         return "No matching player found"
     teamid = int(player['team_id'])
+    teamabv = player['team_abbrev']
     pid = int(player['player_id'])
     disp_name = player['name_display_first_last']
     roster = get_team_info(teamid)['roster']
     for person in roster:
         p = person['person']
         if p['id'] == pid:
-            output = "Season stats for %s:\n\n" % disp_name
+            output = "Season stats for %s (%s):\n\n" % (disp_name, teamabv)
             s = p['stats'][0]['splits'][0]['stat']
             if p['stats'][0]['group']['displayName'] == 'hitting':
                 output = output + " AB   H 2B 3B HR   R RBI  BB  SO SB CS  AVG  OBP  SLG\n"
