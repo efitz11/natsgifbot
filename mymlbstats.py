@@ -84,8 +84,14 @@ def get_single_game_info(gamepk, gamejson):
         awayloss = game['teams']['away']['leagueRecord']['losses']
         homewins = game['teams']['home']['leagueRecord']['wins']
         homeloss = game['teams']['home']['leagueRecord']['losses']
-        probaway = game['teams']['away']['probablePitcher']['lastName']
-        probhome = game['teams']['home']['probablePitcher']['lastName']
+        if 'probablePitcher' in game['teams']['away']:
+            probaway = game['teams']['away']['probablePitcher']['lastName']
+        else:
+            probaway = "TBD"
+        if 'probablePitcher' in game['teams']['home']:
+            probhome = game['teams']['home']['probablePitcher']['lastName']
+        else:
+            probhome = "TBD"
         arecord = "(%s-%s)" % (awaywins, awayloss)
         hrecord = "(%s-%s)" % (homewins, homeloss)
         time = get_ET_from_timestamp(game['gameDate'])
@@ -101,7 +107,7 @@ def get_single_game_info(gamepk, gamejson):
         try:
             aruns = game['teams']['away']['score']
             hruns = game['teams']['home']['score']
-            output = output + "%s %s %s @ %s %s %s # %s\n" % (awayabv, aruns, arecord, homeabv, hruns, hrecord, detailstatus)
+            output = output + "%s %2d %s @ %s %s %s # %s\n" % (awayabv, aruns, arecord, homeabv, hruns, hrecord, detailstatus)
             if 'decisions' in game:
                 decisions = game['decisions']
                 wp = get_last_name(decisions['winner']['fullName'])
@@ -461,7 +467,7 @@ if __name__ == "__main__":
     #make_mlb_schedule()
     #get_mlb_teams()
     #print(get_single_game("nationals",delta="+1"))
-    # print(get_all_game_info(delta='-1'))
+    print(get_all_game_info(delta='-1'))
     #get_ET_from_timestamp("2018-03-31T20:05:00Z")
     # get_div_standings("nle")
     #bs = BoxScore.BoxScore(get_boxscore('529456'))
@@ -471,4 +477,4 @@ if __name__ == "__main__":
     # print(get_player_season_stats("bryce harper"))
     # print(get_player_season_stats("jose guillen"))
     # print(get_player_line("felix hernandez"))
-    print(get_player_line("ryan zimmerman", delta="-4382"))
+    # print(get_player_line("ryan zimmerman", delta="-4382"))
