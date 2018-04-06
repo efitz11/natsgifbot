@@ -102,13 +102,14 @@ def get_single_game_info(gamepk, gamejson):
             aruns = game['teams']['away']['score']
             hruns = game['teams']['home']['score']
             output = output + "%s %s %s @ %s %s %s # %s\n" % (awayabv, aruns, arecord, homeabv, hruns, hrecord, detailstatus)
-            decisions = game['decisions']
-            wp = get_last_name(decisions['winner']['fullName'])
-            lp = get_last_name(decisions['loser']['fullName'])
-            output = output + "\t WP: %s LP: %s" % (wp.ljust(12), lp.ljust(12))
-            if 'save' in decisions:
-                output = output + "\t SV: %s" % (get_last_name(decisions['save']['fullName']))
-            output = output + "\n"
+            if 'decisions' in game:
+                decisions = game['decisions']
+                wp = get_last_name(decisions['winner']['fullName'])
+                lp = get_last_name(decisions['loser']['fullName'])
+                output = output + "\t WP: %s LP: %s" % (wp.ljust(12), lp.ljust(12))
+                if 'save' in decisions:
+                    output = output + "\t SV: %s" % (get_last_name(decisions['save']['fullName']))
+                output = output + "\n"
         except KeyError:
             # no score - game was probably postponed
             output = output + "%s %s @ %s %s # %s\n" % (awayabv, arecord, homeabv, hrecord, detailstatus)
@@ -467,7 +468,7 @@ if __name__ == "__main__":
     #bs.print_box()
     # print(list_scoring_plays('Marlins'))
     # print(get_ohtani_stats())
-    print(get_player_season_stats("bryce harper"))
-    print(get_player_season_stats("shohei ohtani"))
+    # print(get_player_season_stats("bryce harper"))
+    # print(get_player_season_stats("jose guillen"))
     # print(get_player_line("felix hernandez"))
-    # print(get_player_line("shohei ohtani", delta="-3"))
+    print(get_player_line("ryan zimmerman", delta="-4382"))
