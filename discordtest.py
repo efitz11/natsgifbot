@@ -181,7 +181,8 @@ async def memeify(*text:str):
 
 @bot.command()
 async def fuck():
-    l = ['barves','cubs','dh','dodgers','mets','yankees']
+    with open("misc.json", 'r') as f:
+        l = json.loads(f.read())['fucklist']
     num = random.randint(0,len(l)-1)
     await bot.say(('the '+ l[num]).upper())
     
