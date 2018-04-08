@@ -278,7 +278,7 @@ def list_scoring_plays(team,delta=None):
         if team in aname or team in hname or team in aabrv or team in habrv:
             for i in game['scoringPlays']:
                 inning = i['about']['halfInning'].upper() + " " + str(i['about']['inning'])
-                desc = "With " + i['matchup']['pitcher']['fullName'] + " pitching, " + i['result']['description']
+                desc = "With " + i['matchup']['pitcher']['fullName'] + " pitching, " + i['result']['description'] + "(%s-%s)" % (i['result']['awayScore'], i['result']['homeScore'])
                 plays.append((inning, desc))
     return plays
 
@@ -507,7 +507,7 @@ def get_player_season_stats(name):
 if __name__ == "__main__":
     #make_mlb_schedule()
     #get_mlb_teams()
-    print(get_single_game("nyy"))
+    # print(get_single_game("nyy"))
     # print(get_single_game("nationals",delta="+1"))
     # print(get_all_game_info(delta='-1'))
     # print(get_all_game_info())
@@ -516,7 +516,7 @@ if __name__ == "__main__":
     #bs = BoxScore.BoxScore(get_boxscore('529456'))
     #bs.print_box()
     # print(get_stat_leader('sb'))
-    # print(list_scoring_plays('Marlins'))
+    print(list_scoring_plays('nyy'))
     # print(get_ohtani_stats())
     # print(get_player_season_stats("bryce harper"))
     # print(get_player_season_stats("jose guillen"))
