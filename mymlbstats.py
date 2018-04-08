@@ -77,8 +77,10 @@ def get_single_game_info(gamepk, gamejson, show_on_deck=False):
         # output = output + "%s %s @ %s %s: %s - %s outs %s Count: (%s-%s)\n" % (awayabv, awayruns, homeabv, homeruns, inning, outs, bases, balls, strikes)
         # output = output + "\t" + "Pitching: %s \tBatting: %s \tOn Deck: %s\n" % (pitcher, batter, ondeck)
         count = " %s-%s " % (balls, strikes)
-        output = "%s %s | %s | %s | %s | %s | %s\n" % (awayabv, str(awayruns).rjust(2), inninghalf, "out", "bases", "count", "P: " + pitcher)
-        output = output + "%s %s | %s |  %s  |  %s  | %s | %s\t %s\n" % (homeabv, str(homeruns).rjust(2), inning, outs, bases, count, "B: " + batter, ondeck)
+        # output = "%s %s | %s | %s | %s | %s | %s\n" % (awayabv, str(awayruns).rjust(2), inninghalf, "out", "bases", "count", "P: " + pitcher)
+        # output = output + "%s %s | %s |  %s  |  %s  | %s | %s\t %s\n" % (homeabv, str(homeruns).rjust(2), inning, outs, bases, count, "B: " + batter, ondeck)
+        output = "%s %s | %s %s | %s | %s | %s\n" % (awayabv, str(awayruns).rjust(2), inninghalf, inning, "bases", "count", "P: " + pitcher)
+        output = output + "%s %s |  %s %s  |  %s  | %s | %s\t %s\n" % (homeabv, str(homeruns).rjust(2), outs, "out", bases, count, "B: " + batter, ondeck)
         special = None
         if game['flags']['noHitter']:
             special = "NO H*TTER"
@@ -207,7 +209,7 @@ def get_team_info(teamid):
 def get_day_schedule(delta=None,teamid=None,scoringplays=False):
     now = _get_date_from_delta(delta)
     date = str(now.year) + "-" + str(now.month).zfill(2) + "-" + str(now.day).zfill(2)
-    hydrates = "&hydrate=probablePitcher,person,decisions,team,stats,flags,linescore(matchup,runners)"
+    hydrates = "&hydrate=probablePitcher,person,decisions,team,stats,flags,linescore(matchup,runners),previousPlay"
     if scoringplays:
         hydrates = hydrates + ",scoringplays"
     team = ""
@@ -255,6 +257,7 @@ def get_single_game(team,delta=None):
             abstractstatus = game['status']['abstractGameState']
             if abstractstatus == "Live":
                 pbp = get_pbp(gamepk)
+                # pbp =
                 try:
                     if 'description' not in pbp['allPlays'][-1]['result']:
                         lastplay = pbp['allPlays'][-2]
@@ -262,7 +265,7 @@ def get_single_game(team,delta=None):
                         lastplay = pbp['allPlays'][-1]
                     desc = lastplay['result']['description']
                     pitch = lastplay['matchup']['pitcher']['fullName']
-                    output = output + "\tLast Play: With " + pitch + " pitching, " + desc + "\n"
+                    output = output + "\nLast Play: With " + pitch + " pitching, " + desc + "\n"
                 except Exception as e:
                     print(e)
     return output
@@ -509,8 +512,9 @@ def get_player_season_stats(name):
 if __name__ == "__main__":
     #make_mlb_schedule()
     #get_mlb_teams()
-    #print(get_single_game("nationals",delta="+1"))
-    print(get_all_game_info(delta='-1'))
+    print(get_single_game("nyy"))
+    # print(get_single_game("nationals",delta="+1"))
+    # print(get_all_game_info(delta='-1'))
     # print(get_all_game_info())
     #get_ET_from_timestamp("2018-03-31T20:05:00Z")
     # get_div_standings("nle")
