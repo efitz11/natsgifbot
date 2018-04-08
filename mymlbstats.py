@@ -256,13 +256,8 @@ def get_single_game(team,delta=None):
             output = output + get_single_game_info(gamepk,game, show_on_deck=True)
             abstractstatus = game['status']['abstractGameState']
             if abstractstatus == "Live":
-                pbp = get_pbp(gamepk)
-                # pbp =
                 try:
-                    if 'description' not in pbp['allPlays'][-1]['result']:
-                        lastplay = pbp['allPlays'][-2]
-                    else:
-                        lastplay = pbp['allPlays'][-1]
+                    lastplay = game['previousPlay']
                     desc = lastplay['result']['description']
                     pitch = lastplay['matchup']['pitcher']['fullName']
                     output = output + "\nLast Play: With " + pitch + " pitching, " + desc + "\n"
