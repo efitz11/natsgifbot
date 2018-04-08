@@ -59,6 +59,8 @@ def get_single_game_info(gamepk, gamejson, show_on_deck=False):
         homeruns = ls['teams']['home']['runs']
         awayhits = ls['teams']['away']['hits']
         homehits = ls['teams']['home']['hits']
+        awayerrs = ls['teams']['away']['errors']
+        homeerrs = ls['teams']['home']['errors']
         bases = "---"
         if 'first' in ls['offense']:
             bases = "1" + bases[1:]
@@ -78,9 +80,9 @@ def get_single_game_info(gamepk, gamejson, show_on_deck=False):
         if ls['currentInning'] > 9:
             outjust = 4
         count = " %s-%s " % (balls, strikes)
-        output = "%s %s | %s %s | %s | %s | %s\n" % (awayabv, str(awayruns).rjust(2), inninghalf, inning,
+        output = "%s %s %2d %d | %s %s | %s | %s | %s\n" % (awayabv, str(awayruns).rjust(2), awayhits, awayerrs, inninghalf, inning,
                                                      "bases", "count", "P: " + pitcher)
-        output = output + "%s %s |  %s %s  |  %s  | %s | %s %s\n" % (homeabv, str(homeruns).rjust(2),
+        output = output + "%s %s %2d %d |  %s %s  |  %s  | %s | %s %s\n" % (homeabv, str(homeruns).rjust(2), homehits, homeerrs,
                                                                      outs, "out".ljust(outjust), bases, count, "B: " + batter, ondeck)
         special = None
         if game['flags']['noHitter']:
