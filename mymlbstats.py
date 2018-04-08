@@ -91,11 +91,11 @@ def get_single_game_info(gamepk, gamejson, show_on_deck=False):
             special = "P*RFECT GAME"
         if special is not None and awayhits == 0:
             output = output + "\t##############################\n"
-            output = output + "\t" + homeabv + " IS THROWING A %s" % (special)
+            output = output + "\t" + homeabv + " IS THROWING A %s\n" % (special)
             output = output + "\t##############################\n"
         if special is not None and homehits == 0:
             output = output + "\t##############################\n"
-            output = output + "\t" + awayabv + " IS THROWING A %s" % (special)
+            output = output + "\t" + awayabv + " IS THROWING A %s\n" % (special)
             output = output + "\t##############################\n"
     elif abstractstatus == "Preview":
         awaywins = game['teams']['away']['leagueRecord']['wins']
