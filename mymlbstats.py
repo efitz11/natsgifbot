@@ -256,8 +256,12 @@ def get_single_game(team,delta=None):
             output = output + get_single_game_info(gamepk,game, show_on_deck=True)
             abstractstatus = game['status']['abstractGameState']
             if abstractstatus == "Live":
+                pbp = get_pbp(gamepk)
                 try:
-                    lastplay = game['previousPlay']
+                    if 'description' not in pbp['allPlays'][-1]['result']:
+                        lastplay = pbp['allPlays'][-2]
+                    else:
+                        lastplay = pbp['allPlays'][-1]
                     desc = lastplay['result']['description']
                     pitch = lastplay['matchup']['pitcher']['fullName']
                     output = output + "\nLast Play: With " + pitch + " pitching, " + desc + "\n"
@@ -507,7 +511,7 @@ def get_player_season_stats(name):
 if __name__ == "__main__":
     #make_mlb_schedule()
     #get_mlb_teams()
-    # print(get_single_game("nyy"))
+    print(get_single_game("laa"))
     # print(get_single_game("nationals",delta="+1"))
     # print(get_all_game_info(delta='-1'))
     # print(get_all_game_info())
@@ -516,7 +520,7 @@ if __name__ == "__main__":
     #bs = BoxScore.BoxScore(get_boxscore('529456'))
     #bs.print_box()
     # print(get_stat_leader('sb'))
-    print(list_scoring_plays('nyy'))
+    # print(list_scoring_plays('nyy'))
     # print(get_ohtani_stats())
     # print(get_player_season_stats("bryce harper"))
     # print(get_player_season_stats("jose guillen"))
