@@ -35,22 +35,23 @@ def get_mlb_teams():
     for s in sorted(teammap):
         print(s,teammap[s])
 
-def get_single_game_info(gamepk, gamejson):
+def get_single_game_info(gamepk, gamejson, show_on_deck=False):
     game = gamejson
     output = ""
     abstractstatus = game['status']['abstractGameState']
     detailstatus = game['status']['detailedState']
-    awayabv = game['teams']['away']['team']['abbreviation']
-    homeabv = game['teams']['home']['team']['abbreviation']
+    awayabv = game['teams']['away']['team']['abbreviation'].ljust(3)
+    homeabv = game['teams']['home']['team']['abbreviation'].ljust(3)
     # print(gamepk)
     if abstractstatus == "Live":
         # ls = get_linescore(gamepk)
         ls = game['linescore']
         if ls['isTopInning']:
-            inning = "Top"
+            inninghalf = "Top"
         else:
-            inning = "Bot"
-        inning = inning + " " + ls["currentInningOrdinal"]
+            inninghalf= "Bot"
+        # inning = inning + " " + ls["currentInningOrdinal"]
+        inning = ls["currentInningOrdinal"]
         outs = ls['outs']
         strikes = ls['strikes']
         balls = ls['balls']
@@ -65,14 +66,19 @@ def get_single_game_info(gamepk, gamejson):
             bases = bases[:1] + "2" + bases[2:]
         if 'third' in ls['offense']:
             bases = bases[:2] + "3"
-        batter =  get_last_name(ls['offense']['batter']['fullName'])
-        ondeck =  get_last_name(ls['offense']['onDeck']['fullName'])
+        batter = get_last_name(ls['offense']['batter']['fullName'])
+        ondeck = "OD: " + get_last_name(ls['offense']['onDeck']['fullName'])
+        if not show_on_deck:
+            ondeck = ""
         try:
             pitcher = get_last_name(ls['defense']['pitcher']['fullName'])
         except:
             pitcher = ""
-        output = output + "%s %s @ %s %s: %s - %s outs %s Count: (%s-%s)\n" % (awayabv, awayruns, homeabv, homeruns, inning, outs, bases, balls, strikes)
-        output = output + "\t" + "Pitching: %s \tBatting: %s \tOn Deck: %s\n" % (pitcher, batter, ondeck)
+        # output = output + "%s %s @ %s %s: %s - %s outs %s Count: (%s-%s)\n" % (awayabv, awayruns, homeabv, homeruns, inning, outs, bases, balls, strikes)
+        # output = output + "\t" + "Pitching: %s \tBatting: %s \tOn Deck: %s\n" % (pitcher, batter, ondeck)
+        count = " %s-%s " % (balls, strikes)
+        output = "%s %s | %s | %s | %s | %s | %s\n" % (awayabv, str(awayruns).rjust(2), inninghalf, "out", "bases", "count", "P: " + pitcher)
+        output = output + "%s %s | %s |  %s  |  %s  | %s | %s\t %s\n" % (homeabv, str(homeruns).rjust(2), inning, outs, bases, count, "B: " + batter, ondeck)
         special = None
         if game['flags']['noHitter']:
             special = "NO H*TTER"
@@ -116,9 +122,14 @@ def get_single_game_info(gamepk, gamejson):
             probhome = "TBD"
         arecord = "(%s-%s)" % (awaywins, awayloss)
         hrecord = "(%s-%s)" % (homewins, homeloss)
-        time = get_ET_from_timestamp(game['gameDate'])
-        output = output + "%s %s @ %s %s # %s - %s\n" % (awayabv, arecord, homeabv, hrecord, time,detailstatus)
-        output = output + "\t# %s %s v %s %s\n" % (probaway, aprecord, probhome, hprecord)
+        time = get_ET_from_timestamp(game['gameDate']).ljust(9)
+        detailstatus = detailstatus.ljust(9)
+        probaway = probaway.ljust(10)
+        probhome = probhome.ljust(10)
+        # output = output + "%s %s @ %s %s # %s - %s\n" % (awayabv, arecord, homeabv, hrecord, time,detailstatus)
+        # output = output + "\t# %s %s v %s %s\n" % (probaway, aprecord, probhome, hprecord)
+        output = "%s %s | %s | %s %s\n" % (awayabv, arecord, detailstatus, probaway, aprecord)
+        output = output + "%s %s | %s | %s %s\n" % (homeabv, hrecord, time, probhome, hprecord)
     elif abstractstatus == "Final":
         awaywins = game['teams']['away']['leagueRecord']['wins']
         awayloss = game['teams']['away']['leagueRecord']['losses']
@@ -127,20 +138,29 @@ def get_single_game_info(gamepk, gamejson):
         arecord = "(%s-%s)" % (awaywins, awayloss)
         hrecord = "(%s-%s)" % (homewins, homeloss)
         try:
-            aruns = game['teams']['away']['score']
-            hruns = game['teams']['home']['score']
-            output = output + "%s %2d %s @ %s %s %s # %s\n" % (awayabv, aruns, arecord, homeabv, hruns, hrecord, detailstatus)
+            aruns = str(game['teams']['away']['score']).rjust(2)
+            hruns = str(game['teams']['home']['score']).rjust(2)
+            # output = output + "%s %2d %s @ %s %s %s # %s\n" % (awayabv, aruns, arecord, homeabv, hruns, hrecord, detailstatus)
+            line1 = "%s %s %s" % (awayabv, aruns, arecord)
+            line2 = "%s %s %s" % (homeabv, hruns, hrecord)
             if 'decisions' in game:
                 decisions = game['decisions']
-                wp = get_last_name(decisions['winner']['fullName'])
-                lp = get_last_name(decisions['loser']['fullName'])
-                output = output + "\t WP: %s LP: %s" % (wp.ljust(12), lp.ljust(12))
+                wp = decisions['winner']['lastName']
+                lp = decisions['loser']['lastName']
+                # output = output + "\t WP: %s LP: %s" % (wp.ljust(12), lp.ljust(12))
+                save = ""
                 if 'save' in decisions:
-                    output = output + "\t SV: %s" % (get_last_name(decisions['save']['fullName']))
-                output = output + "\n"
+                    # output = output + "\t SV: %s" % (get_last_name(decisions['save']['fullName']))
+                    save = "SV: %s" % (decisions['save']['lastName'])
+                # output = output + "\n"
+                line1 = line1 + " | WP: %s\t %s\n" % (wp.ljust(12), save)
+                line2 = line2 + " | LP: %s\n" % (lp.ljust(12))
+                output = output + line1 + line2
         except KeyError:
             # no score - game was probably postponed
-            output = output + "%s %s @ %s %s # %s\n" % (awayabv, arecord, homeabv, hrecord, detailstatus)
+            # output = output + "%s %s @ %s %s # %s\n" % (awayabv, arecord, homeabv, hrecord, detailstatus)
+            output = "%s %s | %s\n" % (awayabv, arecord, detailstatus)
+            output = output + "%s %s |\n" % (homeabv, hrecord)
 
     return output
 
@@ -155,7 +175,7 @@ def get_all_game_info(delta=None):
         output = "For %d/%d/%d:\n\n" % (now.month,now.day,now.year)
     for game in games:
         gamepk = str(game['gamePk'])
-        output = output + get_single_game_info(gamepk, game)
+        output = output + get_single_game_info(gamepk, game) + "\n"
     return output
 
 def get_linescore(gamepk):
@@ -231,7 +251,7 @@ def get_single_game(team,delta=None):
         awayname = game['teams']['away']['team']['name'].lower()
         homename = game['teams']['home']['team']['name'].lower()
         if team in awayabv or team in homeabv or team in awayname or team in homename:
-            output = output + get_single_game_info(gamepk,game)
+            output = output + get_single_game_info(gamepk,game, show_on_deck=True)
             abstractstatus = game['status']['abstractGameState']
             if abstractstatus == "Live":
                 pbp = get_pbp(gamepk)
@@ -490,13 +510,13 @@ if __name__ == "__main__":
     #make_mlb_schedule()
     #get_mlb_teams()
     #print(get_single_game("nationals",delta="+1"))
-    # print(get_all_game_info(delta='-1'))
+    print(get_all_game_info(delta='-1'))
     # print(get_all_game_info())
     #get_ET_from_timestamp("2018-03-31T20:05:00Z")
     # get_div_standings("nle")
     #bs = BoxScore.BoxScore(get_boxscore('529456'))
     #bs.print_box()
-    print(get_stat_leader('sb'))
+    # print(get_stat_leader('sb'))
     # print(list_scoring_plays('Marlins'))
     # print(get_ohtani_stats())
     # print(get_player_season_stats("bryce harper"))
