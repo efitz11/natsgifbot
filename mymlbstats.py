@@ -249,13 +249,25 @@ def get_single_game(team,delta=None):
     if delta is not None:
         now = _get_date_from_delta(delta)
         output = "For %d/%d/%d:\n\n" % (now.month,now.day,now.year)
+    useabv = False
+    for game in games:
+        if team == game['teams']['away']['team']['abbreviation'].lower() or \
+            team == game['teams']['home']['team']['abbreviation'].lower():
+            useabv = True
     for game in games:
         gamepk = str(game['gamePk'])
         awayabv = game['teams']['away']['team']['abbreviation'].lower()
         homeabv = game['teams']['home']['team']['abbreviation'].lower()
         awayname = game['teams']['away']['team']['name'].lower()
         homename = game['teams']['home']['team']['name'].lower()
-        if team in awayabv or team in homeabv or team in awayname or team in homename:
+        match = False
+        if useabv:
+            if team == awayabv or team == homeabv:
+                match = True
+        else:
+            if team in awayname or team in homename:
+                match = True
+        if match:
             output = output + get_single_game_info(gamepk,game, show_on_deck=True) + "\n"
             abstractstatus = game['status']['abstractGameState']
             if abstractstatus == "Live":
@@ -515,6 +527,7 @@ if __name__ == "__main__":
     #make_mlb_schedule()
     #get_mlb_teams()
     print(get_single_game("lad"))
+    print(get_single_game("mariners"))
     # print(get_single_game("nationals",delta="+1"))
     # print(get_all_game_info(delta='-1'))
     # print(get_all_game_info())
