@@ -256,7 +256,7 @@ def get_single_game(team,delta=None):
         awayname = game['teams']['away']['team']['name'].lower()
         homename = game['teams']['home']['team']['name'].lower()
         if team in awayabv or team in homeabv or team in awayname or team in homename:
-            output = output + get_single_game_info(gamepk,game, show_on_deck=True)
+            output = output + get_single_game_info(gamepk,game, show_on_deck=True) + "\n"
             abstractstatus = game['status']['abstractGameState']
             if abstractstatus == "Live":
                 pbp = get_pbp(gamepk)
@@ -267,7 +267,7 @@ def get_single_game(team,delta=None):
                         lastplay = pbp['allPlays'][-1]
                     desc = lastplay['result']['description']
                     pitch = lastplay['matchup']['pitcher']['fullName']
-                    output = output + "\nLast Play: With " + pitch + " pitching, " + desc + "\n"
+                    output = output + "Last Play: With " + pitch + " pitching, " + desc + "\n"
                 except Exception as e:
                     print(e)
     return output
@@ -514,7 +514,7 @@ def get_player_season_stats(name):
 if __name__ == "__main__":
     #make_mlb_schedule()
     #get_mlb_teams()
-    print(get_single_game("nyy"))
+    print(get_single_game("lad"))
     # print(get_single_game("nationals",delta="+1"))
     # print(get_all_game_info(delta='-1'))
     # print(get_all_game_info())
