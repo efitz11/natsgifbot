@@ -91,6 +91,8 @@ def get_single_game_info(gamepk, gamejson):
         awayloss = game['teams']['away']['leagueRecord']['losses']
         homewins = game['teams']['home']['leagueRecord']['wins']
         homeloss = game['teams']['home']['leagueRecord']['losses']
+        aprecord =""
+        hprecord=""
         if 'probablePitcher' in game['teams']['away']:
             probaway = game['teams']['away']['probablePitcher']['lastName']
             for statgroup in game['teams']['away']['probablePitcher']['stats']:
@@ -155,7 +157,7 @@ def get_all_game_info(delta=None):
         output = "For %d/%d/%d:\n\n" % (now.month,now.day,now.year)
     for game in games:
         gamepk = str(game['gamePk'])
-        output = output + get_single_game_info(gamepk, game)
+        output = output + get_single_game_info(gamepk, game) +"\n"
     return output
 
 def get_linescore(gamepk):
