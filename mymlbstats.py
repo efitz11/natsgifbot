@@ -66,21 +66,22 @@ def get_single_game_info(gamepk, gamejson, show_on_deck=False):
             bases = bases[:1] + "2" + bases[2:]
         if 'third' in ls['offense']:
             bases = bases[:2] + "3"
-        batter = get_last_name(ls['offense']['batter']['fullName'])
-        ondeck = "OD: " + get_last_name(ls['offense']['onDeck']['fullName'])
+        batter = ls['offense']['batter']['lastName']
+        ondeck = "OD: " + ls['offense']['onDeck']['lastName']
         if not show_on_deck:
             ondeck = ""
         try:
-            pitcher = get_last_name(ls['defense']['pitcher']['fullName'])
+            pitcher = ls['defense']['pitcher']['lastName']
         except:
             pitcher = ""
-        # output = output + "%s %s @ %s %s: %s - %s outs %s Count: (%s-%s)\n" % (awayabv, awayruns, homeabv, homeruns, inning, outs, bases, balls, strikes)
-        # output = output + "\t" + "Pitching: %s \tBatting: %s \tOn Deck: %s\n" % (pitcher, batter, ondeck)
+        outjust = 3
+        if ls['currentInning'] > 9:
+            outjust = 4
         count = " %s-%s " % (balls, strikes)
-        # output = "%s %s | %s | %s | %s | %s | %s\n" % (awayabv, str(awayruns).rjust(2), inninghalf, "out", "bases", "count", "P: " + pitcher)
-        # output = output + "%s %s | %s |  %s  |  %s  | %s | %s\t %s\n" % (homeabv, str(homeruns).rjust(2), inning, outs, bases, count, "B: " + batter, ondeck)
-        output = "%s %s | %s %s | %s | %s | %s\n" % (awayabv, str(awayruns).rjust(2), inninghalf, inning, "bases", "count", "P: " + pitcher)
-        output = output + "%s %s |  %s %s  |  %s  | %s | %s\t %s\n" % (homeabv, str(homeruns).rjust(2), outs, "out", bases, count, "B: " + batter, ondeck)
+        output = "%s %s | %s %s | %s | %s | %s\n" % (awayabv, str(awayruns).rjust(2), inninghalf, inning,
+                                                     "bases", "count", "P: " + pitcher)
+        output = output + "%s %s |  %s %s  |  %s  | %s | %s %s\n" % (homeabv, str(homeruns).rjust(2),
+                                                                     outs, "out".ljust(outjust), bases, count, "B: " + batter, ondeck)
         special = None
         if game['flags']['noHitter']:
             special = "NO H*TTER"
@@ -511,7 +512,7 @@ def get_player_season_stats(name):
 if __name__ == "__main__":
     #make_mlb_schedule()
     #get_mlb_teams()
-    print(get_single_game("laa"))
+    print(get_single_game("nyy"))
     # print(get_single_game("nationals",delta="+1"))
     # print(get_all_game_info(delta='-1'))
     # print(get_all_game_info())
