@@ -75,13 +75,14 @@ def find_fastcast(return_str=False):
 
 def find_top_plays(return_str=False):
     url = "https://search-api.mlb.com/svc/search/v2/mlb_global_sitesearch_en/sitesearch?hl=true&facet=type&expand=partner.media&q=top%2B5%2Bplays&page=1"
+    print(url)
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     s = json.loads(urlopen(req).read().decode("utf-8"))
     result = s['docs'][0]
     blurb = result['blurb']
     now = datetime.now() - timedelta(days=1)
     date = "%d/%d/%s:" % (now.month, now.day, str(now.year)[2:])
-    if "Top 5 Plays" in blurb and blurb.startswith(date):
+    if "top 5 plays" in blurb.lower() and blurb.startswith(date):
         url = result['url']
         dir = get_direct_video_url(url)
         if dir is not None:
