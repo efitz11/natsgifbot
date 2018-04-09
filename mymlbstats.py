@@ -114,6 +114,7 @@ def get_single_game_info(gamepk, gamejson, show_on_deck=False):
                     break
         else:
             probaway = "TBD"
+            aprecord = ""
         if 'probablePitcher' in game['teams']['home']:
             for statgroup in game['teams']['home']['probablePitcher']['stats']:
                 if statgroup['type']['displayName'] == "statsSingleSeason" and \
@@ -125,6 +126,7 @@ def get_single_game_info(gamepk, gamejson, show_on_deck=False):
                     hprecord = "(%d-%d) %s" % (wins,losses,era)
         else:
             probhome = "TBD"
+            hprecord = ""
         arecord = "(%s-%s)" % (awaywins, awayloss)
         hrecord = "(%s-%s)" % (homewins, homeloss)
         time = get_ET_from_timestamp(game['gameDate']).ljust(9)
