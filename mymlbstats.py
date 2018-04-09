@@ -179,7 +179,8 @@ def get_all_game_info(delta=None):
     output = ""
     if delta is not None:
         now = _get_date_from_delta(delta)
-        output = "For %d/%d/%d:\n\n" % (now.month,now.day,now.year)
+        import calendar
+        output = "For %s, %d/%d/%d:\n\n" % (calendar.day_name[now.weekday()],now.month,now.day,now.year)
     for game in games:
         gamepk = str(game['gamePk'])
         output = output + get_single_game_info(gamepk, game) + "\n"
@@ -250,7 +251,8 @@ def get_single_game(team,delta=None):
     output = ""
     if delta is not None:
         now = _get_date_from_delta(delta)
-        output = "For %d/%d/%d:\n\n" % (now.month,now.day,now.year)
+        import calendar
+        output = "For %s, %d/%d/%d:\n\n" % (calendar.day_name[now.weekday()],now.month,now.day,now.year)
     useabv = False
     for game in games:
         if team == game['teams']['away']['team']['abbreviation'].lower() or \
@@ -528,9 +530,9 @@ def get_player_season_stats(name):
 if __name__ == "__main__":
     #make_mlb_schedule()
     #get_mlb_teams()
-    print(get_single_game("lad"))
-    print(get_single_game("mariners"))
-    # print(get_single_game("nationals",delta="+1"))
+    # print(get_single_game("lad"))
+    # print(get_single_game("mariners"))
+    print(get_single_game("nationals",delta="+1"))
     # print(get_all_game_info(delta='-1'))
     # print(get_all_game_info())
     #get_ET_from_timestamp("2018-03-31T20:05:00Z")
