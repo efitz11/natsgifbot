@@ -322,7 +322,7 @@ async def poll(question, *answers):
        to "quote the argument" to keep it as one entry
        
        if you don't enter any answers, the answers will default to yes/no"""
-    output = "**%s\n%s**```python\n\n" % ("POLL", question)
+    output = "**%s\n\n%s**```python\n\n" % ("POLL", question)
     a = ord('A')
     for i in range(len(answers)):
         output = output + "\t" + chr(a+i) + " - " + answers[i] + "\n"
