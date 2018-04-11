@@ -467,14 +467,16 @@ def get_player_line(name, delta=None):
         dec = ""
         if 'note' in s:
             dec = s['note']
-        output = output + " IP  H  R ER HR BB SO\n"
-        output = output + "%s %2d %2d %2d %2d %2d %2d %s\n\n" % (s['inningsPitched'],
+        output = output + " IP  H  R ER HR BB SO  P-S\n"
+        output = output + "%s %2d %2d %2d %2d %2d %2d %2d-%d %s\n\n" % (s['inningsPitched'],
                                                                s['hits'],
                                                                s['runs'],
                                                                s['earnedRuns'],
                                                                s['homeRuns'],
                                                                s['baseOnBalls'],
                                                                s['strikeOuts'],
+                                                               s['pitchesThrown'],
+                                                               s['strikes'],
                                                                dec)
     if 'atBats' in stats['batting'] and (not pitcher or (pitcher and not useDH)):
         hasstats=True
@@ -554,7 +556,7 @@ if __name__ == "__main__":
     # print(get_single_game("wsh"))
     # print(get_single_game("nationals",delta="+1"))
     # print(get_all_game_info(delta='-1'))
-    print(get_all_game_info())
+    # print(get_all_game_info())
     #get_ET_from_timestamp("2018-03-31T20:05:00Z")
     # get_div_standings("nle")
     #bs = BoxScore.BoxScore(get_boxscore('529456'))
@@ -564,5 +566,5 @@ if __name__ == "__main__":
     # print(get_ohtani_stats())
     # print(get_player_season_stats("bryce harper"))
     # print(get_player_season_stats("jose guillen"))
-    # print(get_player_line("felix hernandez"))
+    print(get_player_line("cole"))
     # print(get_player_line("ryan zimmerman", delta="-4382"))
