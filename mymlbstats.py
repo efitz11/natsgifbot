@@ -138,6 +138,7 @@ def get_single_game_info(gamepk, gamejson, show_on_deck=False):
         output = "%s %s | %s | %s %s\n" % (awayabv, arecord, detailstatus, probaway, aprecord)
         output = output + "%s %s | %s | %s %s\n" % (homeabv, hrecord, time, probhome, hprecord)
     elif abstractstatus == "Final":
+        ls = game['linescore']
         awaywins = game['teams']['away']['leagueRecord']['wins']
         awayloss = game['teams']['away']['leagueRecord']['losses']
         homewins = game['teams']['home']['leagueRecord']['wins']
@@ -147,23 +148,42 @@ def get_single_game_info(gamepk, gamejson, show_on_deck=False):
         try:
             aruns = str(game['teams']['away']['score']).rjust(2)
             hruns = str(game['teams']['home']['score']).rjust(2)
+            awayhits = ls['teams']['away']['hits']
+            homehits = ls['teams']['home']['hits']
+            awayerrs = ls['teams']['away']['errors']
+            homeerrs = ls['teams']['home']['errors']
             # output = output + "%s %2d %s @ %s %s %s # %s\n" % (awayabv, aruns, arecord, homeabv, hruns, hrecord, detailstatus)
-            line1 = "%s %s %s" % (awayabv, aruns, arecord)
-            line2 = "%s %s %s" % (homeabv, hruns, hrecord)
+            line1 = "%s %s %2d %d %s" % (awayabv, aruns, awayhits, awayerrs, arecord,)
+            line2 = "%s %s %2d %d %s" % (homeabv, hruns, homehits, homeerrs, hrecord)
             if 'decisions' in game:
                 decisions = game['decisions']
                 wp = decisions['winner']['lastName']
                 lp = decisions['loser']['lastName']
+                for stat in decisions['winner']['stats']:
+                    if 'gameLog' == stat['type']['displayName'] and \
+                        'pitching' == stat['group']['displayName']:
+                        wprec = stat['stats']['note']
+                for stat in decisions['loser']['stats']:
+                    if 'gameLog' == stat['type']['displayName'] and \
+                            'pitching' == stat['group']['displayName']:
+                        lprec = stat['stats']['note']
                 # output = output + "\t WP: %s LP: %s" % (wp.ljust(12), lp.ljust(12))
                 save = ""
+                rec = ""
                 if 'save' in decisions:
+                    for stat in decisions['save']['stats']:
+                        if 'gameLog' == stat['type']['displayName'] and \
+                                'pitching' == stat['group']['displayName']:
+                            rec = stat['stats']['note']
                     # output = output + "\t SV: %s" % (get_last_name(decisions['save']['fullName']))
                     save = "SV: %s" % (decisions['save']['lastName'])
                 # output = output + "\n"
-                line1 = line1 + " | WP: %s\t %s\n" % (wp.ljust(12), save)
-                line2 = line2 + " | LP: %s\n" % (lp.ljust(12))
+                wpdisp = "%s %s" % (wp, wprec)
+                line1 = line1 + " | WP: %s %s %s\n" % (wpdisp.ljust(20), save, rec)
+                line2 = line2 + " | LP: %s %s\n" % (lp, lprec)
                 output = output + line1 + line2
-        except KeyError:
+        except KeyError as e:
+            print(e)
             # no score - game was probably postponed
             # output = output + "%s %s @ %s %s # %s\n" % (awayabv, arecord, homeabv, hrecord, detailstatus)
             output = "%s %s | %s\n" % (awayabv, arecord, detailstatus)
@@ -531,10 +551,10 @@ if __name__ == "__main__":
     #make_mlb_schedule()
     #get_mlb_teams()
     # print(get_single_game("lad"))
-    # print(get_single_game("mariners"))
-    print(get_single_game("nationals",delta="+1"))
+    # print(get_single_game("wsh"))
+    # print(get_single_game("nationals",delta="+1"))
     # print(get_all_game_info(delta='-1'))
-    # print(get_all_game_info())
+    print(get_all_game_info())
     #get_ET_from_timestamp("2018-03-31T20:05:00Z")
     # get_div_standings("nle")
     #bs = BoxScore.BoxScore(get_boxscore('529456'))
