@@ -33,14 +33,18 @@ class Baseball():
         """Get MLB info
 
         Supported commands:
-        !mlb <team> - return game info for today for that team
-        !mlb <division> - return division standings (ale,alc,alw,nle,nlc,nlw,alwc,nlwc)
-        !mlb sp <team> - print scoring plays for today's game
+        !mlb               - show info for all games today
+        !mlb live          - show info for all games live now
+        !mlb <team>        - return game info for today for that team
+        !mlb <division>    - return division standings (ale,alc,alw,nle,nlc,nlw,alwc,nlwc)
+        !mlb sp <team>     - print scoring plays for today's game
         !mlb line <player> - print the player's line for that day's game
-        !mlb ohtani - get ohtani's stats for the day
+        !mlb ohtani        - get ohtani's stats for the day
+
         each of the previous commands can end in a number of (+days or -days) to change the date
-        !mlb stats <player> - print the player's season stats
-        !mlb leaders <stat> - list MLB leaders in that stat
+
+        !mlb stats <player>   - print the player's season stats
+        !mlb leaders <stat>   - list MLB leaders in that stat
         """
         delta=None
 
