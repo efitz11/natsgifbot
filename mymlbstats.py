@@ -35,7 +35,7 @@ def get_mlb_teams():
     for s in sorted(teammap):
         print(s,teammap[s])
 
-def get_single_game_info(gamepk, gamejson, show_on_deck=False):
+def get_single_game_info(gamepk, gamejson, show_on_deck=False, liveonly=False):
     game = gamejson
     output = ""
     abstractstatus = game['status']['abstractGameState']
@@ -97,6 +97,8 @@ def get_single_game_info(gamepk, gamejson, show_on_deck=False):
             output = output + "\t##############################\n"
             output = output + "\t" + awayabv + " IS THROWING A %s\n" % (special)
             output = output + "\t##############################\n"
+    elif liveonly:
+        return ""
     elif abstractstatus == "Preview":
         awaywins = game['teams']['away']['leagueRecord']['wins']
         awayloss = game['teams']['away']['leagueRecord']['losses']
@@ -195,7 +197,7 @@ def get_single_game_info(gamepk, gamejson, show_on_deck=False):
 
     return output
 
-def get_all_game_info(delta=None):
+def get_all_game_info(delta=None, liveonly=False):
     """delta is + or - a number of days"""
     s = get_day_schedule(delta)
     games = s['dates'][0]['games']
@@ -207,7 +209,9 @@ def get_all_game_info(delta=None):
         output = "For %s, %d/%d/%d:\n\n" % (calendar.day_name[now.weekday()],now.month,now.day,now.year)
     for game in games:
         gamepk = str(game['gamePk'])
-        output = output + get_single_game_info(gamepk, game) + "\n"
+        out = get_single_game_info(gamepk, game, liveonly=liveonly)
+        if len(out) > 0:
+            output = output + out + "\n"
     return output
 
 def get_linescore(gamepk):
@@ -560,7 +564,7 @@ if __name__ == "__main__":
     # print(get_single_game("wsh"))
     # print(get_single_game("nationals",delta="+1"))
     # print(get_all_game_info(delta='-1'))
-    print(get_all_game_info())
+    print(get_all_game_info(liveonly=True))
     #get_ET_from_timestamp("2018-03-31T20:05:00Z")
     # get_div_standings("nle")
     #bs = BoxScore.BoxScore(get_boxscore('529456'))

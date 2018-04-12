@@ -48,8 +48,11 @@ class Baseball():
             delta = team[-1]
             team = team[:-1]
 
-        if len(team) == 0:
-            output = mymlbstats.get_all_game_info(delta=delta)
+        if len(team) == 0 or (len(team) == 1 and team[0] == 'live'):
+            liveonly=False
+            if len(team) == 1:
+                liveonly = True
+            output = mymlbstats.get_all_game_info(delta=delta, liveonly=liveonly)
             await self.bot.say("```python\n" + output + "```")
             return
 
