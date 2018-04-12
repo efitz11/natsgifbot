@@ -129,6 +129,8 @@ def get_single_game_info(gamepk, gamejson, show_on_deck=False):
             hprecord = ""
         arecord = "(%s-%s)" % (awaywins, awayloss)
         hrecord = "(%s-%s)" % (homewins, homeloss)
+        arecord = arecord.center(7)
+        hrecord = hrecord.center(7)
         time = get_ET_from_timestamp(game['gameDate']).ljust(9)
         detailstatus = detailstatus.ljust(9)
         probaway = probaway.ljust(10)
@@ -145,6 +147,8 @@ def get_single_game_info(gamepk, gamejson, show_on_deck=False):
         homeloss = game['teams']['home']['leagueRecord']['losses']
         arecord = "(%s-%s)" % (awaywins, awayloss)
         hrecord = "(%s-%s)" % (homewins, homeloss)
+        arecord = arecord.center(7)
+        hrecord = hrecord.center(7)
         try:
             aruns = str(game['teams']['away']['score']).rjust(2)
             hruns = str(game['teams']['home']['score']).rjust(2)
@@ -556,7 +560,7 @@ if __name__ == "__main__":
     # print(get_single_game("wsh"))
     # print(get_single_game("nationals",delta="+1"))
     # print(get_all_game_info(delta='-1'))
-    # print(get_all_game_info())
+    print(get_all_game_info())
     #get_ET_from_timestamp("2018-03-31T20:05:00Z")
     # get_div_standings("nle")
     #bs = BoxScore.BoxScore(get_boxscore('529456'))
@@ -566,5 +570,5 @@ if __name__ == "__main__":
     # print(get_ohtani_stats())
     # print(get_player_season_stats("bryce harper"))
     # print(get_player_season_stats("jose guillen"))
-    print(get_player_line("cole"))
+    # print(get_player_line("cole"))
     # print(get_player_line("ryan zimmerman", delta="-4382"))
