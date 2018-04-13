@@ -72,7 +72,6 @@ class RedditBot():
             with open(".dongday.txt", 'r') as f:
                 dongedyet = f.readline().strip()
             date = "%d%d" % (time.month, time.day)
-            print(date)
             if dongedyet != date:
                 for submission in self.reddit.subreddit("nationals").new(limit=12):
                     if submission.title.lower().startswith("game thread"):
