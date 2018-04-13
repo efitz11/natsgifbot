@@ -222,7 +222,7 @@ def get_linescore(gamepk):
 
 def get_boxscore(gamepk):
     url = "https://statsapi.mlb.com/api/v1/game/" + gamepk + "/boxscore"
-    print(url)
+    # print(url)
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     s = json.loads(urlopen(req).read().decode("utf-8"))
     return s
@@ -235,7 +235,7 @@ def get_game_feed(gamepk):
 
 def get_team_info(teamid):
     url = "http://statsapi.mlb.com/api/v1/teams/%d/roster?hydrate=person(stats(splits=statsSingleSeason))" % teamid
-    print(url)
+    # print(url)
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     s = json.loads(urlopen(req).read().decode("utf-8"))
     return s
@@ -250,7 +250,7 @@ def get_day_schedule(delta=None,teamid=None,scoringplays=False):
     if teamid is not None:
         team = "&teamId=" + str(teamid)
     url = "https://statsapi.mlb.com/api/v1/schedule?sportId=1" + team + "&date=" + date + hydrates
-    print(url)
+    # print(url)
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     s = json.loads(urlopen(req).read().decode("utf-8"))
     return s
@@ -410,7 +410,7 @@ def get_stat_leader(stat):
         return []
 
     url = "https://statsapi.mlb.com/api/v1/stats/leaders?leaderCategories=" + cat + "&hydrate=person,team&limit=10"
-    print(url)
+    # print(url)
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     s = json.loads(urlopen(req).read().decode("utf-8"))
     leaders = s['leagueLeaders'][0]['leaders']
@@ -425,7 +425,7 @@ def _get_player_search(name):
     name = name.replace(' ', '+').upper()
     url = "http://lookup-service-prod.mlb.com/json/named.search_player_all.bam?sport_code=%27mlb%27&name_part=%27"+ \
           name+"%25%27&active_sw=%27Y%27"
-    print(url)
+    # print(url)
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     s = json.loads(urlopen(req).read().decode("utf-8"))
     result = s['search_player_all']['queryResults']
