@@ -2,6 +2,8 @@ import praw, prawcore.exceptions
 import pprint
 import gifs
 import json
+from datetime import datetime
+import mymlbstats
 
 class RedditBot():
     def __init__(self):
@@ -61,6 +63,21 @@ class RedditBot():
                     with open("lastgif.txt","w") as f:
                         f.write(submission.url)
             first = False
+
+    def check_time(self):
+        time = datetime.now()
+        hasgame = len(mymlbstats.get_single_game("wsh")) > 0
+        # if hasgame and time.hour == 21 and time.minute == 1:
+        if hasgame and time.hour == 20 and time.minute == 55:
+            with open(".dongday.txt", 'r') as f:
+                dongedyet = f.readline().strip()
+            date = "%s%s" % (datetime.month, datetime.day)
+            if dongedyet != date:
+                for submission in self.reddit.subreddit("nationals").new(limit=12):
+                    if submission.title.lower().startswith("game thread"):
+                        submission.reply("[%s](%s)" % ("It's that time", "https://gfycat.com/FaintElasticAmericanavocet"))
+                        with open(".dongday.txt", 'w') as f:
+                            f.write(date)
 
 class TwitterBot:
     def __init__(self):
@@ -123,5 +140,7 @@ if __name__ == "__main__":
     r.update_postlist()
     # respond to gif requests
     r.check_mentions()
+    r.check_time()
     t = TwitterBot()
     t.check_last_tweet()
+
