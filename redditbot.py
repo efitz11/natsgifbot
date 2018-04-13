@@ -68,13 +68,15 @@ class RedditBot():
         time = datetime.now()
         hasgame = len(mymlbstats.get_single_game("wsh")) > 0
         # if hasgame and time.hour == 21 and time.minute == 1:
-        if hasgame and time.hour == 21 and time.minute == 1:
+        if hasgame:
             with open(".dongday.txt", 'r') as f:
                 dongedyet = f.readline().strip()
-            date = "%s%s" % (datetime.month, datetime.day)
+            date = "%d%d" % (time.month, time.day)
+            print(date)
             if dongedyet != date:
                 for submission in self.reddit.subreddit("nationals").new(limit=12):
                     if submission.title.lower().startswith("game thread"):
+                        print("posted dong comment")
                         submission.reply("[%s](%s)" % ("It's that time", "https://gfycat.com/FaintElasticAmericanavocet"))
                         with open(".dongday.txt", 'w') as f:
                             f.write(date)
@@ -137,10 +139,10 @@ class TwitterBot:
 if __name__ == "__main__":
     r = RedditBot()
     # see if new gifs have been submitted to /r/nationalsgifs
-    r.update_postlist()
+    # r.update_postlist()
     # respond to gif requests
-    r.check_mentions()
+    # r.check_mentions()
     r.check_time()
-    t = TwitterBot()
-    t.check_last_tweet()
+    # t = TwitterBot()
+    # t.check_last_tweet()
 
