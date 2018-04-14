@@ -42,7 +42,7 @@ def get_single_game_info(gamepk, gamejson, show_on_deck=False, liveonly=False):
     detailstatus = game['status']['detailedState']
     awayabv = game['teams']['away']['team']['abbreviation'].ljust(3)
     homeabv = game['teams']['home']['team']['abbreviation'].ljust(3)
-    # print(gamepk)
+    print(gamepk)
     if abstractstatus == "Live":
         # ls = get_linescore(gamepk)
         ls = game['linescore']
@@ -142,7 +142,6 @@ def get_single_game_info(gamepk, gamejson, show_on_deck=False, liveonly=False):
         output = "%s %s | %s | %s %s\n" % (awayabv, arecord, detailstatus, probaway, aprecord)
         output = output + "%s %s | %s | %s %s\n" % (homeabv, hrecord, time, probhome, hprecord)
     elif abstractstatus == "Final":
-        ls = game['linescore']
         awaywins = game['teams']['away']['leagueRecord']['wins']
         awayloss = game['teams']['away']['leagueRecord']['losses']
         homewins = game['teams']['home']['leagueRecord']['wins']
@@ -154,6 +153,7 @@ def get_single_game_info(gamepk, gamejson, show_on_deck=False, liveonly=False):
         try:
             aruns = str(game['teams']['away']['score']).rjust(2)
             hruns = str(game['teams']['home']['score']).rjust(2)
+            ls = game['linescore']
             awayhits = ls['teams']['away']['hits']
             homehits = ls['teams']['home']['hits']
             awayerrs = ls['teams']['away']['errors']
@@ -570,10 +570,11 @@ if __name__ == "__main__":
     #make_mlb_schedule()
     #get_mlb_teams()
     # print(get_single_game("lad"))
-    print(get_single_game("wsh"))
+    # print(get_single_game("wsh"))
     # print(get_single_game("nationals",delta="+1"))
     # print(get_all_game_info(delta='-1'))
     # print(get_all_game_info(liveonly=True))
+    print(get_all_game_info())
     #get_ET_from_timestamp("2018-03-31T20:05:00Z")
     # get_div_standings("nle")
     #bs = BoxScore.BoxScore(get_boxscore('529456'))
