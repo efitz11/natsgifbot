@@ -312,6 +312,10 @@ def get_single_game(team,delta=None):
                     desc = lastplay['result']['description']
                     pitch = lastplay['matchup']['pitcher']['fullName']
                     output = output + "Last Play: With " + pitch + " pitching, " + desc + "\n"
+                    if 'pitchData' in lastplay['playEvents'][-1]:
+                        data = lastplay['playEvents'][-1]
+                        output = output + "Pitch: %s, %d mph\n" % (data['details']['type']['description'],
+                                                                   data['pitchData']['startSpeed'])
                     if 'hitData' in lastplay['playEvents'][-1]:
                         data = lastplay['playEvents'][-1]['hitData']
                         output = output + "Statcast: %d ft, %d mph, %d degrees\n" % (data['totalDistance'],
