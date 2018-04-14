@@ -311,7 +311,7 @@ def get_single_game(team,delta=None):
                         lastplay = pbp['allPlays'][-1]
                     desc = lastplay['result']['description']
                     pitch = lastplay['matchup']['pitcher']['fullName']
-                    output = output + "Last Play: With " + pitch + " pitching, " + desc + "\n"
+                    output = output + "Last Play: With " + pitch + " pitching, " + desc + "\n\n"
                     if 'pitchData' in lastplay['playEvents'][-1]:
                         data = lastplay['playEvents'][-1]
                         output = output + "Pitch: %s, %d mph\n" % (data['details']['type']['description'],
