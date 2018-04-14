@@ -134,7 +134,7 @@ def get_game(team, sport):
     for game in games:
         if game['hometeam'].lower() == team.lower() or game['homeabv'].lower() == team.lower() or game['awayteam'].lower() == team.lower() or game['awayabv'].lower() == team.lower() or team.lower() in game['homename'].lower() or team.lower() in game['awayname'].lower():
             if 'link' in game:
-                link = "<"+game['link']+">"
+                link = "<"+game['link']+"> - "
             else:
                 link = ""
             return "%s```python\n" % (link) + pretty_print_game(game,sport) + "```"
