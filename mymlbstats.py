@@ -250,7 +250,7 @@ def get_day_schedule(delta=None,teamid=None,scoringplays=False):
     if teamid is not None:
         team = "&teamId=" + str(teamid)
     url = "https://statsapi.mlb.com/api/v1/schedule?sportId=1" + team + "&date=" + date + hydrates
-    # print(url)
+    print(url)
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     s = json.loads(urlopen(req).read().decode("utf-8"))
     return s
@@ -311,7 +311,13 @@ def get_single_game(team,delta=None):
                         lastplay = pbp['allPlays'][-1]
                     desc = lastplay['result']['description']
                     pitch = lastplay['matchup']['pitcher']['fullName']
+                    print(json.dumps(lastplay))
+                    if 'hitData' in lastplay['playEvents'][-1]:
+                        data = lastplay['playEvents'][-1]['hitData']
                     output = output + "Last Play: With " + pitch + " pitching, " + desc + "\n"
+                    output = output + "Statcast: %d ft, %d mph, %d degrees\n" % (data['totalDistance'],
+                                                                       data['launchSpeed'],
+                                                                       data['launchAngle'])
                 except Exception as e:
                     print(e)
     return output
@@ -561,10 +567,10 @@ if __name__ == "__main__":
     #make_mlb_schedule()
     #get_mlb_teams()
     # print(get_single_game("lad"))
-    # print(get_single_game("wsh"))
+    print(get_single_game("wsh"))
     # print(get_single_game("nationals",delta="+1"))
     # print(get_all_game_info(delta='-1'))
-    print(get_all_game_info(liveonly=True))
+    # print(get_all_game_info(liveonly=True))
     #get_ET_from_timestamp("2018-03-31T20:05:00Z")
     # get_div_standings("nle")
     #bs = BoxScore.BoxScore(get_boxscore('529456'))
