@@ -311,11 +311,10 @@ def get_single_game(team,delta=None):
                         lastplay = pbp['allPlays'][-1]
                     desc = lastplay['result']['description']
                     pitch = lastplay['matchup']['pitcher']['fullName']
-                    print(json.dumps(lastplay))
+                    output = output + "Last Play: With " + pitch + " pitching, " + desc + "\n"
                     if 'hitData' in lastplay['playEvents'][-1]:
                         data = lastplay['playEvents'][-1]['hitData']
-                    output = output + "Last Play: With " + pitch + " pitching, " + desc + "\n"
-                    output = output + "Statcast: %d ft, %d mph, %d degrees\n" % (data['totalDistance'],
+                        output = output + "Statcast: %d ft, %d mph, %d degrees\n" % (data['totalDistance'],
                                                                        data['launchSpeed'],
                                                                        data['launchAngle'])
                 except Exception as e:
