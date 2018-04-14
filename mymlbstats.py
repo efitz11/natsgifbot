@@ -42,7 +42,7 @@ def get_single_game_info(gamepk, gamejson, show_on_deck=False, liveonly=False):
     detailstatus = game['status']['detailedState']
     awayabv = game['teams']['away']['team']['abbreviation'].ljust(3)
     homeabv = game['teams']['home']['team']['abbreviation'].ljust(3)
-    print(gamepk)
+    # print(gamepk)
     if abstractstatus == "Live":
         # ls = get_linescore(gamepk)
         ls = game['linescore']
