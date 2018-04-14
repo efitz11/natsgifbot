@@ -67,8 +67,8 @@ class RedditBot():
     def check_time(self):
         time = datetime.now()
         hasgame = len(mymlbstats.get_single_game("wsh")) > 0
-        # if hasgame and time.hour == 21 and time.minute == 1:
-        if hasgame:
+        if hasgame and time.hour == 21 and time.minute == 1:
+        # if hasgame:
             with open(".dongday.txt", 'r') as f:
                 dongedyet = f.readline().strip()
             date = "%d%d" % (time.month, time.day)
