@@ -46,6 +46,8 @@ class Baseball():
 
         !mlb stats <player>   - print the player's season stats
         !mlb leaders <stat>   - list MLB leaders in that stat
+        !mlb nlleaders <stat> - list NL leaders in that stat
+        !mlb alleaders <stat> - list AL leaders in that stat
         """
         delta=None
 
@@ -98,7 +100,7 @@ class Baseball():
             player = '+'.join(team[1:])
             await self.bot.say("```%s```" % mymlbstats.get_player_season_stats(player))
             return
-        elif team[0] == 'leaders':
+        elif team[0] in ['leaders','nlleaders','alleaders']:
             stat = team[1]
             # output = '```'
             # leaders = mymlbstats.get_stat_leader(stat)
@@ -112,7 +114,12 @@ class Baseball():
             #     output = output + "%s %s %s\n" % (val, team, name)
             # output = output + "```"
             fg = FG(stat)
-            output = fg.get_stat_leaders_str()
+            if team[0] == "leaders":
+                output = fg.get_stat_leaders_str()
+            elif team[0] == "nlleaders":
+                output = fg.get_stat_leaders_str(league="nl")
+            elif team[0] == "alleaders":
+                output = fg.get_stat_leaders_str(league="al")
             await self.bot.say(output)
             return
         elif team[0] == 'ohtani':
@@ -166,15 +173,16 @@ class FG:
     def __init__(self, stat, isPitching=False):
         self.stat = stat
         self.isPitching = isPitching
-    def get_stat(self):
+
+    def get_stat(self,league="all"):
         dash = ['bb%','k%','iso','babip','avg','obp','slg','woba','wrc+','bsr','off','def','fwar']
         std = ['g','ab','pa','h','1b','2b','3b','hr','r','rbi','bb','ibb','so','hbp','sf','sh','gdp','sb','cs']
         if self.stat in dash:
-            url = "https://www.fangraphs.com/leaders.aspx?pos=all&stats=bat&lg=all&qual=y&type=8&season=2018&month=33&season1=2018&ind=0&team=0&rost=0&age=0&filter=&players=0"
+            url = "https://www.fangraphs.com/leaders.aspx?pos=all&stats=bat&lg=%s&qual=y&type=8&season=2018&month=33&season1=2018&ind=0&team=0&rost=0&age=0&filter=&players=0" % (league)
             index = dash.index(self.stat)+9
             url = url + "&sort=%d,d" % (index)
         elif self.stat in std:
-            url = "https://www.fangraphs.com/leaders.aspx?pos=all&stats=bat&lg=all&qual=y&type=0&season=2018&month=33&season1=2018&ind=0&team=0&rost=0&age=0&filter=&players=0"
+            url = "https://www.fangraphs.com/leaders.aspx?pos=all&stats=bat&lg=%s&qual=y&type=0&season=2018&month=33&season1=2018&ind=0&team=0&rost=0&age=0&filter=&players=0" % (league)
             index = std.index(self.stat)+3
             url = url + "&sort=%d,d" % (index)
         else:
@@ -202,8 +210,8 @@ class FG:
             list.append((row[1],row[2],row[index]))
         return list
 
-    def get_stat_leaders_str(self,len=10):
-        list = self.get_stat()
+    def get_stat_leaders_str(self,len=10,league="all"):
+        list = self.get_stat(league)
         if list == "No matching stat":
             return "```%s```" % list
         output = "```"
