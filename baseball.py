@@ -7,6 +7,7 @@ from datetime import datetime, timedelta, time
 
 import mlbgame, mymlbgame
 import mymlbstats
+from bs4 import BeautifulSoup
 
 class Baseball():
     def __init__(self,bot):
@@ -99,17 +100,19 @@ class Baseball():
             return
         elif team[0] == 'leaders':
             stat = team[1]
-            output = '```'
-            leaders = mymlbstats.get_stat_leader(stat)
-            if len(leaders) == 0:
-                await self.bot.say('not found')
-                return
-            for p in leaders:
-                name = p[0].ljust(20)
-                team = p[1].ljust(3)
-                val  = p[2].rjust(5)
-                output = output + "%s %s %s\n" % (val, team, name)
-            output = output + "```"
+            # output = '```'
+            # leaders = mymlbstats.get_stat_leader(stat)
+            # if len(leaders) == 0:
+            #     await self.bot.say('not found')
+            #     return
+            # for p in leaders:
+            #     name = p[0].ljust(20)
+            #     team = p[1].ljust(3)
+            #     val  = p[2].rjust(5)
+            #     output = output + "%s %s %s\n" % (val, team, name)
+            # output = output + "```"
+            fg = FG(stat)
+            output = fg.get_stat_leaders_str()
             await self.bot.say(output)
             return
         elif team[0] == 'ohtani':
@@ -158,3 +161,58 @@ class Baseball():
         
 def setup(bot):
     bot.add_cog(Baseball(bot))
+
+class FG:
+    def __init__(self, stat, isPitching=False):
+        self.stat = stat
+        self.isPitching = isPitching
+    def get_stat(self):
+        dash = ['bb%','k%','iso','babip','avg','obp','slg','woba','wrc+','bsr','off','def','fwar']
+        std = ['g','ab','pa','h','1b','2b','3b','hr','r','rbi','bb','ibb','so','hbp','sf','sh','gdp','sb','cs']
+        if self.stat in dash:
+            url = "https://www.fangraphs.com/leaders.aspx?pos=all&stats=bat&lg=all&qual=y&type=8&season=2018&month=33&season1=2018&ind=0&team=0&rost=0&age=0&filter=&players=0"
+            index = dash.index(self.stat)+9
+            url = url + "&sort=%d,d" % (index)
+        elif self.stat in std:
+            url = "https://www.fangraphs.com/leaders.aspx?pos=all&stats=bat&lg=all&qual=y&type=0&season=2018&month=33&season1=2018&ind=0&team=0&rost=0&age=0&filter=&players=0"
+            index = std.index(self.stat)+3
+            url = url + "&sort=%d,d" % (index)
+        else:
+            return "No matching stat"
+        print(url)
+        req = Request(url, headers={'User-Agent' : "ubuntu"})
+        s = urlopen(req).read().decode('utf-8')
+        srchstr = "<table class=\"rgMasterTable\""
+        endstr = "</table>"
+        s = s[s.find(srchstr)+len(srchstr):]
+        s = s[:s.find(endstr)+len(endstr)]
+        soup = BeautifulSoup(s,'html.parser')
+        list = []
+        headers = soup.find_all("th", class_="rgHeader")
+        row = []
+        for h in headers:
+            row.append(h.get_text())
+        list.append((row[1],row[2],row[index]))
+        rows = soup.find_all("tr", {'class':['rgRow','rgAltRow']})
+        for r in rows:
+            cells = r.find_all('td')
+            row = []
+            for c in cells:
+                row.append(c.get_text())
+            list.append((row[1],row[2],row[index]))
+        return list
+
+    def get_stat_leaders_str(self,len=10):
+        list = self.get_stat()
+        if list == "No matching stat":
+            return "```%s```" % list
+        output = "```"
+        for i in range(len):
+            l = list[i]
+            output = output + l[0].ljust(20) + l[2].rjust(5) + "\n"
+        output = output + "```"
+        return output
+
+if __name__ == "__main__":
+    fg = FG('fwar')
+    print(fg.get_stat_leaders_str())
