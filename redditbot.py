@@ -140,8 +140,8 @@ if __name__ == "__main__":
     # see if new gifs have been submitted to /r/nationalsgifs
     r.update_postlist()
     # respond to gif requests
-    r.check_mentions()
-    r.check_time()
-    t = TwitterBot()
-    t.check_last_tweet()
+    # r.check_mentions()
+    # r.check_time()
+    # t = TwitterBot()
+    # t.check_last_tweet()
 
