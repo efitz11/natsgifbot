@@ -196,14 +196,18 @@ class FG:
             else:
                 return "No matching stat"
         else:
+            asec = ['era','fip','xfip','whip']
+            order = 'd'
+            if self.stat in asec:
+                order = 'a'
             if self.stat in pdash:
                 url = "https://www.fangraphs.com/leaders.aspx?pos=all&stats=pit&lg=all&qual=y&type=8&season=2018&month=0&season1=2018&ind=0&team=0&rost=0&age=0&filter=&players=0"
                 index = pdash.index(self.stat)+3
-                url = url + "&sort=%d,d" % (index)
+                url = url + "&sort=%d,%s" % (index,order)
             elif self.stat in pstd:
                 url = "https://www.fangraphs.com/leaders.aspx?pos=all&stats=pit&lg=all&qual=y&type=0&season=2018&month=0&season1=2018&ind=0&team=0&rost=0&age=0&filter=&players=0"
                 index = pstd.index(self.stat)+3
-                url = url + "&sort=%d,d" % (index)
+                url = url + "&sort=%d,%s" % (index,order)
             else:
                 return "No matching stat"
         print(url)
