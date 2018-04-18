@@ -184,6 +184,7 @@ class FG:
         pdash = ['w','l','sv','g','gs','ip','k/9','bb/9','hr/9','babip','lob%','gb%','hr/fb','era','fip','xfip','fwar']
         bstd = ['g','ab','pa','h','1b','2b','3b','hr','r','rbi','bb','ibb','so','hbp','sf','sh','gdp','sb','cs']
         pstd = ['w','l','era','g','gs','cg','sho','sv','hld','bs','ip','tbf','h','r','er','hr','bb','ibb','hbp','wp','bk','so']
+        badv = ['ops']
         padv = ['era-','fip-','xfip-','era','fip','e-f','xfip','siera']
         if not self.isPitching:
             if self.stat in bdash:
@@ -193,6 +194,10 @@ class FG:
             elif self.stat in bstd:
                 url = "https://www.fangraphs.com/leaders.aspx?pos=all&stats=bat&lg=%s&qual=y&type=0&season=2018&month=33&season1=2018&ind=0&team=0&rost=0&age=0&filter=&players=0" % (league)
                 index = bstd.index(self.stat)+3
+                url = url + "&sort=%d,d" % (index)
+            elif self.stat in badv:
+                url = "https://www.fangraphs.com/leaders.aspx?pos=all&stats=bat&lg=%s&qual=y&type=1&season=2018&month=0&season1=2018&ind=0&team=0&rost=0&age=0&filter=&players=0" % (league)
+                index = badv.index(self.stat)+10
                 url = url + "&sort=%d,d" % (index)
             else:
                 return "No matching stat"
