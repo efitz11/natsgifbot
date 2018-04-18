@@ -205,6 +205,7 @@ class FG:
         qual = 'y'
         season = '2018'
         team = '0'
+        month='33'
 
         for s in self.options:
             if '=' in s:
@@ -218,6 +219,7 @@ class FG:
                 elif opt == 'qual':
                     qual = val
                 elif opt == 'season':
+                    month='0'
                     season = val
                 elif opt == 'team':
                     if val in self.teams:
@@ -227,7 +229,7 @@ class FG:
                     self.delta = 1
                 elif opt == 'reverse':
                     self.order = ['a','d']
-        return "pos=%s&lg=%s&qual=%s&season=%s&team=%s" % (pos,lg,qual,season,team)
+        return "pos=%s&lg=%s&qual=%s&season=%s&month=%s&team=%s" % (pos,lg,qual,season,month,team)
 
     def get_stat(self, stattype='bat'):
         #parse options
