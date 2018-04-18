@@ -45,9 +45,13 @@ class Baseball():
         each of the previous commands can end in a number of (+days or -days) to change the date
 
         !mlb stats <player>   - print the player's season stats
+
         !mlb leaders <stat>   - list MLB leaders in that stat
-        !mlb nlleaders <stat> - list NL leaders in that stat
-        !mlb alleaders <stat> - list AL leaders in that stat
+           leaders can be followed by a list of options:
+              pos=p      - p can be any pos (p,1B,SS,LF, etc)
+              lg=l       - l can either be al or nl
+              qual=q     - q is minimum PA or IP (increments of 10)
+              season=s   - s is year
         """
         delta=None
 
@@ -100,31 +104,21 @@ class Baseball():
             player = '+'.join(team[1:])
             await self.bot.say("```%s```" % mymlbstats.get_player_season_stats(player))
             return
-        elif team[0] in ['leaders','nlleaders','alleaders','pleaders']:
+        elif team[0].endswith("leaders") or team[0].endswith("losers"):
             stat = team[1]
-            # output = '```'
-            # leaders = mymlbstats.get_stat_leader(stat)
-            # if len(leaders) == 0:
-            #     await self.bot.say('not found')
-            #     return
-            # for p in leaders:
-            #     name = p[0].ljust(20)
-            #     team = p[1].ljust(3)
-            #     val  = p[2].rjust(5)
-            #     output = output + "%s %s %s\n" % (val, team, name)
-            # output = output + "```"
+            opts = []
+            for i in range(2,len(team)):
+                opts.append(team[i])
+            stattype = 'bat'
             if team[0].startswith('p'):
                 t = team[0][1:]
-                fg = FG(stat.lower(),isPitching=True)
+                stattype = 'pit'
             else:
                 t = team[0]
-                fg = FG(stat.lower())
-            if t == "leaders":
-                output = fg.get_stat_leaders_str()
-            elif t == "nlleaders":
-                output = fg.get_stat_leaders_str(league="nl")
-            elif t == "alleaders":
-                output = fg.get_stat_leaders_str(league="al")
+            if t == "losers":
+                opts.append("reverse=yes")
+            fg = FG(stat.lower(),options=opts)
+            output = fg.get_stat_leaders_str(stattype=stattype)
             await self.bot.say(output)
             return
         elif team[0] == 'ohtani':
@@ -175,51 +169,75 @@ def setup(bot):
     bot.add_cog(Baseball(bot))
 
 class FG:
-    def __init__(self, stat, isPitching=False):
-        self.stat = stat
-        self.isPitching = isPitching
+    bdash = ['bb%','k%','iso','babip','avg','obp','slg','woba','wrc+','bsr','off','def','fwar',9]
+    bstd = ['g','ab','pa','h','1b','2b','3b','hr','r','rbi','bb','ibb','so','hbp','sf','sh','gdp','sb','cs',3]
+    badv = ['ops',10]
+    batting = [bdash,bstd,badv]
+    pdash = ['w','l','sv','g','gs','ip','k/9','bb/9','hr/9','babip','lob%','gb%','hr/fb','era','fip','xfip','fwar',3]
+    pstd = ['w','l','era','g','gs','cg','sho','sv','hld','bs','ip','tbf','h','r','er','hr','bb','ibb','hbp','wp','bk','so',3]
+    padv = ['k/9','bb/9','k/bb','hr/9','k%','bb%','k-bb%','avg','whip','babip','lob%','era-','fip-','xfip-','era','fip','e-f','xfip','siera',3]
+    pitching = [pdash,pstd,padv]
 
-    def get_stat(self,league="all"):
-        bdash = ['bb%','k%','iso','babip','avg','obp','slg','woba','wrc+','bsr','off','def','fwar']
-        pdash = ['w','l','sv','g','gs','ip','k/9','bb/9','hr/9','babip','lob%','gb%','hr/fb','era','fip','xfip','fwar']
-        bstd = ['g','ab','pa','h','1b','2b','3b','hr','r','rbi','bb','ibb','so','hbp','sf','sh','gdp','sb','cs']
-        pstd = ['w','l','era','g','gs','cg','sho','sv','hld','bs','ip','tbf','h','r','er','hr','bb','ibb','hbp','wp','bk','so']
-        badv = ['ops']
-        padv = ['k/9','bb/9','k/bb','hr/9','k%','bb%','k-bb%','avg','whip','babip','lob%','era-','fip-','xfip-','era','fip','e-f','xfip','siera']
-        if not self.isPitching:
-            if self.stat in bdash:
-                url = "https://www.fangraphs.com/leaders.aspx?pos=all&stats=bat&lg=%s&qual=y&type=8&season=2018&month=33&season1=2018&ind=0&team=0&rost=0&age=0&filter=&players=0" % (league)
-                index = bdash.index(self.stat)+9
-                url = url + "&sort=%d,d" % (index)
-            elif self.stat in bstd:
-                url = "https://www.fangraphs.com/leaders.aspx?pos=all&stats=bat&lg=%s&qual=y&type=0&season=2018&month=33&season1=2018&ind=0&team=0&rost=0&age=0&filter=&players=0" % (league)
-                index = bstd.index(self.stat)+3
-                url = url + "&sort=%d,d" % (index)
-            elif self.stat in badv:
-                url = "https://www.fangraphs.com/leaders.aspx?pos=all&stats=bat&lg=%s&qual=y&type=1&season=2018&month=0&season1=2018&ind=0&team=0&rost=0&age=0&filter=&players=0" % (league)
-                index = badv.index(self.stat)+10
-                url = url + "&sort=%d,d" % (index)
-            else:
-                return "No matching stat"
-        else:
-            asec = ['era','fip','xfip','whip','era-','fip-','xfip-','babip']
-            order = 'd'
-            if self.stat in asec:
-                order = 'a'
-            if self.stat in pdash:
-                url = "https://www.fangraphs.com/leaders.aspx?pos=all&stats=pit&lg=all&qual=y&type=8&season=2018&month=0&season1=2018&ind=0&team=0&rost=0&age=0&filter=&players=0"
-                index = pdash.index(self.stat)+3
-                url = url + "&sort=%d,%s" % (index,order)
-            elif self.stat in pstd:
-                url = "https://www.fangraphs.com/leaders.aspx?pos=all&stats=pit&lg=all&qual=y&type=0&season=2018&month=0&season1=2018&ind=0&team=0&rost=0&age=0&filter=&players=0"
-                index = pstd.index(self.stat)+3
-                url = url + "&sort=%d,%s" % (index,order)
-            elif self.stat in padv:
-                url = "https://www.fangraphs.com/leaders.aspx?pos=all&stats=pit&lg=all&qual=y&type=1&season=2018&month=0&season1=2018&ind=0&team=0&rost=0&age=0&filter=&players=0"
-                index = padv.index(self.stat)+3
-                url = url + "&sort=%d,%s" % (index,order)
-            else:
-                return "No matching stat"
+    asec = ['era','fip','xfip','whip','era-','fip-','xfip-','babip']
+
+    baseurl = "https://www.fangraphs.com/leaders.aspx?"
+
+    def __init__(self, stat, options=[]):
+        self.stat = stat
+        self.options = options
+        self.order = ['d','a']
+
+    def _get_options_str(self):
+        # set defaults
+        pos = 'all'
+        lg = 'all'
+        qual = 'y'
+        season = '2018'
+        team = '0'
+
+        for s in self.options:
+            if '=' in s:
+                t = s.split('=')
+                opt = t[0]
+                val = t[1]
+                if opt == 'pos':
+                    pos = val
+                elif opt == 'lg':
+                    lg = val
+                elif opt == 'qual':
+                    qual = val
+                elif opt == 'season':
+                    season = val
+                elif opt == 'team':
+                    team = val
+                elif opt == 'reverse':
+                    self.order = ['a','d']
+        return "pos=%s&lg=%s&qual=%s&season=%s&team=%s" % (pos,lg,qual,season,team)
+
+    def get_stat(self, stattype='bat'):
+        #parse options
+        optstr = self._get_options_str()
+        url = self.baseurl + optstr + "&stats="+stattype
+        if stattype == 'bat':
+            list = self.batting
+        elif stattype == 'pit':
+            list = self.pitching
+        count = -1
+        found = False
+        for l in list:
+            if self.stat in l:
+                found = True
+                if count == -1:
+                    count = 8
+                index = l.index(self.stat) + l[-1]
+                order = self.order[0]
+                if self.stat in self.asec:
+                    order = self.order[1]
+                url = url + "&type=%d&sort=%d,%s" % (count,index, order)
+                break
+            count += 1
+        if not found:
+            return "No matching stat"
         print(url)
         req = Request(url, headers={'User-Agent' : "ubuntu"})
         s = urlopen(req).read().decode('utf-8')
@@ -243,12 +261,12 @@ class FG:
             list.append((row[1],row[2],row[index]))
         return list
 
-    def get_stat_leaders_str(self,len=10,league="all"):
-        list = self.get_stat(league)
+    def get_stat_leaders_str(self,len=10,stattype='bat'):
+        list = self.get_stat(stattype=stattype)
         if list == "No matching stat":
             return "```%s```" % list
         output = "```"
-        for i in range(len):
+        for i in range(len+1): #+1 to include title row
             l = list[i]
             output = output + l[0].ljust(20) + l[2].rjust(5) + "\n"
         output = output + "```"
