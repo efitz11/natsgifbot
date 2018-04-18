@@ -100,7 +100,7 @@ class Baseball():
             player = '+'.join(team[1:])
             await self.bot.say("```%s```" % mymlbstats.get_player_season_stats(player))
             return
-        elif team[0] in ['leaders','nlleaders','alleaders']:
+        elif team[0] in ['leaders','nlleaders','alleaders','pleaders']:
             stat = team[1]
             # output = '```'
             # leaders = mymlbstats.get_stat_leader(stat)
@@ -113,12 +113,17 @@ class Baseball():
             #     val  = p[2].rjust(5)
             #     output = output + "%s %s %s\n" % (val, team, name)
             # output = output + "```"
-            fg = FG(stat.lower())
-            if team[0] == "leaders":
+            if team[0].startswith('p'):
+                t = team[0][1:]
+                fg = FG(stat.lower(),isPitching=True)
+            else:
+                t = team[0]
+                fg = FG(stat.lower())
+            if t == "leaders":
                 output = fg.get_stat_leaders_str()
-            elif team[0] == "nlleaders":
+            elif t == "nlleaders":
                 output = fg.get_stat_leaders_str(league="nl")
-            elif team[0] == "alleaders":
+            elif t == "alleaders":
                 output = fg.get_stat_leaders_str(league="al")
             await self.bot.say(output)
             return
@@ -175,18 +180,32 @@ class FG:
         self.isPitching = isPitching
 
     def get_stat(self,league="all"):
-        dash = ['bb%','k%','iso','babip','avg','obp','slg','woba','wrc+','bsr','off','def','fwar']
-        std = ['g','ab','pa','h','1b','2b','3b','hr','r','rbi','bb','ibb','so','hbp','sf','sh','gdp','sb','cs']
-        if self.stat in dash:
-            url = "https://www.fangraphs.com/leaders.aspx?pos=all&stats=bat&lg=%s&qual=y&type=8&season=2018&month=33&season1=2018&ind=0&team=0&rost=0&age=0&filter=&players=0" % (league)
-            index = dash.index(self.stat)+9
-            url = url + "&sort=%d,d" % (index)
-        elif self.stat in std:
-            url = "https://www.fangraphs.com/leaders.aspx?pos=all&stats=bat&lg=%s&qual=y&type=0&season=2018&month=33&season1=2018&ind=0&team=0&rost=0&age=0&filter=&players=0" % (league)
-            index = std.index(self.stat)+3
-            url = url + "&sort=%d,d" % (index)
+        bdash = ['bb%','k%','iso','babip','avg','obp','slg','woba','wrc+','bsr','off','def','fwar']
+        pdash = ['w','l','sv','g','gs','ip','k/9','bb/9','hr/9','babip','lob%','gb%','hr/fb','era','fip','xfip','fwar']
+        bstd = ['g','ab','pa','h','1b','2b','3b','hr','r','rbi','bb','ibb','so','hbp','sf','sh','gdp','sb','cs']
+        pstd = ['w','l','era','g','gs','cg','sho','sv','hld','bs','ip','tbf','h','r','er','hr','bb','ibb','hbp','wp','bk','so']
+        if not self.isPitching:
+            if self.stat in bdash:
+                url = "https://www.fangraphs.com/leaders.aspx?pos=all&stats=bat&lg=%s&qual=y&type=8&season=2018&month=33&season1=2018&ind=0&team=0&rost=0&age=0&filter=&players=0" % (league)
+                index = bdash.index(self.stat)+9
+                url = url + "&sort=%d,d" % (index)
+            elif self.stat in bstd:
+                url = "https://www.fangraphs.com/leaders.aspx?pos=all&stats=bat&lg=%s&qual=y&type=0&season=2018&month=33&season1=2018&ind=0&team=0&rost=0&age=0&filter=&players=0" % (league)
+                index = bstd.index(self.stat)+3
+                url = url + "&sort=%d,d" % (index)
+            else:
+                return "No matching stat"
         else:
-            return "No matching stat"
+            if self.stat in pdash:
+                url = "https://www.fangraphs.com/leaders.aspx?pos=all&stats=pit&lg=all&qual=y&type=8&season=2018&month=0&season1=2018&ind=0&team=0&rost=0&age=0&filter=&players=0"
+                index = pdash.index(self.stat)+3
+                url = url + "&sort=%d,d" % (index)
+            elif self.stat in pstd:
+                url = "https://www.fangraphs.com/leaders.aspx?pos=all&stats=pit&lg=all&qual=y&type=0&season=2018&month=0&season1=2018&ind=0&team=0&rost=0&age=0&filter=&players=0"
+                index = pstd.index(self.stat)+3
+                url = url + "&sort=%d,d" % (index)
+            else:
+                return "No matching stat"
         print(url)
         req = Request(url, headers={'User-Agent' : "ubuntu"})
         s = urlopen(req).read().decode('utf-8')
