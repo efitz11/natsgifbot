@@ -184,6 +184,7 @@ class FG:
         pdash = ['w','l','sv','g','gs','ip','k/9','bb/9','hr/9','babip','lob%','gb%','hr/fb','era','fip','xfip','fwar']
         bstd = ['g','ab','pa','h','1b','2b','3b','hr','r','rbi','bb','ibb','so','hbp','sf','sh','gdp','sb','cs']
         pstd = ['w','l','era','g','gs','cg','sho','sv','hld','bs','ip','tbf','h','r','er','hr','bb','ibb','hbp','wp','bk','so']
+        padv = ['era-','fip-','xfip-','era','fip','e-f','xfip','siera']
         if not self.isPitching:
             if self.stat in bdash:
                 url = "https://www.fangraphs.com/leaders.aspx?pos=all&stats=bat&lg=%s&qual=y&type=8&season=2018&month=33&season1=2018&ind=0&team=0&rost=0&age=0&filter=&players=0" % (league)
@@ -196,7 +197,7 @@ class FG:
             else:
                 return "No matching stat"
         else:
-            asec = ['era','fip','xfip','whip']
+            asec = ['era','fip','xfip','whip','era-','fip-','xfip-']
             order = 'd'
             if self.stat in asec:
                 order = 'a'
@@ -207,6 +208,10 @@ class FG:
             elif self.stat in pstd:
                 url = "https://www.fangraphs.com/leaders.aspx?pos=all&stats=pit&lg=all&qual=y&type=0&season=2018&month=0&season1=2018&ind=0&team=0&rost=0&age=0&filter=&players=0"
                 index = pstd.index(self.stat)+3
+                url = url + "&sort=%d,%s" % (index,order)
+            elif self.stat in padv:
+                url = "https://www.fangraphs.com/leaders.aspx?pos=all&stats=pit&lg=all&qual=y&type=1&season=2018&month=0&season1=2018&ind=0&team=0&rost=0&age=0&filter=&players=0"
+                index = padv.index(self.stat)+14
                 url = url + "&sort=%d,%s" % (index,order)
             else:
                 return "No matching stat"
