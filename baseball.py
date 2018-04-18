@@ -47,6 +47,9 @@ class Baseball():
         !mlb stats <player>   - print the player's season stats
 
         !mlb leaders <stat>   - list MLB leaders in that stat
+           leaders can be replaced by:
+                pleaders - pitching stats
+                fleaders - fielding stats
            leaders can be followed by a list of options:
               pos=p      - p can be any pos (p,1B,SS,LF, etc)
               lg=l       - l can either be al or nl
@@ -114,6 +117,9 @@ class Baseball():
             if team[0].startswith('p'):
                 t = team[0][1:]
                 stattype = 'pit'
+            elif team[0].startswith('f'):
+                t = team[0][1:]
+                stattype = 'fld'
             else:
                 t = team[0]
             if t == "losers":
@@ -178,6 +184,9 @@ class FG:
     pstd = ['w','l','era','g','gs','cg','sho','sv','hld','bs','ip','tbf','h','r','er','hr','bb','ibb','hbp','wp','bk','so',3]
     padv = ['k/9','bb/9','k/bb','hr/9','k%','bb%','k-bb%','avg','whip','babip','lob%','era-','fip-','xfip-','era','fip','e-f','xfip','siera',3]
     pitching = [pdash,pstd,padv]
+    fstd = ['po','a','e','fe','te','dp','dps','dpt','dpf','scp','sb','cs','pb','wp','fp',7]
+    fadv = ['drs','biz','plays','rzr','ooz','cpp','rpp','tzl','fsr','arm','dpr','rngr','errr','uzr','uzr/150','def',10]
+    fielding = [fstd,fadv]
 
     asec = ['era','fip','xfip','whip','era-','fip-','xfip-','babip']
 
@@ -240,7 +249,11 @@ class FG:
             list = self.batting
         elif stattype == 'pit':
             list = self.pitching
+        elif stattype == 'fld':
+            list = self.fielding
         count = -1
+        if stattype == 'fld':
+            count = 0
         found = False
         for l in list:
             if self.stat in l:
