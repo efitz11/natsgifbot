@@ -182,6 +182,16 @@ class FG:
 
     baseurl = "https://www.fangraphs.com/leaders.aspx?"
 
+    teams = {'angels':1,'astros':21,'athletics':10,'bluejays':14,'braves':16,'brewers':23,'cardinals':28,
+             'cubs':17,'diamondbacks':15,'dodgers':22,'giants':30,'indians':5,'mariners':11,'marlins':20,
+             'mets':25,'nationals':24,'orioles':2,'padres':29,'phillies':26,'pirates':27,'rangers':13,
+             'rays':12,'redsox':3,'reds':18,'rockies':19,'royals':7,'tigers':6,'twins':8,'whitesox':4,
+             'yankees':9,
+             'laa':1,'hou':21,'oak':10,'tor':14,'atl':16,'mil':23,'stl':28,
+             'chc':17,'ari':15,'lad':22,'sf':30,'cle':5,'sea':11,'mia':20,
+             'nym':25,'wsh':24,'bal':2,'sd':29,'phi':26,'pit':27,'tex':13,
+             'tb':12,'bos':3,'cin':18,'col':19,'kc':7,'det':6,'min':8,'chw':4,'nyy':9}
+
     def __init__(self, stat, options=[]):
         self.stat = stat
         self.options = options
@@ -199,8 +209,8 @@ class FG:
         for s in self.options:
             if '=' in s:
                 t = s.split('=')
-                opt = t[0]
-                val = t[1]
+                opt = t[0].lower()
+                val = t[1].lower()
                 if opt == 'pos':
                     pos = val
                 elif opt == 'lg':
@@ -210,7 +220,10 @@ class FG:
                 elif opt == 'season':
                     season = val
                 elif opt == 'team':
-                    team = val
+                    if val in self.teams:
+                        team = str(self.teams[val])
+                    else:
+                        team = val
                     self.delta = 1
                 elif opt == 'reverse':
                     self.order = ['a','d']
