@@ -113,7 +113,7 @@ class Baseball():
             #     val  = p[2].rjust(5)
             #     output = output + "%s %s %s\n" % (val, team, name)
             # output = output + "```"
-            fg = FG(stat)
+            fg = FG(stat.lower())
             if team[0] == "leaders":
                 output = fg.get_stat_leaders_str()
             elif team[0] == "nlleaders":
