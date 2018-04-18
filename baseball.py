@@ -186,6 +186,7 @@ class FG:
         self.stat = stat
         self.options = options
         self.order = ['d','a']
+        self.delta = 0
 
     def _get_options_str(self):
         # set defaults
@@ -210,6 +211,7 @@ class FG:
                     season = val
                 elif opt == 'team':
                     team = val
+                    self.delta = 1
                 elif opt == 'reverse':
                     self.order = ['a','d']
         return "pos=%s&lg=%s&qual=%s&season=%s&team=%s" % (pos,lg,qual,season,team)
@@ -229,7 +231,7 @@ class FG:
                 found = True
                 if count == -1:
                     count = 8
-                index = l.index(self.stat) + l[-1]
+                index = l.index(self.stat) + l[-1] - self.delta
                 order = self.order[0]
                 if self.stat in self.asec:
                     order = self.order[1]
