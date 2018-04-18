@@ -457,7 +457,7 @@ async def m8ball():
                  "Without out a doubt","Outlook good","Better not tell you now","My sources say no",
                  "Yes definitely","Yes","Cannot predict now","Outlook not so good",
                  "You may rely on it","Signs point to yes","Concentrate and ask again","Very doubtful"]
-    await bot.say(responses[random.randint(0,len(responses))])
+    await bot.say(responses[random.randint(0,len(responses)-1)])
 
 @bot.event
 async def on_message(message):
