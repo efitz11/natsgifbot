@@ -261,12 +261,14 @@ class FG:
             list.append((row[1],row[2],row[index]))
         return list
 
-    def get_stat_leaders_str(self,len=10,stattype='bat'):
+    def get_stat_leaders_str(self, length=10, stattype='bat'):
         list = self.get_stat(stattype=stattype)
         if list == "No matching stat":
             return "```%s```" % list
         output = "```"
-        for i in range(len+1): #+1 to include title row
+        length = min(length + 1, len(list))
+        print(length)
+        for i in range(length): #+1 to include title row
             l = list[i]
             output = output + l[0].ljust(20) + l[2].rjust(5) + "\n"
         output = output + "```"
