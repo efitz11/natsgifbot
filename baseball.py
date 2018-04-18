@@ -202,7 +202,7 @@ class FG:
             else:
                 return "No matching stat"
         else:
-            asec = ['era','fip','xfip','whip','era-','fip-','xfip-']
+            asec = ['era','fip','xfip','whip','era-','fip-','xfip-','babip']
             order = 'd'
             if self.stat in asec:
                 order = 'a'
