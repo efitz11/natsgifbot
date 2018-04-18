@@ -52,6 +52,7 @@ class Baseball():
               lg=l       - l can either be al or nl
               qual=q     - q is minimum PA or IP (increments of 10)
               season=s   - s is year
+              team=t     - t is either the team abbrev('wsh') or the team name ("redsox")
         """
         delta=None
 
