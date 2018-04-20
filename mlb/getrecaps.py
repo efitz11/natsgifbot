@@ -97,6 +97,30 @@ def find_top_plays(return_str=False):
         return ""
     return None
 
+def find_quick_pitch(return_str=False):
+    url = "https://search-api.mlb.com/svc/search/v2/mlb_global_sitesearch_en/sitesearch?hl=true&facet=type&expand=partner.media&q=quick%2Bpitch&page=1"
+    print(url)
+    req = Request(url, headers={'User-Agent' : "ubuntu"})
+    s = json.loads(urlopen(req).read().decode("utf-8"))
+    result = s['docs'][0]
+    blurb = result['blurb']
+    now = datetime.now() - timedelta(days=1)
+    date = "%d/%d/%s" % (now.month, now.day, str(now.year)[2:])
+    if "quick pitch recap" in blurb.lower() and date in blurb:
+        url = result['url']
+        dir = get_direct_video_url(url)
+        if dir is not None:
+            url = dir
+        duration = result['duration'][3:]
+        s = "[%s](%s) - %s\n\n" % (blurb,url,duration)
+        print(s)
+        if return_str:
+            return s
+        return (blurb,url,duration)
+    if return_str:
+        return ""
+    return None
+
 def find_must_cs(return_str=False):
     url = "https://search-api.mlb.com/svc/search/v2/mlb_global_sitesearch_en/sitesearch?hl=true&facet=type&expand=partner.media&q=must%2Bc&page=1"
     req = Request(url, headers={'User-Agent' : "ubuntu"})
@@ -147,6 +171,7 @@ def post_on_reddit(comment):
 
 if __name__ == "__main__":
     output = find_fastcast(return_str=True)
+    output = output + find_quick_pitch(return_str=True)
     output = output + find_top_plays(return_str=True)
     output = output + "****\n"
     output = output + find_must_cs(return_str=True)
