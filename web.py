@@ -100,8 +100,22 @@ def search_imdb(query):
     out = "https://imdb.com%s" % href
     return out
 
+def ud_def(query):
+    url = "http://api.urbandictionary.com/v0/define?term=" + urllib.parse.quote_plus(query)
+    req = Request(url, headers={'User-Agent' : "ubuntu"})
+    data = json.loads(urlopen(req).read().decode('utf-8'))
+    count = 0
+    out = ""
+    for l in data['list']:
+        count += 1
+        out = out + "**%s**: %s\n%s\n\n" % (l['word'], l['definition'], l['example'])
+        if count == 3:
+            break
+    return out
+
 if __name__ == "__main__":
     # print(search_untappd("heineken"))
     # print(get_latest_tweet("nationalsump"))
     # print(get_latest_tweet("chelsea_janes"))
-    search_imdb("ryan reynolds")
+    print(ud_def("word"))
+    # search_imdb("ryan reynolds")
