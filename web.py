@@ -108,7 +108,7 @@ def ud_def(query):
     out = []
     for l in data['list']:
         count += 1
-        out.append("**%s**: %s\n%s\n\n" % (l['word'], l['definition'], l['example']))
+        out.append("**%s**: %s\n\n*%s*" % (l['word'], l['definition'], l['example']))
         if count == 2:
             break
     return out
