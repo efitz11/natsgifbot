@@ -459,6 +459,11 @@ async def m8ball():
                  "You may rely on it","Signs point to yes","Concentrate and ask again","Very doubtful"]
     await bot.say(responses[random.randint(0,len(responses)-1)])
 
+@bot.command()
+async def ud(query):
+    """query UrbanDictionary"""
+    await bot.say(web.ud_def(query))
+
 @bot.event
 async def on_message(message):
     #stuff
