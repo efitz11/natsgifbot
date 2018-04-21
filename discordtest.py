@@ -462,7 +462,9 @@ async def m8ball():
 @bot.command()
 async def ud(query):
     """query UrbanDictionary"""
-    await bot.say(web.ud_def(query))
+    list = web.ud_def(query)
+    for l in list:
+        await bot.say(l)
 
 @bot.event
 async def on_message(message):
