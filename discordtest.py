@@ -460,9 +460,9 @@ async def m8ball():
     await bot.say(responses[random.randint(0,len(responses)-1)])
 
 @bot.command()
-async def ud(query):
+async def ud(*query):
     """query UrbanDictionary"""
-    list = web.ud_def(query)
+    list = web.ud_def(' '.join(query))
     for l in list:
         await bot.say(l)
 
