@@ -105,11 +105,11 @@ def ud_def(query):
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     data = json.loads(urlopen(req).read().decode('utf-8'))
     count = 0
-    out = ""
+    out = []
     for l in data['list']:
         count += 1
-        out = out + "**%s**: %s\n%s\n\n" % (l['word'], l['definition'], l['example'])
-        if count == 3:
+        out.append("**%s**: %s\n%s\n\n" % (l['word'], l['definition'], l['example']))
+        if count == 2:
             break
     return out
 
