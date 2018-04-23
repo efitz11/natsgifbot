@@ -147,6 +147,31 @@ def find_must_cs(return_str=False):
         return output
     return vids
 
+def find_statcasts(return_str=False):
+    url = "https://search-api.mlb.com/svc/search/v2/mlb_global_sitesearch_en/sitesearch?hl=true&facet=type&expand=partner.media&q=statcast&page=1"
+    req = Request(url, headers={'User-Agent' : "ubuntu"})
+    s = json.loads(urlopen(req).read().decode("utf-8"))
+    results = s['docs']
+    yesterday = datetime.now() - timedelta(days=1)
+    vids = []
+    output = ""
+    for res in results:
+        date = ""
+        for tag in res['tags']:
+            if tag['type'] == 'event_date':
+                date = tag['value']
+        if date[:10] == "%d-%02d-%02d" % (yesterday.year, yesterday.month, yesterday.day):
+            blurb = res['blurb']
+            url = get_direct_video_url(res['url'])
+            duration = res['duration'][3:]
+            s = "[%s](%s) - %s\n\n" % (blurb,url,duration)
+            print(s)
+            if return_str:
+                output = output + s
+            vids.append((blurb,url,duration))
+    if return_str:
+        return output
+    return vids
 
 def post_on_reddit(comment):
     import praw
@@ -175,6 +200,8 @@ if __name__ == "__main__":
     output = output + find_top_plays(return_str=True)
     output = output + "****\n"
     output = output + find_must_cs(return_str=True)
+    output = output + "****\n"
+    output = output + find_statcasts(return_str=True)
     output = output + "****\n"
     output = output + get_recaps(return_str=True)
     if len(sys.argv) > 1 and sys.argv[1] == "post":
