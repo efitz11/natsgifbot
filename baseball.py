@@ -135,6 +135,15 @@ class Baseball():
             else:
                 await self.bot.say("No stats found")
             return
+        elif team[0] == "box":
+            part = team[1]
+            team = ' '.join(team[2:]).lower()
+            if team == "nats":
+                team = "nationals"
+            out = mymlbstats.print_box(team, part=part)
+            if out is not None:
+                await self.bot.say("```%s```" % out)
+            return
         else:
             teamname = ' '.join(team).lower()
         if teamname == "nats":
