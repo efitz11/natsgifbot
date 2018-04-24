@@ -221,7 +221,7 @@ def get_linescore(gamepk):
     return s
 
 def get_boxscore(gamepk):
-    url = "https://statsapi.mlb.com/api/v1/game/" + gamepk + "/boxscore"
+    url = "https://statsapi.mlb.com/api/v1/game/" + gamepk + "/boxscore?hydrate=person"
     # print(url)
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     s = json.loads(urlopen(req).read().decode("utf-8"))
@@ -260,6 +260,25 @@ def get_pbp(gamepk):
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     s = json.loads(urlopen(req).read().decode("utf-8"))
     return s
+
+def print_box(team,part, delta=None):
+    s = get_day_schedule(delta=delta)
+    games = s['dates'][0]['games']
+    for game in games:
+        awayname = game['teams']['away']['team']['name'].lower()
+        homename = game['teams']['home']['team']['name'].lower()
+        awayabv = game['teams']['away']['team']['abbreviation'].lower()
+        homeabv = game['teams']['home']['team']['abbreviation'].lower()
+        side = None
+        if team == homeabv or team in homename:
+            side = 'home'
+        elif team == awayabv or team in awayname:
+            side = 'away'
+        if side is not None:
+            gamepk = str(game['gamePk'])
+            bs = BoxScore.BoxScore(get_boxscore(gamepk))
+            out = bs.print_box(side=side, part=part)
+            return out
 
 def get_lg_standings(lgid, wc=False):
     now = datetime.now()
