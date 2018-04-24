@@ -140,7 +140,7 @@ class Baseball():
             team = ' '.join(team[2:]).lower()
             if team == "nats":
                 team = "nationals"
-            out = mymlbstats.print_box(team, part=part)
+            out = mymlbstats.print_box(team, part=part, delta=delta)
             if out is not None:
                 await self.bot.say("```%s```" % out)
             return
