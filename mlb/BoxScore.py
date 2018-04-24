@@ -23,6 +23,7 @@ class BoxScore:
                 self.players[pid] = self.box['teams'][t]['players'][p]
 
     def print_box(self, side="home", part="batting"):
+        output = None
         if part == "batting":
             output = "%s %s %s %s %s %s %s %s %s\n" % ("Batters".ljust(18),'AB','R','H','RBI','BB','SO','LOB',' AVG')
             lastbatter = None
