@@ -24,12 +24,17 @@ class BoxScore:
 
     def print_box(self, side="home", part="batting"):
         if part == "batting":
-            output = "%s %s %s %s %s %s %s %s %s\n" % ("Batters".ljust(15),'AB','R','H','RBI','BB','SO','LOB',' AVG')
+            output = "%s %s %s %s %s %s %s %s %s\n" % ("Batters".ljust(18),'AB','R','H','RBI','BB','SO','LOB',' AVG')
+            lastbatter = None
             for batter in self.box['teams'][side]['batters']:
                 player = self.players[batter]
-                name = player['person']['boxscoreName']
+                if lastbatter not in self.box['teams'][side]['battingOrder'] and lastbatter is not None:
+                    name = " " + player['person']['boxscoreName']
+                else:
+                    name = player['person']['boxscoreName']
+                lastbatter = batter
                 pos = player['position']['abbreviation']
-                namepos = (name + " " + pos).ljust(15)
+                namepos = (name + " " + pos).ljust(18)
                 battingstats = player['stats']['batting']
                 abs = str(battingstats['atBats']).rjust(2)
                 runs = str(battingstats['runs'])
