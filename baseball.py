@@ -41,6 +41,7 @@ class Baseball():
         !mlb sp <team>     - print scoring plays for today's game
         !mlb line <player> - print the player's line for that day's game
         !mlb ohtani        - get ohtani's stats for the day
+        !mlb box (batting,pitching) <team> - print box score for that team
 
         each of the previous commands can end in a number of (+days or -days) to change the date
 
@@ -56,6 +57,7 @@ class Baseball():
               qual=q     - q is minimum PA or IP (increments of 10)
               season=s   - s is year
               team=t     - t is either the team abbrev('wsh') or the team name ("redsox")
+              split=s    - s is one of (last7, last14, last30)
         """
         delta=None
 
@@ -243,8 +245,22 @@ class FG:
                 elif opt == 'qual':
                     qual = val
                 elif opt == 'season':
-                    month='0'
+                    if month == '33':
+                        month='0'
                     season = val
+                elif opt == 'split':
+                    if val == 'last7':
+                        month='1'
+                    elif val == 'last14':
+                        month='2'
+                    elif val == 'last30':
+                        month='3'
+                    # elif val == 'risp':
+                    #     month='29'
+                    # elif val == 'vl':
+                    #     month='13'
+                    # elif val == 'vr':
+                    #     month='14'
                 elif opt == 'team':
                     if val in self.teams:
                         team = str(self.teams[val])
