@@ -198,6 +198,9 @@ class FG:
     fielding = [fstd,fadv]
 
     asec = ['era','fip','xfip','whip','era-','fip-','xfip-','babip']
+    count = ['bsr','off','def','fwar','g','ab','pa','h','1b','2b','3b','hr','r','rbi','bb','ibb','so','hbp','sf','sh','gdp','sb','cs',
+             'w','l','sv','g','gs','ip','fwar','cg','sho','sv','hld','bs','tbf','wp','bk',
+             'po','a','e','fe','te','dp','pb','drs']
 
     baseurl = "https://www.fangraphs.com/leaders.aspx?"
 
@@ -225,6 +228,8 @@ class FG:
         season = '2018'
         team = '0'
         month='33'
+        if self.stat in self.count:
+            qual = '0'
 
         for s in self.options:
             if '=' in s:
