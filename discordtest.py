@@ -454,7 +454,7 @@ async def m8ball():
     """ask the magic 8 ball a question"""
     responses = ["It is certain", "As I see it, yes","Reply hazy try again","Don't count on it",
                  "It is decidedly so","Most likely","Ask again later","My reply is no",
-                 "Without out a doubt","Outlook good","Better not tell you now","My sources say no",
+                 "Without a doubt","Outlook good","Better not tell you now","My sources say no",
                  "Yes definitely","Yes","Cannot predict now","Outlook not so good",
                  "You may rely on it","Signs point to yes","Concentrate and ask again","Very doubtful"]
     await bot.say(responses[random.randint(0,len(responses)-1)])
