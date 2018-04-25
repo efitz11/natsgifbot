@@ -77,7 +77,8 @@ class BoxScore:
 
         notes = self.box['teams'][side]['info']
         for i in notes:
-            if part == "batting" and (i['title'] == "BATTING" or i['title'] == "FIELDING"):
+            # if part == "batting" and (i['title'] == "BATTING" or i['title'] == "FIELDING" ):
+            if part == "batting" and (i['title'] in ['BATTING', 'FIELDING', 'BASERUNNING']):
                 output = output + "\n" + i['title'] + ":\n"
                 for f in i['fieldList']:
                     output = output + "%s: %s\n" % (f['label'], f['value'])
