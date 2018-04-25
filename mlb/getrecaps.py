@@ -80,9 +80,11 @@ def find_top_plays(return_str=False):
     s = json.loads(urlopen(req).read().decode("utf-8"))
     result = s['docs'][0]
     blurb = result['blurb']
-    now = datetime.now() - timedelta(days=1)
-    date = "%d/%d/%s:" % (now.month, now.day, str(now.year)[2:])
-    if "top 5 plays" in blurb.lower() and blurb.startswith(date):
+    now = datetime.now()# - timedelta(days=1)
+    # date = "%d/%d/%s:" % (now.month, now.day, str(now.year)[2:])
+    date = "%d-%02d-%2d" % (now.year, now.month, now.day)
+    print(date)
+    if "top 5 plays" in blurb.lower() and date in result['display_timestamp']:
         url = result['url']
         dir = get_direct_video_url(url)
         if dir is not None:
