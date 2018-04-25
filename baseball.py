@@ -315,6 +315,8 @@ class FG:
         print(length)
         for i in range(length): #+1 to include title row
             l = list[i]
+            if len(l[2].strip()) == 0:
+                continue
             output = output + l[0].ljust(20) + l[2].rjust(5) + "\n"
         output = output + "```"
         return output
