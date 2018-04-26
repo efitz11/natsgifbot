@@ -265,20 +265,32 @@ def print_box(team,part, delta=None):
     s = get_day_schedule(delta=delta)
     games = s['dates'][0]['games']
     for game in games:
+        if team == game['teams']['away']['team']['abbreviation'].lower() or \
+                team == game['teams']['home']['team']['abbreviation'].lower():
+            useabv = True
+    for game in games:
         awayname = game['teams']['away']['team']['name'].lower()
         homename = game['teams']['home']['team']['name'].lower()
         awayabv = game['teams']['away']['team']['abbreviation'].lower()
         homeabv = game['teams']['home']['team']['abbreviation'].lower()
-        side = None
-        if team == homeabv or team in homename:
-            side = 'home'
-        elif team == awayabv or team in awayname:
-            side = 'away'
-        if side is not None:
-            gamepk = str(game['gamePk'])
-            bs = BoxScore.BoxScore(get_boxscore(gamepk))
-            out = bs.print_box(side=side, part=part)
-            return out
+        match = False
+        if useabv:
+            if team == awayabv or team == homeabv:
+                match = True
+        else:
+            if team in awayname or team in homename:
+                match = True
+        if match:
+            side = None
+            if team == homeabv or team in homename:
+                side = 'home'
+            elif team == awayabv or team in awayname:
+                side = 'away'
+            if side is not None:
+                gamepk = str(game['gamePk'])
+                bs = BoxScore.BoxScore(get_boxscore(gamepk))
+                out = bs.print_box(side=side, part=part)
+                return out
 
 def get_lg_standings(lgid, wc=False):
     now = datetime.now()
