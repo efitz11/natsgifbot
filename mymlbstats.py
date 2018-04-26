@@ -264,6 +264,7 @@ def get_pbp(gamepk):
 def print_box(team,part, delta=None):
     s = get_day_schedule(delta=delta)
     games = s['dates'][0]['games']
+    useabv = False
     for game in games:
         if team == game['teams']['away']['team']['abbreviation'].lower() or \
                 team == game['teams']['home']['team']['abbreviation'].lower():
