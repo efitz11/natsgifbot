@@ -25,7 +25,7 @@ class BoxScore:
     def print_box(self, side="home", part="batting"):
         output = None
         if part == "batting":
-            output = "%s %s %s %s %s %s %s %s %s\n" % ("".ljust(18),'AB','R','H','RBI','BB','SO','LOB',' AVG')
+            output = "%s %s %s %s %s %s %s %s %s %s %s\n" % ("".ljust(18),'AB','R','H','RBI','BB','SO','LOB',' AVG', ' OBP',' SLG')
             lastbatter = None
             for batter in self.box['teams'][side]['batters']:
                 player = self.players[batter]
@@ -45,7 +45,9 @@ class BoxScore:
                 so = str(battingstats['strikeOuts']).rjust(2)
                 lob = str(battingstats['leftOnBase']).rjust(3)
                 avg = player['seasonStats']['batting']['avg']
-                outlist = [abs, runs, hits, rbi, bb, so, lob, avg]
+                obp = player['seasonStats']['batting']['obp']
+                slg = player['seasonStats']['batting']['slg']
+                outlist = [abs, runs, hits, rbi, bb, so, lob, avg, obp, slg]
                 output = output + namepos
                 for s in outlist:
                     output = output + " " + s
