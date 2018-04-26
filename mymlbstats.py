@@ -410,22 +410,26 @@ def get_div_standings(div):
     standings = get_lg_standings(id,wc=wc)
     div = standings['records'][idx]
     output = "```python\n"
-    output = output + "%s %s %s %s %s %s %s %s %s\n" %\
-             (' '.rjust(3),'W'.rjust(3),'L'.rjust(3),'PCT'.rjust(5), 'GB'.rjust(4), ' WCGB', 'STK',
-              'RS'.rjust(3),'RA'.rjust(3))
+    output = output + "%s %s %s %s %s %s %s %s %s %s %s\n" %\
+             (' '.rjust(3),'W'.rjust(3),'L'.rjust(3),'PCT'.rjust(5), 'GB'.rjust(4), ' WCGB', 'L10',
+              'STK', 'RD'.rjust(3),'RS'.rjust(4),'RA'.rjust(4))
     for team in div['teamRecords']:
         abbrev = team['team']['abbreviation'].ljust(3)
         streak = team['streak']['streakCode'].ljust(3)
         wins = str(team['wins']).rjust(3)
         loss = str(team['losses']).rjust(3)
         pct = team['leagueRecord']['pct'].rjust(5)
-        rundiff = team['runDifferential']
-        ra = str(team['runsAllowed']).rjust(3)
-        rs = str(team['runsScored']).rjust(3)
+        rd = str(team['runDifferential']).rjust(3)
+        ra = str(team['runsAllowed']).rjust(4)
+        rs = str(team['runsScored']).rjust(4)
         gb = team['gamesBack'].rjust(4)
         wcgb = team['wildCardGamesBack'].rjust(5)
-        output = output + "%s %s %s %s %s %s %s %s %s\n" %\
-                 (abbrev, wins, loss, pct, gb, wcgb, streak, rs, ra)
+        lastten = ""
+        for split in team['records']['splitRecords']:
+            if split['type'] == "lastTen":
+                lastten = "%s-%s" % (split['wins'],split['losses'])
+        output = output + "%s %s %s %s %s %s %s %s %s %s %s\n" %\
+                 (abbrev, wins, loss, pct, gb, wcgb, lastten, streak, rd, rs, ra)
     output = output + "```"
     return output
 
