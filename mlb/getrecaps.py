@@ -2,7 +2,7 @@ from urllib.request import urlopen, Request
 import json
 from datetime import datetime, timedelta
 from xml.etree import ElementTree
-import sys
+import sys, time
 
 def get_recaps(return_str=False):
     now = datetime.now() - timedelta(days=1)
@@ -175,7 +175,7 @@ def find_statcasts(return_str=False):
         return output
     return vids
 
-def post_on_reddit(comment):
+def post_on_reddit(comment, cron=False):
     import praw
     with open('.fitz.json', 'r') as f:
         f = json.loads(f.read())['keys']['efitz11']
@@ -184,17 +184,25 @@ def post_on_reddit(comment):
                          user_agent='recap bot on ubuntu (/u/efitz11)',
                          username=f['user'],password=f['password'])
     user = reddit.redditor('baseballbot')
-    for submission in user.submissions.new(limit=5):
-        if 'Around the Horn' in submission.title:
-            idx = submission.title.find('-')
-            date = submission.title[idx+2:]
-            now = datetime.now()
-            today = "%d/%d/%s" % (now.month,now.day,str(now.year)[2:])
-            # print(comment)
-            if date == today:
-                print("Adding comment to thread: %s - %s" % (submission.title, submission.url))
-                submission.reply(comment)
-            break
+    posted = False
+    while not posted:
+        for submission in user.submissions.new(limit=5):
+            if 'Around the Horn' in submission.title:
+                idx = submission.title.find('-')
+                date = submission.title[idx+2:]
+                now = datetime.now()
+                today = "%d/%d/%s" % (now.month,now.day,str(now.year)[2:])
+                # print(comment)
+                if date == today:
+                    print("Adding comment to thread: %s - %s" % (submission.title, submission.url))
+                    submission.reply(comment)
+                    posted = True
+                break
+        if not cron:
+            posted = True
+        else:
+            print("didn't find ATH, checking in 5 minutes...")
+            time.sleep(5*60)
 
 if __name__ == "__main__":
     output = find_fastcast(return_str=True)
@@ -207,5 +215,8 @@ if __name__ == "__main__":
     output = output + "****\n"
     output = output + get_recaps(return_str=True)
     if len(sys.argv) > 1 and sys.argv[1] == "post":
-        post_on_reddit(output)
+        if sys.argv > 2 and sys.argv[2] == "cron":
+            post_on_reddit(output, cron=True)
+        else:
+            post_on_reddit(output)
 
