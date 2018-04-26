@@ -25,7 +25,7 @@ class BoxScore:
     def print_box(self, side="home", part="batting"):
         output = None
         if part == "batting":
-            output = "%s %s %s %s %s %s %s %s %s\n" % ("Batters".ljust(18),'AB','R','H','RBI','BB','SO','LOB',' AVG')
+            output = "%s %s %s %s %s %s %s %s %s\n" % ("".ljust(18),'AB','R','H','RBI','BB','SO','LOB',' AVG')
             lastbatter = None
             for batter in self.box['teams'][side]['batters']:
                 player = self.players[batter]
@@ -51,7 +51,7 @@ class BoxScore:
                     output = output + " " + s
                 output = output + "\n"
         elif part == "pitching":
-            output = "%s %s %s %s %s %s %s %s %s %s %s\n" % ("Pitchers".ljust(15)," IP"," H"," R","ER","BB","SO","HR","  ERA","  P", " S")
+            output = "%s %s %s %s %s %s %s %s %s %s %s\n" % ("".ljust(15)," IP"," H"," R","ER","BB","SO","HR","  ERA","  P", " S")
             for pitcher in self.box['teams'][side]['pitchers']:
                 player = self.players[pitcher]
                 name = player['person']['boxscoreName']
@@ -74,14 +74,23 @@ class BoxScore:
                     output = output + " " + s
 
                 output = output + "\n"
-
-        notes = self.box['teams'][side]['info']
-        for i in notes:
-            # if part == "batting" and (i['title'] == "BATTING" or i['title'] == "FIELDING" ):
-            if part == "batting" and (i['title'] in ['BATTING', 'FIELDING', 'BASERUNNING']):
+        elif part == "notes":
+            notes = self.box['teams'][side]['info']
+            output = ""
+            for i in notes:
+                # if part == "batting" and (i['title'] == "BATTING" or i['title'] == "FIELDING" ):
+                # if part == "batting" and (i['title'] in ['BATTING', 'FIELDING', 'BASERUNNING']):
                 output = output + "\n" + i['title'] + ":\n"
                 for f in i['fieldList']:
                     output = output + "%s: %s\n" % (f['label'], f['value'])
+        elif part == 'info':
+            info = self.box['info']
+            output = ""
+            for i in info:
+                out = i['label']
+                if 'value' in i:
+                    out = "%s: %s" % (out, i['value'])
+                output = output + "%s\n\n" % (out)
         if part == "pitching":
             output = output + "\n"
             for i in self.box['pitchingNotes']:
