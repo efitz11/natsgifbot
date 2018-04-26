@@ -200,7 +200,7 @@ def post_on_reddit(comment, cron=False):
                 break
         if not cron:
             posted = True
-        else:
+        elif not posted:
             print("didn't find ATH, checking in 5 minutes...")
             time.sleep(5*60)
 
