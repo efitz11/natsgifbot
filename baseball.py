@@ -41,7 +41,7 @@ class Baseball():
         !mlb sp <team>     - print scoring plays for today's game
         !mlb line <player> - print the player's line for that day's game
         !mlb ohtani        - get ohtani's stats for the day
-        !mlb (batting,pitching) <team> - print box score for that team
+        !mlb (batting,pitching,notes) <team> - print box score for that team
 
         each of the previous commands can end in a number of (+days or -days) to change the date
 
@@ -137,7 +137,7 @@ class Baseball():
             else:
                 await self.bot.say("No stats found")
             return
-        elif team[0] in ['batting','pitching']:
+        elif team[0] in ['batting','pitching','notes','info']:
             part = team[0]
             team = ' '.join(team[1:]).lower()
             if team == "nats":
