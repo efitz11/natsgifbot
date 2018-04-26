@@ -215,7 +215,7 @@ if __name__ == "__main__":
     output = output + "****\n"
     output = output + get_recaps(return_str=True)
     if len(sys.argv) > 1 and sys.argv[1] == "post":
-        if sys.argv > 2 and sys.argv[2] == "cron":
+        if len(sys.argv) > 2 and sys.argv[2] == "cron":
             post_on_reddit(output, cron=True)
         else:
             post_on_reddit(output)
