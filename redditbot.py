@@ -7,7 +7,7 @@ import mymlbstats
 
 class RedditBot():
     def __init__(self):
-        self.enabled_subs = ["computerdudetest","nationals"]
+        self.enabled_subs = ["computerdudetest","nationals", "baseball"]
     
         # get tokens from file
         f = open('reddittokens.txt','r')
@@ -140,8 +140,8 @@ if __name__ == "__main__":
     # see if new gifs have been submitted to /r/nationalsgifs
     r.update_postlist()
     # respond to gif requests
-    # r.check_mentions()
-    # r.check_time()
-    # t = TwitterBot()
-    # t.check_last_tweet()
+    r.check_mentions()
+    r.check_time()
+    t = TwitterBot()
+    t.check_last_tweet()
 
