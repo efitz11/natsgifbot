@@ -100,7 +100,10 @@ class Baseball():
                 return
         elif team[0] == 'line':
             player = '+'.join(team[1:])
-            out = mymlbstats.get_player_line(player, delta)
+            if len(player) == 0:
+                out = get_daily_leaders()
+            else:
+                out = mymlbstats.get_player_line(player, delta)
             if len(out) == 0:
                 await self.bot.say("couldn't find stats")
             else:
@@ -337,6 +340,27 @@ class FG:
         output = output + "```"
         return output
 
+def get_daily_leaders():
+    url = "http://www.espn.com/mlb/stats/dailyleaders"
+    req = Request(url, headers={'User-Agent' : "ubuntu"})
+    s = urlopen(req).read().decode('latin-1')
+    soup = BeautifulSoup(s, 'html.parser')
+    table = soup.find_all("table", class_="tablehead")[1]
+    # print(table)
+    rows = table.find_all("tr")
+    output = ""
+    count = 0
+    for r in rows:
+        if count > 1 and count < 12:
+            cells = r.find_all('td')
+            player = cells[1].get_text().ljust(20)
+            team = cells[2].get_text().ljust(4)
+            stats = cells[5].get_text()
+            output = output + "%s %s %s\n" % (team, player, stats)
+        count += 1
+    return output
+
 if __name__ == "__main__":
-    fg = FG('fwar')
-    print(fg.get_stat_leaders_str())
+    # fg = FG('fwar')
+    # print(fg.get_stat_leaders_str())
+    get_daily_leaders()
