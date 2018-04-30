@@ -342,10 +342,10 @@ class FG:
         output = output + "```"
         return output
 
-def get_daily_leaders(delta=0):
+def get_daily_leaders(delta=None):
     url = "http://www.espn.com/mlb/stats/dailyleaders"
-    delta = int(delta)
-    if delta != 0:
+    if delta != None:
+        delta = int(delta)
         day = datetime.now() + timedelta(days=delta)
         url = url + "/_/date/%d%02d%02d" % (day.year, day.month, day.day)
     req = Request(url, headers={'User-Agent' : "ubuntu"})
