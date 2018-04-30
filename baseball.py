@@ -101,7 +101,9 @@ class Baseball():
         elif team[0] == 'line':
             player = '+'.join(team[1:])
             if len(player) == 0:
-                out = "ESPN's daily leaders:\n" + get_daily_leaders(delta=0)
+                out = get_daily_leaders(delta=delta)
+                await self.bot.say("ESPN's daily leaders:\n```%s```"% out)
+                return
             else:
                 out = mymlbstats.get_player_line(player, delta)
             if len(out) == 0:
