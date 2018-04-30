@@ -101,7 +101,7 @@ class Baseball():
         elif team[0] == 'line':
             player = '+'.join(team[1:])
             if len(player) == 0:
-                out = get_daily_leaders()
+                out = "ESPN's daily leaders:\n" + get_daily_leaders(delta=0)
             else:
                 out = mymlbstats.get_player_line(player, delta)
             if len(out) == 0:
@@ -340,8 +340,12 @@ class FG:
         output = output + "```"
         return output
 
-def get_daily_leaders():
+def get_daily_leaders(delta=0):
     url = "http://www.espn.com/mlb/stats/dailyleaders"
+    delta = int(delta)
+    if delta != 0:
+        day = datetime.now() + timedelta(days=delta)
+        url = url + "/_/date/%d%02d%02d" % (day.year, day.month, day.day)
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     s = urlopen(req).read().decode('latin-1')
     soup = BeautifulSoup(s, 'html.parser')
@@ -363,4 +367,4 @@ def get_daily_leaders():
 if __name__ == "__main__":
     # fg = FG('fwar')
     # print(fg.get_stat_leaders_str())
-    get_daily_leaders()
+    print(get_daily_leaders(delta="-1"))
