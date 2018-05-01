@@ -61,7 +61,8 @@ def find_fastcast(return_str=False):
     result = s['docs'][0]
     title = result['title']
     now = datetime.now()
-    date = "%d-%02d-%2d" % (now.year, now.month, now.day)
+    date = "%d-%02d-%02d" % (now.year, now.month, now.day)
+    print(date)
     if "MLB.com FastCast" in title and date in result['display_timestamp']:
         blurb = result['blurb']
         url = result['url']
@@ -86,7 +87,7 @@ def find_top_plays(return_str=False):
     blurb = result['blurb']
     now = datetime.now()# - timedelta(days=1)
     # date = "%d/%d/%s:" % (now.month, now.day, str(now.year)[2:])
-    date = "%d-%02d-%2d" % (now.year, now.month, now.day)
+    date = "%d-%02d-%02d" % (now.year, now.month, now.day)
     print(date)
     if "top 5 plays" in blurb.lower() and date in result['display_timestamp']:
         url = result['url']
