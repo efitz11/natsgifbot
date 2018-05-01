@@ -111,9 +111,20 @@ class Baseball():
             else:
                 await self.bot.say("```%s```" % out)
             return
-        elif team[0] == 'stats':
+        elif team[0] in ['stats','bstats','pstats']:
+            year = None
+            if team[-1].isdigit():
+                year = team[-1]
+                team = team[0:-1]
             player = '+'.join(team[1:])
-            await self.bot.say("```%s```" % mymlbstats.get_player_season_stats(player))
+            if team[0] in ['stats','bstats']:
+                t = "hitting"
+            else:
+                t = "pitching"
+            if year is None:
+                await self.bot.say("```%s```" % mymlbstats.get_player_season_stats(player,type=t))
+            else:
+                await self.bot.say("```%s```" % mymlbstats.get_player_season_stats(player,type=t,year=year))
             return
         elif team[0].endswith("leaders") or team[0].endswith("losers"):
             stat = team[1]
