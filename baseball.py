@@ -117,9 +117,10 @@ class Baseball():
                 year = team[-1]
                 team = team[0:-1]
             player = '+'.join(team[1:])
-            if team[0] in ['stats','bstats']:
+            t = None
+            if team[0] in ['bstats']:
                 t = "hitting"
-            else:
+            elif team[0] == 'pstats':
                 t = "pitching"
             if year is None:
                 await self.bot.say("```%s```" % mymlbstats.get_player_season_stats(player,type=t))

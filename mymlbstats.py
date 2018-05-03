@@ -472,7 +472,7 @@ def _get_player_search(name):
     name = name.replace(' ', '+').upper()
     url = "http://lookup-service-prod.mlb.com/json/named.search_player_all.bam?sport_code=%27mlb%27&name_part=%27"+ \
           name+"%25%27&active_sw=%27Y%27"
-    # print(url)
+    print(url)
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     s = json.loads(urlopen(req).read().decode("utf-8"))
     result = s['search_player_all']['queryResults']
@@ -557,7 +557,7 @@ def get_player_line(name, delta=None):
 def get_ohtani_line(delta=None):
     return get_player_line("shohei ohtani", delta=delta)
 
-def get_player_season_stats(name, type="hitting", year=None):
+def get_player_season_stats(name, type=None, year=None):
     player = _get_player_search(name)
     if player is None:
         return "No matching player found"
@@ -565,6 +565,12 @@ def get_player_season_stats(name, type="hitting", year=None):
     teamabv = player['team_abbrev']
     pid = int(player['player_id'])
     disp_name = player['name_display_first_last']
+    pos = player['position']
+    # print(pos)
+    if type is None and pos == 'P':
+        type = "pitching"
+    elif type is None and pos != 'P':
+        type = "hitting"
     url = "http://lookup-service-prod.mlb.com/json/named.sport_" + type + "_composed.bam?game_type=%27R%27&league_list_id=%27mlb_hist%27&player_id=" + str(pid)
     print(url)
     req = Request(url, headers={'User-Agent' : "ubuntu"})
