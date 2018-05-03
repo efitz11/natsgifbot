@@ -72,9 +72,13 @@ def get_latest_tweet(user):
             token = key['token']
             token_secret = key['token_secret']
     map = json.loads(s)['accounts']
+    if user == "list":
+        output = ""
+        for u in map:
+            output = output + "%s - %s\n" % (u, map[u])
+        return output[:-1]
     if user in map:
         user = map[user]
-    print(user)
     auth = tweepy.OAuthHandler(api_key, secret)
     auth.set_access_token(token, token_secret)
     api = tweepy.API(auth)
