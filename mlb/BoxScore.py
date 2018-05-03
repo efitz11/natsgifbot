@@ -34,7 +34,11 @@ class BoxScore:
                 else:
                     name = player['person']['boxscoreName']
                 lastbatter = batter
-                pos = player['position']['abbreviation']
+                # pos = player['position']['abbreviation']
+                pos = ""
+                for p in player['allPositions']:
+                    pos = pos + p['abbreviation'] + "-"
+                pos = pos[:-1]
                 namepos = (name + " " + pos).ljust(18)
                 battingstats = player['stats']['batting']
                 abs = str(battingstats['atBats']).rjust(2)
