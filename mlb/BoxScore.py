@@ -27,12 +27,16 @@ class BoxScore:
         if part == "batting":
             output = "%s %s %s %s %s %s %s %s %s %s %s\n" % ("".ljust(18),'AB','R','H','RBI','BB','SO','LOB',' AVG', ' OBP',' SLG')
             lastbatter = None
+            count = 0
             for batter in self.box['teams'][side]['batters']:
                 player = self.players[batter]
                 if lastbatter not in self.box['teams'][side]['battingOrder'] and lastbatter is not None:
                     name = " " + player['person']['boxscoreName']
                 else:
                     name = player['person']['boxscoreName']
+                    if count == 9:
+                        break
+                    count += 1
                 lastbatter = batter
                 # pos = player['position']['abbreviation']
                 pos = ""
