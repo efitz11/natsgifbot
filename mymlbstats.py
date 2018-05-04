@@ -471,10 +471,10 @@ def _get_player_search(name):
     # find player id
     name = name.replace(' ', '+').upper()
     url = "http://lookup-service-prod.mlb.com/json/named.search_player_all.bam?sport_code=%27mlb%27&name_part=%27"+ \
-          name+"%25%27&active_sw=%27Y%27"
+          name+"%25%27"#&active_sw=%27Y%27"
     print(url)
     req = Request(url, headers={'User-Agent' : "ubuntu"})
-    s = json.loads(urlopen(req).read().decode("utf-8"))
+    s = json.loads(urlopen(req).read().decode("latin1"))
     result = s['search_player_all']['queryResults']
     size = int(result['totalSize'])
     if size > 1:
