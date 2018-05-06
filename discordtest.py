@@ -473,7 +473,7 @@ async def on_message(message):
         return
     if message.content.startswith(bot.command_prefix):
         await bot.process_commands(message)
-    elif message.content.startswith('?') and not message.content.endswith('?'):
+    elif message.content.startswith('?') and not message.content.endswith('?') and not message.content[1] == ' ':
         message.content = '!'+message.content[1:]
         await bot.delete_message(message)
         await bot.process_commands(message)
