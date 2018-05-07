@@ -3,7 +3,7 @@ from discord.ext import commands
 
 from urllib.request import urlopen, Request
 import urllib.parse
-from datetime import datetime, timedelta, time
+from datetime import datetime, timedelta, time, date
 
 import mlbgame, mymlbgame
 import mymlbstats
@@ -63,6 +63,14 @@ class Baseball():
 
         if len(team) > 0 and (team[-1].startswith('-') or team[-1].startswith('+')):
             delta = team[-1]
+            team = team[:-1]
+
+        if len(team) > 0 and len(team[-1].split('/')) == 3:
+            now = datetime.now().date()
+            datelist = team[-1].split('/')
+            other = date(int(datelist[2]), int(datelist[0]), int(datelist[1]))
+            delta = now - other
+            delta = "-" + str(delta.days)
             team = team[:-1]
 
         if len(team) == 0 or (len(team) == 1 and team[0] == 'live'):
