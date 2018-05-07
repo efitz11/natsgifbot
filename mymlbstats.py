@@ -154,13 +154,16 @@ def get_single_game_info(gamepk, gamejson, show_on_deck=False, liveonly=False):
             aruns = str(game['teams']['away']['score']).rjust(2)
             hruns = str(game['teams']['home']['score']).rjust(2)
             ls = game['linescore']
-            awayhits = ls['teams']['away']['hits']
-            homehits = ls['teams']['home']['hits']
-            awayerrs = ls['teams']['away']['errors']
-            homeerrs = ls['teams']['home']['errors']
-            # output = output + "%s %2d %s @ %s %s %s # %s\n" % (awayabv, aruns, arecord, homeabv, hruns, hrecord, detailstatus)
-            line1 = "%s %s %2d %d %s" % (awayabv, aruns, awayhits, awayerrs, arecord,)
-            line2 = "%s %s %2d %d %s" % (homeabv, hruns, homehits, homeerrs, hrecord)
+            if 'hits' in ls['teams']['away']:
+                awayhits = ls['teams']['away']['hits']
+                homehits = ls['teams']['home']['hits']
+                awayerrs = ls['teams']['away']['errors']
+                homeerrs = ls['teams']['home']['errors']
+                line1 = "%s %s %2d %d %s" % (awayabv, aruns, awayhits, awayerrs, arecord,)
+                line2 = "%s %s %2d %d %s" % (homeabv, hruns, homehits, homeerrs, hrecord)
+            else:
+                line1 = "%s %s %s" % (awayabv, aruns, arecord,)
+                line2 = "%s %s %s" % (homeabv, hruns, hrecord)
             if 'decisions' in game:
                 decisions = game['decisions']
                 wp = decisions['winner']['lastName']
@@ -185,9 +188,9 @@ def get_single_game_info(gamepk, gamejson, show_on_deck=False, liveonly=False):
                     save = "SV: %s" % (decisions['save']['lastName'])
                 # output = output + "\n"
                 wpdisp = "%s %s" % (wp, wprec)
-                line1 = line1 + " | WP: %s %s %s\n" % (wpdisp.ljust(20), save, rec)
-                line2 = line2 + " | LP: %s %s\n" % (lp, lprec)
-                output = output + line1 + line2
+                line1 = line1 + " | WP: %s %s %s" % (wpdisp.ljust(20), save, rec)
+                line2 = line2 + " | LP: %s %s" % (lp, lprec)
+            output = output + line1 + "\n" + line2 + "\n"
         except KeyError as e:
             print(e)
             # no score - game was probably postponed
