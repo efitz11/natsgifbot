@@ -586,6 +586,7 @@ def get_player_season_stats(name, type=None, year=None):
     if s['sport_'+type+'_composed']['sport_'+type+"_agg"]["queryResults"]["totalSize"] == "0":
         return "No stats for %s" % disp_name
     seasonstats = s['sport_'+type+'_composed']['sport_'+type+"_agg"]["queryResults"]["row"]
+    sport_tm = s['sport_'+type+'_composed']['sport_'+type+"_tm"]['queryResults']['row']
     now = datetime.now()
     if year is None:
         year = str(now.year)
@@ -601,6 +602,9 @@ def get_player_season_stats(name, type=None, year=None):
                 s = season
         if s is None:
             return "No stats for %s" % disp_name
+    for r in sport_tm:
+        if r['season'] == year:
+            teamabv = r['team_abbrev']
 
     output = "%s season stats for %s (%s):\n\n" % (year, disp_name, teamabv)
     if type == "hitting":
