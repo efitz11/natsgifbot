@@ -594,17 +594,19 @@ def get_player_season_stats(name, type=None, year=None):
     if "season" in seasonstats:
         if seasonstats["season"] == year:
             s = seasonstats
+        if sport_tm['season'] == year:
+            teamabv = sport_tm['team_abbrev']
         else:
             return "No stats for %s" % disp_name
     else:
         for season in seasonstats:
             if season["season"] == year:
                 s = season
+        for r in sport_tm:
+            if r['season'] == year:
+                teamabv = r['team_abbrev']
         if s is None:
             return "No stats for %s" % disp_name
-    for r in sport_tm:
-        if r['season'] == year:
-            teamabv = r['team_abbrev']
 
     output = "%s season stats for %s (%s):\n\n" % (year, disp_name, teamabv)
     if type == "hitting":
