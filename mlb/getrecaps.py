@@ -128,6 +128,42 @@ def find_quick_pitch(return_str=False):
         return ""
     return None
 
+def find_youtube_homeruns(return_str=False):
+    url = "https://www.googleapis.com/youtube/v3/search?part=snippet&q=mlb+all+home+runs&order=date&channelId=UCoLrcjPV5PbUrUyXq5mjc_A"
+    with open("../keys.json",'r') as f:
+        f = json.loads(f.read())
+    key = None
+    for k in f['keys']:
+        if k['name'] == "youtube":
+            key = k['key']
+    if key is not None:
+        d = datetime.now() - timedelta(days=1)
+        url = url + "&key=" + key
+        print(url)
+        req = Request(url, headers={'User-Agent' : "ubuntu"})
+        s = json.loads(urlopen(req).read().decode("utf-8"))
+        import calendar
+        month = calendar.month_name[d.month]
+        for res in s['items']:
+            datestr = "%s %d, %d" % (month, d.day, d.year)
+            if datestr in res['snippet']['title']:
+                id = res['id']['videoId']
+                title = res['snippet']['title']
+                url = "https://www.googleapis.com/youtube/v3/videos?id=" + id + "&part=contentDetails&key=" + key
+                print(url)
+                req = Request(url, headers={'User-Agent' : "ubuntu"})
+                s = json.loads(urlopen(req).read().decode("utf-8"))
+                duration = s['items'][0]['contentDetails']['duration']
+                duration = duration[2:]
+                duration = duration.replace('M',':')
+                duration = duration.replace('S','')
+                url = "https://www.youtube.com/watch?v=" + id
+                s = "[%s](%s) - %s\n\n" % (title,url,duration)
+                print(s)
+                if return_str:
+                    return s
+                return (title,url,duration)
+
 def find_must_cs(return_str=False):
     url = "https://search-api.mlb.com/svc/search/v2/mlb_global_sitesearch_en/sitesearch?hl=true&facet=type&expand=partner.media&q=must%2Bc&page=1"
     req = Request(url, headers={'User-Agent' : "ubuntu"})
@@ -213,6 +249,8 @@ if __name__ == "__main__":
     output = find_fastcast(return_str=True)
     output = output + find_quick_pitch(return_str=True)
     output = output + find_top_plays(return_str=True)
+    output = output + "****\n"
+    output = output + find_youtube_homeruns(return_str=True)
     output = output + "****\n"
     output = output + find_must_cs(return_str=True)
     output = output + "****\n"
