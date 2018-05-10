@@ -79,11 +79,11 @@ def get_single_game_info(gamepk, gamejson, show_on_deck=False, liveonly=False):
         outjust = 3
         if ls['currentInning'] > 9:
             outjust = 4
-        count = " %s-%s " % (balls, strikes)
-        output = "%s %s %2d %d | %s %s | %s | %s | %s\n" % (awayabv, str(awayruns).rjust(2), awayhits, awayerrs, inninghalf, inning,
-                                                     "bases", "count", "P: " + pitcher)
-        output = output + "%s %s %2d %d |  %s %s  |  %s  | %s | %s %s\n" % (homeabv, str(homeruns).rjust(2), homehits, homeerrs,
-                                                                     outs, "out".ljust(outjust), bases, count, "B: " + batter, ondeck)
+        count = "(%s-%s)" % (balls, strikes)
+        output = "%s %s %2d %d | %s %s | %s | %s\n" % (awayabv, str(awayruns).rjust(2), awayhits, awayerrs, inninghalf, inning,
+                                                     bases.center(5), "P: " + pitcher)
+        output = output + "%s %s %2d %d |  %s %s  | %s | %s %s\n" % (homeabv, str(homeruns).rjust(2), homehits, homeerrs,
+                                                                     outs, "out".ljust(outjust), count, "B: " + batter, ondeck)
         special = None
         if game['flags']['noHitter']:
             special = "NO H*TTER"
