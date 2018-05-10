@@ -41,11 +41,11 @@ class Baseball():
         !mlb sp <team>     - print scoring plays for today's game
         !mlb line <player> - print the player's line for that day's game
         !mlb ohtani        - get ohtani's stats for the day
-        !mlb (batting,pitching,notes) <team> - print box score for that team
+        !mlb <part> <team> - print box score for that team, part is one of (batting, pitching, info, notes)
 
         each of the previous commands can end in a number of (+days or -days) to change the date
 
-        !mlb stats <player>   - print the player's season stats
+        !mlb stats <player> [year] - print the player's season stats, year defaults to current year
 
         !mlb leaders <stat>   - list MLB leaders in that stat
            leaders can be replaced by:
