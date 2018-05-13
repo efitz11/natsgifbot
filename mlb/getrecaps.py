@@ -149,7 +149,8 @@ def find_youtube_homeruns(return_str=False):
         month = calendar.month_name[d.month]
         for res in s['items']:
             datestr = "%s %d, %d" % (month, d.day, d.year)
-            if datestr in res['snippet']['title']:
+            otherdatestr = "%d/%d/%d" % (d.month, d.day, d.year[2:])
+            if datestr in res['snippet']['title'] or otherdatestr in res['snippet']['title']:
                 id = res['id']['videoId']
                 title = res['snippet']['title']
                 url = "https://www.googleapis.com/youtube/v3/videos?id=" + id + "&part=contentDetails&key=" + key
