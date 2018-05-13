@@ -221,7 +221,7 @@ def find_statcasts(return_str=False):
         return output
     return vids
 
-def post_on_reddit(comment, cron=False):
+def post_on_reddit(cron=False):
     import praw
     with open('.fitz.json', 'r') as f:
         f = json.loads(f.read())['keys']['efitz11']
@@ -241,6 +241,7 @@ def post_on_reddit(comment, cron=False):
                 # print(comment)
                 if date == today:
                     print("Adding comment to thread: %s - %s" % (submission.title, submission.url))
+                    comment = get_all_outputs()
                     submission.reply(comment)
                     posted = True
                 break
@@ -250,7 +251,7 @@ def post_on_reddit(comment, cron=False):
             print("didn't find ATH, checking in 5 minutes...")
             time.sleep(5*60)
 
-if __name__ == "__main__":
+def get_all_outputs():
     output = find_fastcast(return_str=True)
     output = output + find_quick_pitch(return_str=True)
     output = output + find_youtube_homeruns(return_str=True)
@@ -261,9 +262,13 @@ if __name__ == "__main__":
     output = output + find_statcasts(return_str=True)
     output = output + "****\n"
     output = output + get_recaps(return_str=True)
+    return output
+
+if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == "post":
         if len(sys.argv) > 2 and sys.argv[2] == "cron":
-            post_on_reddit(output, cron=True)
+            post_on_reddit(cron=True)
         else:
-            post_on_reddit(output)
-
+            post_on_reddit()
+    else:
+        print(get_all_outputs())
