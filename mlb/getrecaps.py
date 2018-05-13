@@ -163,6 +163,8 @@ def find_youtube_homeruns(return_str=False):
                 if return_str:
                     return s
                 return (title,url,duration)
+        if return_str:
+            return ""
 
 def find_must_cs(return_str=False):
     url = "https://search-api.mlb.com/svc/search/v2/mlb_global_sitesearch_en/sitesearch?hl=true&facet=type&expand=partner.media&q=must%2Bc&page=1"
@@ -248,9 +250,8 @@ def post_on_reddit(comment, cron=False):
 if __name__ == "__main__":
     output = find_fastcast(return_str=True)
     output = output + find_quick_pitch(return_str=True)
-    output = output + find_top_plays(return_str=True)
-    output = output + "****\n"
     output = output + find_youtube_homeruns(return_str=True)
+    output = output + find_top_plays(return_str=True)
     output = output + "****\n"
     output = output + find_must_cs(return_str=True)
     output = output + "****\n"
