@@ -42,6 +42,7 @@ class Baseball():
         !mlb line <player> - print the player's line for that day's game
         !mlb ohtani        - get ohtani's stats for the day
         !mlb <part> <team> - print box score for that team, part is one of (batting, pitching, info, notes)
+        !mlb linescore <team> - print line score for that team's game
 
         each of the previous commands can end in a number of (+days or -days) to change the date
 
@@ -170,6 +171,13 @@ class Baseball():
             out = mymlbstats.print_box(team, part=part, delta=delta)
             if out is not None:
                 await self.bot.say("```%s```" % out)
+            return
+        elif team[0] == "linescore":
+            team = ' '.join(team[1:]).lower()
+            if team == "nats":
+                team = "nationals"
+            out = mymlbstats.print_linescore(team, delta=delta)
+            await self.bot.say("```%s```" % out)
             return
         else:
             teamname = ' '.join(team).lower()

@@ -301,6 +301,61 @@ def print_box(team,part, delta=None):
                 out = bs.print_box(side=side, part=part)
                 return out
 
+def print_linescore(team, delta=None):
+    s = get_day_schedule(delta=delta)
+    games = s['dates'][0]['games']
+    useabv = False
+    for game in games:
+        if team == game['teams']['away']['team']['abbreviation'].lower() or \
+                team == game['teams']['home']['team']['abbreviation'].lower():
+            useabv = True
+    out = ""
+    for game in games:
+        awayname = game['teams']['away']['team']['name'].lower()
+        homename = game['teams']['home']['team']['name'].lower()
+        awayabv = game['teams']['away']['team']['abbreviation'].lower()
+        homeabv = game['teams']['home']['team']['abbreviation'].lower()
+        match = False
+        if useabv:
+            if team == awayabv or team == homeabv:
+                match = True
+        else:
+            if team in awayname or team in homename:
+                match = True
+        if match:
+            line0 = "   "
+            line1 = awayabv.upper().ljust(3)
+            line2 = homeabv.upper().ljust(3)
+            inningslist = game['linescore']['innings']
+            for inning in inningslist:
+                if 'runs' in inning['away']:
+                    ar = str(inning['away']['runs'])
+                else:
+                    ar = " "
+                if 'runs' in inning['home']:
+                    hr = str(inning['home']['runs'])
+                else:
+                    hr = " "
+                lenstr = max(len(ar),len(hr))
+                line0 = "%s %s" % (line0, str(inning['num']).rjust(lenstr))
+                line1 = "%s %s" % (line1, ar.rjust(lenstr))
+                line2 = "%s %s" % (line2, hr.rjust(lenstr))
+            away = game['linescore']['teams']['away']
+            home = game['linescore']['teams']['home']
+            (ar, hr) = (str(away['runs']), str(home['runs']))
+            (ah, hh) = (str(away['hits']), str(home['hits']))
+            (ae, he) = (str(away['errors']), str(home['errors']))
+            rlen = max(len(ar),len(hr))
+            hlen = max(len(ah),len(hh))
+            elen = max(len(ae),len(he))
+            line0 = line0 + " | %s %s %s\n" % ('R'.rjust(rlen),'H'.rjust(hlen), 'E'.rjust(elen))
+            line1 = line1 + " | %s %s %s\n" % (ar.rjust(rlen), ah.rjust(hlen), ae.rjust(elen))
+            line2 = line2 + " | %s %s %s\n\n" % (hr.rjust(rlen), hh.rjust(hlen), he.rjust(elen))
+            out = out + line0 + line1 + line2
+    if out == "":
+        out = "No matching games found"
+    return out
+
 def get_lg_standings(lgid, wc=False):
     now = datetime.now()
     type = "regularSeason"
@@ -682,7 +737,8 @@ def get_player_season_stats(name, type=None, year=None):
 if __name__ == "__main__":
     #make_mlb_schedule()
     #get_mlb_teams()
-    # print(get_single_game("lad"))
+    # print(get_single_game("chc"))
+    print(print_linescore("chc"))
     # print(get_single_game("wsh"))
     # print(get_single_game("nationals",delta="+1"))
     # print(get_all_game_info(delta='-1'))
@@ -695,10 +751,10 @@ if __name__ == "__main__":
     # print(get_stat_leader('sb'))
     # print(list_scoring_plays('chc'))
     # print(get_ohtani_stats())
-    print(get_player_season_stats("adam eaton"))
-    print(get_player_season_stats("adam eaton", year="2017"))
-    print(get_player_season_stats("shohei ohtani"))
-    print(get_player_season_stats("shohei ohtani", type="pitching"))
+    # print(get_player_season_stats("adam eaton"))
+    # print(get_player_season_stats("adam eaton", year="2017"))
+    # print(get_player_season_stats("shohei ohtani"))
+    # print(get_player_season_stats("shohei ohtani", type="pitching"))
     # print(get_player_season_stats("jose guillen"))
     # print(get_player_line("cole"))
     # print(get_player_line("ryan zimmerman", delta="-4382"))
