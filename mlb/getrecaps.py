@@ -149,7 +149,7 @@ def find_youtube_homeruns(return_str=False):
         month = calendar.month_name[d.month]
         for res in s['items']:
             datestr = "%s %d, %d" % (month, d.day, d.year)
-            otherdatestr = "%d/%d/%d" % (d.month, d.day, d.year[2:])
+            otherdatestr = "%d/%d/%s" % (d.month, d.day, str(d.year)[2:])
             if datestr in res['snippet']['title'] or otherdatestr in res['snippet']['title']:
                 id = res['id']['videoId']
                 title = res['snippet']['title']
