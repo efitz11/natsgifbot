@@ -56,6 +56,7 @@ def get_direct_video_url(indirecturl):
 
 def find_fastcast(return_str=False):
     url = "https://search-api.mlb.com/svc/search/v2/mlb_global_sitesearch_en/sitesearch?hl=true&facet=type&expand=partner.media&q=fastcast&page=1"
+    print(url)
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     s = json.loads(urlopen(req).read().decode("utf-8"))
     result = s['docs'][0]
@@ -63,7 +64,7 @@ def find_fastcast(return_str=False):
     now = datetime.now()
     date = "%d-%02d-%02d" % (now.year, now.month, now.day)
     print(date)
-    if "MLB.com FastCast" in title and date in result['display_timestamp']:
+    if "MLB.com FastCast".lower() in title.lower() and date in result['display_timestamp']:
         blurb = result['blurb']
         url = result['url']
         dir = get_direct_video_url(url)
@@ -79,7 +80,7 @@ def find_fastcast(return_str=False):
         return ""
 
 def find_top_plays(return_str=False):
-    url = "https://search-api.mlb.com/svc/search/v2/mlb_global_sitesearch_en/sitesearch?hl=true&facet=type&expand=partner.media&q=top%2B5%2Bplays&page=1"
+    url = "https://search-api.mlb.com/svc/search/v2/mlb_global_sitesearch_en/sitesearch?hl=true&facet=type&expand=partner.media&q=top%2Bplays&page=1"
     print(url)
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     s = json.loads(urlopen(req).read().decode("utf-8"))
