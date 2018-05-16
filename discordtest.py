@@ -237,6 +237,11 @@ async def forecast(*location:str):
     output = weathermodule.get_forecast('%2C'.join(location))
     await bot.say(output)
 
+@bot.command()
+async def radar():
+    """show pic of the current DC weather radar"""
+    await bot.say("https://api.weather.com/v2/maps/dynamic?geocode=38.85,-76.95&h=320&w=568&lod=8&product=twcRadarMosaic&map=light&format=jpg&language=en&apiKey=d522aa97197fd864d36b418f39ebb323&a=0")
+
 def convert_number_to_emoji(num):
     snum = str(num)
     out = ""
