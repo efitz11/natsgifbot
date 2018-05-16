@@ -72,6 +72,7 @@ def get_latest_tweet(user):
             token = key['token']
             token_secret = key['token_secret']
     map = json.loads(s)['accounts']
+    user = user.lower()
     if user == "list":
         output = ""
         for u in map:
