@@ -62,6 +62,8 @@ class Baseball():
         """
         delta=None
 
+        team = ["wsh" if x == "nats" else x for x in team]
+
         if len(team) > 0 and (team[-1].startswith('-') or team[-1].startswith('+')):
             delta = team[-1]
             team = team[:-1]
@@ -84,8 +86,6 @@ class Baseball():
 
         if team[0] == "sp":
             teamname = ' '.join(team[1:]).title()
-            if teamname == "Nats":
-                teamname = "Nationals"
             scoring_plays = mymlbstats.list_scoring_plays(teamname, delta)
             print(teamname,scoring_plays)
             if len(scoring_plays) > 0:
@@ -166,23 +166,17 @@ class Baseball():
         elif team[0] in ['batting','pitching','notes','info']:
             part = team[0]
             team = ' '.join(team[1:]).lower()
-            if team == "nats":
-                team = "nationals"
             out = mymlbstats.print_box(team, part=part, delta=delta)
             if out is not None:
                 await self.bot.say("```%s```" % out)
             return
         elif team[0] == "linescore":
             team = ' '.join(team[1:]).lower()
-            if team == "nats":
-                team = "nationals"
             out = mymlbstats.print_linescore(team, delta=delta)
             await self.bot.say("```%s```" % out)
             return
         else:
             teamname = ' '.join(team).lower()
-        if teamname == "nats":
-            teamname = "nationals"
 
         if teamname in ['nle','nlc','nlw','ale','alc','alw','nlwc','alwc']:
             output = mymlbstats.get_div_standings(teamname)
