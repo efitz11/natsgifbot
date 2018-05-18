@@ -74,7 +74,7 @@ class Baseball():
             other = date(int(datelist[2]), int(datelist[0]), int(datelist[1]))
             delta = now - other
             direction = '-'
-            if delta.days > 0:
+            if delta.days < 0:
                 direction = '+'
             delta = direction + str(delta.days)
             team = team[:-1]
