@@ -73,7 +73,10 @@ class Baseball():
             datelist = team[-1].split('/')
             other = date(int(datelist[2]), int(datelist[0]), int(datelist[1]))
             delta = now - other
-            delta = "-" + str(delta.days)
+            direction = '-'
+            if delta.days > 0:
+                direction = '+'
+            delta = direction + str(delta.days)
             team = team[:-1]
 
         if len(team) == 0 or (len(team) == 1 and team[0] == 'live'):
