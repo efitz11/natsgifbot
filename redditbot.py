@@ -7,7 +7,7 @@ import mymlbstats
 
 class RedditBot():
     def __init__(self):
-        self.enabled_subs = ["computerdudetest","nationals", "baseball"]
+        self.enabled_subs = ["computerdudetest","nationals"]
     
         # get tokens from file
         f = open('reddittokens.txt','r')
@@ -128,6 +128,8 @@ class TwitterBot:
                     if submission.title.lower().startswith("game thread"):
                         picture = tweet.entities['media'][0]['media_url_https']
                         comment = tweet.text.replace("\n","\n\n")
+                        if "Soto" in tweet.text:
+                            tweet.text.replace("OnePursuit","JuanPursuit")
                         index = comment.find("https://t.co")
                         comment = comment[:index]
                         index = comment.find('\n')
@@ -141,7 +143,7 @@ if __name__ == "__main__":
     r.update_postlist()
     # respond to gif requests
     r.check_mentions()
-    r.check_time()
+    #r.check_time()
     t = TwitterBot()
     t.check_last_tweet()
 
