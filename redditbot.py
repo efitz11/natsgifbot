@@ -129,7 +129,7 @@ class TwitterBot:
                         picture = tweet.entities['media'][0]['media_url_https']
                         comment = tweet.text.replace("\n","\n\n")
                         if "Soto" in tweet.text:
-                            tweet.text.replace("OnePursuit","JuanPursuit")
+                            comment = comment.replace("OnePursuit","JuanPursuit")
                         index = comment.find("https://t.co")
                         comment = comment[:index]
                         index = comment.find('\n')
