@@ -374,6 +374,7 @@ async def clap(*text:str):
 @bot.command()
 async def big(text:str):
     """bot posts the requested image. use \"!big list\" to get the current list"""
+    text = text.lower()
     basepath = '/home/ubuntu/images/'
     filelist = os.listdir(basepath)
     filelist.sort()
