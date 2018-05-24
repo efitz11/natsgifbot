@@ -244,7 +244,7 @@ class FG:
              'laa':1,'hou':21,'oak':10,'tor':14,'atl':16,'mil':23,'stl':28,
              'chc':17,'ari':15,'lad':22,'sf':30,'cle':5,'sea':11,'mia':20,
              'nym':25,'wsh':24,'bal':2,'sd':29,'phi':26,'pit':27,'tex':13,
-             'tb':12,'bos':3,'cin':18,'col':19,'kc':7,'det':6,'min':8,'chw':4,'nyy':9}
+             'tb':12,'bos':3,'cin':18,'col':19,'kc':7,'det':6,'min':8,'cws':4,'nyy':9}
 
     def __init__(self, stat, options=[]):
         self.stat = stat
