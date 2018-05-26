@@ -86,12 +86,13 @@ def find_top_plays(return_str=False):
     s = json.loads(urlopen(req).read().decode("utf-8"))
     results = s['docs']
     now = datetime.now()# - timedelta(days=1)
-    # date = "%d/%d/%s:" % (now.month, now.day, str(now.year)[2:])
+    yesterday = now - timedelta(days=1)
+    yest = "%d/%d/%s:" % (yesterday.month, yesterday.day, str(yesterday.year)[2:])
     date = "%d-%02d-%02d" % (now.year, now.month, now.day)
     vids = []
     output = ""
     for res in results:
-        if date in res['display_timestamp']:
+        if date in res['display_timestamp'] or yest in res['blurb']:
             blurb = res['blurb']
             if "top" in blurb.lower() and ("plays" in blurb.lower() or "home runs" in blurb.lower()):
                 url = res['url']
@@ -255,15 +256,15 @@ def post_on_reddit(cron=False):
 
 def get_all_outputs():
     output = find_fastcast(return_str=True)
-    output = output + find_quick_pitch(return_str=True)
-    output = output + find_youtube_homeruns(return_str=True)
+    # output = output + find_quick_pitch(return_str=True)
+    # output = output + find_youtube_homeruns(return_str=True)
     output = output + find_top_plays(return_str=True)
     output = output + "****\n"
-    output = output + find_must_cs(return_str=True)
-    output = output + "****\n"
-    output = output + find_statcasts(return_str=True)
-    output = output + "****\n"
-    output = output + get_recaps(return_str=True)
+    # output = output + find_must_cs(return_str=True)
+    # output = output + "****\n"
+    # output = output + find_statcasts(return_str=True)
+    # output = output + "****\n"
+    # output = output + get_recaps(return_str=True)
     return output
 
 if __name__ == "__main__":
