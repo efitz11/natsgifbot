@@ -318,10 +318,10 @@ async def wiki(*query:str):
     """get a link to wikipedia's first search result for your query"""
     await bot.say(web.get_wiki_page(' '.join(query)))
 
-# @bot.command()
-# async def beer(*beer_name):
-#     """get untappd info on a beer"""
-#     await bot.say(web.search_untappd(' '.join(beer_name)))
+@bot.command()
+async def beer(*beer_name):
+    """get untappd info on a beer"""
+    await bot.say(web.search_untappd(' '.join(beer_name)))
     
 @bot.command()
 async def poll(question, *answers):
