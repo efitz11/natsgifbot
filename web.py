@@ -5,6 +5,14 @@ import urllib.parse
 from bs4 import BeautifulSoup
 import tweepy
 
+def get_keys(name):
+    with open("keys.json",'r') as f:
+        s = f.read()
+    keys = json.loads(s)['keys']
+    for key in keys:
+        if key['name'] == name:
+            return key
+
 def get_wiki_page(query):
     url = "https://en.wikipedia.org/w/api.php?action=opensearch&search="+urllib.parse.quote_plus(query)+"&limit=1&namespace=0&redirects=resolve&format=json"
     req = Request(url, headers={'User-Agent' : "ubuntu"})
@@ -13,7 +21,30 @@ def get_wiki_page(query):
     
 def search_untappd(beer_name):
     """search untappd for a beer"""
-    print("shit's broke yo")
+    keys = get_keys("untappd")
+    url = "https://api.untappd.com/v4/search/beer?q="
+    lim = "limit=5"
+    clid = "client_id=%s" % keys['id']
+    secr = "client_secret=%s" % keys['secret']
+    url = url + '&'.join([urllib.parse.quote_plus(beer_name), clid, secr, lim])
+    req = Request(url, headers={'User-Agent' : "ubuntu"})
+    page = urlopen(req)
+    data = page.read().decode('utf-8')
+    rate = page.getheader('X-Ratelimit-Remaining')
+    print(rate)
+    data = json.loads(data)['response']['beers']['items']
+    if len(data) > 0:
+        beer = data[0]['beer']
+        brew = data[0]['brewery']
+        beer_page = "https://untappd.com/beer/%d" % beer['bid']
+        brewery = brew['brewery_name']
+        location = brew['location']['brewery_city'] + "," + brew['location']['brewery_state']
+        name = beer['beer_name']
+        abv = beer['beer_abv']
+        ibu = beer['beer_ibu']
+        return "**%s** - %s (%s)\nABV: %.1f\tIBU: %d\n<%s>" % (name, brewery, location, abv, ibu, beer_page)
+    return "No beer found"
+
 
 def get_latest_ig_post(username):
     url = "https://www.instagram.com/" + username
