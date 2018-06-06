@@ -62,7 +62,7 @@ class Baseball():
         """
         delta=None
 
-        team = ["wsh" if x == "nats" else x for x in team]
+        team = ["wsh" if x.lower() == "nats" else x for x in team]
 
         if len(team) > 0 and (team[-1].startswith('-') or team[-1].startswith('+')):
             delta = team[-1]
