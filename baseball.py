@@ -38,7 +38,8 @@ class Baseball():
         !mlb live          - show info for all games live now
         !mlb <team>        - return game info for today for that team
         !mlb <division>    - return division standings (ale,alc,alw,nle,nlc,nlw,alwc,nlwc)
-        !mlb sp <team>     - print scoring plays for today's game
+        !mlb [l]sp <team>  - print scoring plays for today's game
+                             prefix with 'l' to only print the last scoring play
         !mlb line <player> - print the player's line for that day's game
         !mlb ohtani        - get ohtani's stats for the day
         !mlb <part> <team> - print box score for that team, part is one of (batting, pitching, info, notes)
