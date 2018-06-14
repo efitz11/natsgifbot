@@ -420,7 +420,7 @@ def get_single_game(team,delta=None):
                     print(e)
     return output
 
-def list_scoring_plays(team,delta=None):
+def list_scoring_plays(team,delta=None,lastonly=False):
     s = get_day_schedule(delta,scoringplays=True)
     team = team.lower()
     games = s['dates'][0]['games']
@@ -437,6 +437,8 @@ def list_scoring_plays(team,delta=None):
                 if 'awayScore' in i['result']:
                        desc = desc + "(%s-%s)" % (i['result']['awayScore'], i['result']['homeScore'])
                 plays.append((inning, desc))
+    if lastonly:
+        return [plays[-1]]
     return plays
 
 def get_div_standings(div):

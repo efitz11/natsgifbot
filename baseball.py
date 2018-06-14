@@ -90,9 +90,12 @@ class Baseball():
             await self.bot.say("```python\n" + output + "```")
             return
 
-        if team[0] == "sp":
+        if team[0] in ["sp","lsp"]:
             teamname = ' '.join(team[1:]).title()
-            scoring_plays = mymlbstats.list_scoring_plays(teamname, delta)
+            if team[0] == "lsp":
+                scoring_plays = mymlbstats.list_scoring_plays(teamname, delta,lastonly=True)
+            else:
+                scoring_plays = mymlbstats.list_scoring_plays(teamname, delta)
             print(teamname,scoring_plays)
             if len(scoring_plays) > 0:
                 output = "```"
