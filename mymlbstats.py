@@ -435,7 +435,12 @@ def list_scoring_plays(team,delta=None,lastonly=False):
                 inning = i['about']['halfInning'].upper() + " " + str(i['about']['inning'])
                 desc = "With " + i['matchup']['pitcher']['fullName'] + " pitching, " + i['result']['description']
                 if 'awayScore' in i['result']:
-                       desc = desc + "(%s-%s)" % (i['result']['awayScore'], i['result']['homeScore'])
+                    desc = desc + "(%s-%s)" % (i['result']['awayScore'], i['result']['homeScore'])
+                    if 'hitData' in i['playEvents'][-1]:
+                        data = i['playEvents'][-1]['hitData']
+                        desc = desc + "\n\tStatcast: %d ft, %d mph, %d degrees\n" % (data['totalDistance'],
+                                                                                     data['launchSpeed'],
+                                                                                     data['launchAngle'])
                 plays.append((inning, desc))
     if lastonly:
         return [plays[-1]]
