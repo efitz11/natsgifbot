@@ -530,11 +530,11 @@ def get_stat_leader(stat):
                         leader['value']))
     return players
 
-def _get_player_search(name):
+def _get_player_search(name, active='Y'):
     # find player id
     name = name.replace(' ', '+').upper()
     url = "http://lookup-service-prod.mlb.com/json/named.search_player_all.bam?sport_code=%27mlb%27&name_part=%27"+ \
-          name+"%25%27"#&active_sw=%27Y%27"
+          name+"%25%27&active_sw=%27" + active + "%27"
     print(url)
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     s = json.loads(urlopen(req).read().decode("latin1"))
@@ -620,8 +620,8 @@ def get_player_line(name, delta=None):
 def get_ohtani_line(delta=None):
     return get_player_line("shohei ohtani", delta=delta)
 
-def get_player_season_stats(name, type=None, year=None):
-    player = _get_player_search(name)
+def get_player_season_stats(name, type=None, year=None, active='Y'):
+    player = _get_player_search(name, active=active)
     if player is None:
         return "No matching player found"
     teamid = int(player['team_id'])
