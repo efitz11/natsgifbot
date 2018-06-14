@@ -46,12 +46,15 @@ class Baseball():
 
         each of the previous commands can end in a number of (+days or -days) to change the date
 
-        !mlb stats <player> [year] - print the player's season stats, year defaults to current year
+        !mlb [h][b,p]stats <player> [year] - print the player's season stats, year defaults to current year
+                            - players default to active players unless prefixed with 'h' (for historical)
+                            - 'b' forces batting stats
+                            - 'p' forces pitching stats
 
-        !mlb leaders <stat>   - list MLB leaders in that stat
-           leaders can be replaced by:
-                pleaders - pitching stats
-                fleaders - fielding stats
+        !mlb [p,f]leaders <stat>   - list MLB leaders in that stat
+           leaders can be prefixed by:
+                p - pitching stats
+                f - fielding stats
            leaders can be followed by a list of options:
               pos=p      - p can be any pos (p,1B,SS,LF, etc)
               lg=l       - l can either be al or nl
@@ -123,7 +126,11 @@ class Baseball():
             else:
                 await self.bot.say("```%s```" % out)
             return
-        elif team[0] in ['stats','bstats','pstats']:
+        elif team[0] in ['stats','bstats','pstats','hstats','hbstats','hpstats']:
+            active = 'Y'
+            if team[0].startswith('h'):
+                team[0] = team[0][1:]
+                active = 'N'
             year = None
             if team[-1].isdigit():
                 year = team[-1]
@@ -135,9 +142,9 @@ class Baseball():
             elif team[0] == 'pstats':
                 t = "pitching"
             if year is None:
-                await self.bot.say("```%s```" % mymlbstats.get_player_season_stats(player,type=t))
+                await self.bot.say("```%s```" % mymlbstats.get_player_season_stats(player,type=t,active=active))
             else:
-                await self.bot.say("```%s```" % mymlbstats.get_player_season_stats(player,type=t,year=year))
+                await self.bot.say("```%s```" % mymlbstats.get_player_season_stats(player,type=t,year=year,active=active))
             return
         elif team[0].endswith("leaders") or team[0].endswith("losers"):
             stat = team[1]
