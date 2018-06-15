@@ -137,6 +137,7 @@ class Baseball():
             if team[0].startswith('h'):
                 team[0] = team[0][1:]
                 active = 'N'
+            career = False
             if team[0].startswith('c'):
                 team[0] = team[0][1:]
                 career = True
