@@ -643,11 +643,11 @@ def get_player_season_stats(name, type=None, year=None, active='Y', career=False
     height = "%s'%s\"" % (player['height_feet'], player['height_inches'])
     weight = "%s lbs" % (player['weight'])
     infoline = "%s | B/T: %s/%s | %s | %s" % (pos, bats,throws, height, weight)
+    now = datetime.now()
     if active == 'Y':
         birthdate = player['birth_date']
         birthdate = birthdate[:birthdate.find('T')]
         birth = birthdate.split('-')
-        now = datetime.now()
         d = now.year - int(birth[0]) - ((now.month, now.day) < (int(birth[1]), int(birth[2])))
         infoline = "%s | Age: %d" % (infoline, d)
     # print(pos)
