@@ -681,7 +681,7 @@ def get_player_season_stats(name, type=None, year=None, active='Y', career=False
                     teamabv = r['team_abbrev']
             if s is None:
                 return "No stats for %s" % disp_name
-        output = "%s season stats for %s (%s):\n\n" % (year, disp_name, teamabv)
+        output = "%s season stats for %s (%s):" % (year, disp_name, teamabv)
     else:
         if "season" in seasons:
             years = seasons["season"]
