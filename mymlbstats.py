@@ -631,6 +631,8 @@ def get_player_season_stats(name, type=None, year=None, active='Y', career=False
     player = _get_player_search(name, active=active)
     if player is None:
         return "No matching player found"
+    if year == None and active == 'N':
+        career = True
     teamid = int(player['team_id'])
     teamabv = player['team_abbrev']
     pid = int(player['player_id'])
