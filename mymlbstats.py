@@ -700,7 +700,7 @@ def get_player_season_stats(name, type=None, year=None, active='Y', career=False
     if type == "hitting":
         stats = ['ab','h','d','t','hr','r','rbi','bb','so','sb','cs','avg','obp','slg']
     elif type == "pitching":
-        stats = ['w','l','g','sv','ip','so','bb','hr','era','whip']
+        stats = ['w','l','g','svo','sv','ip','so','bb','hr','era','whip']
     output = output + _print_labeled_list(stats,s)
     return output
             # print(season)
@@ -772,10 +772,10 @@ if __name__ == "__main__":
     # print(get_stat_leader('sb'))
     # print(list_scoring_plays('chc'))
     # print(get_ohtani_stats())
-    print(get_player_season_stats("adam eaton", career=True))
+    # print(get_player_season_stats("adam eaton", career=True))
     # print(get_player_season_stats("adam eaton", year="2017"))
     # print(get_player_season_stats("shohei ohtani", career=True))
-    # print(get_player_season_stats("shohei ohtani", type="pitching"))
+    print(get_player_season_stats("shohei ohtani", type="pitching"))
     # print(get_player_season_stats("jose guillen"))
     # print(get_player_line("cole"))
     # print(get_player_line("ryan zimmerman", delta="-4382"))
