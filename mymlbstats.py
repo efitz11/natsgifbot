@@ -653,6 +653,7 @@ def get_player_season_stats(name, type=None, year=None, active='Y', career=False
     if s['sport_'+type+'_composed'][sport+type+"_agg"]["queryResults"]["totalSize"] == "0":
         return "No stats for %s" % disp_name
     seasonstats = s['sport_'+type+'_composed'][sport+type+"_agg"]["queryResults"]["row"]
+    seasons = s['sport_'+type+'_composed']["sport_"+type+"_agg"]["queryResults"]["row"]
     sport_tm = s['sport_'+type+'_composed']['sport_'+type+"_tm"]['queryResults']['row']
     now = datetime.now()
     if year is None:
@@ -677,8 +678,12 @@ def get_player_season_stats(name, type=None, year=None, active='Y', career=False
                 return "No stats for %s" % disp_name
         output = "%s season stats for %s (%s):\n\n" % (year, disp_name, teamabv)
     else:
+        if "season" in seasons:
+            years = seasons["season"]
+        else:
+            years = "%s-%s" % (seasons[0]["season"], seasons[-1]["season"])
         s = seasonstats
-        output = "Career stats for %s:\n\n" % (disp_name)
+        output = "Career stats for %s (%s):\n\n" % (disp_name,years)
 
     if type == "hitting":
         stats = ['ab','h','d','t','hr','r','rbi','bb','so','sb','cs','avg','obp','slg']
@@ -757,7 +762,7 @@ if __name__ == "__main__":
     # print(get_ohtani_stats())
     print(get_player_season_stats("adam eaton", career=True))
     # print(get_player_season_stats("adam eaton", year="2017"))
-    # print(get_player_season_stats("shohei ohtani"))
+    # print(get_player_season_stats("shohei ohtani", career=True))
     # print(get_player_season_stats("shohei ohtani", type="pitching"))
     # print(get_player_season_stats("jose guillen"))
     # print(get_player_line("cole"))
