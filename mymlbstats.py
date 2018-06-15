@@ -643,6 +643,13 @@ def get_player_season_stats(name, type=None, year=None, active='Y', career=False
     height = "%s'%s\"" % (player['height_feet'], player['height_inches'])
     weight = "%s lbs" % (player['weight'])
     infoline = "%s | B/T: %s/%s | %s | %s" % (pos, bats,throws, height, weight)
+    if active == 'Y':
+        birthdate = player['birth_date']
+        birthdate = birthdate[:birthdate.find('T')]
+        birth = birthdate.split('-')
+        now = datetime.now()
+        d = now.year - int(birth[0]) - ((now.month, now.day) < (int(birth[1]), int(birth[2])))
+        infoline = "%s | Age: %d" % (infoline, d)
     # print(pos)
     if type is None and pos == 'P':
         type = "pitching"
@@ -660,7 +667,6 @@ def get_player_season_stats(name, type=None, year=None, active='Y', career=False
     seasonstats = s['sport_'+type+'_composed'][sport+type+"_agg"]["queryResults"]["row"]
     seasons = s['sport_'+type+'_composed']["sport_"+type+"_agg"]["queryResults"]["row"]
     sport_tm = s['sport_'+type+'_composed']['sport_'+type+"_tm"]['queryResults']['row']
-    now = datetime.now()
     if year is None:
         year = str(now.year)
     s = None
