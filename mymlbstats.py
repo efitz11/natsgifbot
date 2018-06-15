@@ -638,6 +638,11 @@ def get_player_season_stats(name, type=None, year=None, active='Y', career=False
     pid = int(player['player_id'])
     disp_name = player['name_display_first_last']
     pos = player['position']
+    bats = player['bats']
+    throws = player['throws']
+    height = "%s'%s\"" % (player['height_feet'], player['height_inches'])
+    weight = "%s lbs" % (player['weight'])
+    infoline = "%s | B/T: %s/%s | %s | %s" % (pos, bats,throws, height, weight)
     # print(pos)
     if type is None and pos == 'P':
         type = "pitching"
@@ -683,7 +688,8 @@ def get_player_season_stats(name, type=None, year=None, active='Y', career=False
         else:
             years = "%s-%s" % (seasons[0]["season"], seasons[-1]["season"])
         s = seasonstats
-        output = "Career stats for %s (%s):\n\n" % (disp_name,years)
+        output = "Career stats for %s (%s):" % (disp_name,years)
+    output = "%s\n\t%s\n\n" % (output, infoline)
 
     if type == "hitting":
         stats = ['ab','h','d','t','hr','r','rbi','bb','so','sb','cs','avg','obp','slg']
