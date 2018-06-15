@@ -49,7 +49,7 @@ class Baseball():
 
         !mlb [h][c][b,p]stats <player> [year] - print the player's season stats, year defaults to current year
                             - players default to active players unless prefixed with 'h' (for historical)
-                            - 'c' gives career stats
+                            - 'c' gives career stats (default for historical players)
                             - 'b' forces batting stats
                             - 'p' forces pitching stats
 
