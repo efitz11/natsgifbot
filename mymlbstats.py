@@ -676,7 +676,7 @@ def get_player_season_stats(name, type=None, year=None, active='Y', career=False
         output = "%s season stats for %s (%s):\n\n" % (year, disp_name, teamabv)
     else:
         s = seasonstats
-        output = "%s career stats for %s:\n\n" % (year, disp_name)
+        output = "Career stats for %s:\n\n" % (disp_name)
 
     if type == "hitting":
         stats = ['ab','h','d','t','hr','r','rbi','bb','so','sb','cs','avg','obp','slg']
