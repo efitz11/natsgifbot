@@ -151,9 +151,9 @@ class Baseball():
             elif team[0] == 'pstats':
                 t = "pitching"
             if year is None:
-                await self.bot.say("```%s```" % mymlbstats.get_player_season_stats(player,type=t,active=active, career=True))
+                await self.bot.say("```%s```" % mymlbstats.get_player_season_stats(player,type=t,active=active, career=career))
             else:
-                await self.bot.say("```%s```" % mymlbstats.get_player_season_stats(player,type=t,year=year,active=active, career=True))
+                await self.bot.say("```%s```" % mymlbstats.get_player_season_stats(player,type=t,year=year,active=active, career=career))
             return
         elif team[0].endswith("leaders") or team[0].endswith("losers"):
             stat = team[1]
