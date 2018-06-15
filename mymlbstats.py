@@ -627,7 +627,7 @@ def get_player_line(name, delta=None):
 def get_ohtani_line(delta=None):
     return get_player_line("shohei ohtani", delta=delta)
 
-def get_player_season_stats(name, type=None, year=None, active='Y'):
+def get_player_season_stats(name, type=None, year=None, active='Y', career=False):
     player = _get_player_search(name, active=active)
     if player is None:
         return "No matching player found"
@@ -645,62 +645,44 @@ def get_player_season_stats(name, type=None, year=None, active='Y'):
     print(url)
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     s = json.loads(urlopen(req).read().decode("utf-8"))
-    if s['sport_'+type+'_composed']['sport_'+type+"_agg"]["queryResults"]["totalSize"] == "0":
+    sport = "sport_"
+    if career:
+        sport = "sport_career_"
+    if s['sport_'+type+'_composed'][sport+type+"_agg"]["queryResults"]["totalSize"] == "0":
         return "No stats for %s" % disp_name
-    seasonstats = s['sport_'+type+'_composed']['sport_'+type+"_agg"]["queryResults"]["row"]
+    seasonstats = s['sport_'+type+'_composed'][sport+type+"_agg"]["queryResults"]["row"]
     sport_tm = s['sport_'+type+'_composed']['sport_'+type+"_tm"]['queryResults']['row']
     now = datetime.now()
     if year is None:
         year = str(now.year)
     s = None
-    if "season" in seasonstats:
-        if seasonstats["season"] == year:
-            s = seasonstats
-        if sport_tm['season'] == year:
-            teamabv = sport_tm['team_abbrev']
+    if not career:
+        if "season" in seasonstats:
+            if seasonstats["season"] == year:
+                s = seasonstats
+            if sport_tm['season'] == year:
+                teamabv = sport_tm['team_abbrev']
+            else:
+                return "No stats for %s" % disp_name
         else:
-            return "No stats for %s" % disp_name
+            for season in seasonstats:
+                if season["season"] == year:
+                    s = season
+            for r in sport_tm:
+                if r['season'] == year:
+                    teamabv = r['team_abbrev']
+            if s is None:
+                return "No stats for %s" % disp_name
+        output = "%s season stats for %s (%s):\n\n" % (year, disp_name, teamabv)
     else:
-        for season in seasonstats:
-            if season["season"] == year:
-                s = season
-        for r in sport_tm:
-            if r['season'] == year:
-                teamabv = r['team_abbrev']
-        if s is None:
-            return "No stats for %s" % disp_name
+        s = seasonstats
+        output = "%s career stats for %s:\n\n" % (year, disp_name)
 
-    output = "%s season stats for %s (%s):\n\n" % (year, disp_name, teamabv)
     if type == "hitting":
-        output = output + " AB   H 2B 3B HR   R RBI  BB  SO SB CS  AVG  OBP  SLG\n"
-        output = output + "%3s %3s %2s %2s %2s %3s %3s %3s %3s %2s %2s %s %s %s" % (s['ab'],
-                                                                                    s['h'],
-                                                                                    s['d'],
-                                                                                    s['t'],
-                                                                                    s['hr'],
-                                                                                    s['r'],
-                                                                                    s['rbi'],
-                                                                                    s['bb'],
-                                                                                    s['so'],
-                                                                                    s['sb'],
-                                                                                    s['cs'],
-                                                                                    s['avg'],
-                                                                                    s['obp'],
-                                                                                    s['slg']
-                                                                                    )
+        stats = ['ab','h','d','t','hr','r','rbi','bb','so','sb','cs','avg','obp','slg']
     elif type == "pitching":
-        output = output + " W  L  G SV    IP  SO  BB HR  ERA WHIP\n"
-        output = output + "%2s %2s %2s %2s %s %3s %3s %2s %s %s" % (s['w'],
-                                                                    s['l'],
-                                                                    s['g'],
-                                                                    s['sv'],
-                                                                    s['ip'].rjust(5),
-                                                                    s['so'],
-                                                                    s['bb'],
-                                                                    s['hr'],
-                                                                    s['era'],
-                                                                    s['whip']
-                                                                    )
+        stats = ['w','l','g','sv','ip','so','bb','hr','era','whip']
+    output = output + _print_labeled_list(stats,s)
     return output
             # print(season)
     # roster = get_team_info(teamid)['roster']
@@ -741,11 +723,24 @@ def get_player_season_stats(name, type=None, year=None, active='Y'):
     #                                                                         )
     #         return output
 
+def _print_labeled_list(labels, dict):
+    repl_map = {'d':'2B','t':'3B'}
+    line1 = ""
+    line2 = ""
+    for label in labels:
+        r = str(dict[label])
+        if label in repl_map:
+            label = repl_map[label]
+        l = max(len(r), len(label))
+        line1 = "%s %s" % (line1, label.rjust(l).upper())
+        line2 = "%s %s" % (line2, r.rjust(l))
+    return "%s\n%s" % (line1, line2)
+
 if __name__ == "__main__":
     #make_mlb_schedule()
     #get_mlb_teams()
     # print(get_single_game("chc"))
-    print(print_linescore("chc"))
+    # print(print_linescore("chc"))
     # print(get_single_game("wsh"))
     # print(get_single_game("nationals",delta="+1"))
     # print(get_all_game_info(delta='-1'))
@@ -758,7 +753,7 @@ if __name__ == "__main__":
     # print(get_stat_leader('sb'))
     # print(list_scoring_plays('chc'))
     # print(get_ohtani_stats())
-    # print(get_player_season_stats("adam eaton"))
+    print(get_player_season_stats("adam eaton", career=True))
     # print(get_player_season_stats("adam eaton", year="2017"))
     # print(get_player_season_stats("shohei ohtani"))
     # print(get_player_season_stats("shohei ohtani", type="pitching"))
