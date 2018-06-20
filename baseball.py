@@ -53,7 +53,8 @@ class Baseball():
                             - 'b' forces batting stats
                             - 'p' forces pitching stats
 
-        !mlb last<n> <player> - print the stats for the players last <n> days
+        !mlb [b]last<n> <player> - print the stats for the players last <n> days
+                                 - 'b' forces batting stats (for pitchers)
 
         !mlb [p,f]leaders <stat>   - list MLB leaders in that stat
            leaders can be prefixed by:
