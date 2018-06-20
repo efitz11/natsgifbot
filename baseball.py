@@ -158,9 +158,13 @@ class Baseball():
             else:
                 await self.bot.say("```%s```" % mymlbstats.get_player_season_stats(player,type=t,year=year,active=active, career=career))
             return
-        elif team[0].startswith("last"):
+        elif team[0].startswith("last") or team[0].startswith("blast"):
+            forcebatting = False
+            if team[0].startswith('blast'):
+                team[0] = team[0][1:]
+                forcebatting = True
             days = int(team[0][4:])
-            await self.bot.say("```%s```" % mymlbstats.get_player_trailing_splits('+'.join(team[1:]), days))
+            await self.bot.say("```%s```" % mymlbstats.get_player_trailing_splits('+'.join(team[1:]), days, forcebatting=forcebatting))
             return
         elif team[0].endswith("leaders") or team[0].endswith("losers"):
             stat = team[1]
