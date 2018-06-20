@@ -664,7 +664,7 @@ def get_player_trailing_splits(name, days, forcebatting=False):
         if p['player_id'] == player['player_id']:
             output = "Last %d days for %s (%s):\n\n" % (days, player['name_display_first_last'], player['team_abbrev'])
             if not pitching:
-                stats = ['ab','h','d','t','hr','r','rbi','bb','so','sb','cs','avg','obp','slg','ops']
+                stats = ['g','ab','h','d','t','hr','r','rbi','bb','so','sb','cs','avg','obp','slg','ops']
             else:
                 stats = ['w','l','g','svo','sv','ip','so','bb','hr','era','whip']
             output = output + _print_labeled_list(stats,p)
