@@ -53,6 +53,8 @@ class Baseball():
                             - 'b' forces batting stats
                             - 'p' forces pitching stats
 
+        !mlb last<n> <player> - print the stats for the players last <n> days
+
         !mlb [p,f]leaders <stat>   - list MLB leaders in that stat
            leaders can be prefixed by:
                 p - pitching stats
@@ -155,6 +157,10 @@ class Baseball():
                 await self.bot.say("```%s```" % mymlbstats.get_player_season_stats(player,type=t,active=active, career=career))
             else:
                 await self.bot.say("```%s```" % mymlbstats.get_player_season_stats(player,type=t,year=year,active=active, career=career))
+            return
+        elif team[0].startswith("last"):
+            days = int(team[0][4:])
+            await self.bot.say("```%s```" % mymlbstats.get_player_trailing_splits('+'.join(team[1:]), days))
             return
         elif team[0].endswith("leaders") or team[0].endswith("losers"):
             stat = team[1]
