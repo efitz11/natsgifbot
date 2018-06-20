@@ -627,6 +627,37 @@ def get_player_line(name, delta=None):
 def get_ohtani_line(delta=None):
     return get_player_line("shohei ohtani", delta=delta)
 
+def get_player_gamelogs(name, num=5, forcebatting=False):
+    # cap at 15
+    if num > 15:
+        num = 15
+    player = _get_player_search(name)
+    if player is None:
+        return "No matching player found"
+    pitching = player['position'] == 'P'
+    if forcebatting:
+        pitching = False
+    url = "http://lookup-service-prod.mlb.com/json/named.sport_hitting_game_log_composed.bam?game_type=%27R%27&league_list_id=%27mlb_hist%27\
+            &player_id="+ player['player_id'] +"&season=2018&sit_code=%271%27&sit_code=%272%27&sit_code=%273%27&sit_code=%274%27&sit_code=%275%27&sit_code=%276%27&sit_code=%277%27&sit_code=%278%27&sit_code=%279%27&sit_code=%2710%27&sit_code=%2711%27&sit_code=%2712%27"
+    type = "hitting"
+    if pitching:
+        url = "http://lookup-service-prod.mlb.com/json/named.sport_pitching_game_log_composed.bam?game_type=%27R%27&league_list_id=%27mlb_hist%27" \
+              "&player_id=" + player['player_id'] + "&season=2018&sit_code=%271%27&sit_code=%272%27&sit_code=%273%27&sit_code=%274%27&sit_code=%275%27&sit_code=%276%27&sit_code=%277%27&sit_code=%278%27&sit_code=%279%27&sit_code=%2710%27&sit_code=%2711%27&sit_code=%2712%27"
+        type = "pitching"
+    print(url)
+    req = Request(url, headers={'User-Agent' : "ubuntu"})
+    s = json.loads(urlopen(req).read().decode("utf-8"))
+    gamelog = s['sport_%s_game_log_composed' % type]['sport_%s_game_log' % type]['queryResults']['row']
+    output = "Game Log for %s's last %d games:\n\n" % (player['name_display_first_last'], num)
+    for i in range(num):
+        game = gamelog[-i-1]
+        if not pitching:
+            stats = ['game_day','ab','h','d','t','hr','r','rbi','bb','so','sb','cs','avg','obp','slg','ops']
+        else:
+            stats = ['game_day','w','l','svo','sv','ip','so','bb','hr','era','whip']
+        output = output + _print_labeled_list(stats,game,header=(i==0)) + "\n"
+    return output
+
 def _get_player_info_line(player):
     pos = player['position']
     bats = player['bats']
@@ -747,7 +778,7 @@ def get_player_season_stats(name, type=None, year=None, active='Y', career=False
     output = output + _print_labeled_list(stats,s)
     return output
 
-def _print_labeled_list(labels, dict):
+def _print_labeled_list(labels, dict, header=True):
     repl_map = {'d':'2B','t':'3B'}
     line1 = ""
     line2 = ""
@@ -758,6 +789,8 @@ def _print_labeled_list(labels, dict):
         l = max(len(r), len(label))
         line1 = "%s %s" % (line1, label.rjust(l).upper())
         line2 = "%s %s" % (line2, r.rjust(l))
+    if not header:
+        return line2
     return "%s\n%s" % (line1, line2)
 
 if __name__ == "__main__":
@@ -785,4 +818,5 @@ if __name__ == "__main__":
     # print(get_player_line("cole"))
     # print(get_player_line("ryan zimmerman", delta="-4382"))
     # print(print_box('nationals','batting',delta="-1"))
-    print(get_player_trailing_splits("Adam Eaton", 7))
+    # print(get_player_trailing_splits("Adam Eaton", 7))
+    print(get_player_gamelogs("Max Scherzer"))
