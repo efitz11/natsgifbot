@@ -656,7 +656,7 @@ def get_player_trailing_splits(name, days):
         return "No matching team found for player " + player['name_display_first_last']
     for p in s['row']:
         if p['player_id'] == player['player_id']:
-            output = "Last 7 days for %s (%s):\n\n" % (player['name_display_first_last'], player['team_abbrev'])
+            output = "Last %d days for %s (%s):\n\n" % (days, player['name_display_first_last'], player['team_abbrev'])
             stats = ['ab','h','d','t','hr','r','rbi','bb','so','sb','cs','avg','obp','slg','ops']
             output = output + _print_labeled_list(stats,p)
             return output
