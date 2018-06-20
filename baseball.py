@@ -55,8 +55,7 @@ class Baseball():
 
         !mlb [b]last<n> <player> - print the stats for the players last <n> days
                                  - 'b' forces batting stats (for pitchers)
-        !mlb [b]gamelog <player> [n]> - print the player's game log for the last [n] games
-                                 - 'n' defaults to 5 games
+        !mlb [b]gamelog <player> [n]> - print the player's game log for the last [n=5] games
                                  - 'b' forces batting stats (for pitchers)
 
         !mlb [p,f]leaders <stat>   - list MLB leaders in that stat
