@@ -642,12 +642,18 @@ def get_player_season_splits(name, split, type=None, year=None, active='Y'):
     if year == None and active == 'N':
         career = True
 
-def get_player_trailing_splits(name, days):
+def get_player_trailing_splits(name, days, forcebatting=False):
     player = _get_player_search(name)
     if player is None:
         return "No matching player found"
+    pitching = player['position'] == 'P'
+    if forcebatting:
+        pitching = False
     url = "http://mlb.mlb.com/pubajax/wf/flow/stats.splayer?season=2018&sort_order=%27desc%27&sort_column=%27avg%27&stat_type=hitting&page_type=SortablePlayer" \
           "&team_id=" + player['team_id'] + "&game_type=%27R%27&last_x_days="+str(days)+"&player_pool=ALL&season_type=ANY&sport_code=%27mlb%27&results=1000&recSP=1&recPP=50"
+    if pitching:
+        url = "http://mlb.mlb.com/pubajax/wf/flow/stats.splayer?season=2018&sort_order=%27asc%27&sort_column=%27era%27&stat_type=pitching&page_type=SortablePlayer" \
+          "&team_id=" + player['team_id'] + "&game_type=%27R%27&last_x_days="+str(days)+"&player_pool=ALL&season_type=ANY&sport_code=%27mlb%27&results=1000&position=%271%27&recSP=1&recPP=50"
     print(url)
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     s = json.loads(urlopen(req).read().decode("utf-8"))
@@ -657,7 +663,10 @@ def get_player_trailing_splits(name, days):
     for p in s['row']:
         if p['player_id'] == player['player_id']:
             output = "Last %d days for %s (%s):\n\n" % (days, player['name_display_first_last'], player['team_abbrev'])
-            stats = ['ab','h','d','t','hr','r','rbi','bb','so','sb','cs','avg','obp','slg','ops']
+            if not pitching:
+                stats = ['ab','h','d','t','hr','r','rbi','bb','so','sb','cs','avg','obp','slg','ops']
+            else:
+                stats = ['w','l','g','svo','sv','ip','so','bb','hr','era','whip']
             output = output + _print_labeled_list(stats,p)
             return output
     else:
