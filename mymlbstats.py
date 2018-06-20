@@ -627,6 +627,42 @@ def get_player_line(name, delta=None):
 def get_ohtani_line(delta=None):
     return get_player_line("shohei ohtani", delta=delta)
 
+def _get_player_info_line(player):
+    pos = player['position']
+    bats = player['bats']
+    throws = player['throws']
+    height = "%s'%s\"" % (player['height_feet'], player['height_inches'])
+    weight = "%s lbs" % (player['weight'])
+    return "%s | B/T: %s/%s | %s | %s" % (pos, bats,throws, height, weight)
+
+def get_player_season_splits(name, split, type=None, year=None, active='Y'):
+    player = _get_player_search(name, active=active)
+    if player is None:
+        return "No matching player found"
+    if year == None and active == 'N':
+        career = True
+
+def get_player_trailing_splits(name, days):
+    player = _get_player_search(name)
+    if player is None:
+        return "No matching player found"
+    url = "http://mlb.mlb.com/pubajax/wf/flow/stats.splayer?season=2018&sort_order=%27desc%27&sort_column=%27avg%27&stat_type=hitting&page_type=SortablePlayer" \
+          "&team_id=" + player['team_id'] + "&game_type=%27R%27&last_x_days="+str(days)+"&player_pool=ALL&season_type=ANY&sport_code=%27mlb%27&results=1000&recSP=1&recPP=50"
+    print(url)
+    req = Request(url, headers={'User-Agent' : "ubuntu"})
+    s = json.loads(urlopen(req).read().decode("utf-8"))
+    s = s['stats_sortable_player']['queryResults']
+    if int(s['totalSize']) == 0:
+        return "No matching team found for player " + player['name_display_first_last']
+    for p in s['row']:
+        if p['player_id'] == player['player_id']:
+            output = "Last 7 days for %s (%s):\n" % (player['name_display_first_last'], player['team_abbrev'])
+            stats = ['ab','h','d','t','hr','r','rbi','bb','so','sb','cs','avg','obp','slg','ops']
+            output = output + _print_labeled_list(stats,p)
+            return output
+    else:
+        return "%s not found on team %s" % (player['name_display_first_last'],player['team_abbrev'])
+
 def get_player_season_stats(name, type=None, year=None, active='Y', career=False):
     player = _get_player_search(name, active=active)
     if player is None:
@@ -638,11 +674,7 @@ def get_player_season_stats(name, type=None, year=None, active='Y', career=False
     pid = int(player['player_id'])
     disp_name = player['name_display_first_last']
     pos = player['position']
-    bats = player['bats']
-    throws = player['throws']
-    height = "%s'%s\"" % (player['height_feet'], player['height_inches'])
-    weight = "%s lbs" % (player['weight'])
-    infoline = "%s | B/T: %s/%s | %s | %s" % (pos, bats,throws, height, weight)
+    infoline = _get_player_info_line(player)
     now = datetime.now()
     if active == 'Y':
         birthdate = player['birth_date']
@@ -656,6 +688,8 @@ def get_player_season_stats(name, type=None, year=None, active='Y', career=False
     elif type is None and pos != 'P':
         type = "hitting"
     url = "http://lookup-service-prod.mlb.com/json/named.sport_" + type + "_composed.bam?game_type=%27R%27&league_list_id=%27mlb_hist%27&player_id=" + str(pid)
+    # if split is not None:
+    #     url = "http://lookup-service-prod.mlb.com/json/named.sport_hitting_sits_composed.bam?league_list_id=%27mlb_hist%27&game_type=%27R%27&season=2018&player_id=" + str(pid)
     print(url)
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     s = json.loads(urlopen(req).read().decode("utf-8"))
@@ -698,49 +732,11 @@ def get_player_season_stats(name, type=None, year=None, active='Y', career=False
     output = "%s\n\t%s\n\n" % (output, infoline)
 
     if type == "hitting":
-        stats = ['ab','h','d','t','hr','r','rbi','bb','so','sb','cs','avg','obp','slg']
+        stats = ['ab','h','d','t','hr','r','rbi','bb','so','sb','cs','avg','obp','slg','ops']
     elif type == "pitching":
         stats = ['w','l','g','svo','sv','ip','so','bb','hr','era','whip']
     output = output + _print_labeled_list(stats,s)
     return output
-            # print(season)
-    # roster = get_team_info(teamid)['roster']
-    # for person in roster:
-    #     p = person['person']
-    #     if p['id'] == pid:
-    #         output = "Season stats for %s (%s):\n\n" % (disp_name, teamabv)
-    #         s = p['stats'][0]['splits'][0]['stat']
-    #         if p['stats'][0]['group']['displayName'] == 'hitting':
-    #             output = output + " AB   H 2B 3B HR   R RBI  BB  SO SB CS  AVG  OBP  SLG\n"
-    #             output = output + "%3d %3d %2d %2d %2d %3d %3d %3d %3d %2d %2d %s %s %s" % (s['atBats'],
-    #                                                                                         s['hits'],
-    #                                                                                         s['doubles'],
-    #                                                                                         s['triples'],
-    #                                                                                         s['homeRuns'],
-    #                                                                                         s['runs'],
-    #                                                                                         s['rbi'],
-    #                                                                                         s['baseOnBalls'],
-    #                                                                                         s['strikeOuts'],
-    #                                                                                         s['stolenBases'],
-    #                                                                                         s['caughtStealing'],
-    #                                                                                         s['avg'],
-    #                                                                                         s['obp'],
-    #                                                                                         s['slg']
-    #                                                                                         )
-    #         elif p['stats'][0]['group']['displayName'] == 'pitching':
-    #             output = output + " W  L  G SV    IP  SO  BB HR  ERA WHIP\n"
-    #             output = output + "%2d %2d %2d %2d %s %3d %3d %2d %s %s" % (s['wins'],
-    #                                                                         s['losses'],
-    #                                                                         s['gamesPitched'],
-    #                                                                         s['saves'],
-    #                                                                         s['inningsPitched'].rjust(5),
-    #                                                                         s['strikeOuts'],
-    #                                                                         s['baseOnBalls'],
-    #                                                                         s['homeRuns'],
-    #                                                                         s['era'],
-    #                                                                         s['whip']
-    #                                                                         )
-    #         return output
 
 def _print_labeled_list(labels, dict):
     repl_map = {'d':'2B','t':'3B'}
@@ -775,8 +771,9 @@ if __name__ == "__main__":
     # print(get_player_season_stats("adam eaton", career=True))
     # print(get_player_season_stats("adam eaton", year="2017"))
     # print(get_player_season_stats("shohei ohtani", career=True))
-    print(get_player_season_stats("shohei ohtani", type="pitching"))
+    # print(get_player_season_stats("shohei ohtani", type="pitching"))
     # print(get_player_season_stats("jose guillen"))
     # print(get_player_line("cole"))
     # print(get_player_line("ryan zimmerman", delta="-4382"))
     # print(print_box('nationals','batting',delta="-1"))
+    print(get_player_trailing_splits("Adam Eaton", 7))
