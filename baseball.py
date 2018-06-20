@@ -55,6 +55,9 @@ class Baseball():
 
         !mlb [b]last<n> <player> - print the stats for the players last <n> days
                                  - 'b' forces batting stats (for pitchers)
+        !mlb [b]gamelog <player> [n]> - print the player's game log for the last [n] games
+                                 - 'n' defaults to 5 games
+                                 - 'b' forces batting stats (for pitchers)
 
         !mlb [p,f]leaders <stat>   - list MLB leaders in that stat
            leaders can be prefixed by:
@@ -166,6 +169,16 @@ class Baseball():
                 forcebatting = True
             days = int(team[0][4:])
             await self.bot.say("```%s```" % mymlbstats.get_player_trailing_splits('+'.join(team[1:]), days, forcebatting=forcebatting))
+            return
+        elif team[0].endswith("gamelog"):
+            forcebatting = team[0].startswith("b")
+            if team[-1].isdigit():
+                num = int(team[-1])
+                team = team[:-1]
+            else:
+                num=5
+            player = '+'.join(team[1:])
+            await self.bot.say("```%s```" % mymlbstats.get_player_gamelogs(player,num,forcebatting=forcebatting))
             return
         elif team[0].endswith("leaders") or team[0].endswith("losers"):
             stat = team[1]
