@@ -780,7 +780,7 @@ def get_player_season_stats(name, type=None, year=None, active='Y', career=False
     output = output + _print_labeled_list(stats,s)
     return output
 
-def _print_labeled_list(labels, dict, header=True, repl_map={}):
+def _print_labeled_list(labels, dict, header=True, repl_map={'d':'2B','t':'3B'}):
     line1 = ""
     line2 = ""
     for label in labels:
