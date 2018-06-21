@@ -652,10 +652,11 @@ def get_player_gamelogs(name, num=5, forcebatting=False):
     for i in range(num):
         game = gamelog[-i-1]
         if not pitching:
-            stats = ['game_day','ab','h','d','t','hr','r','rbi','bb','so','sb','cs','avg','obp','slg','ops']
+            stats = ['game_day','opponent_abbrev','ab','h','d','t','hr','r','rbi','bb','so','sb','cs','avg','obp','slg','ops']
         else:
-            stats = ['game_day','w','l','svo','sv','ip','r','er','so','bb','hr','era','whip']
-        output = output + _print_labeled_list(stats,game,header=(i==0)) + "\n"
+            stats = ['game_day','opponent_abbrev','w','l','svo','sv','ip','r','er','so','bb','hr','era','whip']
+        repl_map = {'game_day':'day','opponent_abbrev':'opp', 'd':'2B', 't':'3B'}
+        output = output + _print_labeled_list(stats,game,header=(i==0),repl_map=repl_map) + "\n"
     return output
 
 def _get_player_info_line(player):
@@ -698,7 +699,8 @@ def get_player_trailing_splits(name, days, forcebatting=False):
                 stats = ['g','ab','h','d','t','hr','r','rbi','bb','so','sb','cs','avg','obp','slg','ops']
             else:
                 stats = ['w','l','g','svo','sv','ip','so','bb','hr','era','whip']
-            output = output + _print_labeled_list(stats,p)
+            repl_map = {'d':'2B','t':'3B'}
+            output = output + _print_labeled_list(stats,p,repl_map=repl_map)
             return output
     else:
         return "%s not found on team %s" % (player['name_display_first_last'],player['team_abbrev'])
@@ -778,8 +780,7 @@ def get_player_season_stats(name, type=None, year=None, active='Y', career=False
     output = output + _print_labeled_list(stats,s)
     return output
 
-def _print_labeled_list(labels, dict, header=True):
-    repl_map = {'d':'2B','t':'3B'}
+def _print_labeled_list(labels, dict, header=True, repl_map={}):
     line1 = ""
     line2 = ""
     for label in labels:
