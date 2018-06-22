@@ -6,7 +6,7 @@ import mlb.BoxScore as BoxScore
 
 def _get_date_from_delta(delta=None):
     now = datetime.now() - timedelta(hours=5)
-    if delta is not None and (delta.startswith('+') or delta.startswith('-')):
+    if delta is not None and (isinstance(delta,int) or (delta.startswith('+') or delta.startswith('-'))):
         delta = int(delta)
         now = now + timedelta(days=delta)
     return now
@@ -29,11 +29,22 @@ def get_mlb_teams():
     s = json.loads(urlopen(req).read().decode("utf-8"))
     teams = s['teams']
     teammap = {}
+    abbrevmap = {}
     for s in teams:
         # print("%s - %s" % (s['id'],s['name']))
-        teammap[s['id']] = s['name']
-    for s in sorted(teammap):
-        print(s,teammap[s])
+        teammap[s['name']] = s['id']
+        abbrevmap[s['abbreviation'].lower()] = s['id']
+    # for s in sorted(teammap):
+    #     print(s,teammap[s])
+    return (abbrevmap, teammap)
+
+def get_teamid(search):
+    abvs,names = get_mlb_teams()
+    if search in abvs:
+        return abvs[search]
+    for name in names:
+        if search in name:
+            return names[name]
 
 def get_single_game_info(gamepk, gamejson, show_on_deck=False, liveonly=False):
     game = gamejson
@@ -420,6 +431,37 @@ def get_single_game(team,delta=None):
                     print(e)
     return output
 
+def get_team_schedule(team, num, backward=True):
+    teamid = get_teamid(team)
+    if teamid is None:
+        return "No matching team found."
+    print(teamid)
+    if backward:
+        num = -num
+    then = _get_date_from_delta(num)
+    now = _get_date_from_delta(0)
+    if backward:
+        startdate = str(then.year) + "-" + str(then.month).zfill(2) + "-" + str(then.day).zfill(2)
+        enddate = str(now.year) + "-" + str(now.month).zfill(2) + "-" + str(now.day).zfill(2)
+    else:
+        enddate = str(then.year) + "-" + str(then.month).zfill(2) + "-" + str(then.day).zfill(2)
+        startdate = str(now.year) + "-" + str(now.month).zfill(2) + "-" + str(now.day).zfill(2)
+    url = "https://statsapi.mlb.com/api/v1/schedule?lang=en&sportId=1&hydrate=team(venue(timezone)),venue(timezone)," \
+          "game(seriesStatus,seriesSummary,tickets,promotions,sponsorships,content(summary,media(epg))),seriesStatus," \
+          "seriesSummary,linescore,tickets,radioBroadcasts,broadcasts(all),probablePitcher,decisions,person,stats&" \
+          "season=" + str(now.year) + "&startDate="+str(startdate)+"&endDate=" + str(enddate) + "&teamId=" + str(teamid) + "&" \
+          "eventTypes=primary&scheduleTypes=games,events,xref"
+    print(url)
+    req = Request(url, headers={'User-Agent' : "ubuntu"})
+    s = json.loads(urlopen(req).read().decode("utf-8"))
+    dates = s['dates']
+    output = ""
+    for date in dates:
+        for game in date['games']:
+            output = output + date['date'] + ":\n"
+            output = output + get_single_game_info(None, game) + "\n"
+    return output
+
 def list_scoring_plays(team,delta=None,lastonly=False):
     s = get_day_schedule(delta,scoringplays=True)
     team = team.lower()
@@ -623,7 +665,6 @@ def get_player_line(name, delta=None):
         return "No stats for %s on %d/%d vs %s" % (disp_name, d.month, d.day, opp.upper())
     return output
 
-
 def get_ohtani_line(delta=None):
     return get_player_line("shohei ohtani", delta=delta)
 
@@ -796,7 +837,7 @@ def _print_labeled_list(labels, dict, header=True, repl_map={'d':'2B','t':'3B'})
 
 if __name__ == "__main__":
     #make_mlb_schedule()
-    #get_mlb_teams()
+    # get_mlb_teams()
     # print(get_single_game("chc"))
     # print(print_linescore("chc"))
     # print(get_single_game("wsh"))
@@ -820,4 +861,5 @@ if __name__ == "__main__":
     # print(get_player_line("ryan zimmerman", delta="-4382"))
     # print(print_box('nationals','batting',delta="-1"))
     # print(get_player_trailing_splits("Adam Eaton", 7))
-    print(get_player_gamelogs("Max Scherzer"))
+    # print(get_player_gamelogs("Max Scherzer"))
+    print(get_team_schedule("wsh",3,backward=False))
