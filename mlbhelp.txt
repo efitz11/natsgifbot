@@ -1,0 +1,38 @@
+Get MLB info
+
+Supported commands:
+!mlb               - show info for all games today
+!mlb live          - show info for all games live now
+!mlb <team>        - return game info for today for that team
+!mlb <division>    - return division standings (ale,alc,alw,nle,nlc,nlw,alwc,nlwc)
+!mlb [l]sp <team>  - print scoring plays for today's game
+                     prefix with 'l' to only print the last scoring play
+!mlb line <player> - print the player's line for that day's game
+!mlb ohtani        - get ohtani's stats for the day
+!mlb <part> <team> - print box score for that team, part is one of (batting, pitching, info, notes)
+!mlb linescore <team> - print line score for that team's game
+
+each of the previous commands can end in a number of (+days or -days) to change the date
+
+!mlb [h][c][b,p]stats <player> [year] - print the player's season stats, year defaults to current year
+                    - players default to active players unless prefixed with 'h' (for historical)
+                    - 'c' gives career stats (default for historical players)
+                    - 'b' forces batting stats
+                    - 'p' forces pitching stats
+
+!mlb [b]last <player> [n] - print the stats for the players last [n=7] days
+                         - 'b' forces batting stats (for pitchers)
+!mlb [b]log [n] <player> - print the player's game log for the last [n=5] games
+                         - 'b' forces batting stats (for pitchers)
+
+!mlb [p,f]leaders <stat>   - list MLB leaders in that stat
+   leaders can be prefixed by:
+        p - pitching stats
+        f - fielding stats
+   leaders can be followed by a list of options:
+      pos=p      - p can be any pos (p,1B,SS,LF, etc)
+      lg=l       - l can either be al or nl
+      qual=q     - q is minimum PA or IP (increments of 10)
+      season=s   - s is year
+      team=t     - t is either the team abbrev('wsh') or the team name ("redsox")
+      split=s    - s is one of (last7, last14, last30)
