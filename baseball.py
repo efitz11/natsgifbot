@@ -33,42 +33,29 @@ class Baseball():
     async def mlb(self,*team :str):
         """Get MLB info
 
-        Supported commands:
-        !mlb               - show info for all games today
-        !mlb live          - show info for all games live now
-        !mlb <team>        - return game info for today for that team
-        !mlb <division>    - return division standings (ale,alc,alw,nle,nlc,nlw,alwc,nlwc)
-        !mlb [l]sp <team>  - print scoring plays for today's game
-                             prefix with 'l' to only print the last scoring play
-        !mlb line <player> - print the player's line for that day's game
-        !mlb ohtani        - get ohtani's stats for the day
-        !mlb <part> <team> - print box score for that team, part is one of (batting, pitching, info, notes)
-        !mlb linescore <team> - print line score for that team's game
+        Help is now too long for a discord message. Check the github link for full help.
 
-        each of the previous commands can end in a number of (+days or -days) to change the date
+        Supported sub commands:
+        blank
+        <team>
+        <division>
+        [l]sp <team>
+        line <player>
+        ohtani
+        <part> <team>
+        linescore <team>
 
-        !mlb [h][c][b,p]stats <player> [year] - print the player's season stats, year defaults to current year
-                            - players default to active players unless prefixed with 'h' (for historical)
-                            - 'c' gives career stats (default for historical players)
-                            - 'b' forces batting stats
-                            - 'p' forces pitching stats
+            each of the previous commands can end in a number of (+days or -days) to change the date
 
-        !mlb [b]last <player> [n] - print the stats for the players last [n=7] days
-                                 - 'b' forces batting stats (for pitchers)
-        !mlb [b]log [n] <player> - print the player's game log for the last [n=5] games
-                                 - 'b' forces batting stats (for pitchers)
+        last [n] <team>
+        next [n] <team>
 
-        !mlb [p,f]leaders <stat>   - list MLB leaders in that stat
-           leaders can be prefixed by:
-                p - pitching stats
-                f - fielding stats
-           leaders can be followed by a list of options:
-              pos=p      - p can be any pos (p,1B,SS,LF, etc)
-              lg=l       - l can either be al or nl
-              qual=q     - q is minimum PA or IP (increments of 10)
-              season=s   - s is year
-              team=t     - t is either the team abbrev('wsh') or the team name ("redsox")
-              split=s    - s is one of (last7, last14, last30)
+        [h][c][b,p]stats <player> [year]
+        [b]last <player> [n]
+        [b]log [n] <player>
+        [p,f]leaders <stat>
+
+        help - https://github.com/efitz11/natsgifbot/blob/master/mlbhelp.txt
         """
         delta=None
 
@@ -95,6 +82,10 @@ class Baseball():
                 liveonly = True
             output = mymlbstats.get_all_game_info(delta=delta, liveonly=liveonly)
             await self.bot.say("```python\n" + output + "```")
+            return
+
+        if team[0] == 'help':
+            await self.bot.say("https://github.com/efitz11/natsgifbot/blob/master/mlbhelp.txt")
             return
 
         if team[0] in ["sp","lsp"]:
@@ -160,6 +151,16 @@ class Baseball():
                 await self.bot.say("```%s```" % mymlbstats.get_player_season_stats(player,type=t,active=active, career=career))
             else:
                 await self.bot.say("```%s```" % mymlbstats.get_player_season_stats(player,type=t,year=year,active=active, career=career))
+            return
+        elif team[0] in ['past', 'next']:
+            num = 2
+            backwards = team[0] == 'past'
+            if team[1].isdigit():
+                num = int(team[1])
+                team = ' '.join(team[2:])
+            else:
+                team = ' '.join(team[1:])
+            await self.bot.say("```%s```" % mymlbstats.get_team_schedule(team,num,backward=backwards))
             return
         elif team[0].startswith("last") or team[0].startswith("blast"):
             forcebatting = False
