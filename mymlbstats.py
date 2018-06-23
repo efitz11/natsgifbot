@@ -43,7 +43,7 @@ def get_teamid(search):
     if search in abvs:
         return abvs[search]
     for name in names:
-        if search in name:
+        if search.lower() in name.lower():
             return names[name]
 
 def get_single_game_info(gamepk, gamejson, show_on_deck=False, liveonly=False):
