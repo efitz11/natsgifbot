@@ -86,24 +86,27 @@ class BoxScore:
                 output = output + "\n"
         elif part in ['bench','bullpen']:
             if part == 'bench':
-                output = "%s %s\n" % ("".ljust(15),"AVG")
+                output = "%s %s %s %s\n" % ("".ljust(15),"B","Pos"," AVG")
             elif part == 'bullpen':
-                output = "%s %s %s\n" % ('T',"".ljust(15),"ERA")
+                output = "%s %s %s\n" % ("".ljust(15),"T","ERA")
             for player in self.box['teams'][side][part]:
                 player = self.players[player]
                 name = player['person']['boxscoreName']
+                pos = player['position']['abbreviation'].rjust(3)
+                output = output + name.ljust(15)
                 if part == 'bench':
                     data = player['seasonStats']['batting']
                     statlist = ['avg','obp','slg','ops']
+                    bat = player['person']['batSide']['code']
+                    output = output + " %s %s " % (bat,pos)
                 elif part == 'bullpen':
                     data = player['seasonStats']['pitching']
                     throw = player['person']['pitchHand']['code']
                     statlist = ['era']
-                    output = output + "%s " % throw
-                output = output + name.ljust(15)
+                    output = output + " %s " % throw
                 for stat in statlist:
                     try:
-                        output = output + data[stat]
+                        output = output + data[stat] + " "
                     except KeyError:
                         pass
                 output = output + "\n"
