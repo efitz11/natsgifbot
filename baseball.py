@@ -212,7 +212,7 @@ class Baseball():
             else:
                 await self.bot.say("No stats found")
             return
-        elif team[0] in ['batting','pitching','notes','info']:
+        elif team[0] in ['batting','pitching','notes','info','bench','bullpen']:
             part = team[0]
             team = ' '.join(team[1:]).lower()
             out = mymlbstats.print_box(team, part=part, delta=delta)

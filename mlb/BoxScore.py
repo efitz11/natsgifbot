@@ -84,6 +84,29 @@ class BoxScore:
                     output = output + " " + s
 
                 output = output + "\n"
+        elif part in ['bench','bullpen']:
+            if part == 'bench':
+                output = "%s %s\n" % ("".ljust(15),"AVG")
+            elif part == 'bullpen':
+                output = "%s %s %s\n" % ('T',"".ljust(15),"ERA")
+            for player in self.box['teams'][side][part]:
+                player = self.players[player]
+                name = player['person']['boxscoreName']
+                if part == 'bench':
+                    data = player['seasonStats']['batting']
+                    statlist = ['avg','obp','slg','ops']
+                elif part == 'bullpen':
+                    data = player['seasonStats']['pitching']
+                    throw = player['person']['pitchHand']['code']
+                    statlist = ['era']
+                    output = output + "%s " % throw
+                output = output + name.ljust(15)
+                for stat in statlist:
+                    try:
+                        output = output + data[stat]
+                    except KeyError:
+                        pass
+                output = output + "\n"
         elif part == "notes":
             notes = self.box['teams'][side]['info']
             output = ""
@@ -109,5 +132,5 @@ class BoxScore:
         return output
 
 if __name__ == "__main__":
-    bs = BoxScore("",gamepk="529744")
-    bs.print_box('away',part="pitching")
+    bs = BoxScore("",gamepk="530598")
+    print(bs.print_box('away',part="bench"))
