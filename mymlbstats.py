@@ -85,6 +85,10 @@ def get_single_game_info(gamepk, gamejson, show_on_deck=False, liveonly=False):
             ondeck = ""
         try:
             pitcher = ls['defense']['pitcher']['lastName']
+            for stats in ls['defense']['pitcher']['stats']:
+                if stats['type']['displayName'] == 'gameLog' and stats['group']['displayName'] == 'pitching':
+                    ps = '(%dP %dS)' % (stats['stats']['pitchesThrown'], stats['stats']['strikes'])
+                    pitcher = "%s %s" % (pitcher, ps)
         except:
             pitcher = ""
         outjust = 3
