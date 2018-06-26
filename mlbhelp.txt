@@ -17,6 +17,8 @@ each of the previous commands can end in a number of (+days or -days) to change 
 !mlb past [n] <team> - print the last [n] days of games for <team>
 !mlb next [n] <team> - print the next [n] days of games for <team>
 
+!mlb dl <team> - print players on <team>'s disabled list
+
 !mlb [h][c][b,p]stats <player> [year] - print the player's season stats, year defaults to current year
                     - players default to active players unless prefixed with 'h' (for historical)
                     - 'c' gives career stats (default for historical players)

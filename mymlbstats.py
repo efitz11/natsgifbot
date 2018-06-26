@@ -263,6 +263,27 @@ def get_team_info(teamid):
     s = json.loads(urlopen(req).read().decode("utf-8"))
     return s
 
+def get_team_dl(team):
+    teamid = get_teamid(team)
+    url = "http://statsapi.mlb.com/api/v1/teams/%d/roster/40Man/?hydrate=person(stats(splits=statsSingleSeason))" % teamid
+    req = Request(url, headers={'User-Agent' : "ubuntu"})
+    roster = json.loads(urlopen(req).read().decode("utf-8"))['roster']
+    output = ""
+    map = {}
+    for player in roster:
+        if player['status']['code'].startswith('D'):
+            desc = player['status']['description']
+            if desc not in map:
+                map[desc] = []
+            map[desc].append(player['person']['fullName'])
+            # output = "%s%s: %s\n" % (output, player['person']['fullName'].ljust(18), player['status']['description'])
+    for key in map:
+        output = output + key + ":\n"
+        for player in map[key]:
+            output = output + "  %s\n" % player
+        output = output + "\n"
+    return output
+
 def get_day_schedule(delta=None,teamid=None,scoringplays=False):
     now = _get_date_from_delta(delta)
     date = str(now.year) + "-" + str(now.month).zfill(2) + "-" + str(now.day).zfill(2)
@@ -863,7 +884,8 @@ if __name__ == "__main__":
     # print(get_player_season_stats("jose guillen"))
     # print(get_player_line("cole"))
     # print(get_player_line("ryan zimmerman", delta="-4382"))
-    print(print_box('nationals','batting'))
+    # print(print_box('nationals','batting'))
     # print(get_player_trailing_splits("Adam Eaton", 7))
     # print(get_player_gamelogs("Max Scherzer"))
     # print(get_team_schedule("wsh",3,backward=False))
+    print(get_team_dl('wsh'))

@@ -47,6 +47,8 @@ class Baseball():
 
             each of the previous commands can end in a number of (+days or -days) to change the date
 
+        dl <team>
+
         last [n] <team>
         next [n] <team>
 
@@ -151,6 +153,10 @@ class Baseball():
                 await self.bot.say("```%s```" % mymlbstats.get_player_season_stats(player,type=t,active=active, career=career))
             else:
                 await self.bot.say("```%s```" % mymlbstats.get_player_season_stats(player,type=t,year=year,active=active, career=career))
+            return
+        elif team[0].lower() == "dl":
+            team = ' '.join(team[1:])
+            await self.bot.say("```%s```" % mymlbstats.get_team_dl(team))
             return
         elif team[0] in ['past', 'next']:
             num = 2
