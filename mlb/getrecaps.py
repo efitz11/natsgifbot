@@ -237,12 +237,14 @@ def post_on_reddit(cron=False):
     while not posted:
         for submission in user.submissions.new(limit=5):
             if 'Around the Horn' in submission.title:
-                idx = submission.title.find('-')
-                date = submission.title[idx+2:]
+                #idx = submission.title.find('-')
+                #date = submission.title[idx+2:]
                 now = datetime.now()
                 today = "%d/%d/%s" % (now.month,now.day,str(now.year)[2:])
+                todayalt = "%d/%d/%s" % (now.month,now.day,str(now.year))
                 # print(comment)
-                if date == today:
+                #if date == today:
+                if today in submission.title or todayalt in submission.title:
                     print("Adding comment to thread: %s - %s" % (submission.title, submission.url))
                     comment = get_all_outputs()
                     submission.reply(comment)
@@ -256,15 +258,15 @@ def post_on_reddit(cron=False):
 
 def get_all_outputs():
     output = find_fastcast(return_str=True)
-    # output = output + find_quick_pitch(return_str=True)
-    # output = output + find_youtube_homeruns(return_str=True)
+    output = output + find_quick_pitch(return_str=True)
+    output = output + find_youtube_homeruns(return_str=True)
     output = output + find_top_plays(return_str=True)
     output = output + "****\n"
-    # output = output + find_must_cs(return_str=True)
-    # output = output + "****\n"
-    # output = output + find_statcasts(return_str=True)
-    # output = output + "****\n"
-    # output = output + get_recaps(return_str=True)
+    output = output + find_must_cs(return_str=True)
+    output = output + "****\n"
+    output = output + find_statcasts(return_str=True)
+    output = output + "****\n"
+    output = output + get_recaps(return_str=True)
     return output
 
 if __name__ == "__main__":
