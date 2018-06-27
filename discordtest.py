@@ -19,7 +19,7 @@ bot = commands.Bot(command_prefix='!')
 extensions = ["baseball","sports","reddit"]
 
 pattern69 = re.compile('(^|[\s\.]|\$)[6][\.]*[9]([\s\.]|x|%|$|th)')
-patterncheer = re.compile('cheer', re.IGNORECASE)
+patterncheer = re.compile('cheer$', re.IGNORECASE)
 patternsolis = re.compile('solis', re.IGNORECASE)
 patternpoop = re.compile('mets|phillies|braves',re.IGNORECASE)
 patternperf = re.compile('perfect game',re.IGNORECASE)
@@ -532,9 +532,9 @@ async def update_mlbtr():
     triviach = discord.utils.find(lambda m: m.name == 'trivia', channel.server.channels)
     while not bot.is_closed:
         if hqmod.check_hq():
-            await bot.send_message(channel,":rotating_light: HQ is starting soon :rotating_light: --- head to %s" % (triviach.mention))
+            # await bot.send_message(channel,":rotating_light: HQ is starting soon :rotating_light: --- head to %s" % (triviach.mention))
             await bot.send_message(triviach,":rotating_light: HQ is starting soon :rotating_light:")
-            await bot.send_message(triviach, hqmod.list_users(mention=True))
+            # await bot.send_message(triviach, hqmod.list_users(mention=True))
             
         out = mlbtr.mlbtr()
         if out != None:
