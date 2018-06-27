@@ -11,11 +11,6 @@ def _get_date_from_delta(delta=None):
         now = now + timedelta(days=delta)
     return now
 
-def get_last_name(fullname):
-    if "Jr." in fullname:
-        fullname = fullname[:-4]
-    return fullname.split(' ')[-1]
-
 def get_ET_from_timestamp(timestamp):
     utc = datetime.strptime(timestamp,"%Y-%m-%dT%H:%M:00Z") #"2018-03-31T20:05:00Z",
     nowtime = time.time()
@@ -31,11 +26,8 @@ def get_mlb_teams():
     teammap = {}
     abbrevmap = {}
     for s in teams:
-        # print("%s - %s" % (s['id'],s['name']))
         teammap[s['name']] = s['id']
         abbrevmap[s['abbreviation'].lower()] = s['id']
-    # for s in sorted(teammap):
-    #     print(s,teammap[s])
     return (abbrevmap, teammap)
 
 def get_teamid(search):
@@ -204,7 +196,6 @@ def get_single_game_info(gamepk, gamejson, show_on_deck=False, liveonly=False):
                                 'pitching' == stat['group']['displayName'] and \
                                 'note' in stat['stats']:
                             rec = stat['stats']['note']
-                    # output = output + "\t SV: %s" % (get_last_name(decisions['save']['fullName']))
                     save = "SV: %s" % (decisions['save']['lastName'])
                 # output = output + "\n"
                 wpdisp = "%s %s" % (wp, wprec)
@@ -276,7 +267,6 @@ def get_team_dl(team):
             if desc not in map:
                 map[desc] = []
             map[desc].append(player['person']['fullName'])
-            # output = "%s%s: %s\n" % (output, player['person']['fullName'].ljust(18), player['status']['description'])
     for key in map:
         output = output + key + ":\n"
         for player in map[key]:
