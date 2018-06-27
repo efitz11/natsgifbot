@@ -43,7 +43,7 @@ def search_untappd(beer_name):
         abv = beer['beer_abv']
         ibu = beer['beer_ibu']
         desc = beer['beer_description']
-        return "**%s** - %s (%s)\nABV: %.1f\tIBU: %d\n%s\n%s" % (name, brewery, location, abv, ibu, desc, beer_page)
+        return "**%s** - %s (%s)\nABV: %.1f\tIBU: %d\n\n%s\n\n%s" % (name, brewery, location, abv, ibu, desc, beer_page)
     return "No beer found"
 
 
