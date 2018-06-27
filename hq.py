@@ -4,8 +4,8 @@ from datetime import datetime, time
 f = "hqsers.txt"
 
 def check_hq():
-    dayst = time(14,57,0)
-    dayet = time(15,0,0)
+    dayst = time(19,57,0)
+    dayet = time(19,0,0)
     nightst = time(20,57,0)
     nightet = time(21,0,0)
     
