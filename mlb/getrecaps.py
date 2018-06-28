@@ -92,7 +92,7 @@ def find_top_plays(return_str=False):
     vids = []
     output = ""
     for res in results:
-        if date in res['display_timestamp'] or yest in res['blurb']:
+        if date in res['display_timestamp'] or (res['blurb'] is not None and yest in res['blurb']):
             blurb = res['blurb']
             if "top" in blurb.lower() and ("plays" in blurb.lower() or "home runs" in blurb.lower()):
                 url = res['url']
