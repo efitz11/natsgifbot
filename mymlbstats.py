@@ -106,7 +106,7 @@ def get_single_game_info(gamepk, gamejson, show_on_deck=False, liveonly=False):
             output = output + "\t##############################\n"
     elif liveonly:
         return ""
-    elif abstractstatus == "Preview":
+    elif abstractstatus == "Preview" or detailstatus in ["Warmup"]:
         awaywins = game['teams']['away']['leagueRecord']['wins']
         awayloss = game['teams']['away']['leagueRecord']['losses']
         homewins = game['teams']['home']['leagueRecord']['wins']
