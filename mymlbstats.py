@@ -761,6 +761,46 @@ def get_player_trailing_splits(name, days, forcebatting=False):
     else:
         return "%s not found on team %s" % (player['name_display_first_last'],player['team_abbrev'])
 
+def milb_player_search(name):
+    name = name.replace(' ','+')
+    url = "http://lookup-service-prod.bamgrid.com/lookup/json/named.milb_player_search.bam?active_sw=%27Y%27&name_part=%27"+ name +"%25%27"
+    print(url)
+    req = Request(url, headers={'User-Agent' : "ubuntu"})
+    s = json.loads(urlopen(req).read().decode("utf-8"))['milb_player_search']['queryResults']
+    if int(s['totalSize']) == 0:
+        return None
+    elif int(s['totalSize']) == 1:
+        return s['row']
+    else:
+        return s['row'][0]
+
+def get_milb_season_stats(name, type="hitting"):
+    player = milb_player_search(name)
+    if player is None:
+        return "No player found"
+    name = player['name_first_last']
+    teamabv = player['team_name_abbrev']
+    level = player['level']
+    parent = player['parent_team']
+    id = player['player_id']
+    pos = player['primary_position']
+    url = "http://lookup-service-prod.bamgrid.com/lookup/json/named.sport_hitting_composed.bam?" \
+          "game_type=%27R%27&league_list_id=%27mlb_milb%27&sort_by=%27season_asc%27&player_id="+ id
+    req = Request(url, headers={'User-Agent' : "ubuntu"})
+    s = json.loads(urlopen(req).read().decode("utf-8"))['sport_hitting_composed']['sport_hitting_tm']['queryResults']
+    if s['totalSize'] == 1:
+        last = s['row']
+    else:
+        last = s['row'][-1]
+    output = "Season stats for %s (%s - %s):\n" % (name, teamabv, level)
+    if type == "hitting":
+        stats = ['ab','h','d','t','hr','r','rbi','bb','so','sb','cs','avg','obp','slg','ops']
+    elif type == "pitching":
+        stats = ['w','l','g','svo','sv','ip','so','bb','hr','era','whip']
+    output = output + _print_labeled_list(stats,last)
+    return output
+
+
 def get_player_season_stats(name, type=None, year=None, active='Y', career=False):
     player = _get_player_search(name, active=active)
     if player is None:
@@ -878,4 +918,5 @@ if __name__ == "__main__":
     # print(get_player_trailing_splits("Adam Eaton", 7))
     # print(get_player_gamelogs("Max Scherzer"))
     # print(get_team_schedule("wsh",3,backward=False))
-    print(get_team_dl('wsh'))
+    # print(get_team_dl('wsh'))
+    print(get_milb_season_stats("Danny Espinosa"))
