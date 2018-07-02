@@ -26,9 +26,10 @@ def get_current_weather(text):
             condition = emojimap[condition]
         if fcondition in emojimap:
             fcondition = emojimap[fcondition]
+        hum=data['atmosphere']['humidity']
         output = data['item']['title'] + '\n'
         output = output + data['item']['condition']['temp'] + ' ' + unit + " - "
-        output = output + condition + "\tWind Chill: " + data['wind']['chill'] + ' ' + unit + "\n"
+        output = output + condition + "\tWind Chill: " + data['wind']['chill'] + ' ' + unit + 'Humidity: ' + hum + "\n"
         output = output + data['item']['forecast'][0]['day'] + "'s forecast: " + data['item']['forecast'][0]['high'] + "/" + data['item']['forecast'][0]['low'] + ", " + fcondition
     return output
     
