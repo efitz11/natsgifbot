@@ -92,7 +92,7 @@ async def on_ready():
 @bot.command()
 async def gif(*name : str):
     """returns a nationals gif matching the search query"""
-    await bot.say(gifs.gif(' '.join(name)))
+    await bot.say(gifs.fuzzygif(' '.join(name)))
     
 @bot.command()
 async def mlbgif(*name : str):
