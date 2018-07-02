@@ -251,6 +251,11 @@ class Baseball():
                 player = ' '.join(team[1:])
                 await self.bot.say("```%s```" % mymlbstats.get_milb_season_stats(player))
                 return
+            elif team[0].endswith('log'):
+                player = ' '.join(team[1:])
+                await self.bot.say("```%s```" % mymlbstats.get_milb_log(player))
+                return
+
 
 def setup(bot):
     bot.add_cog(Baseball(bot))
