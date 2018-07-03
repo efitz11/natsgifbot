@@ -860,11 +860,15 @@ def get_player_season_stats(name, type=None, year=None, active='Y', career=False
     pos = player['position']
     infoline = _get_player_info_line(player)
     now = datetime.now()
-    if active == 'Y':
-        birthdate = player['birth_date']
-        birthdate = birthdate[:birthdate.find('T')]
-        birth = birthdate.split('-')
+    birthdate = player['birth_date']
+    birthdate = birthdate[:birthdate.find('T')]
+    birth = birthdate.split('-')
+    d = None
+    if year == None and active == 'Y':
         d = now.year - int(birth[0]) - ((now.month, now.day) < (int(birth[1]), int(birth[2])))
+    elif year is not None:
+        d = int(year) - int(birth[0]) - ((7,1) < (int(birth[1]), int(birth[2])))
+    if d is not None:
         infoline = "%s | Age: %d" % (infoline, d)
     # print(pos)
     if type is None and pos == 'P':
