@@ -230,6 +230,10 @@ class Baseball():
             out = mymlbstats.print_linescore(team, delta=delta)
             await self.bot.say("```%s```" % out)
             return
+        elif team[0] == "highlight":
+            query = ' '.join(team[1:])
+            await self.bot.say(mymlbstats.search_highlights(query))
+            return
         else:
             teamname = ' '.join(team).lower()
 

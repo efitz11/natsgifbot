@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 import time
 import json, os
 import mlb.BoxScore as BoxScore
+import mlb.getrecaps as recap
 
 def _get_date_from_delta(delta=None):
     now = datetime.now() - timedelta(hours=5)
@@ -905,6 +906,17 @@ def get_player_season_stats(name, type=None, year=None, active='Y', career=False
     output = output + _print_labeled_list(stats,s)
     return output
 
+def search_highlights(query):
+    results = recap.search_video(query)
+    if len(results) == 0:
+        return "No highlights found"
+    first = results[0]
+    blurb = first['blurb']
+    length = first['duration'][3:]
+    date = first['display_timestamp'][:10]
+    url = recap.get_direct_video_url(first['url'])
+    return "(%s) %s - %s:\n%s" % (date, blurb, length, url)
+
 def _print_labeled_list(labels, dict, header=True, repl_map={'d':'2B','t':'3B'}):
     line1 = ""
     line2 = ""
@@ -949,4 +961,5 @@ if __name__ == "__main__":
     # print(get_team_schedule("wsh",3,backward=False))
     # print(get_team_dl('wsh'))
     # print(get_milb_log("Danny Espinosa"))
-    print(get_milb_season_stats("Byron Buxton"))
+    # print(get_milb_season_stats("Byron Buxton"))
+    print(search_highlights("Murphy"))

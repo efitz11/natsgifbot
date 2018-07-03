@@ -4,6 +4,14 @@ from datetime import datetime, timedelta
 from xml.etree import ElementTree
 import sys, time
 
+def search_video(query):
+    query = query.replace(' ', "%2B")
+    url = "https://search-api.mlb.com/svc/search/v2/mlb_global_sitesearch_en/sitesearch?hl=true&facet=type&expand=partner.media&q=" + query + "&page=1&sort=new&type=video"
+    print(url)
+    req = Request(url, headers={'User-Agent' : "ubuntu"})
+    s = json.loads(urlopen(req).read().decode("utf-8"))['docs']
+    return s
+
 def get_recaps(return_str=False):
     now = datetime.now() - timedelta(days=1)
     date = str(now.year) + "-" + str(now.month).zfill(2) + "-" + str(now.day).zfill(2)
