@@ -819,17 +819,25 @@ def get_milb_log(name):
     level = player['level']
     parent = player['parent_team']
     id = player['player_id']
-    pos = player['primary_position']
+    pos = int(player['primary_position'])
+    type = "hitting"
     url = "http://lookup-service-prod.bamgrid.com/lookup/json/named.sport_bio_hitting_last_10.bam?results=5&game_type=%27R%27&game_type=%27F%27&game_type=%27D%27&game_type=%27L%27&game_type=%27W%27&game_type=%27C%27" \
           "&season=2018&player_id="+id+"&league_list_id=%27milb_all%27&sport_hitting_last_x.col_in=game_date&sport_hitting_last_x.col_in=opp&sport_hitting_last_x.col_in=ab&sport_hitting_last_x.col_in=r&sport_hitting_last_x.col_in=h&sport_hitting_last_x.col_in=hr&sport_hitting_last_x.col_in=rbi&sport_hitting_last_x.col_in=bb&sport_hitting_last_x.col_in=so&sport_hitting_last_x.col_in=sb&sport_hitting_last_x.col_in=avg&sport_hitting_last_x.col_in=home_away&sport_hitting_last_x.col_in=game_id&sport_hitting_last_x.col_in=game_type&sport_hitting_last_x.col_in=sport_id&sport_hitting_last_x.col_in=sport"
+    if pos == 1:
+        type = "pitching"
+        url = "http://lookup-service-prod.bamgrid.com/lookup/json/named.sport_bio_pitching_last_10.bam?results=5&game_type=%27R%27&game_type=%27F%27&game_type=%27D%27&game_type=%27L%27&game_type=%27W%27&game_type=%27C%27" \
+              "&season=2018&player_id="+id+"&league_list_id=%27milb_all%27&sport_pitching_last_x.col_in=game_date&sport_pitching_last_x.col_in=opp&sport_pitching_last_x.col_in=w&sport_pitching_last_x.col_in=l&sport_pitching_last_x.col_in=era&sport_pitching_last_x.col_in=sv&sport_pitching_last_x.col_in=ip&sport_pitching_last_x.col_in=h&sport_pitching_last_x.col_in=er&sport_pitching_last_x.col_in=bb&sport_pitching_last_x.col_in=so&sport_pitching_last_x.col_in=home_away&sport_pitching_last_x.col_in=game_id&sport_pitching_last_x.col_in=game_type&sport_pitching_last_x.col_in=sport_id&sport_pitching_last_x.col_in=sport"
     req = Request(url, headers={'User-Agent' : "ubuntu"})
-    s = json.loads(urlopen(req).read().decode("utf-8"))['sport_bio_hitting_last_10']['sport_hitting_game_log']['queryResults']
+    s = json.loads(urlopen(req).read().decode("utf-8"))['sport_bio_'+type+'_last_10']['sport_'+type+'_game_log']['queryResults']
     num = int(s['totalSize'])
     gamelog = s['row']
     output = "Game Log for %s's (%s - %s) last %d games:\n\n" % (name, teamabv, level, num)
     for i in range(num):
         game = gamelog[-i-1]
-        stats = ['game_day','opponent_abbrev','ab','h','d','t','hr','r','rbi','bb','so','sb','cs','avg','obp','slg','ops']
+        if type == "hitting":
+            stats = ['game_day','opponent_abbrev','ab','h','d','t','hr','r','rbi','bb','so','sb','cs','avg','obp','slg','ops']
+        elif type == "pitching":
+            stats = ['game_day','opponent_abbrev','w','l','svo','sv','ip','r','er','so','bb','hr','era','whip']
         repl_map = {'game_day':'day','opponent_abbrev':'opp', 'd':'2B', 't':'3B'}
         output = output + _print_labeled_list(stats,game,header=(i==0),repl_map=repl_map) + "\n"
     return output
@@ -963,6 +971,6 @@ if __name__ == "__main__":
     # print(get_player_gamelogs("Max Scherzer"))
     # print(get_team_schedule("wsh",3,backward=False))
     # print(get_team_dl('wsh'))
-    # print(get_milb_log("Danny Espinosa"))
-    print(get_milb_season_stats("Austin Voth"))
+    print(get_milb_log("Austin Voth"))
+    # print(get_milb_season_stats("Austin Voth"))
     # print(search_highlights("Murphy"))
