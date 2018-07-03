@@ -786,12 +786,18 @@ def get_milb_season_stats(name, type="hitting"):
     pos = player['primary_position']
     url = "http://lookup-service-prod.bamgrid.com/lookup/json/named.sport_hitting_composed.bam?" \
           "game_type=%27R%27&league_list_id=%27mlb_milb%27&sort_by=%27season_asc%27&player_id="+ id
+    print(url)
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     s = json.loads(urlopen(req).read().decode("utf-8"))['sport_hitting_composed']['sport_hitting_tm']['queryResults']
     if s['totalSize'] == 1:
         last = s['row']
     else:
-        last = s['row'][-1]
+        num = -1
+        while s['row'][num]['sport'] == 'MLB':
+            num -= 1
+            last = s['row'][num]
+    level = last['sport']
+    teamabv = last['team_abbrev']
     output = "Season stats for %s (%s - %s):\n\n" % (name, teamabv, level)
     if type == "hitting":
         stats = ['ab','h','d','t','hr','r','rbi','bb','so','sb','cs','avg','obp','slg','ops']
@@ -942,4 +948,5 @@ if __name__ == "__main__":
     # print(get_player_gamelogs("Max Scherzer"))
     # print(get_team_schedule("wsh",3,backward=False))
     # print(get_team_dl('wsh'))
-    print(get_milb_log("Danny Espinosa"))
+    # print(get_milb_log("Danny Espinosa"))
+    print(get_milb_season_stats("Byron Buxton"))
