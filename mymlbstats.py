@@ -837,7 +837,7 @@ def get_milb_log(name):
         if type == "hitting":
             stats = ['game_day','opponent_abbrev','ab','h','d','t','hr','r','rbi','bb','so','sb','cs','avg','obp','slg','ops']
         elif type == "pitching":
-            stats = ['game_day','opponent_abbrev','w','l','svo','sv','ip','r','er','so','bb','hr','era','whip']
+            stats = ['game_day','opponent_abbrev','w','l','svo','sv','ip','h','r','er','so','bb','hr','era','whip']
         repl_map = {'game_day':'day','opponent_abbrev':'opp', 'd':'2B', 't':'3B'}
         output = output + _print_labeled_list(stats,game,header=(i==0),repl_map=repl_map) + "\n"
     return output
