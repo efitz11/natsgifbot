@@ -706,14 +706,17 @@ def get_player_gamelogs(name, num=5, forcebatting=False):
     s = json.loads(urlopen(req).read().decode("utf-8"))
     gamelog = s['sport_%s_game_log_composed' % type]['sport_%s_game_log' % type]['queryResults']['row']
     output = "Game Log for %s's last %d games:\n\n" % (player['name_display_first_last'], num)
+    games = []
     for i in range(num):
         game = gamelog[-i-1]
-        if not pitching:
-            stats = ['game_day','opponent_abbrev','ab','h','d','t','hr','r','rbi','bb','so','sb','cs','avg','obp','slg','ops']
-        else:
-            stats = ['game_day','opponent_abbrev','w','l','svo','sv','ip','r','er','so','bb','hr','era','whip']
-        repl_map = {'game_day':'day','opponent_abbrev':'opp', 'd':'2B', 't':'3B'}
-        output = output + _print_labeled_list(stats,game,header=(i==0),repl_map=repl_map) + "\n"
+        games.append(game)
+    if not pitching:
+        stats = ['game_day','opponent_abbrev','ab','h','d','t','hr','r','rbi','bb','so','sb','cs','avg','obp','slg','ops']
+    else:
+        stats = ['game_day','opponent_abbrev','w','l','svo','sv','ip','r','er','so','bb','hr','era','whip']
+    repl_map = {'game_day':'day','opponent_abbrev':'opp', 'd':'2B', 't':'3B'}
+    # output = output + _print_labeled_list(stats,game,header=(i==0),repl_map=repl_map) + "\n"
+    output = output + _print_table(stats,games,repl_map=repl_map) + "\n"
     return output
 
 def _get_player_info_line(player):
@@ -832,14 +835,16 @@ def get_milb_log(name):
     num = int(s['totalSize'])
     gamelog = s['row']
     output = "Game Log for %s's (%s - %s) last %d games:\n\n" % (name, teamabv, level, num)
+    games = []
     for i in range(num):
         game = gamelog[-i-1]
-        if type == "hitting":
-            stats = ['game_day','opponent_abbrev','ab','h','d','t','hr','r','rbi','bb','so','sb','cs','avg','obp','slg','ops']
-        elif type == "pitching":
-            stats = ['game_day','opponent_abbrev','w','l','svo','sv','ip','h','r','er','so','bb','hr','era','whip']
-        repl_map = {'game_day':'day','opponent_abbrev':'opp', 'd':'2B', 't':'3B'}
-        output = output + _print_labeled_list(stats,game,header=(i==0),repl_map=repl_map) + "\n"
+        games.append(game)
+    if type == "hitting":
+        stats = ['game_day','opponent_abbrev','ab','h','d','t','hr','r','rbi','bb','so','sb','cs','avg','obp','slg','ops']
+    elif type == "pitching":
+        stats = ['game_day','opponent_abbrev','w','l','svo','sv','ip','h','r','er','so','bb','hr','era','whip']
+    repl_map = {'game_day':'day','opponent_abbrev':'opp', 'd':'2B', 't':'3B'}
+    output = output + _print_table(stats,games,repl_map=repl_map) + "\n"
     return output
 
 def get_player_season_stats(name, type=None, year=None, active='Y', career=False):
@@ -928,6 +933,22 @@ def search_highlights(query):
     url = recap.get_direct_video_url(first['url'])
     return "(%s) %s - %s:\n%s" % (date, blurb, length, url)
 
+def _print_table(labels, dicts, repl_map={'d':'2B','t':'3B'}):
+    lines = ['' for i in range(len(dicts)+1)]
+    for label in labels:
+        l = label
+        if l in repl_map:
+            l = repl_map[label]
+        length = len(l)
+        for d in dicts:
+            r = str(d[label])
+            length = max(length, len(r))
+        lines[0] = "%s %s" % (lines[0], l.rjust(length).upper())
+        for i in range(len(dicts)):
+            r = str(dicts[i][label])
+            lines[i+1] = "%s %s" % (lines[i+1], r.rjust(length))
+    return '\n'.join(lines)
+
 def _print_labeled_list(labels, dict, header=True, repl_map={'d':'2B','t':'3B'}):
     line1 = ""
     line2 = ""
@@ -968,9 +989,9 @@ if __name__ == "__main__":
     # print(get_player_line("ryan zimmerman", delta="-4382"))
     # print(print_box('nationals','batting'))
     # print(get_player_trailing_splits("Adam Eaton", 7))
-    # print(get_player_gamelogs("Max Scherzer"))
+    print(get_player_gamelogs("Max Scherzer"))
     # print(get_team_schedule("wsh",3,backward=False))
     # print(get_team_dl('wsh'))
-    print(get_milb_log("Austin Voth"))
+    # print(get_milb_log("brady dragmire"))
     # print(get_milb_season_stats("Austin Voth"))
     # print(search_highlights("Murphy"))
