@@ -41,3 +41,5 @@ each of the previous commands can end in a number of (+days or -days) to change 
       season=s   - s is year
       team=t     - t is either the team abbrev('wsh') or the team name ("redsox")
       split=s    - s is one of (last7, last14, last30)
+
+!mlb highlight <query> - search MLB videos for a highlight

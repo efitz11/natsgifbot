@@ -57,6 +57,8 @@ class Baseball():
         [b]log [n] <player>
         [p,f]leaders <stat>
 
+        highlight <query>
+
         help - https://github.com/efitz11/natsgifbot/blob/master/mlbhelp.txt
         """
         delta=None
