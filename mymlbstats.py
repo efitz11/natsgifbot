@@ -5,6 +5,10 @@ import json, os
 import mlb.BoxScore as BoxScore
 import mlb.getrecaps as recap
 
+def _get_json(url):
+    req = Request(url, headers={'User-Agent' : "ubuntu"})
+    return json.loads(urlopen(req).read().decode("utf-8"))
+
 def _get_date_from_delta(delta=None):
     now = datetime.now() - timedelta(hours=5)
     if delta is not None and (isinstance(delta,int) or (delta.startswith('+') or delta.startswith('-'))):
@@ -732,11 +736,33 @@ def _get_player_info_line(player):
     return "%s | B/T: %s/%s | %s | %s" % (pos, bats,throws, height, weight)
 
 def get_player_season_splits(name, split, type=None, year=None, active='Y'):
+    split = split.lower()
+    splitsmap = {'vsl':'vl','vsr':'vr','home':'h','away':'a','grass':'g','turf':'t','day':'d','night':'n',
+                 'march':'3','april':'4','may':'5','june':'6','july':'7','august':'8','september':'9','october':'10',
+                 'late':'lc','ahead':'ac','behind':'bc','noouts':'o0','oneout':'o1','twoouts':'o2',
+                 'b1':'b1','b2':'b2','b3':'b3','b4':'b4','b5':'b5','b6':'b6','b7':'b7','b8':'b8','b9':'b9',
+                 'empty':'r0','loaded':'r123','risp':'risp'}
+    if split in ['list','all','help']:
+        output = ""
+        for key in splitsmap:
+            output = "%s %s," % (output, key)
+        return output[:-1]
+    if split not in splitsmap:
+        return "split not found"
     player = _get_player_search(name, active=active)
     if player is None:
         return "No matching player found"
     if year == None and active == 'N':
         career = True
+    url = "http://lookup-service-prod.mlb.com/json/named.sport_hitting_sits_composed.bam?league_list_id=%27mlb_hist%27&game_type=%27R%27" \
+          "&season=2018&player_id=" + player['player_id'] + "&sit_code=%27" + splitsmap[split] + "%27"
+    print(url)
+    json = _get_json(url)
+    results = json['sport_hitting_sits_composed']['sport_hitting_sits']['queryResults']['row']
+    output = "%s's %s splits:\n\n" % (player['name_display_first_last'], results['situation'])
+    stats = ['ab','h','d','t','hr','r','rbi','bb','so','sb','cs','avg','obp','slg','ops']
+    output = output + _print_labeled_list(stats,results)
+    return output
 
 def get_player_trailing_splits(name, days, forcebatting=False):
     player = _get_player_search(name)
@@ -1021,6 +1047,7 @@ if __name__ == "__main__":
     # print(get_team_schedule("wsh",3,backward=False))
     # print(get_team_dl('wsh'))
     # print(get_milb_log("brady dragmire"))
-    print(get_milb_season_stats("carter kieboom"))
-    print(get_milb_season_stats("carter kieboom",year="2017"))
+    # print(get_milb_season_stats("carter kieboom"))
+    # print(get_milb_season_stats("carter kieboom",year="2017"))
     # print(search_highlights("Murphy"))
+    print(get_player_season_splits("Bryce Harper","help"))

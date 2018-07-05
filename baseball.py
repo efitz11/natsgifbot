@@ -156,6 +156,11 @@ class Baseball():
             else:
                 await self.bot.say("```%s```" % mymlbstats.get_player_season_stats(player,type=t,year=year,active=active, career=career))
             return
+        elif team[0] == 'splits':
+            split = team[1]
+            player = ' '.join(team[2:])
+            await self.bot.say("```%s```" % mymlbstats.get_player_season_splits(player,split))
+            return
         elif team[0].lower() == "dl":
             team = ' '.join(team[1:])
             await self.bot.say("```%s```" % mymlbstats.get_team_dl(team))
