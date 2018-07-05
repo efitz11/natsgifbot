@@ -766,7 +766,7 @@ def get_player_trailing_splits(name, days, forcebatting=False):
         return "%s not found on team %s" % (player['name_display_first_last'],player['team_abbrev'])
 
 def milb_player_search(name):
-    name = name.replace(' ','+')
+    name = name.replace(' ','%25')
     url = "http://lookup-service-prod.bamgrid.com/lookup/json/named.milb_player_search.bam?active_sw=%27Y%27&name_part=%27"+ name +"%25%27"
     print(url)
     req = Request(url, headers={'User-Agent' : "ubuntu"})
@@ -993,9 +993,9 @@ if __name__ == "__main__":
     # print(get_player_line("ryan zimmerman", delta="-4382"))
     # print(print_box('nationals','batting'))
     # print(get_player_trailing_splits("Adam Eaton", 7))
-    print(get_player_gamelogs("Max Scherzer"))
+    # print(get_player_gamelogs("Max Scherzer"))
     # print(get_team_schedule("wsh",3,backward=False))
     # print(get_team_dl('wsh'))
     # print(get_milb_log("brady dragmire"))
-    # print(get_milb_season_stats("Austin Voth"))
+    print(get_milb_season_stats("carter kieboom"))
     # print(search_highlights("Murphy"))
