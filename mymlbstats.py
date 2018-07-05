@@ -747,7 +747,9 @@ def player_vs_team(name, team, year=None):
           "league_list_id=%27mlb_hist%27&game_type=%27R%27&player_id=" + player['player_id'] \
           + "&opp_team_id=" + str(teamid) + "&season=" + year
     print(url)
-    json = _get_json(url,encoding="ISO-8859-1")["stats_batter_vs_pitcher_composed"]["stats_batter_vs_pitcher"]["queryResults"]
+    json = _get_json(url,encoding="ISO-8859-1")["stats_batter_vs_pitcher_composed"]
+    totals = json["stats_batter_vs_pitcher_total"]["queryResults"]["row"]
+    json = json["stats_batter_vs_pitcher"]["queryResults"]
     pitchers = []
     if int(json['totalSize']) == 1:
         pitchers.append(json['row'])
@@ -757,7 +759,9 @@ def player_vs_team(name, team, year=None):
     output = "%s's stats vs %s pitchers (%s):\n\n" % (player['name_display_first_last'], pitchers[0]['opponent'], pitchers[0]['season'])
     stats = ['pitcher_first_last_html','ab','h','d','t','hr','bb','so','avg','obp','slg','ops']
     repl_map = {'d':'2B', 't':'3B', 'pitcher_first_last_html':'pitcher'}
-    output = output + _print_table(stats,pitchers,repl_map=repl_map)
+    output = output + _print_table(stats,pitchers,repl_map=repl_map) + "\n\n"
+    stats = ['opponent','ab','h','d','t','hr','bb','so','avg','obp','slg','ops']
+    output = output + _print_labeled_list(stats,totals)
     return output
 
 def get_player_season_splits(name, split, type=None, year=None, active='Y'):
@@ -1085,5 +1089,5 @@ if __name__ == "__main__":
     # print(get_milb_season_stats("carter kieboom"))
     # print(get_milb_season_stats("carter kieboom",year="2017"))
     # print(search_highlights("Murphy"))
-    print(get_player_season_splits("Strasburg","day"))
-    # print(player_vs_team("Bryce Harper","atl"))
+    # print(get_player_season_splits("Strasburg","day"))
+    print(player_vs_team("Bryce Harper","atl"))
