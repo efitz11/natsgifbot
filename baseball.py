@@ -256,7 +256,7 @@ class Baseball():
             if team[0] == 'stats':
                 if team[-1].isdigit():
                     year = team[-1]
-                    player = ' '.join(team[0:-1])
+                    player = ' '.join(team[1:-1])
                     await self.bot.say("```%s```" % mymlbstats.get_milb_season_stats(player,year=year))
                 else:
                     player = ' '.join(team[1:])
