@@ -720,7 +720,11 @@ def get_player_gamelogs(name, num=5, forcebatting=False):
     return output
 
 def _get_player_info_line(player):
-    pos = player['position']
+    try:
+        pos = player['position']
+    except KeyError:
+        posits = ['P','C','1B','2B','3B','SS','LF','CF','RF']
+        pos = posits[int(player['primary_position'])-1]
     bats = player['bats']
     throws = player['throws']
     height = "%s'%s\"" % (player['height_feet'], player['height_inches'])
@@ -802,13 +806,19 @@ def get_milb_season_stats(name, type="hitting",year="2018"):
         for i in s['row']:
             if i['season'] == year and i['sport'] != "MLB":
                 leagues.append(i)
-    output = "Season stats for %s (%s-%s, %s):\n\n" % (name, teamabv, level, parent)
+    output = "Season stats for %s (%s-%s, %s):\n" % (name, teamabv, level, parent)
+    teamid = player['team_id']
+    url = "http://lookup-service-prod.bamgrid.com/lookup/json/named.roster_all.bam?team_id=" + teamid
+    req = Request(url, headers={'User-Agent' : "ubuntu"})
+    t = json.loads(urlopen(req).read().decode("utf-8"))['roster_all']['queryResults']['row']
+    for player2 in t:
+        if player2['player_id'] == id:
+            output = output + "  " + _get_player_info_line(player2)+'\n'
     if type == "hitting":
         stats = ['sport','ab','h','d','t','hr','r','rbi','bb','so','sb','cs','avg','obp','slg','ops']
     elif type == "pitching":
         stats = ['sport','w','l','g','svo','sv','ip','so','bb','hr','era','whip']
-    output = output + _print_table(stats,leagues,repl_map={'d':'2B','t':'3B','sport':'lev'})
-    # output = output + _print_labeled_list(stats,last)
+    output = output + "\n" + _print_table(stats,leagues,repl_map={'d':'2B','t':'3B','sport':'lev'})
     return output
 
 def get_milb_log(name):
