@@ -782,13 +782,20 @@ def get_player_season_splits(name, split, type=None, year=None, active='Y'):
     if year is None:
         now = datetime.now()
         year = str(now.year)
-    url = "http://lookup-service-prod.mlb.com/json/named.sport_hitting_sits_composed.bam?league_list_id=%27mlb_hist%27&game_type=%27R%27" \
+    pos = player['position']
+    type="hitting"
+    if pos == 'P':
+        type="pitching"
+    url = "http://lookup-service-prod.mlb.com/json/named.sport_" + type + "_sits_composed.bam?league_list_id=%27mlb_hist%27&game_type=%27R%27" \
           "&season=" + year + "&player_id=" + player['player_id'] + "&sit_code=%27" + splitsmap[split] + "%27"
     print(url)
     json = _get_json(url)
-    results = json['sport_hitting_sits_composed']['sport_hitting_sits']['queryResults']['row']
+    results = json['sport_'+type+'_sits_composed']['sport_'+type+'_sits']['queryResults']['row']
     output = "%s's %s splits (%s):\n\n" % (player['name_display_first_last'], results['situation'], results['season'])
-    stats = ['ab','h','d','t','hr','r','rbi','bb','so','sb','cs','avg','obp','slg','ops']
+    if type == "hitting":
+        stats = ['ab','h','d','t','hr','r','rbi','bb','so','sb','cs','avg','obp','slg','ops']
+    else:
+        stats = ['w','l','g','svo','sv','ip','h','r','so','bb','hr','era','whip']
     output = output + _print_labeled_list(stats,results)
     return output
 
@@ -1078,5 +1085,5 @@ if __name__ == "__main__":
     # print(get_milb_season_stats("carter kieboom"))
     # print(get_milb_season_stats("carter kieboom",year="2017"))
     # print(search_highlights("Murphy"))
-    # print(get_player_season_splits("Bryce Harper","help"))
-    print(player_vs_team("Bryce Harper","atl"))
+    print(get_player_season_splits("Strasburg","day"))
+    # print(player_vs_team("Bryce Harper","atl"))
