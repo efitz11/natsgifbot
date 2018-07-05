@@ -254,8 +254,13 @@ class Baseball():
     async def milb(self,*team:str):
         if len(team) > 1:
             if team[0] == 'stats':
-                player = ' '.join(team[1:])
-                await self.bot.say("```%s```" % mymlbstats.get_milb_season_stats(player))
+                if team[-1].isdigit():
+                    year = team[-1]
+                    player = ' '.join(team[0:-1])
+                    await self.bot.say("```%s```" % mymlbstats.get_milb_season_stats(player,year=year))
+                else:
+                    player = ' '.join(team[1:])
+                    await self.bot.say("```%s```" % mymlbstats.get_milb_season_stats(player))
                 return
             elif team[0].endswith('log'):
                 player = ' '.join(team[1:])
