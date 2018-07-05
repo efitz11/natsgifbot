@@ -778,7 +778,7 @@ def milb_player_search(name):
     else:
         return s['row'][0]
 
-def get_milb_season_stats(name, type="hitting"):
+def get_milb_season_stats(name, type="hitting",year="2018"):
     player = milb_player_search(name)
     if player is None:
         return "No player found"
@@ -795,22 +795,20 @@ def get_milb_season_stats(name, type="hitting"):
     print(url)
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     s = json.loads(urlopen(req).read().decode("utf-8"))['sport_'+type+'_composed']['sport_'+type+'_tm']['queryResults']
+    leagues = []
     if s['totalSize'] == 1:
-        last = s['row']
+        leagues.append(s['row'])
     else:
-        num = -1
-        last = s['row'][num]
-        while s['row'][num]['sport'] == 'MLB':
-            num -= 1
-            last = s['row'][num]
-    level = last['sport']
-    teamabv = last['team_abbrev']
-    output = "Season stats for %s (%s - %s):\n\n" % (name, teamabv, level)
+        for i in s['row']:
+            if i['season'] == year and i['sport'] != "MLB":
+                leagues.append(i)
+    output = "Season stats for %s (%s-%s, %s):\n\n" % (name, teamabv, level, parent)
     if type == "hitting":
-        stats = ['ab','h','d','t','hr','r','rbi','bb','so','sb','cs','avg','obp','slg','ops']
+        stats = ['sport','ab','h','d','t','hr','r','rbi','bb','so','sb','cs','avg','obp','slg','ops']
     elif type == "pitching":
-        stats = ['w','l','g','svo','sv','ip','so','bb','hr','era','whip']
-    output = output + _print_labeled_list(stats,last)
+        stats = ['sport','w','l','g','svo','sv','ip','so','bb','hr','era','whip']
+    output = output + _print_table(stats,leagues,repl_map={'d':'2B','t':'3B','sport':'lev'})
+    # output = output + _print_labeled_list(stats,last)
     return output
 
 def get_milb_log(name):
