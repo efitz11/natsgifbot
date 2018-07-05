@@ -813,7 +813,8 @@ def get_milb_season_stats(name, type="hitting",year="2018"):
     t = json.loads(urlopen(req).read().decode("utf-8"))['roster_all']['queryResults']['row']
     for player2 in t:
         if player2['player_id'] == id:
-            output = output + "  " + _get_player_info_line(player2)+'\n'
+            output = output + "  " + _get_player_info_line(player2)
+            output = output + " | Age: " + str(_calc_age(player['player_birth_date'])) + "\n"
     if type == "hitting":
         stats = ['sport','ab','h','d','t','hr','r','rbi','bb','so','sb','cs','avg','obp','slg','ops']
     elif type == "pitching":
@@ -854,6 +855,11 @@ def get_milb_log(name):
     repl_map = {'game_day':'day','opponent_abbrev':'opp', 'd':'2B', 't':'3B'}
     output = output + _print_table(stats,games,repl_map=repl_map) + "\n"
     return output
+
+def _calc_age(birthdate):
+    year,month,day = birthdate[:birthdate.find('T')].split('-')
+    now = datetime.now()
+    return now.year - int(year) - ((now.month, now.day) < (int(month), int(day)))
 
 def get_player_season_stats(name, type=None, year=None, active='Y', career=False):
     player = _get_player_search(name, active=active)
