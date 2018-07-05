@@ -782,7 +782,7 @@ def milb_player_search(name):
     else:
         return s['row'][0]
 
-def get_milb_season_stats(name, type="hitting",year="2018"):
+def get_milb_season_stats(name, type="hitting",year=None):
     player = milb_player_search(name)
     if player is None:
         return "No player found"
@@ -800,13 +800,17 @@ def get_milb_season_stats(name, type="hitting",year="2018"):
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     s = json.loads(urlopen(req).read().decode("utf-8"))['sport_'+type+'_composed']['sport_'+type+'_tm']['queryResults']
     leagues = []
+    now = datetime.now()
+    season = str(now.year)
+    if year is not None:
+        season = year
     if s['totalSize'] == 1:
         leagues.append(s['row'])
     else:
         for i in s['row']:
-            if i['season'] == year and i['sport'] != "MLB":
+            if i['season'] == str(season) and i['sport'] != "MLB":
                 leagues.append(i)
-    output = "Season stats for %s (%s-%s, %s):\n" % (name, teamabv, level, parent)
+    output = "%s Season stats for %s (%s-%s, %s):\n" % (season, name, teamabv, level, parent)
     teamid = player['team_id']
     url = "http://lookup-service-prod.bamgrid.com/lookup/json/named.roster_all.bam?team_id=" + teamid
     req = Request(url, headers={'User-Agent' : "ubuntu"})
@@ -814,7 +818,10 @@ def get_milb_season_stats(name, type="hitting",year="2018"):
     for player2 in t:
         if player2['player_id'] == id:
             output = output + "  " + _get_player_info_line(player2)
-            output = output + " | Age: " + str(_calc_age(player['player_birth_date'])) + "\n"
+            if year is None:
+                output = output + " | Age: " + str(_calc_age(player['player_birth_date'])) + "\n"
+            else:
+                output = output + " | Age: " + str(_calc_age(player['player_birth_date'],year=season)) + "\n"
     if type == "hitting":
         stats = ['sport','ab','h','d','t','hr','r','rbi','bb','so','sb','cs','avg','obp','slg','ops']
     elif type == "pitching":
@@ -856,10 +863,13 @@ def get_milb_log(name):
     output = output + _print_table(stats,games,repl_map=repl_map) + "\n"
     return output
 
-def _calc_age(birthdate):
-    year,month,day = birthdate[:birthdate.find('T')].split('-')
-    now = datetime.now()
-    return now.year - int(year) - ((now.month, now.day) < (int(month), int(day)))
+def _calc_age(birthdate, year=None):
+    byear,month,day = birthdate[:birthdate.find('T')].split('-')
+    if year is None:
+        now = datetime.now()
+        return now.year - int(byear) - ((now.month, now.day) < (int(month), int(day)))
+    else:
+        return int(year) - int(byear) - ((7,1) < (int(month), int(day)))
 
 def get_player_season_stats(name, type=None, year=None, active='Y', career=False):
     player = _get_player_search(name, active=active)
@@ -1012,4 +1022,5 @@ if __name__ == "__main__":
     # print(get_team_dl('wsh'))
     # print(get_milb_log("brady dragmire"))
     print(get_milb_season_stats("carter kieboom"))
+    print(get_milb_season_stats("carter kieboom",year="2017"))
     # print(search_highlights("Murphy"))
