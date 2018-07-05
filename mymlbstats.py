@@ -5,9 +5,9 @@ import json, os
 import mlb.BoxScore as BoxScore
 import mlb.getrecaps as recap
 
-def _get_json(url):
+def _get_json(url,encoding="utf-8"):
     req = Request(url, headers={'User-Agent' : "ubuntu"})
-    return json.loads(urlopen(req).read().decode("utf-8"))
+    return json.loads(urlopen(req).read().decode(encoding))
 
 def _get_date_from_delta(delta=None):
     now = datetime.now() - timedelta(hours=5)
@@ -735,6 +735,31 @@ def _get_player_info_line(player):
     weight = "%s lbs" % (player['weight'])
     return "%s | B/T: %s/%s | %s | %s" % (pos, bats,throws, height, weight)
 
+def player_vs_team(name, team, year=None):
+    teamid = get_teamid(team)
+    player = _get_player_search(name)
+    if player is None:
+        return "No matching player found"
+    if year is None:
+        now = datetime.now()
+        year = str(now.year)
+    url = "http://lookup-service-prod.mlb.com/json/named.stats_batter_vs_pitcher_composed.bam?" \
+          "league_list_id=%27mlb_hist%27&game_type=%27R%27&player_id=" + player['player_id'] \
+          + "&opp_team_id=" + str(teamid) + "&season=" + year
+    print(url)
+    json = _get_json(url,encoding="ISO-8859-1")["stats_batter_vs_pitcher_composed"]["stats_batter_vs_pitcher"]["queryResults"]
+    pitchers = []
+    if int(json['totalSize']) == 1:
+        pitchers.append(json['row'])
+    else:
+        for row in json['row']:
+            pitchers.append(row)
+    output = "%s's stats vs %s pitchers (%s):\n\n" % (player['name_display_first_last'], pitchers[0]['opponent'], pitchers[0]['season'])
+    stats = ['pitcher_first_last_html','ab','h','d','t','hr','bb','so','avg','obp','slg','ops']
+    repl_map = {'d':'2B', 't':'3B', 'pitcher_first_last_html':'pitcher'}
+    output = output + _print_table(stats,pitchers,repl_map=repl_map)
+    return output
+
 def get_player_season_splits(name, split, type=None, year=None, active='Y'):
     split = split.lower()
     splitsmap = {'vsl':'vl','vsr':'vr','home':'h','away':'a','grass':'g','turf':'t','day':'d','night':'n',
@@ -754,12 +779,15 @@ def get_player_season_splits(name, split, type=None, year=None, active='Y'):
         return "No matching player found"
     if year == None and active == 'N':
         career = True
+    if year is None:
+        now = datetime.now()
+        year = str(now.year)
     url = "http://lookup-service-prod.mlb.com/json/named.sport_hitting_sits_composed.bam?league_list_id=%27mlb_hist%27&game_type=%27R%27" \
-          "&season=2018&player_id=" + player['player_id'] + "&sit_code=%27" + splitsmap[split] + "%27"
+          "&season=" + year + "&player_id=" + player['player_id'] + "&sit_code=%27" + splitsmap[split] + "%27"
     print(url)
     json = _get_json(url)
     results = json['sport_hitting_sits_composed']['sport_hitting_sits']['queryResults']['row']
-    output = "%s's %s splits:\n\n" % (player['name_display_first_last'], results['situation'])
+    output = "%s's %s splits (%s):\n\n" % (player['name_display_first_last'], results['situation'], results['season'])
     stats = ['ab','h','d','t','hr','r','rbi','bb','so','sb','cs','avg','obp','slg','ops']
     output = output + _print_labeled_list(stats,results)
     return output
@@ -1050,4 +1078,5 @@ if __name__ == "__main__":
     # print(get_milb_season_stats("carter kieboom"))
     # print(get_milb_season_stats("carter kieboom",year="2017"))
     # print(search_highlights("Murphy"))
-    print(get_player_season_splits("Bryce Harper","help"))
+    # print(get_player_season_splits("Bryce Harper","help"))
+    print(player_vs_team("Bryce Harper","atl"))
