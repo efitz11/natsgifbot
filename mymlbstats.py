@@ -834,7 +834,7 @@ def get_player_trailing_splits(name, days, forcebatting=False):
     else:
         return "%s not found on team %s" % (player['name_display_first_last'],player['team_abbrev'])
 
-def milb_player_search(name):
+def milb_player_search(name,parent=None):
     name = name.replace(' ','%25')
     url = "http://lookup-service-prod.bamgrid.com/lookup/json/named.milb_player_search.bam?active_sw=%27Y%27&name_part=%27"+ name +"%25%27"
     print(url)
@@ -845,10 +845,20 @@ def milb_player_search(name):
     elif int(s['totalSize']) == 1:
         return s['row']
     else:
+        if parent is not None:
+            for player in s['row']:
+                if parent.lower() in player['parent_team'].lower():
+                    return player
         return s['row'][0]
 
 def get_milb_season_stats(name, type="hitting",year=None):
-    player = milb_player_search(name)
+    if 'parent=' in name:
+        parentteam = name[name.find('=')+1:]
+        print(parentteam)
+        name = name[:name.find('parent=')]
+        player = milb_player_search(name,parentteam)
+    else:
+        player = milb_player_search(name)
     if player is None:
         return "No player found"
     name = player['name_first_last']
