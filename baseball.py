@@ -274,6 +274,12 @@ class Baseball():
 
     @commands.command()
     async def milb(self,*team:str):
+        """find minor league info
+
+        !milb stats <player> [parent=clubname] [year]
+        !milb log <player>
+
+        """
         if len(team) > 1:
             if team[0] == 'stats':
                 if team[-1].isdigit():
