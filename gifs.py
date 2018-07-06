@@ -35,7 +35,9 @@ def fuzzygif(query):
     f = open('postlist.csv','r')
     for line in f:
         search = ','.join(line.split(',')[:-1])
-        sc = fuzz.token_set_ratio(query,search)
+        sc = fuzz.partial_token_sort_ratio(query,search)
+        # if sc > 50:
+        #     print (search, sc)
         if sc > score:
             highest,score = line,sc
             matches = [line]
@@ -44,6 +46,8 @@ def fuzzygif(query):
     f.close()
     if len(matches) == 0:
         return "no matches"
+    # for match in matches:
+    #     print(match)
     num = random.randint(0,len(matches)-1)
     return matches[num].strip()
 
