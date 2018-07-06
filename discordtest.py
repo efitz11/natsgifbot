@@ -475,6 +475,11 @@ async def ud(*query):
     for l in list:
         await bot.say(l)
 
+@bot.command()
+async def cocktail(*query):
+    """get info about a cocktail"""
+    await bot.say(web.cocktail(' '.join(query)))
+
 @bot.event
 async def on_message(message):
     #stuff
