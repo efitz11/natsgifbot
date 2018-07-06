@@ -879,7 +879,7 @@ def get_milb_season_stats(name, type="hitting",year=None):
     season = str(now.year)
     if year is not None:
         season = year
-    if s['totalSize'] == 1:
+    if s['totalSize'] == "1":
         leagues.append(s['row'])
     else:
         for i in s['row']:
