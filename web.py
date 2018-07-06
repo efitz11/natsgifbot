@@ -137,9 +137,43 @@ def ud_def(query):
             break
     return out
 
+def _print_table(lines):
+    # lengths = [0 for i in range(len(lines[0]))]
+    outlines = ['' for i in range(len(lines))]
+    for col in range(len(lines[0])):
+        length = 0
+        for i in range(len(lines)):
+            length = max(length,len(lines[i][col]))
+        for i in range(len(lines)):
+            outlines[i] = "%s %s" % (outlines[i], lines[i][col].ljust(length))
+    return '\n'.join(outlines)
+
+def cocktail(query):
+    url = "https://www.thecocktaildb.com/api/json/v1/1/search.php?s=" + urllib.parse.quote_plus(query)
+    req = Request(url, headers={'User-Agent' : "ubuntu"})
+    data = json.loads(urlopen(req).read().decode('utf-8'))
+    if data['drinks'] is None:
+        return "No cocktails found."
+    if len(data['drinks']) == 0:
+        return "No cocktails found."
+    for drink in data['drinks']:
+        output = "**%s**:\n\n" % drink['strDrink']
+        lines = []
+        for i in range(1,15):
+            ingredient = drink['strIngredient%d' % i]
+            if ingredient == "":
+                break
+            measure = drink['strMeasure%d' % i]
+            lines.append([measure, ingredient])
+        output = "%s```%s```" % (output, _print_table(lines))
+        output = "%s\n%s\n\n" % (output, drink['strInstructions'].strip())
+        output = "%s%s" % (output, drink['strDrinkThumb'])
+        return output
+
 if __name__ == "__main__":
-    print(search_untappd("heineken"))
+    # print(search_untappd("heineken"))
     # print(get_latest_tweet("nationalsump"))
     # print(get_latest_tweet("chelsea_janes"))
     # print(ud_def("word"))
     # search_imdb("ryan reynolds")
+    print(cocktail("margarita"))
