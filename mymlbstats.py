@@ -452,7 +452,7 @@ def get_single_game(team,delta=None,print_statcast=True):
                                                                        data['launchSpeed'],
                                                                        data['launchAngle'])
                 except Exception as e:
-                    print("Error in parsing game %d" % gamepk)
+                    # print("Error in parsing game %d" % gamepk)
                     print(e)
     return output
 
