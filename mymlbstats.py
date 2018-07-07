@@ -394,6 +394,7 @@ def get_lg_standings(lgid, wc=False):
         type = "wildCard"
     url = "https://statsapi.mlb.com/api/v1/standings/" + type + "?" \
           "leagueId=" + str(lgid) + "&season=" + str(now.year) + "&hydrate=team"
+    print(url)
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     s = json.loads(urlopen(req).read().decode("utf-8"))
     return s
@@ -543,26 +544,31 @@ def get_div_standings(div):
     standings = get_lg_standings(id,wc=wc)
     div = standings['records'][idx]
     output = "```python\n"
-    output = output + "%s %s %s %s %s %s %s %s %s %s %s\n" %\
-             (' '.rjust(3),'W'.rjust(3),'L'.rjust(3),'PCT'.rjust(5), 'GB'.rjust(4), ' WCGB', 'L10',
-              'STK', 'RD'.rjust(3),'RS'.rjust(4),'RA'.rjust(4))
+    teams = []
     for team in div['teamRecords']:
-        abbrev = team['team']['abbreviation'].ljust(3)
-        streak = team['streak']['streakCode'].ljust(3)
-        wins = str(team['wins']).rjust(3)
-        loss = str(team['losses']).rjust(3)
-        pct = team['leagueRecord']['pct'].rjust(5)
-        rd = str(team['runDifferential']).rjust(3)
-        ra = str(team['runsAllowed']).rjust(4)
-        rs = str(team['runsScored']).rjust(4)
-        gb = team['gamesBack'].rjust(4)
-        wcgb = team['wildCardGamesBack'].rjust(5)
-        lastten = ""
+        l = dict()
+        l['abv'] = team['team']['abbreviation']
+        l['w'] = str(team['wins'])
+        l['l'] = str(team['losses'])
+        l['pct'] = team['leagueRecord']['pct']
+        l['gb'] = team['gamesBack']
+        l['wcgb'] = team['wildCardGamesBack']
         for split in team['records']['splitRecords']:
             if split['type'] == "lastTen":
-                lastten = "%s-%s" % (split['wins'],split['losses'])
-        output = output + "%s %s %s %s %s %s %s %s %s %s %s\n" %\
-                 (abbrev, wins, loss, pct, gb, wcgb, lastten, streak, rd, rs, ra)
+                l['l10'] = "%s-%s" % (split['wins'],split['losses'])
+        l['stk'] = team['streak']['streakCode']
+        l['rd'] = str(team['runDifferential'])
+        l['rs'] = str(team['runsScored'])
+        l['ra'] = str(team['runsAllowed'])
+        l['e'] = str(team['eliminationNumber'])
+        try:
+            l['wce'] = str(team['wildCardEliminationNumber'])
+        except KeyError:
+            l['wce'] = "-"
+        teams.append(l)
+
+    labs = ['abv','w','l','pct','gb','wcgb','l10','stk','rd','e','wce']
+    output = output + _print_table(labs,teams)
     output = output + "```"
     return output
 
@@ -1087,7 +1093,7 @@ if __name__ == "__main__":
     # print(get_all_game_info(liveonly=True))
     # print(get_all_game_info())
     #get_ET_from_timestamp("2018-03-31T20:05:00Z")
-    # get_div_standings("nle")
+    print(get_div_standings("nle"))
     #bs = BoxScore.BoxScore(get_boxscore('529456'))
     #bs.print_box()
     # print(get_stat_leader('sb'))
@@ -1105,9 +1111,9 @@ if __name__ == "__main__":
     # print(get_player_gamelogs("Max Scherzer"))
     # print(get_team_schedule("wsh",3,backward=False))
     # print(get_team_dl('wsh'))
-    # print(get_milb_log("brady dragmire"))
-    # print(get_milb_season_stats("carter kieboom"))
+    # print(get_milb_log("koda glover"))
+    # print(get_milb_season_stats("alejandro de aza"))
     # print(get_milb_season_stats("carter kieboom",year="2017"))
     # print(search_highlights("Murphy"))
     # print(get_player_season_splits("Strasburg","day"))
-    print(player_vs_team("Bryce Harper","atl"))
+    # print(player_vs_team("Bryce Harper","atl"))
