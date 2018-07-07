@@ -567,8 +567,9 @@ def get_div_standings(div):
             l['wce'] = "-"
         teams.append(l)
 
+    repl_map = {'abv':''}
     labs = ['abv','w','l','pct','gb','wcgb','l10','stk','rd','e','wce']
-    output = output + _print_table(labs,teams)
+    output = output + _print_table(labs,teams,repl_map=repl_map)
     output = output + "```"
     return output
 
