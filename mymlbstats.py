@@ -727,8 +727,11 @@ def _get_player_info_line(player):
     try:
         pos = player['position']
     except KeyError:
-        posits = ['P','C','1B','2B','3B','SS','LF','CF','RF']
-        pos = posits[int(player['primary_position'])-1]
+        if player['primary_position'] == 'O':
+            pos = 'OF'
+        else:
+            posits = ['P','C','1B','2B','3B','SS','LF','CF','RF']
+            pos = posits[int(player['primary_position'])-1]
     bats = player['bats']
     throws = player['throws']
     height = "%s'%s\"" % (player['height_feet'], player['height_inches'])
@@ -866,9 +869,12 @@ def get_milb_season_stats(name, type="hitting",year=None):
     level = player['level']
     parent = player['parent_team']
     id = player['player_id']
-    pos = int(player['primary_position'])
-    if pos == 1:
-        type = "pitching"
+    try:
+        pos = int(player['primary_position'])
+        if pos == 1:
+            type = "pitching"
+    except:
+        print("%s is an OF" % name)
     url = "http://lookup-service-prod.bamgrid.com/lookup/json/named.sport_"+type+"_composed.bam?" \
           "game_type=%27R%27&league_list_id=%27mlb_milb%27&sort_by=%27season_asc%27&player_id="+ id
     print(url)
