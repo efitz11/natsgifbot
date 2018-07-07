@@ -39,6 +39,7 @@ class Baseball():
         blank
         <team>
         <division>
+        standings <division>
         [l]sp <team>
         line <player>
         ohtani
@@ -258,19 +259,16 @@ class Baseball():
             query = ' '.join(team[1:])
             await self.bot.say(mymlbstats.search_highlights(query))
             return
+        elif team[0] == "standings":
+            div = team[1]
+            await self.bot.say(mymlbstats.get_div_standings(div))
         else:
             teamname = ' '.join(team).lower()
-
-        if teamname in ['nle','nlc','nlw','ale','alc','alw','nlwc','alwc']:
-            output = mymlbstats.get_div_standings(teamname)
-            await self.bot.say(output)
-            return
-
-        output = mymlbstats.get_single_game(teamname,delta=delta)
-        if len(output) > 0:
-            await self.bot.say("```python\n" + output + "```")
-        else:
-            await self.bot.say("no games found")
+            output = mymlbstats.get_single_game(teamname,delta=delta)
+            if len(output) > 0:
+                await self.bot.say("```python\n" + output + "```")
+            else:
+                await self.bot.say("no games found")
 
     @commands.command()
     async def milb(self,*team:str):

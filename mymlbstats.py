@@ -399,7 +399,7 @@ def get_lg_standings(lgid, wc=False):
     s = json.loads(urlopen(req).read().decode("utf-8"))
     return s
 
-def get_single_game(team,delta=None):
+def get_single_game(team,delta=None,print_statcast=True):
     """delta is + or - a number of days"""
     s = get_day_schedule(delta)
     games = s['dates'][0]['games']
@@ -408,28 +408,31 @@ def get_single_game(team,delta=None):
         now = _get_date_from_delta(delta)
         import calendar
         output = "For %s, %d/%d/%d:\n\n" % (calendar.day_name[now.weekday()],now.month,now.day,now.year)
-    useabv = False
-    for game in games:
-        if team == game['teams']['away']['team']['abbreviation'].lower() or \
-            team == game['teams']['home']['team']['abbreviation'].lower():
-            useabv = True
+    checkdivs = False
+    divs = {'nle':204,'nlc':205,'nlw':203,'ale':201,'alc':202,'alw':200}
+    if team in divs:
+        checkdivs = True
+        divid = divs[team]
+        print_statcast = False
+    else:
+        teamid = get_teamid(team)
     for game in games:
         gamepk = str(game['gamePk'])
-        awayabv = game['teams']['away']['team']['abbreviation'].lower()
-        homeabv = game['teams']['home']['team']['abbreviation'].lower()
-        awayname = game['teams']['away']['team']['name'].lower()
-        homename = game['teams']['home']['team']['name'].lower()
         match = False
-        if useabv:
-            if team == awayabv or team == homeabv:
+        if checkdivs:
+            awaydiv = game['teams']['away']['team']['division']['id']
+            homediv = game['teams']['home']['team']['division']['id']
+            if divid == awaydiv or divid == homediv:
                 match = True
         else:
-            if team in awayname or team in homename:
+            awayid = game['teams']['away']['team']['id']
+            homeid = game['teams']['home']['team']['id']
+            if teamid == awayid or teamid == homeid:
                 match = True
         if match:
             output = output + get_single_game_info(gamepk,game, show_on_deck=True) + "\n"
             abstractstatus = game['status']['abstractGameState']
-            if abstractstatus == "Live":
+            if abstractstatus == "Live" and print_statcast:
                 pbp = get_pbp(gamepk)
                 try:
                     if 'description' not in pbp['allPlays'][-1]['result']:
@@ -445,10 +448,11 @@ def get_single_game(team,delta=None):
                                                                    data['pitchData']['startSpeed'])
                     if 'hitData' in lastplay['playEvents'][-1]:
                         data = lastplay['playEvents'][-1]['hitData']
-                        output = output + "Statcast: %d ft, %d mph, %d degrees\n" % (data['totalDistance'],
+                        output = output + "Statcast: %d ft, %d mph, %d degrees\n\n" % (data['totalDistance'],
                                                                        data['launchSpeed'],
                                                                        data['launchAngle'])
                 except Exception as e:
+                    print("Error in parsing game %d" % gamepk)
                     print(e)
     return output
 
@@ -1088,13 +1092,13 @@ if __name__ == "__main__":
     # get_mlb_teams()
     # print(get_single_game("chc"))
     # print(print_linescore("chc"))
-    # print(get_single_game("wsh"))
+    print(get_single_game("nle"))
     # print(get_single_game("nationals",delta="+1"))
     # print(get_all_game_info(delta='-1'))
     # print(get_all_game_info(liveonly=True))
     # print(get_all_game_info())
     #get_ET_from_timestamp("2018-03-31T20:05:00Z")
-    print(get_div_standings("nle"))
+    # print(get_div_standings("nle"))
     #bs = BoxScore.BoxScore(get_boxscore('529456'))
     #bs.print_box()
     # print(get_stat_leader('sb'))

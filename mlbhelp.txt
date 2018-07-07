@@ -4,7 +4,8 @@ Supported commands:
 !mlb               - show info for all games today
 !mlb live          - show info for all games live now
 !mlb <team>        - return game info for today for that team
-!mlb <division>    - return division standings (ale,alc,alw,nle,nlc,nlw,alwc,nlwc)
+!mlb <division>    - return game info for all teams in a division
+!mlb <standings> <division>    - return division standings (ale,alc,alw,nle,nlc,nlw,alwc,nlwc)
 !mlb [l]sp <team>  - print scoring plays for today's game
                      prefix with 'l' to only print the last scoring play
 !mlb line <player> - print the player's line for that day's game
