@@ -997,7 +997,8 @@ def compare_player_stats(playerlist,career=False,year=None):
         if career:
             sport = "sport_career_"
         if s['sport_'+type+'_composed'][sport+type+"_agg"]["queryResults"]["totalSize"] == "0":
-            errors = errors + "No stats for %s\n" % disp_name
+            errors = errors + "No %s stats for %s\n" % (type, disp_name)
+            continue
         seasonstats = s['sport_'+type+'_composed'][sport+type+"_agg"]["queryResults"]["row"]
         seasons = s['sport_'+type+'_composed']["sport_"+type+"_agg"]["queryResults"]["row"]
         sport_tm = s['sport_'+type+'_composed']['sport_'+type+"_tm"]['queryResults']['row']
@@ -1019,7 +1020,7 @@ def compare_player_stats(playerlist,career=False,year=None):
             s = seasonstats
         s['name'] = player['name_last'][:5]
         stats.append(s)
-    output = output + _print_table(statlist, stats)
+    output = output + _print_table(statlist, stats) + "\n\n" + errors
     return output
 
 def get_player_season_stats(name, type=None, year=None, active='Y', career=False):
@@ -1219,4 +1220,4 @@ if __name__ == "__main__":
     # print(player_vs_team("Bryce Harper","atl"))
     # print(get_game_highlights_plays("530753"))
     # print(get_inning_plays("wsh", 2))
-    print(compare_player_stats(["J.T. Realmuto", "Pedro Severino"]))
+    print(compare_player_stats(["ohtani", "harper"]))
