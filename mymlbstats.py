@@ -969,10 +969,13 @@ def _calc_age(birthdate, year=None):
 
 def compare_player_stats(playerlist,career=False,year=None):
     players = []
+    output = ""
     for player in playerlist:
         p = _get_player_search(player)
         if p is not None:
             players.append(p)
+            output = output + p['name_display_first_last'] + " vs "
+    output = output[:-4] + "\n\n"
     pos = players[0]['position']
     type = 'hitting'
     statlist = ['name','ab','h','d','t','hr','r','rbi','bb','so','sb','cs','avg','obp','slg','ops']
@@ -1016,7 +1019,7 @@ def compare_player_stats(playerlist,career=False,year=None):
             s = seasonstats
         s['name'] = player['name_last'][:5]
         stats.append(s)
-    output = _print_table(statlist, stats)
+    output = output + _print_table(statlist, stats)
     return output
 
 def get_player_season_stats(name, type=None, year=None, active='Y', career=False):
