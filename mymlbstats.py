@@ -760,6 +760,12 @@ def player_vs_team(name, team, year=None):
     url = "http://lookup-service-prod.mlb.com/json/named.stats_batter_vs_pitcher_composed.bam?" \
           "league_list_id=%27mlb_hist%27&game_type=%27R%27&player_id=" + player['player_id'] \
           + "&opp_team_id=" + str(teamid) + "&season=" + year
+    pitching = False
+    if player['position'] == 'P':
+        pitching = True
+        url = "http://lookup-service-prod.mlb.com/json/named.stats_batter_vs_pitcher_composed.bam?" \
+              "league_list_id=%27mlb_hist%27&game_type=%27R%27&pitcher_id=" + player['player_id'] \
+              + "&team_id=" + str(teamid) + "&season=" + year
     print(url)
     json = _get_json(url,encoding="ISO-8859-1")["stats_batter_vs_pitcher_composed"]
     totals = json["stats_batter_vs_pitcher_total"]["queryResults"]["row"]
@@ -770,11 +776,18 @@ def player_vs_team(name, team, year=None):
     else:
         for row in json['row']:
             pitchers.append(row)
-    output = "%s's stats vs %s pitchers (%s):\n\n" % (player['name_display_first_last'], pitchers[0]['opponent'], pitchers[0]['season'])
-    stats = ['pitcher_first_last_html','ab','h','d','t','hr','bb','so','avg','obp','slg','ops']
-    repl_map = {'d':'2B', 't':'3B', 'pitcher_first_last_html':'pitcher'}
+    if not pitching:
+        output = "%s's stats vs %s pitchers (%s):\n\n" % (player['name_display_first_last'], pitchers[0]['opponent'], pitchers[0]['season'])
+        stats = ['pitcher_first_last_html','ab','h','d','t','hr','bb','so','avg','obp','slg','ops']
+    else:
+        output = "%s's stats vs %s batters (%s):\n\n" % (player['name_display_first_last'], pitchers[0]['opponent'], pitchers[0]['season'])
+        stats = ['player_first_last_html','ab','h','d','t','hr','bb','so','avg','obp','slg','ops']
+    repl_map = {'d':'2B', 't':'3B', 'pitcher_first_last_html':'pitcher', 'player_first_last_html':'batter'}
     output = output + _print_table(stats,pitchers,repl_map=repl_map) + "\n\n"
-    stats = ['opponent','ab','h','d','t','hr','bb','so','avg','obp','slg','ops']
+    if pitching:
+        stats = ['team','ab','h','d','t','hr','bb','so','avg','obp','slg','ops']
+    else:
+        stats = ['opponent','ab','h','d','t','hr','bb','so','avg','obp','slg','ops']
     output = output + _print_labeled_list(stats,totals)
     return output
 
@@ -1216,14 +1229,14 @@ if __name__ == "__main__":
     # print(print_box('nationals','batting'))
     # print(get_player_trailing_splits("Adam Eaton", 7))
     # print(get_player_gamelogs("Max Scherzer"))
-    print(get_team_schedule("wsh",3,backward=False))
+    # print(get_team_schedule("wsh",3,backward=False))
     # print(get_team_dl('wsh'))
     # print(get_milb_log("koda glover"))
     # print(get_milb_season_stats("alejandro de aza"))
     # print(get_milb_season_stats("carter kieboom",year="2017"))
     # print(search_highlights("Murphy"))
     # print(get_player_season_splits("Strasburg","day"))
-    # print(player_vs_team("Bryce Harper","atl"))
+    print(player_vs_team("max scherzer","atl"))
     # print(get_game_highlights_plays("530753"))
     # print(get_inning_plays("wsh", 2))
-    print(compare_player_stats(["ohtani", "harper"]))
+    # print(compare_player_stats(["ohtani", "harper"]))
