@@ -773,6 +773,8 @@ def player_vs_team(name, team, year=None):
     pitchers = []
     if int(json['totalSize']) == 1:
         pitchers.append(json['row'])
+    elif int(json['totalSize']) == 1:
+        return "No stats for %s." % (player['name_display_first_last'])
     else:
         for row in json['row']:
             pitchers.append(row)
@@ -1236,7 +1238,7 @@ if __name__ == "__main__":
     # print(get_milb_season_stats("carter kieboom",year="2017"))
     # print(search_highlights("Murphy"))
     # print(get_player_season_splits("Strasburg","day"))
-    print(player_vs_team("ivan nova","wsh"))
+    print(player_vs_team("chris archer","wsh"))
     # print(get_game_highlights_plays("530753"))
     # print(get_inning_plays("wsh", 2))
     # print(compare_player_stats(["ohtani", "harper"]))
