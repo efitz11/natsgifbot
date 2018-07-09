@@ -780,7 +780,7 @@ def player_vs_team(name, team, year=None):
         output = "%s's stats vs %s pitchers (%s):\n\n" % (player['name_display_first_last'], pitchers[0]['opponent'], pitchers[0]['season'])
         stats = ['pitcher_first_last_html','ab','h','d','t','hr','bb','so','avg','obp','slg','ops']
     else:
-        output = "%s's stats vs %s batters (%s):\n\n" % (player['name_display_first_last'], pitchers[0]['opponent'], pitchers[0]['season'])
+        output = "%s's stats vs %s batters (%s):\n\n" % (player['name_display_first_last'], pitchers[0]['team'], pitchers[0]['season'])
         stats = ['player_first_last_html','ab','h','d','t','hr','bb','so','avg','obp','slg','ops']
     repl_map = {'d':'2B', 't':'3B', 'pitcher_first_last_html':'pitcher', 'player_first_last_html':'batter'}
     output = output + _print_table(stats,pitchers,repl_map=repl_map) + "\n\n"
@@ -1236,7 +1236,7 @@ if __name__ == "__main__":
     # print(get_milb_season_stats("carter kieboom",year="2017"))
     # print(search_highlights("Murphy"))
     # print(get_player_season_splits("Strasburg","day"))
-    print(player_vs_team("max scherzer","atl"))
+    print(player_vs_team("ivan nova","wsh"))
     # print(get_game_highlights_plays("530753"))
     # print(get_inning_plays("wsh", 2))
     # print(compare_player_stats(["ohtani", "harper"]))
