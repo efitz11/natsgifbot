@@ -973,6 +973,58 @@ def _calc_age(birthdate, year=None):
     else:
         return int(year) - int(byear) - ((7,1) < (int(month), int(day)))
 
+def compare_player_stats(playerlist,career=False,year=None):
+    players = []
+    for player in playerlist:
+        p = _get_player_search(player)
+        if p is not None:
+            players.append(p)
+    pos = players[0]['position']
+    type = 'hitting'
+    statlist = ['name','ab','h','d','t','hr','r','rbi','bb','so','sb','cs','avg','obp','slg','ops']
+    if pos == 'P':
+        type = 'pitching'
+        statlist = ['name','w','l','g','svo','sv','ip','so','bb','hr','era','whip']
+    errors = ""
+    stats = []
+    now = datetime.now()
+    if year is None:
+        year = str(now.year)
+    for player in players:
+        pid = player['player_id']
+        disp_name = player['name_display_first_last']
+        url = "http://lookup-service-prod.mlb.com/json/named.sport_" + type + "_composed.bam?game_type=%27R%27&league_list_id=%27mlb_hist%27&player_id=" + str(pid)
+        print(url)
+        s = _get_json(url)
+        sport = "sport_"
+        if career:
+            sport = "sport_career_"
+        if s['sport_'+type+'_composed'][sport+type+"_agg"]["queryResults"]["totalSize"] == "0":
+            errors = errors + "No stats for %s\n" % disp_name
+        seasonstats = s['sport_'+type+'_composed'][sport+type+"_agg"]["queryResults"]["row"]
+        seasons = s['sport_'+type+'_composed']["sport_"+type+"_agg"]["queryResults"]["row"]
+        sport_tm = s['sport_'+type+'_composed']['sport_'+type+"_tm"]['queryResults']['row']
+        if not career:
+            if "season" in seasonstats:
+                if seasonstats["season"] == year:
+                    s = seasonstats
+                if sport_tm['season'] != year:
+                    errors = errors + "No %d stats for %s\n" % (year, disp_name)
+                    continue
+            else:
+                for season in seasonstats:
+                    if season["season"] == year:
+                        s = season
+                if s is None:
+                    errors = errors + "No %d stats for %s\n" % (year, disp_name)
+                    continue
+        else: #career stats
+            s = seasonstats
+        s['name'] = player['name_last'][:5]
+        stats.append(s)
+    output = _print_table(statlist, stats)
+    return output
+
 def get_player_season_stats(name, type=None, year=None, active='Y', career=False):
     player = _get_player_search(name, active=active)
     if player is None:
@@ -1002,8 +1054,6 @@ def get_player_season_stats(name, type=None, year=None, active='Y', career=False
     elif type is None and pos != 'P':
         type = "hitting"
     url = "http://lookup-service-prod.mlb.com/json/named.sport_" + type + "_composed.bam?game_type=%27R%27&league_list_id=%27mlb_hist%27&player_id=" + str(pid)
-    # if split is not None:
-    #     url = "http://lookup-service-prod.mlb.com/json/named.sport_hitting_sits_composed.bam?league_list_id=%27mlb_hist%27&game_type=%27R%27&season=2018&player_id=" + str(pid)
     print(url)
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     s = json.loads(urlopen(req).read().decode("utf-8"))
@@ -1063,6 +1113,48 @@ def search_highlights(query):
     url = recap.get_direct_video_url(first['url'])
     return "(%s) %s - %s:\n%s" % (date, blurb, length, url)
 
+def get_game_highlights_plays(gamepk):
+    url = "https://statsapi.mlb.com/api/v1/game/" + str(gamepk) + "/content"
+    items = _get_json(url)['highlights']['live']['items']
+    plays = dict()
+    for item in items:
+        for keyword in item['keywordsAll']:
+            if keyword['type'] == "sv_id":
+                svid = keyword['value']
+                plays[svid] = item
+    return plays
+
+def get_inning_plays(team, inning):
+    teamid = get_teamid(team)
+    s = get_day_schedule(teamid=teamid)
+    try:
+        game = s['dates'][0]['games'][0]
+    except IndexError:
+        return "Couldn't find game"
+    gamepk = game['gamePk']
+    if game['teams']['away']['team']['id'] == teamid:
+        side = 'top'
+    else:
+        side = 'bottom'
+    highlights = get_game_highlights_plays(gamepk)
+    url = "https://statsapi.mlb.com/api/v1/game/" + str(gamepk) + "/playByPlay"
+    plays = _get_json(url)
+    playsinning = plays['playsByInning'][inning-1][side]
+    output = ""
+    for idx in playsinning:
+        play = plays['allPlays'][idx]
+        desc = play['result']['description']
+        output = output + "\n\n" + desc
+        for event in play['playEvents']:
+            if 'playId' in event:
+                if event['playId'] in highlights:
+                    blurb = highlights[event['playId']]['blurb']
+                    for playback in highlights[event['playId']]['playbacks']:
+                        if playback['name'] == "FLASH_2500K_1280X720":
+                            url = playback['url']
+                            output = output + " Video: <" + url + ">"
+    return output
+
 def _print_table(labels, dicts, repl_map={'d':'2B','t':'3B'}):
     lines = ['' for i in range(len(dicts)+1)]
     for label in labels:
@@ -1098,7 +1190,7 @@ if __name__ == "__main__":
     # get_mlb_teams()
     # print(get_single_game("chc"))
     # print(print_linescore("chc"))
-    print(get_single_game("nle"))
+    # print(get_single_game("nle"))
     # print(get_single_game("nationals",delta="+1"))
     # print(get_all_game_info(delta='-1'))
     # print(get_all_game_info(liveonly=True))
@@ -1128,3 +1220,6 @@ if __name__ == "__main__":
     # print(search_highlights("Murphy"))
     # print(get_player_season_splits("Strasburg","day"))
     # print(player_vs_team("Bryce Harper","atl"))
+    # print(get_game_highlights_plays("530753"))
+    # print(get_inning_plays("wsh", 2))
+    print(compare_player_stats(["J.T. Realmuto", "Pedro Severino"]))
