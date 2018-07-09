@@ -159,6 +159,19 @@ class Baseball():
             else:
                 await self.bot.say("```%s```" % mymlbstats.get_player_season_stats(player,type=t,year=year,active=active, career=career))
             return
+        elif team[0] == 'compare':
+            year = None
+            if team[-1].isdigit():
+                year = team[-1]
+                team = team[0:-1]
+            team = team[1:]
+            playerlist = []
+            for t in team:
+                playerlist.append(t)
+            if year is None:
+                await self.bot.say("```%s```" % mymlbstats.compare_player_stats(playerlist))
+            else:
+                await self.bot.say("```%s```" % mymlbstats.compare_player_stats(playerlist, year=year))
         elif team[0] == 'splits':
             split = team[1]
             if team[-1].isdigit():
@@ -259,6 +272,10 @@ class Baseball():
             query = ' '.join(team[1:])
             await self.bot.say(mymlbstats.search_highlights(query))
             return
+        elif team[0] == "plays":
+            inning = int(team[-1])
+            team = ' '.join(team[1:-1]).lower()
+            await self.bot.say(mymlbstats.get_inning_plays(team, inning))
         elif team[0] == "standings":
             div = team[1]
             await self.bot.say(mymlbstats.get_div_standings(div))
