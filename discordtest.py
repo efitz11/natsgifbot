@@ -185,7 +185,7 @@ async def fuck():
     with open(miscfile, 'r') as f:
         l = json.loads(f.read())['fucklist']
     num = random.randint(0,len(l)-1)
-    await bot.say(('the '+ l[num]).upper())
+    await bot.say((l[num]).upper())
     
 @bot.command()
 async def pajokie():
