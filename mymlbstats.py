@@ -473,7 +473,7 @@ def get_team_schedule(team, num, backward=True):
         startdate = str(now.year) + "-" + str(now.month).zfill(2) + "-" + str(now.day).zfill(2)
     url = "https://statsapi.mlb.com/api/v1/schedule?lang=en&sportId=1&hydrate=team(venue(timezone)),venue(timezone)," \
           "game(seriesStatus,seriesSummary,tickets,promotions,sponsorships,content(summary,media(epg))),seriesStatus," \
-          "seriesSummary,linescore,tickets,radioBroadcasts,broadcasts(all),probablePitcher,decisions,person,stats,linescore(matchup,runners)&" \
+          "seriesSummary,tickets,radioBroadcasts,broadcasts(all),probablePitcher,decisions,person,stats,linescore(matchup,runners)&" \
           "season=" + str(now.year) + "&startDate="+str(startdate)+"&endDate=" + str(enddate) + "&teamId=" + str(teamid) + "&" \
           "eventTypes=primary&scheduleTypes=games,events,xref"
     print(url)
@@ -1216,7 +1216,7 @@ if __name__ == "__main__":
     # print(print_box('nationals','batting'))
     # print(get_player_trailing_splits("Adam Eaton", 7))
     # print(get_player_gamelogs("Max Scherzer"))
-    # print(get_team_schedule("wsh",3,backward=False))
+    print(get_team_schedule("wsh",3,backward=False))
     # print(get_team_dl('wsh'))
     # print(get_milb_log("koda glover"))
     # print(get_milb_season_stats("alejandro de aza"))
@@ -1226,8 +1226,4 @@ if __name__ == "__main__":
     # print(player_vs_team("Bryce Harper","atl"))
     # print(get_game_highlights_plays("530753"))
     # print(get_inning_plays("wsh", 2))
-<<<<<<< HEAD
-    print(compare_player_stats(["J.T. Realmuto", "Pedro Severino"]))
-=======
     print(compare_player_stats(["ohtani", "harper"]))
->>>>>>> bb966dd1afbd575917e52402cc54716ed3e6324d
