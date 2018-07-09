@@ -283,7 +283,6 @@ async def countdown(ctx, *addlist):
     with open(miscfile,'r') as f:
         s = json.loads(f.read())
 
-    write = False
     if len(addlist) == 5 and addlist[0] == "add":
         if str(ctx.message.author) in auth_users:
             name = addlist[1]
@@ -299,25 +298,30 @@ async def countdown(ctx, *addlist):
                         d['day'] = day
                         d['year'] = year
                         s['countdown'].append(d)
-                        write = True
 
     countdown = s['countdown']
     now = datetime.now()
     removelist = []
+    dayslist = []
     for event in countdown:
         d = datetime(event['year'], event['month'], event['day']) - now
         if d.days >= -1:
-            await bot.say("%s %s until %s" % (convert_number_to_emoji(d.days+1), "day" if (d.days+1 == 1) else "days", event['name']))
+            dayslist.append((d.days, event))
         else:
             removelist.append(event)
 
     for event in removelist:
         s['countdown'].remove(event)
-        write = True
 
-    if write:
-        with open(miscfile,'w') as f:
-            f.write(json.dumps(s, indent=4))
+    dayslist.sort()
+    sortedlist = []
+    for d, value in dayslist:
+        sortedlist.append(value)
+        await bot.say("%s %s until %s" % (convert_number_to_emoji(d+1), "day" if (d+1 == 1) else "days", event['name']))
+    s['countdown'] = sortedlist
+
+    with open(miscfile,'w') as f:
+        f.write(json.dumps(s, indent=4))
 
 @bot.command()
 async def stock(*symbol:str):
