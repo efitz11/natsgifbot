@@ -182,10 +182,34 @@ async def memeify(*text:str):
         output = output + " " + s
     await bot.say(output.strip().upper())
 
-@bot.command()
-async def fuck():
+@bot.command(pass_context=True)
+async def fuck(ctx,*addlist):
     with open(miscfile, 'r') as f:
-        l = json.loads(f.read())['fucklist']
+        s = json.loads(f.read())
+
+    if len(addlist) > 0:
+        write = False
+        if addlist[0] == 'add':
+            add = ' '.join(addlist[1:]).upper()
+            s['fucklist'].append(add)
+            write = True
+        elif addlist[0] == 'remove':
+            remove = ' '.join(addlist[1:]).upper()
+            s['fucklist'].remove(remove)
+            write = True
+        elif addlist[0] == 'list':
+            output = ""
+            for item in s['fucklist']:
+                output = "%s%s, " % (output, item)
+            output = output[:-2]
+            await bot.say(output)
+        if write:
+            with open(miscfile, 'w') as f:
+                f.write(json.dumps(s, indent=4))
+            await bot.say("done.")
+        return
+
+    l = s['fucklist']
     num = random.randint(0,len(l)-1)
     await bot.say((l[num]).upper())
     
