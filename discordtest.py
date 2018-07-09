@@ -18,6 +18,8 @@ bot = commands.Bot(command_prefix='!')
 
 extensions = ["baseball","sports","reddit"]
 
+auth_users = ['fitz#6390']
+
 pattern69 = re.compile('(^|[\s\.]|\$)[6][\.]*[9]([\s\.]|x|%|$|th)')
 patterncheer = re.compile('cheer$', re.IGNORECASE)
 patternsolis = re.compile('solis', re.IGNORECASE)
@@ -252,23 +254,46 @@ def convert_number_to_emoji(num):
         out = out + emoji_letter_map[s]
     return out
     
-@bot.command()
-async def countdown():
-    # od = datetime(2018,3,30) - datetime.now()
-    # ho = datetime(2018,4,5) - datetime.now()
-    #
-    # if od.days >= -1:
-    #     await bot.say("%s %s until Opening Day, 2018" % (convert_number_to_emoji(od.days+1), "day" if (od.days+1 == 1) else "days"))
-    # if ho.days >= -1:
-    #     await bot.say("%s %s until Nationals Home Opener, 2018" % (convert_number_to_emoji(ho.days+1), "day" if (ho.days+1 == 1) else "days"))
+@bot.command(pass_context=True)
+async def countdown(ctx, *addlist):
     with open(miscfile,'r') as f:
         s = json.loads(f.read())
+
+    write = False
+    if len(addlist) == 5 and addlist[0] == "add":
+        if str(ctx.message.author) in auth_users:
+            name = addlist[1]
+            month = int(addlist[2])
+            day = int(addlist[3])
+            year = int(addlist[4])
+            if month > 0 and month <= 12:
+                if day > 0 and day <= 31:
+                    if year >= 2018:
+                        d = dict()
+                        d['name'] = name
+                        d['month'] = month
+                        d['day'] = day
+                        d['year'] = year
+                        s['countdown'].append(d)
+                        write = True
+
     countdown = s['countdown']
     now = datetime.now()
+    removelist = []
     for event in countdown:
         d = datetime(event['year'], event['month'], event['day']) - now
         if d.days >= -1:
             await bot.say("%s %s until %s" % (convert_number_to_emoji(d.days+1), "day" if (d.days+1 == 1) else "days", event['name']))
+        else:
+            removelist.append(event)
+
+    for event in removelist:
+        s['countdown'].remove(event)
+        write = True
+
+    if write:
+        with open(miscfile,'w') as f:
+            f.write(json.dumps(s, indent=4))
 
 @bot.command()
 async def stock(*symbol:str):
