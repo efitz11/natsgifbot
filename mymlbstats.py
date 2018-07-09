@@ -823,7 +823,7 @@ def get_player_season_splits(name, split, type=None, year=None, active='Y'):
           "&season=" + year + "&player_id=" + player['player_id'] + "&sit_code=%27" + splitsmap[split] + "%27"
     print(url)
     json = _get_json(url)
-    results = json['sport_'+type+'_sits_composed']['sport_'+type+'_sits']['queryResults']['row']
+    results = json['sport_'+type+'_sits_composed']['sport_'+type+'_sits_total']['queryResults']['row']
     output = "%s's %s splits (%s):\n\n" % (player['name_display_first_last'], results['situation'], results['season'])
     if type == "hitting":
         stats = ['ab','h','d','t','hr','r','rbi','bb','so','sb','cs','avg','obp','slg','ops']
@@ -1237,8 +1237,8 @@ if __name__ == "__main__":
     # print(get_milb_season_stats("alejandro de aza"))
     # print(get_milb_season_stats("carter kieboom",year="2017"))
     # print(search_highlights("Murphy"))
-    # print(get_player_season_splits("Strasburg","day"))
-    print(player_vs_team("chris archer","wsh"))
+    print(get_player_season_splits("Bryce Harper","vsl", year="2017"))
+    # print(player_vs_team("chris archer","wsh"))
     # print(get_game_highlights_plays("530753"))
     # print(get_inning_plays("wsh", 2))
     # print(compare_player_stats(["ohtani", "harper"]))
