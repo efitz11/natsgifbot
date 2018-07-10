@@ -1164,12 +1164,35 @@ def get_inning_plays(team, inning, delta=None):
         playsinning = plays['playsByInning'][inning-1][side]
     except IndexError:
         return "Inning not found."
-    output = "%s %d:" % (plays['allPlays'][0]['about']['halfInning'].upper(), plays['allPlays'][playsinning[0]]['about']['inning'])
+    output = "%s %d:\n" % (plays['allPlays'][0]['about']['halfInning'].upper(), plays['allPlays'][playsinning[0]]['about']['inning'])
     for idx in playsinning:
         play = plays['allPlays'][idx]
+        curplayevent = play['playEvents'][-1]
+        cnt = play['count']
+        balls = cnt['balls']
+        strikes = cnt['strikes']
+        outs = cnt['outs']
+        if play['about']['hasOut']:
+            outs -= 1
+        if curplayevent['details']['isBall']:
+            balls -= 1
+        if curplayevent['details']['isStrike']:
+            strikes -= 1
+        count = "(%d out, %d-%d)" % (outs, balls, strikes)
+        opppitcher = play['matchup']['pitcher']['fullName']
         if 'description' in play['result']:
-            desc = play['result']['description']
-        output = output + "\n\n" + desc
+            desc = "With %s pitching, %s" % (opppitcher, play['result']['description'])
+        pitch = curplayevent['details']['type']['description']
+        pspeed = curplayevent['pitchData']['startSpeed']
+        data = "(%.1f mph %s" % (pspeed, pitch)
+        if 'hitData' in curplayevent:
+            hitdata = curplayevent['hitData']
+            data = data + " | %d ft, %.1f mph, %d degrees" % (hitdata['totalDistance'], hitdata['launchSpeed'], hitdata['launchAngle'])
+        data = data + ")\n"
+        if play['about']['isScoringPlay']:
+            desc = "**%s**" % desc
+        output = "%s%s %s %s\n" % (output, count, desc, data)
+        # output = output + "\n\n" + desc
         for event in play['playEvents']:
             if 'playId' in event:
                 if event['playId'] in highlights:
@@ -1177,7 +1200,8 @@ def get_inning_plays(team, inning, delta=None):
                     for playback in highlights[event['playId']]['playbacks']:
                         if playback['name'] == "FLASH_2500K_1280X720":
                             url = playback['url']
-                            output = output + " Video: <" + url + ">"
+                            output = output + " Video: <" + url + ">\n"
+        output = output + "\n"
     return output
 
 def _print_table(labels, dicts, repl_map={'d':'2B','t':'3B'}):
