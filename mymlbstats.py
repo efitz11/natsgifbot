@@ -301,7 +301,8 @@ def get_pbp(gamepk):
     return s
 
 def print_box(team,part, delta=None):
-    s = get_day_schedule(delta=delta)
+    teamid = get_teamid(team)
+    s = get_day_schedule(delta=delta, teamid=teamid)
     games = s['dates'][0]['games']
     useabv = False
     for game in games:
@@ -333,7 +334,8 @@ def print_box(team,part, delta=None):
                 return out
 
 def print_linescore(team, delta=None):
-    s = get_day_schedule(delta=delta)
+    teamid = get_teamid(team)
+    s = get_day_schedule(delta=delta, teamid=teamid)
     games = s['dates'][0]['games']
     useabv = False
     for game in games:
