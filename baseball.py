@@ -145,7 +145,12 @@ class Baseball():
                 team[0] = team[0][1:]
                 career = True
             year = None
+            year2 = None
             if team[-1].isdigit():
+                year = team[-1]
+                team = team[0:-1]
+            if team[-1].isdigit():
+                year2 = year
                 year = team[-1]
                 team = team[0:-1]
             player = '+'.join(team[1:])
@@ -154,10 +159,7 @@ class Baseball():
                 t = "hitting"
             elif team[0] == 'pstats':
                 t = "pitching"
-            if year is None:
-                await self.bot.say("```%s```" % mymlbstats.get_player_season_stats(player,type=t,active=active, career=career))
-            else:
-                await self.bot.say("```%s```" % mymlbstats.get_player_season_stats(player,type=t,year=year,active=active, career=career))
+            await self.bot.say("```%s```" % mymlbstats.get_player_season_stats(player,type=t,year=year,year2=year2,active=active, career=career))
             return
         elif team[0] == 'compare':
             year = None
