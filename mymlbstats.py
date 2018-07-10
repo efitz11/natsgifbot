@@ -1219,7 +1219,7 @@ def get_inning_plays(team, inning, delta=None):
                     for playback in highlights[event['playId']]['playbacks']:
                         if playback['name'] == "FLASH_2500K_1280X720":
                             url = playback['url']
-                            output = output + " Video: <" + url + ">\n"
+                            output = output + " %s: <" % blurb + url + ">\n"
         output = output + "\n"
     return output
 
