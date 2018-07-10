@@ -1160,8 +1160,11 @@ def get_inning_plays(team, inning, delta=None):
     url = "https://statsapi.mlb.com/api/v1/game/" + str(gamepk) + "/playByPlay"
     print(url)
     plays = _get_json(url)
-    playsinning = plays['playsByInning'][inning-1][side]
-    output = ""
+    try:
+        playsinning = plays['playsByInning'][inning-1][side]
+    except IndexError:
+        return "Inning not found."
+    output = "%s %d:" % (plays['allPlays'][0]['about']['halfInning'].upper(), plays['allPlays'][playsinning[0]]['about']['inning'])
     for idx in playsinning:
         play = plays['allPlays'][idx]
         if 'description' in play['result']:
