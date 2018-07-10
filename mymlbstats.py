@@ -1164,7 +1164,8 @@ def get_inning_plays(team, inning, delta=None):
     output = ""
     for idx in playsinning:
         play = plays['allPlays'][idx]
-        desc = play['result']['description']
+        if 'description' in play['result']:
+            desc = play['result']['description']
         output = output + "\n\n" + desc
         for event in play['playEvents']:
             if 'playId' in event:
