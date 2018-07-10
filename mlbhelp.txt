@@ -20,7 +20,8 @@ each of the previous commands can end in a number of (+days or -days) to change 
 
 !mlb dl <team> - print players on <team>'s disabled list
 
-!mlb [h][c][b,p]stats <player> [year] - print the player's season stats, year defaults to current year
+!mlb [h][c][b,p]stats <player> [year] [year2]  - print the player's season stats, year defaults to current year
+                    - year2 also optional, lists all years between [year] and [year2]
                     - players default to active players unless prefixed with 'h' (for historical)
                     - 'c' gives career stats (default for historical players)
                     - 'b' forces batting stats

@@ -53,7 +53,7 @@ class Baseball():
         last [n] <team>
         next [n] <team>
 
-        [h][c][b,p]stats <player> [year]
+        [h][c][b,p]stats <player> [year] [year2]
         splits <split> <player> [year]
         vs <team> <player> [year]
         [b]last <player> [n]
