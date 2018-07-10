@@ -401,7 +401,8 @@ def get_lg_standings(lgid, wc=False):
 
 def get_single_game(team,delta=None,print_statcast=True):
     """delta is + or - a number of days"""
-    s = get_day_schedule(delta)
+    teamid = get_teamid(team)
+    s = get_day_schedule(delta, teamid=teamid)
     games = s['dates'][0]['games']
     output = ""
     if delta is not None:
