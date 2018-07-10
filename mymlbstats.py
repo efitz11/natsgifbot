@@ -818,7 +818,7 @@ def get_player_season_splits(name, split, type=None, year=None, active='Y'):
                  'march':'3','april':'4','may':'5','june':'6','july':'7','august':'8','september':'9','october':'10',
                  'late':'lc','ahead':'ac','behind':'bc','noouts':'o0','oneout':'o1','twoouts':'o2',
                  'b1':'b1','b2':'b2','b3':'b3','b4':'b4','b5':'b5','b6':'b6','b7':'b7','b8':'b8','b9':'b9',
-                 'empty':'r0','loaded':'r123','risp':'risp'}
+                 'empty':'r0','loaded':'r123','risp':'risp','half1':'preas','half2':'posas'}
     if split in ['list','all','help']:
         output = ""
         for key in splitsmap:
