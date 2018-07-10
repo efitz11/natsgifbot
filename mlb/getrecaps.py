@@ -42,6 +42,64 @@ def get_recaps(return_str=False):
         return output
     return recaps
 
+def get_sound_smarts():
+    now = datetime.now() - timedelta(days=1)
+    date = str(now.year) + "-" + str(now.month).zfill(2) + "-" + str(now.day).zfill(2)
+    url = "https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=" + date + "&hydrate=team"
+    req = Request(url, headers={'User-Agent' : "ubuntu"})
+    s = json.loads(urlopen(req).read().decode("utf-8"))
+    games = s['dates'][0]['games']
+    recaps = []
+    output = ""
+    line = "<p><b>SOUND SMART</b><br />"
+    readarticles = []
+    for game in games:
+        url = "https://securea.mlb.com/gen/hb/content/mlb/" + str(game['gamePk']) + ".json"
+        # print(url)
+        req = Request(url, headers={'User-Agent' : "ubuntu"})
+        articles = json.loads(urlopen(req).read().decode("utf-8"))['list']
+        items = []
+        for article in articles:
+            if line in article['body']:
+                if article['contentId'] in readarticles:
+                    continue
+                readarticles.append(article['contentId'])
+                body = article['body']
+                lineidx = body.find(line) + len(line)
+                body = body[lineidx:]
+                body = body[:body.find('<p><b>')-6].strip()
+                body = body.replace('</span>', '')
+                body = body.replace('\n', ' ')
+                body = body.replace('<p>', '')
+                body = body.replace('</p>', '')
+                while "<a" in body:
+                    idx = body.find("<a")
+                    endidx = body.find("/a>") + 3
+                    start = body[:idx]
+                    end = body[endidx:]
+                    body = start + end
+                while "<span" in body:
+                    idx = body.find("<span")
+                    endidx = body.find(">") + 1
+                    start = body[:idx]
+                    end = body[endidx:]
+                    body = start + end
+                if body not in items:
+                    items.append(body)
+        if len(items) > 0:
+            awayteam = game['teams']['away']['team']['teamName']
+            awayscore = game['teams']['away']['score']
+            hometeam = game['teams']['home']['team']['teamName']
+            homescore = game['teams']['home']['score']
+            outstr = "**%s %d, %s %d:**\n\n" % (awayteam, awayscore, hometeam, homescore)
+            output = output + outstr
+            # print(outstr)
+            for item in items:
+                outstr = "* " + item + "\n\n"
+                output = output + outstr
+                # print(outstr)
+    return output
+
 def get_direct_video_url(indirecturl):
     url = indirecturl
     one=url[-3]
