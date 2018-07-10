@@ -318,7 +318,7 @@ async def countdown(ctx, *addlist):
     sortedlist = []
     for d, value in dayslist:
         sortedlist.append(value)
-        await bot.say("%s %s until %s" % (convert_number_to_emoji(d+1), "day" if (d+1 == 1) else "days", event['name']))
+        await bot.say("%s %s until %s" % (convert_number_to_emoji(d+1), "day" if (d+1 == 1) else "days", value['name']))
     s['countdown'] = sortedlist
 
     with open(miscfile,'w') as f:

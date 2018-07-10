@@ -342,4 +342,5 @@ if __name__ == "__main__":
         else:
             post_on_reddit()
     else:
-        print(get_all_outputs())
+        # print(get_all_outputs())
+        print(get_sound_smarts())
