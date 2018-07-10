@@ -96,7 +96,7 @@ class Baseball():
             return
 
         if team[0] in ["sp","lsp"]:
-            teamname = ' '.join(team[1:]).title()
+            teamname = ' '.join(team[1:])
             if team[0] == "lsp":
                 scoring_plays = mymlbstats.list_scoring_plays(teamname, delta,lastonly=True)
             else:
@@ -275,7 +275,7 @@ class Baseball():
         elif team[0] == "plays":
             inning = int(team[-1])
             team = ' '.join(team[1:-1]).lower()
-            await self.bot.say(mymlbstats.get_inning_plays(team, inning))
+            await self.bot.say(mymlbstats.get_inning_plays(team, inning, delta=delta))
         elif team[0] == "standings":
             div = team[1]
             await self.bot.say(mymlbstats.get_div_standings(div))
