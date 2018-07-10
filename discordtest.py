@@ -189,15 +189,16 @@ async def fuck(ctx,*addlist):
 
     if len(addlist) > 0:
         write = False
-        if addlist[0] == 'add':
-            add = ' '.join(addlist[1:]).upper()
-            s['fucklist'].append(add)
-            write = True
-        elif addlist[0] == 'remove':
-            remove = ' '.join(addlist[1:]).upper()
-            s['fucklist'].remove(remove)
-            write = True
-        elif addlist[0] == 'list':
+        if str(ctx.message.author) in auth_users:
+            if addlist[0] == 'add':
+                add = ' '.join(addlist[1:]).upper()
+                s['fucklist'].append(add)
+                write = True
+            elif addlist[0] == 'remove':
+                remove = ' '.join(addlist[1:]).upper()
+                s['fucklist'].remove(remove)
+                write = True
+        if addlist[0] == 'list':
             output = ""
             for item in s['fucklist']:
                 output = "%s%s, " % (output, item)
