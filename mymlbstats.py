@@ -1136,6 +1136,7 @@ def get_player_season_stats(name, type=None, year=None, year2=None, active='Y', 
         output = "Career stats for %s (%s):" % (disp_name,years)
     output = "%s\n\t%s\n\n" % (output, infoline)
 
+    print(s)
     if type == "hitting":
         stats = ['ab','h','d','t','hr','r','rbi','bb','so','sb','cs','avg','obp','slg','ops']
     elif type == "pitching":
@@ -1279,7 +1280,7 @@ if __name__ == "__main__":
     # print(list_scoring_plays('chc'))
     # print(get_ohtani_stats())
     # print(get_player_season_stats("adam eaton", career=True))
-    # print(get_player_season_stats("adam eaton", year="2017"))
+    print(get_player_season_stats("doolittle", year="2015", year2="2017"))
     # print(get_player_season_stats("shohei ohtani", career=True))
     # print(get_player_season_stats("shohei ohtani", type="pitching"))
     # print(get_player_season_stats("jose guillen"))
@@ -1294,7 +1295,7 @@ if __name__ == "__main__":
     # print(get_milb_season_stats("alejandro de aza"))
     # print(get_milb_season_stats("carter kieboom",year="2017"))
     # print(search_highlights("Murphy"))
-    print(get_player_season_splits("Bryce Harper","vsl", year="2017"))
+    # print(get_player_season_splits("Bryce Harper","vsl", year="2017"))
     # print(player_vs_team("chris archer","wsh"))
     # print(get_game_highlights_plays("530753"))
     # print(get_inning_plays("wsh", 2))
