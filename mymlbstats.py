@@ -1063,7 +1063,7 @@ def compare_player_stats(playerlist,career=False,year=None):
     output = output + _print_table(statlist, stats) + "\n\n" + errors
     return output
 
-def get_player_season_stats(name, type=None, year=None, active='Y', career=False):
+def get_player_season_stats(name, type=None, year=None, year2=None, active='Y', career=False):
     player = _get_player_search(name, active=active)
     if player is None:
         return "No matching player found"
@@ -1105,19 +1105,22 @@ def get_player_season_stats(name, type=None, year=None, active='Y', career=False
     sport_tm = s['sport_'+type+'_composed']['sport_'+type+"_tm"]['queryResults']['row']
     if year is None:
         year = str(now.year)
-    s = None
+    s = []
     if not career:
         if "season" in seasonstats:
             if seasonstats["season"] == year:
-                s = seasonstats
+                s = [seasonstats]
             if sport_tm['season'] == year:
                 teamabv = sport_tm['team_abbrev']
             else:
                 return "No stats for %s" % disp_name
         else:
             for season in seasonstats:
-                if season["season"] == year:
-                    s = season
+                syear = season['season']
+                if year2 is None and syear == year:
+                        s.append(season)
+                elif int(syear)>= int(year) and int(syear) <= int(year2):
+                    s.append(season)
             for r in sport_tm:
                 if r['season'] == year:
                     teamabv = r['team_abbrev']
@@ -1137,7 +1140,9 @@ def get_player_season_stats(name, type=None, year=None, active='Y', career=False
         stats = ['ab','h','d','t','hr','r','rbi','bb','so','sb','cs','avg','obp','slg','ops']
     elif type == "pitching":
         stats = ['w','l','g','svo','sv','ip','so','bb','hr','era','whip']
-    output = output + _print_labeled_list(stats,s)
+    if year2 is not None:
+        stats = ['season'] + stats
+    output = output + _print_table(stats,s, repl_map={'season':'year'})
     return output
 
 def search_highlights(query):
@@ -1225,7 +1230,8 @@ def get_inning_plays(team, inning, delta=None):
         output = output + "\n"
     return output
 
-def _print_table(labels, dicts, repl_map={'d':'2B','t':'3B'}):
+def _print_table(labels, dicts, repl_map={}):
+    repl_map = {'d':'2B','t':'3B', **repl_map}
     lines = ['' for i in range(len(dicts)+1)]
     for label in labels:
         l = label
