@@ -96,7 +96,7 @@ class Baseball():
             return
 
         if team[0] in ["sp","lsp"]:
-            teamname = ' '.join(team[1:]).title()
+            teamname = ' '.join(team[1:])
             if team[0] == "lsp":
                 scoring_plays = mymlbstats.list_scoring_plays(teamname, delta,lastonly=True)
             else:
