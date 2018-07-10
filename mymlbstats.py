@@ -241,7 +241,7 @@ def get_linescore(gamepk):
 
 def get_boxscore(gamepk):
     url = "https://statsapi.mlb.com/api/v1/game/" + gamepk + "/boxscore?hydrate=person"
-    # print(url)
+    print(url)
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     s = json.loads(urlopen(req).read().decode("utf-8"))
     return s
@@ -330,7 +330,10 @@ def print_box(team,part, delta=None):
             if side is not None:
                 gamepk = str(game['gamePk'])
                 bs = BoxScore.BoxScore(get_boxscore(gamepk))
-                out = bs.print_box(side=side, part=part)
+                dp = False
+                if delta is None:
+                    dp = True
+                out = bs.print_box(side=side, part=part, display_pitches=dp)
                 return out
 
 def print_linescore(team, delta=None):

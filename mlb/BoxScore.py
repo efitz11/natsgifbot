@@ -22,7 +22,7 @@ class BoxScore:
                 pid = self.box['teams'][t]['players'][p]['person']['id']
                 self.players[pid] = self.box['teams'][t]['players'][p]
 
-    def print_box(self, side="home", part="batting"):
+    def print_box(self, side="home", part="batting", display_pitches=False):
         output = None
         if part == "batting":
             output = "%s %s %s %s %s %s %s %s %s %s %s\n" % ("".ljust(18),'AB','R','H','RBI','BB','SO','LOB',' AVG', ' OBP',' SLG')
@@ -88,7 +88,14 @@ class BoxScore:
             if part == 'bench':
                 output = "%s %s %s %s\n" % ("".ljust(15),"B","Pos"," AVG")
             elif part == 'bullpen':
-                output = "%s %s %s\n" % ("".ljust(15),"T","ERA")
+                np = " NP" if display_pitches else ""
+                output = "%s %s %s  %s\n" % ("".ljust(15),"T","ERA", np)
+                if display_pitches:
+                    teamid = self.box['teams'][side]['team']['id']
+                    url = "http://mlb.mlb.com/pubajax/wf/flow/stats.splayer?season=2018&sort_order=%27asc%27&sort_column=%27era%27&stat_type=pitching&page_type=SortablePlayer" \
+                          "&team_id=" + str(teamid) + "&game_type=%27R%27&last_x_days=3&player_pool=ALL&season_type=ANY&sport_code=%27mlb%27&results=1000&position=%271%27&recSP=1&recPP=50"
+                    req = Request(url, headers={'User-Agent' : "ubuntu"})
+                    last3 = json.loads(urlopen(req).read().decode("utf-8"))['stats_sortable_player']['queryResults']['row']
             for player in self.box['teams'][side][part]:
                 player = self.players[player]
                 name = player['person']['boxscoreName']
@@ -109,6 +116,12 @@ class BoxScore:
                         output = output + data[stat] + " "
                     except KeyError:
                         pass
+                if part == 'bullpen' and display_pitches:
+                    plid = player['person']['id']
+                    for p in last3:
+                        if int(p['player_id']) == plid:
+                            output = "%s%3d" % (output, int(p['np']))
+                            # output = output + p['np']
                 output = output + "\n"
         elif part == "notes":
             notes = self.box['teams'][side]['info']
@@ -132,6 +145,8 @@ class BoxScore:
             for i in self.box['pitchingNotes']:
                 output = output + "%s\n" % (i)
         # print(output)
+        if part == 'bullpen' and display_pitches:
+            output = output + "NP is pitches thrown in the last 3 days.\n"
         return output
 
 if __name__ == "__main__":
