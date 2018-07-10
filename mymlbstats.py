@@ -301,7 +301,8 @@ def get_pbp(gamepk):
     return s
 
 def print_box(team,part, delta=None):
-    s = get_day_schedule(delta=delta)
+    teamid = get_teamid(team)
+    s = get_day_schedule(delta=delta, teamid=teamid)
     games = s['dates'][0]['games']
     useabv = False
     for game in games:
@@ -333,7 +334,8 @@ def print_box(team,part, delta=None):
                 return out
 
 def print_linescore(team, delta=None):
-    s = get_day_schedule(delta=delta)
+    teamid = get_teamid(team)
+    s = get_day_schedule(delta=delta, teamid=teamid)
     games = s['dates'][0]['games']
     useabv = False
     for game in games:
@@ -401,7 +403,8 @@ def get_lg_standings(lgid, wc=False):
 
 def get_single_game(team,delta=None,print_statcast=True):
     """delta is + or - a number of days"""
-    s = get_day_schedule(delta)
+    teamid = get_teamid(team)
+    s = get_day_schedule(delta, teamid=teamid)
     games = s['dates'][0]['games']
     output = ""
     if delta is not None:
@@ -488,27 +491,43 @@ def get_team_schedule(team, num, backward=True):
     return output
 
 def list_scoring_plays(team,delta=None,lastonly=False):
-    s = get_day_schedule(delta,scoringplays=True)
-    team = team.lower()
+    teamid = get_teamid(team)
+    s = get_day_schedule(delta, teamid=teamid, scoringplays=True)
     games = s['dates'][0]['games']
     plays = []
     for game in games:
-        aname = game['teams']['away']['team']['name'].lower()
-        hname = game['teams']['home']['team']['name'].lower()
-        aabrv = game['teams']['away']['team']['abbreviation'].lower()
-        habrv = game['teams']['home']['team']['abbreviation'].lower()
-        if team in aname or team in hname or team in aabrv or team in habrv:
-            for i in game['scoringPlays']:
+        if game['teams']['away']['team']['id'] == teamid:
+            part = 'top'
+        else:
+            part = 'bottom'
+        for i in game['scoringPlays']:
+            if i['about']['halfInning'] == part:
                 inning = i['about']['halfInning'].upper() + " " + str(i['about']['inning'])
-                desc = "With " + i['matchup']['pitcher']['fullName'] + " pitching, " + i['result']['description']
-                if 'awayScore' in i['result']:
-                    desc = desc + "(%s-%s)" % (i['result']['awayScore'], i['result']['homeScore'])
-                    if 'hitData' in i['playEvents'][-1]:
-                        data = i['playEvents'][-1]['hitData']
+                playevents = i['playEvents']
+                if i['about']['isScoringPlay']:
+                    desc = "With " + i['matchup']['pitcher']['fullName'] + " pitching, " + i['result']['description']
+                    if 'awayScore' in i['result']:
+                        desc = desc + "(%s-%s)" % (i['result']['awayScore'], i['result']['homeScore'])
+                    playevent = playevents[-1]
+                    if 'hitData' in playevent:
+                        data = playevent['hitData']
                         desc = desc + "\n\tStatcast: %d ft, %d mph, %d degrees\n" % (data['totalDistance'],
                                                                                      data['launchSpeed'],
                                                                                      data['launchAngle'])
-                plays.append((inning, desc))
+                    plays.append((inning, desc))
+                else:
+                    for j in playevents:
+                        if 'isScoringPlay' in j['details']:
+                            if j['details']['isScoringPlay']:
+                                desc = "With " + i['matchup']['pitcher']['fullName'] + " pitching, " + j['details']['description']
+                                if 'awayScore' in j['details']:
+                                    desc = desc + "(%s-%s)" % (j['details']['awayScore'], j['details']['homeScore'])
+                                if 'hitData' in j:
+                                    data = j['hitData']
+                                    desc = desc + "\n\tStatcast: %d ft, %d mph, %d degrees\n" % (data['totalDistance'],
+                                                                                                 data['launchSpeed'],
+                                                                                                 data['launchAngle'])
+                            plays.append((inning, desc))
     if lastonly:
         return [plays[-1]]
     return plays
@@ -1134,6 +1153,7 @@ def search_highlights(query):
 
 def get_game_highlights_plays(gamepk):
     url = "https://statsapi.mlb.com/api/v1/game/" + str(gamepk) + "/content"
+    print(url)
     items = _get_json(url)['highlights']['live']['items']
     plays = dict()
     for item in items:
@@ -1143,9 +1163,9 @@ def get_game_highlights_plays(gamepk):
                 plays[svid] = item
     return plays
 
-def get_inning_plays(team, inning):
+def get_inning_plays(team, inning, delta=None):
     teamid = get_teamid(team)
-    s = get_day_schedule(teamid=teamid)
+    s = get_day_schedule(teamid=teamid, delta=delta)
     try:
         game = s['dates'][0]['games'][0]
     except IndexError:
@@ -1157,13 +1177,43 @@ def get_inning_plays(team, inning):
         side = 'bottom'
     highlights = get_game_highlights_plays(gamepk)
     url = "https://statsapi.mlb.com/api/v1/game/" + str(gamepk) + "/playByPlay"
+    print(url)
     plays = _get_json(url)
-    playsinning = plays['playsByInning'][inning-1][side]
-    output = ""
+    try:
+        playsinning = plays['playsByInning'][inning-1][side]
+    except IndexError:
+        return "Inning not found."
+    output = "%s %d:\n" % (plays['allPlays'][0]['about']['halfInning'].upper(), plays['allPlays'][playsinning[0]]['about']['inning'])
     for idx in playsinning:
         play = plays['allPlays'][idx]
-        desc = play['result']['description']
-        output = output + "\n\n" + desc
+        curplayevent = play['playEvents'][-1]
+        cnt = play['count']
+        balls = cnt['balls']
+        strikes = cnt['strikes']
+        outs = cnt['outs']
+        if play['about']['hasOut']:
+            outs -= 1
+        if curplayevent['details']['isBall']:
+            balls -= 1
+        if curplayevent['details']['isStrike']:
+            strikes -= 1
+        count = "(%d out, %d-%d)" % (outs, balls, strikes)
+        opppitcher = play['matchup']['pitcher']['fullName']
+        if 'description' in play['result']:
+            desc = "With %s pitching, %s" % (opppitcher, play['result']['description'])
+        pitch = curplayevent['details']['type']['description']
+        pspeed = curplayevent['pitchData']['startSpeed']
+        data = "(%.1f mph %s" % (pspeed, pitch)
+        if 'hitData' in curplayevent:
+            hitdata = curplayevent['hitData']
+            data = data + " | %d ft, %.1f mph, %d degrees" % (hitdata['totalDistance'], hitdata['launchSpeed'], hitdata['launchAngle'])
+        data = data + ")"
+        if play['about']['isScoringPlay']:
+            desc = desc + "(%d-%d)" % (play['result']['awayScore'], play['result']['homeScore'])
+            desc = "**%s**" % desc
+        data = data + "\n"
+        output = "%s%s %s %s\n" % (output, count, desc, data)
+        # output = output + "\n\n" + desc
         for event in play['playEvents']:
             if 'playId' in event:
                 if event['playId'] in highlights:
@@ -1171,7 +1221,8 @@ def get_inning_plays(team, inning):
                     for playback in highlights[event['playId']]['playbacks']:
                         if playback['name'] == "FLASH_2500K_1280X720":
                             url = playback['url']
-                            output = output + " Video: <" + url + ">"
+                            output = output + " %s: <" % blurb + url + ">\n"
+        output = output + "\n"
     return output
 
 def _print_table(labels, dicts, repl_map={'d':'2B','t':'3B'}):
