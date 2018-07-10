@@ -1134,6 +1134,7 @@ def search_highlights(query):
 
 def get_game_highlights_plays(gamepk):
     url = "https://statsapi.mlb.com/api/v1/game/" + str(gamepk) + "/content"
+    print(url)
     items = _get_json(url)['highlights']['live']['items']
     plays = dict()
     for item in items:
@@ -1143,9 +1144,9 @@ def get_game_highlights_plays(gamepk):
                 plays[svid] = item
     return plays
 
-def get_inning_plays(team, inning):
+def get_inning_plays(team, inning, delta=None):
     teamid = get_teamid(team)
-    s = get_day_schedule(teamid=teamid)
+    s = get_day_schedule(teamid=teamid, delta=delta)
     try:
         game = s['dates'][0]['games'][0]
     except IndexError:
@@ -1157,6 +1158,7 @@ def get_inning_plays(team, inning):
         side = 'bottom'
     highlights = get_game_highlights_plays(gamepk)
     url = "https://statsapi.mlb.com/api/v1/game/" + str(gamepk) + "/playByPlay"
+    print(url)
     plays = _get_json(url)
     playsinning = plays['playsByInning'][inning-1][side]
     output = ""
