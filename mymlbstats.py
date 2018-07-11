@@ -1122,7 +1122,7 @@ def get_player_season_stats(name, type=None, year=None, year2=None, active='Y', 
                 syear = season['season']
                 if year2 is None and syear == year:
                         s.append(season)
-                elif int(syear)>= int(year) and int(syear) <= int(year2):
+                elif year2 is not None and int(syear)>= int(year) and int(syear) <= int(year2):
                     s.append(season)
             for r in sport_tm:
                 if r['season'] == year:
@@ -1282,7 +1282,7 @@ if __name__ == "__main__":
     # print(list_scoring_plays('chc'))
     # print(get_ohtani_stats())
     # print(get_player_season_stats("adam eaton", career=True))
-    print(get_player_season_stats("doolittle", year="2015", year2="2017"))
+    print(get_player_season_stats("doolittle", year="2015"))
     # print(get_player_season_stats("shohei ohtani", career=True))
     # print(get_player_season_stats("shohei ohtani", type="pitching"))
     # print(get_player_season_stats("jose guillen"))
