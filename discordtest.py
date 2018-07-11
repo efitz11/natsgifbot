@@ -204,6 +204,12 @@ async def fuck(ctx,*addlist):
                 output = "%s%s, " % (output, item)
             output = output[:-2]
             await bot.say(output)
+        else:
+            search = ' '.join(addlist).lower()
+            for l in s['fucklist']:
+                if search in l.lower():
+                    await bot.say("FUCK " + l.upper())
+                    return
         if write:
             with open(miscfile, 'w') as f:
                 f.write(json.dumps(s, indent=4))
