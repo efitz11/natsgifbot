@@ -93,15 +93,15 @@ def get_sound_smarts():
         homescore = game['teams']['home']['score']
         outstr = "**%s %d, %s %d:**\n\n" % (awayteam, awayscore, hometeam, homescore)
         output = output + outstr
-        print(outstr)
+        # print(outstr)
         if len(items) > 0:
             for item in items:
                 outstr = "* " + item + "\n\n"
                 output = output + outstr
-                print(outstr)
+                # print(outstr)
         else:
             outstr = "* No quirky events took place. :(\n\n"
-            print(outstr)
+            # print(outstr)
             output = output + outstr
     return output
 
