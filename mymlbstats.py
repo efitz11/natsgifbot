@@ -372,7 +372,7 @@ def print_linescore(team, delta=None):
                     hr = str(inning['home']['runs'])
                 else:
                     hr = " "
-                lenstr = max(len(ar),len(hr))
+                lenstr = max(len(ar),len(hr),len(str(inning['num'])))
                 line0 = "%s %s" % (line0, str(inning['num']).rjust(lenstr))
                 line1 = "%s %s" % (line1, ar.rjust(lenstr))
                 line2 = "%s %s" % (line2, hr.rjust(lenstr))
