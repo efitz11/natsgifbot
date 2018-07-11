@@ -104,7 +104,7 @@ def get_sound_smarts():
                 output = output + outstr
                 # print(outstr)
         else:
-            outstr = "* No quirky events took place. :(\n\n"
+            outstr = "* No quirky (significant but *under-the-radar*) events took place. :(\n\n"
             # print(outstr)
             output = output + outstr
     listofarts = "List of articles:\n\n"
