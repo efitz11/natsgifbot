@@ -392,13 +392,16 @@ def print_linescore(team, delta=None):
         out = "No matching games found"
     return out
 
-def get_lg_standings(lgid, wc=False):
+def get_lg_standings(lgid, wc=False, year=None):
     now = datetime.now()
+    y = now.year
+    if year is not None:
+        y = year
     type = "regularSeason"
     if wc:
         type = "wildCard"
     url = "https://statsapi.mlb.com/api/v1/standings/" + type + "?" \
-          "leagueId=" + str(lgid) + "&season=" + str(now.year) + "&hydrate=team"
+          "leagueId=" + str(lgid) + "&season=" + y + "&hydrate=team"
     print(url)
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     s = json.loads(urlopen(req).read().decode("utf-8"))
@@ -535,7 +538,7 @@ def list_scoring_plays(team,delta=None,lastonly=False):
         return [plays[-1]]
     return plays
 
-def get_div_standings(div):
+def get_div_standings(div, year=None):
     wc = False
     div = div.lower()
     if div == "ale":
@@ -567,7 +570,7 @@ def get_div_standings(div):
     else:
         return
 
-    standings = get_lg_standings(id,wc=wc)
+    standings = get_lg_standings(id,wc=wc, year=year)
     div = standings['records'][idx]
     output = "```python\n"
     teams = []
@@ -1135,7 +1138,7 @@ def get_player_season_stats(name, type=None, year=None, year2=None, active='Y', 
             years = seasons["season"]
         else:
             years = "%s-%s" % (seasons[0]["season"], seasons[-1]["season"])
-        s = seasonstats
+        s = [seasonstats]
         output = "Career stats for %s (%s):" % (disp_name,years)
     output = "%s\n\t%s\n\n" % (output, infoline)
 
