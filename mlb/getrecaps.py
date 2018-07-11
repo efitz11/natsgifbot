@@ -55,7 +55,7 @@ def get_sound_smarts():
     readarticles = []
     for game in games:
         url = "https://securea.mlb.com/gen/hb/content/mlb/" + str(game['gamePk']) + ".json"
-        # print(url)
+        print(url)
         req = Request(url, headers={'User-Agent' : "ubuntu"})
         articles = json.loads(urlopen(req).read().decode("utf-8"))['list']
         items = []
@@ -67,7 +67,8 @@ def get_sound_smarts():
                 body = article['body']
                 lineidx = body.find(line) + len(line)
                 body = body[lineidx:]
-                body = body[:body.find('<p><b>')-6].strip()
+                if '<p><b>' in body:
+                    body = body[:body.find('<p><b>')-6].strip()
                 body = body.replace('</span>', '')
                 body = body.replace('\n', ' ')
                 body = body.replace('<p>', '')
@@ -86,18 +87,22 @@ def get_sound_smarts():
                     body = start + end
                 if body not in items:
                     items.append(body)
+        awayteam = game['teams']['away']['team']['teamName']
+        awayscore = game['teams']['away']['score']
+        hometeam = game['teams']['home']['team']['teamName']
+        homescore = game['teams']['home']['score']
+        outstr = "**%s %d, %s %d:**\n\n" % (awayteam, awayscore, hometeam, homescore)
+        output = output + outstr
+        print(outstr)
         if len(items) > 0:
-            awayteam = game['teams']['away']['team']['teamName']
-            awayscore = game['teams']['away']['score']
-            hometeam = game['teams']['home']['team']['teamName']
-            homescore = game['teams']['home']['score']
-            outstr = "**%s %d, %s %d:**\n\n" % (awayteam, awayscore, hometeam, homescore)
-            output = output + outstr
-            # print(outstr)
             for item in items:
                 outstr = "* " + item + "\n\n"
                 output = output + outstr
-                # print(outstr)
+                print(outstr)
+        else:
+            outstr = "* No quirky events took place. :(\n\n"
+            print(outstr)
+            output = output + outstr
     return output
 
 def get_direct_video_url(indirecturl):
@@ -343,4 +348,4 @@ if __name__ == "__main__":
             post_on_reddit()
     else:
         # print(get_all_outputs())
-        print(get_sound_smarts())
+        get_sound_smarts()
