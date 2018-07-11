@@ -61,7 +61,7 @@ def get_sound_smarts():
         articles = json.loads(urlopen(req).read().decode("utf-8"))['list']
         items = []
         for article in articles:
-            link = 'http://mlb.com/news/'+ article['seo-headline'] + '/c-' + str(article['contentId'])
+            link = 'https://www.mlb.com/news/'+ article['seo-headline'] + '/c-' + str(article['contentId'])
             if link not in urls:
                 urls.append(link)
             if line in article['body']:
@@ -366,6 +366,7 @@ if __name__ == "__main__":
             post_on_reddit()
     elif len(sys.argv) == 2 and sys.argv[1] == "smart":
         out = get_sound_smarts()
+        print(out[1])
         pm_user('sound smart!', out[0], user='HeSawTheLight')
         pm_user('list of articles:', out[1], user='HeSawTheLight')
     else:
