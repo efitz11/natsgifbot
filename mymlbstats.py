@@ -1226,7 +1226,7 @@ def get_inning_plays(team, inning, delta=None):
         if play['about']['isScoringPlay']:
             desc = desc + "(%d-%d)" % (play['result']['awayScore'], play['result']['homeScore'])
             desc = "**%s**" % desc
-        data = data + "\n"
+        data = data# + "\n"
         output = "%s%s %s %s\n" % (output, count, desc, data)
         # output = output + "\n\n" + desc
         for event in play['playEvents']:
@@ -1236,7 +1236,7 @@ def get_inning_plays(team, inning, delta=None):
                     for playback in highlights[event['playId']]['playbacks']:
                         if playback['name'] == "FLASH_2500K_1280X720":
                             url = playback['url']
-                            output = output + " %s: <" % blurb + url + ">\n"
+                            output = output + " -- %s: <" % blurb + url + ">\n"
         output = output + "\n"
     return output
 
