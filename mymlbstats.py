@@ -1053,17 +1053,20 @@ def compare_player_stats(playerlist,career=False,year=None):
                 if seasonstats["season"] == year:
                     s = seasonstats
                 if sport_tm['season'] != year:
-                    errors = errors + "No %d stats for %s\n" % (year, disp_name)
+                    errors = errors + "No %s stats for %s\n" % (year, disp_name)
                     continue
             else:
                 for season in seasonstats:
                     if season["season"] == year:
                         s = season
                 if s is None:
-                    errors = errors + "No %d stats for %s\n" % (year, disp_name)
+                    errors = errors + "No %s stats for %s\n" % (year, disp_name)
                     continue
         else: #career stats
             s = seasonstats
+        if 'season' not in s:
+            errors = errors + "No %s stats for %s\n" % (year, disp_name)
+            continue
         s['name'] = player['name_last'][:5]
         stats.append(s)
     output = output + _print_table(statlist, stats) + "\n\n" + errors
