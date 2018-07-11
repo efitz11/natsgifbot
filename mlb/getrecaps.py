@@ -61,7 +61,7 @@ def get_sound_smarts():
         articles = json.loads(urlopen(req).read().decode("utf-8"))['list']
         items = []
         for article in articles:
-            link = 'http://mlb.com/new/'+ article['seo-headline'] + '/c-' + str(article['contentId'])
+            link = 'http://mlb.com/news/'+ article['seo-headline'] + '/c-' + str(article['contentId'])
             if link not in urls:
                 urls.append(link)
             if line in article['body']:
