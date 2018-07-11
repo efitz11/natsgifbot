@@ -53,6 +53,7 @@ def get_sound_smarts():
     output = ""
     line = "<p><b>SOUND SMART</b><br />"
     readarticles = []
+    urls = []
     for game in games:
         url = "https://securea.mlb.com/gen/hb/content/mlb/" + str(game['gamePk']) + ".json"
         print(url)
@@ -60,6 +61,9 @@ def get_sound_smarts():
         articles = json.loads(urlopen(req).read().decode("utf-8"))['list']
         items = []
         for article in articles:
+            link = 'http://mlb.com/new/'+ article['seo-headline'] + '/c-' + str(article['contentId'])
+            if link not in urls:
+                urls.append(link)
             if line in article['body']:
                 if article['contentId'] in readarticles:
                     continue
@@ -103,7 +107,11 @@ def get_sound_smarts():
             outstr = "* No quirky events took place. :(\n\n"
             # print(outstr)
             output = output + outstr
-    return output
+    listofarts = "List of articles:\n\n"
+    for link in urls:
+        # print("[%s](%s)  \n" % (link[0],link[1]))
+        listofarts = listofarts + "%s  \n" % link
+    return (output, listofarts)
 
 def get_direct_video_url(indirecturl):
     url = indirecturl
@@ -327,6 +335,16 @@ def post_on_reddit(cron=False):
             print("didn't find ATH, checking in 5 minutes...")
             time.sleep(5*60)
 
+def pm_user(subject, body, user="efitz11"):
+    import praw
+    with open('.fitz.json', 'r') as f:
+        f = json.loads(f.read())['keys']['efitz11']
+    reddit = praw.Reddit(client_id=f['client_id'],
+                         client_secret=f['token'],
+                         user_agent='recap bot on ubuntu (/u/efitz11)',
+                         username=f['user'],password=f['password'])
+    reddit.redditor(user).message(subject, body)
+
 def get_all_outputs():
     output = find_fastcast(return_str=True)
     output = output + find_quick_pitch(return_str=True)
@@ -346,6 +364,10 @@ if __name__ == "__main__":
             post_on_reddit(cron=True)
         else:
             post_on_reddit()
+    elif len(sys.argv) == 2 and sys.argv[1] == "smart":
+        out = get_sound_smarts()
+        pm_user('sound smart!', out[0], user='HeSawTheLight')
+        pm_user('list of articles:', out[1], user='HeSawTheLight')
     else:
-        # print(get_all_outputs())
-        get_sound_smarts()
+        print(get_all_outputs())
+        # get_sound_smarts()
