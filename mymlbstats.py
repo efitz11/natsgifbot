@@ -1194,19 +1194,23 @@ def get_inning_plays(team, inning, delta=None):
     output = "%s %d:\n" % (plays['allPlays'][0]['about']['halfInning'].upper(), plays['allPlays'][playsinning[0]]['about']['inning'])
     for idx in playsinning:
         play = plays['allPlays'][idx]
-        curplayevent = play['playEvents'][-1]
-        cnt = play['count']
-        balls = cnt['balls']
-        strikes = cnt['strikes']
-        outs = cnt['outs']
-        if play['about']['hasOut']:
-            outs -= 1
-        if curplayevent['details']['isBall']:
-            balls -= 1
-        if curplayevent['details']['isStrike']:
-            strikes -= 1
+        try:
+            curplayevent = play['playEvents'][-1]
+            cnt = play['count']
+            balls = cnt['balls']
+            strikes = cnt['strikes']
+            outs = cnt['outs']
+            if play['about']['hasOut']:
+                outs -= 1
+            if curplayevent['details']['isBall']:
+                balls -= 1
+            if curplayevent['details']['isStrike']:
+                strikes -= 1
+        except:
+            continue
         count = "(%d out, %d-%d)" % (outs, balls, strikes)
         opppitcher = play['matchup']['pitcher']['fullName']
+        desc = ""
         if 'description' in play['result']:
             desc = "With %s pitching, %s" % (opppitcher, play['result']['description'])
         pitch = curplayevent['details']['type']['description']
@@ -1282,7 +1286,7 @@ if __name__ == "__main__":
     # print(list_scoring_plays('chc'))
     # print(get_ohtani_stats())
     # print(get_player_season_stats("adam eaton", career=True))
-    print(get_player_season_stats("doolittle", year="2015"))
+    # print(get_player_season_stats("doolittle", year="2015"))
     # print(get_player_season_stats("shohei ohtani", career=True))
     # print(get_player_season_stats("shohei ohtani", type="pitching"))
     # print(get_player_season_stats("jose guillen"))
@@ -1300,5 +1304,5 @@ if __name__ == "__main__":
     # print(get_player_season_splits("Bryce Harper","vsl", year="2017"))
     # print(player_vs_team("chris archer","wsh"))
     # print(get_game_highlights_plays("530753"))
-    # print(get_inning_plays("wsh", 2))
+    print(get_inning_plays("col", 7))
     # print(compare_player_stats(["ohtani", "harper"]))
