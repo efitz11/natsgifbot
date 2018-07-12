@@ -84,7 +84,8 @@ def get_single_game_info(gamepk, gamejson, show_on_deck=False, liveonly=False):
             pitcher = ls['defense']['pitcher']['lastName']
             for stats in ls['defense']['pitcher']['stats']:
                 if stats['type']['displayName'] == 'gameLog' and stats['group']['displayName'] == 'pitching':
-                    ps = '(%dP %dS)' % (stats['stats']['pitchesThrown'], stats['stats']['strikes'])
+                    # ps = '(%dP %dS)' % (stats['stats']['pitchesThrown'], stats['stats']['strikes'])
+                    ps = '(%d P)' % (stats['stats']['pitchesThrown'])
                     pitcher = "%s %s" % (pitcher, ps)
         except:
             pitcher = ""
@@ -201,11 +202,18 @@ def get_single_game_info(gamepk, gamejson, show_on_deck=False, liveonly=False):
                                 'pitching' == stat['group']['displayName'] and \
                                 'note' in stat['stats']:
                             rec = stat['stats']['note']
-                    save = "SV: %s" % (decisions['save']['lastName'])
+                    save = "%s" % (decisions['save']['lastName'])
                 # output = output + "\n"
                 wpdisp = "%s %s" % (wp, wprec)
-                line1 = line1 + " | WP: %s %s %s" % (wpdisp.ljust(20), save, rec)
-                line2 = line2 + " | LP: %s %s" % (lp, lprec)
+                inning = ls['currentInning']
+                res = 'F '
+                if inning > 9:
+                    inn = str(inning)
+                else:
+                    inn = "  "
+
+                line1 = line1 + " | %s | %s %s %s" % (res, wpdisp.ljust(20), save, rec)
+                line2 = line2 + " | %s | %s %s" % (inn, lp, lprec)
             output = output + line1 + "\n" + line2 + "\n"
         except KeyError as e:
             print(e)
