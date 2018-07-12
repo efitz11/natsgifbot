@@ -7,7 +7,10 @@ import mymlbstats
 
 class RedditBot():
     def __init__(self):
-        self.enabled_subs = ["computerdudetest","nationals"]
+        # self.enabled_subs = ["computerdudetest","nationals","aaahhhtionals"]
+        self.enabled_subs = ["nationals","aaahhhtionals"]
+        self.banned_subs = ["computerdudetest","baseball"] #fuck the mods
+        self.all_subs = self.enabled_subs + self.banned_subs
     
         # get tokens from file
         f = open('reddittokens.txt','r')
@@ -24,7 +27,8 @@ class RedditBot():
     def check_mentions(self):
         mention_str = "/u/"+self.username.lower()
         for comment in self.reddit.inbox.unread(limit=100):
-            if comment.subreddit.display_name.lower() in self.enabled_subs:
+            sub = comment.subreddit.display_name.lower
+            if sub in self.all_subs:
                 textbody = comment.body.lower()
                 lines = textbody.split('\n')
                 reply = ""
@@ -43,6 +47,11 @@ class RedditBot():
                         else:
                             reply = reply + "[Sorry, I couldn't find a matching gif.](https://gfycat.com/CandidHeartfeltDuck)\n*****\n"
                 if len(reply) > 0:
+                    if sub in self.banned_subs:
+                        user = comment.author
+                        reply = "Sorry, I am banned in the subreddit you asked me for (fuck the mods), but here is your gif:\n\n" + reply
+                        user.message("your gif request", reply)
+
                     reply = reply + "^^computer-dude ^^bot ^^made ^^by ^^[/u\/efitz11](/user/efitz11) ^^--- "
                     reply = reply + "[^^more ^^info ^^on ^^computer-dude](https://github.com/efitz11/natsgifbot/blob/master/computer-dude.md)"
                     comment.reply(reply)
