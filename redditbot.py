@@ -27,7 +27,7 @@ class RedditBot():
     def check_mentions(self):
         mention_str = "/u/"+self.username.lower()
         for comment in self.reddit.inbox.unread(limit=100):
-            sub = comment.subreddit.display_name.lower
+            sub = comment.subreddit.display_name.lower()
             if sub in self.all_subs:
                 textbody = comment.body.lower()
                 lines = textbody.split('\n')
