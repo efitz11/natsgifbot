@@ -7,9 +7,8 @@ import mymlbstats
 
 class RedditBot():
     def __init__(self):
-        # self.enabled_subs = ["computerdudetest","nationals","aaahhhtionals"]
-        self.enabled_subs = ["nationals","aaahhhtionals"]
-        self.banned_subs = ["computerdudetest","baseball"] #fuck the mods
+        self.enabled_subs = ["computerdudetest","nationals","aaahhhtionals"]
+        self.banned_subs = ["baseball"] #fuck the mods
         self.all_subs = self.enabled_subs + self.banned_subs
     
         # get tokens from file
@@ -49,7 +48,7 @@ class RedditBot():
                 if len(reply) > 0:
                     if sub in self.banned_subs:
                         user = comment.author.name
-                        reply = "Sorry, I am banned in the subreddit you asked me for (fuck the mods), but here is your gif:\n\n" + reply
+                        reply = "Sorry, I am banned in the subreddit you asked me in (fuck the mods), but here is your gif:\n\n" + reply
                         print("attempting to send reply:")
                         self.reddit.redditor(user).message("your gif request", reply)
                     else:
