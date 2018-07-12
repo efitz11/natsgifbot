@@ -48,10 +48,10 @@ class RedditBot():
                             reply = reply + "[Sorry, I couldn't find a matching gif.](https://gfycat.com/CandidHeartfeltDuck)\n*****\n"
                 if len(reply) > 0:
                     if sub in self.banned_subs:
-                        user = comment.author
+                        user = comment.author.name
                         reply = "Sorry, I am banned in the subreddit you asked me for (fuck the mods), but here is your gif:\n\n" + reply
                         print("attempting to send reply:")
-                        user.message("your gif request", reply)
+                        self.reddit.user(user).message("your gif request", reply)
                     else:
                         reply = reply + "^^computer-dude ^^bot ^^made ^^by ^^[/u\/efitz11](/user/efitz11) ^^--- "
                         reply = reply + "[^^more ^^info ^^on ^^computer-dude](https://github.com/efitz11/natsgifbot/blob/master/computer-dude.md)"
