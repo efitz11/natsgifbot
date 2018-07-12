@@ -409,7 +409,7 @@ def get_lg_standings(lgid, wc=False, year=None):
     if wc:
         type = "wildCard"
     url = "https://statsapi.mlb.com/api/v1/standings/" + type + "?" \
-          "leagueId=" + str(lgid) + "&season=" + y + "&hydrate=team"
+          "leagueId=" + str(lgid) + "&season=" + str(y) + "&hydrate=team"
     print(url)
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     s = json.loads(urlopen(req).read().decode("utf-8"))
