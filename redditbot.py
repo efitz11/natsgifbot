@@ -50,11 +50,12 @@ class RedditBot():
                     if sub in self.banned_subs:
                         user = comment.author
                         reply = "Sorry, I am banned in the subreddit you asked me for (fuck the mods), but here is your gif:\n\n" + reply
+                        print("attempting to send reply:")
                         user.message("your gif request", reply)
-
-                    reply = reply + "^^computer-dude ^^bot ^^made ^^by ^^[/u\/efitz11](/user/efitz11) ^^--- "
-                    reply = reply + "[^^more ^^info ^^on ^^computer-dude](https://github.com/efitz11/natsgifbot/blob/master/computer-dude.md)"
-                    comment.reply(reply)
+                    else:
+                        reply = reply + "^^computer-dude ^^bot ^^made ^^by ^^[/u\/efitz11](/user/efitz11) ^^--- "
+                        reply = reply + "[^^more ^^info ^^on ^^computer-dude](https://github.com/efitz11/natsgifbot/blob/master/computer-dude.md)"
+                        comment.reply(reply)
             comment.mark_read()
     def update_postlist(self):
         with open("lastgif.txt", "r") as f:
