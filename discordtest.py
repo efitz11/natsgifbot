@@ -137,7 +137,7 @@ async def gifall(*name:str):
         await bot.say(output.strip())
         
     return
-                
+
 def mockify_text(text):
     last = False
     output = ""

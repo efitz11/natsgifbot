@@ -109,7 +109,7 @@ class Baseball():
                     if play[0] != lastinning:
                         if len(lastinning) != 0:
                             output = output + "```\n```"
-                            if len(output) + len(play[0]) > 1800:
+                            if len(output) + len(play[0]) > 1600:
                                 await self.bot.say(output[:-3])
                                 output = "```"
                         output = output + play[0] + "\n"
