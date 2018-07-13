@@ -545,6 +545,7 @@ async def on_message(message):
     #stuff
     if message.author == bot.user:
         return
+    message.content = message.content.lower()
     if message.content.startswith(bot.command_prefix):
         await bot.process_commands(message)
     elif message.content.startswith('?') and not message.content.endswith('?') and not message.content[1] == ' ':
