@@ -409,7 +409,7 @@ def get_lg_standings(lgid, wc=False, year=None):
     if wc:
         type = "wildCard"
     url = "https://statsapi.mlb.com/api/v1/standings/" + type + "?" \
-          "leagueId=" + str(lgid) + "&season=" + y + "&hydrate=team"
+          "leagueId=" + str(lgid) + "&season=" + str(y) + "&hydrate=team"
     print(url)
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     s = json.loads(urlopen(req).read().decode("utf-8"))
@@ -1156,7 +1156,7 @@ def get_player_season_stats(name, type=None, year=None, year2=None, active='Y', 
     if type == "hitting":
         stats = ['ab','h','d','t','hr','r','rbi','bb','so','sb','cs','avg','obp','slg','ops']
     elif type == "pitching":
-        stats = ['w','l','g','svo','sv','ip','so','bb','hr','era','whip']
+        stats = ['w','l','g','gs','svo','sv','ip','so','bb','hr','era','whip']
     if year2 is not None:
         stats = ['season'] + stats
     output = output + _print_table(stats,s, repl_map={'season':'year'})
