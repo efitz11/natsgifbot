@@ -253,6 +253,7 @@ def find_youtube_homeruns(return_str=False):
 
 def find_must_cs(return_str=False):
     url = "https://search-api.mlb.com/svc/search/v2/mlb_global_sitesearch_en/sitesearch?hl=true&facet=type&expand=partner.media&q=must%2Bc&page=1"
+    print(url)
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     s = json.loads(urlopen(req).read().decode("utf-8"))
     results = s['docs']
@@ -261,9 +262,12 @@ def find_must_cs(return_str=False):
     output = ""
     for res in results:
         if res['blurb'].startswith("Must C"):
+            date = None
             for tag in res['tags']:
                 if tag['type'] == 'event_date':
                     date = tag['value']
+            if date is None:
+                continue
             if date[:10] == "%d-%02d-%02d" % (yesterday.year, yesterday.month, yesterday.day):
                 blurb = res['blurb']
                 url = get_direct_video_url(res['url'])
