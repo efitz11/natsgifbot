@@ -4,7 +4,7 @@ import urllib.parse
 import json
 from fuzzywuzzy import fuzz
 
-otherteams = ['atl','sea','phi','nyy']
+otherteams = ['atl','sea','phi','nyy','stl']
 
 def gif(query):
     matches = []
@@ -13,6 +13,7 @@ def gif(query):
     file = 'postlist.csv'
 
     name = query.split(" ")
+    name[0] = name[0].lower()
     if len(name) > 0 and name[0] in otherteams:
         file = 'giflists/' + name[0] + '.csv'
         name = name[1:]
