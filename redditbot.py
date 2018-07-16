@@ -56,6 +56,17 @@ class RedditBot():
                         reply = reply + "[^^more ^^info ^^on ^^computer-dude](https://github.com/efitz11/natsgifbot/blob/master/computer-dude.md)"
                         comment.reply(reply)
             comment.mark_read()
+
+    def create_postlist(self, team, subreddit):
+        file = 'giflists/' + team + ".csv"
+        output = ""
+        import string
+        for submission in self.reddit.subreddit(subreddit).new(limit=1000):
+            if all(c in string.printable for c in submission.title):
+                output = "%s\n%s,%s" % (output, submission.title, submission.url)
+        with open(file, 'w') as f:
+            f.write(output)
+
     def update_postlist(self):
         with open("lastgif.txt", "r") as f:
             lastgif = f.readline().strip()
