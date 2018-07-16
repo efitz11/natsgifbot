@@ -117,31 +117,31 @@ def get_single_game_info(gamepk, gamejson, show_on_deck=False, liveonly=False):
         awayloss = game['teams']['away']['leagueRecord']['losses']
         homewins = game['teams']['home']['leagueRecord']['wins']
         homeloss = game['teams']['home']['leagueRecord']['losses']
+        probaway = "TBD"
+        aprecord = ""
+        probhome = "TBD"
+        hprecord = ""
         if 'probablePitcher' in game['teams']['away']:
             probaway = game['teams']['away']['probablePitcher']['lastName']
-            for statgroup in game['teams']['away']['probablePitcher']['stats']:
-                if statgroup['type']['displayName'] == "statsSingleSeason" and \
-                        statgroup['group']['displayName'] == "pitching":
-                    wins = statgroup['stats']['wins']
-                    losses = statgroup['stats']['losses']
-                    era = statgroup['stats']['era']
-                    aprecord = "(%d-%d) %s" % (wins,losses,era)
-                    break
-        else:
-            probaway = "TBD"
-            aprecord = ""
+            if 'stats' in game['teams']['away']['probablePitcher']:
+                for statgroup in game['teams']['away']['probablePitcher']['stats']:
+                    if statgroup['type']['displayName'] == "statsSingleSeason" and \
+                            statgroup['group']['displayName'] == "pitching":
+                        wins = statgroup['stats']['wins']
+                        losses = statgroup['stats']['losses']
+                        era = statgroup['stats']['era']
+                        aprecord = "(%d-%d) %s" % (wins,losses,era)
+                        break
         if 'probablePitcher' in game['teams']['home']:
-            for statgroup in game['teams']['home']['probablePitcher']['stats']:
-                if statgroup['type']['displayName'] == "statsSingleSeason" and \
-                        statgroup['group']['displayName'] == "pitching":
-                    probhome = game['teams']['home']['probablePitcher']['lastName']
-                    wins = statgroup['stats']['wins']
-                    losses = statgroup['stats']['losses']
-                    era = statgroup['stats']['era']
-                    hprecord = "(%d-%d) %s" % (wins,losses,era)
-        else:
-            probhome = "TBD"
-            hprecord = ""
+            probhome = game['teams']['home']['probablePitcher']['lastName']
+            if 'stats' in game['teams']['away']['probablePitcher']:
+                for statgroup in game['teams']['home']['probablePitcher']['stats']:
+                    if statgroup['type']['displayName'] == "statsSingleSeason" and \
+                            statgroup['group']['displayName'] == "pitching":
+                        wins = statgroup['stats']['wins']
+                        losses = statgroup['stats']['losses']
+                        era = statgroup['stats']['era']
+                        hprecord = "(%d-%d) %s" % (wins,losses,era)
         arecord = "(%s-%s)" % (awaywins, awayloss)
         hrecord = "(%s-%s)" % (homewins, homeloss)
         arecord = arecord.center(7)
