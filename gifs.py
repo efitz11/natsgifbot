@@ -4,15 +4,23 @@ import urllib.parse
 import json
 from fuzzywuzzy import fuzz
 
+otherteams = ['atl','sea','phi']
+
 def gif(query):
     matches = []
     patterns = []
-    
+
+    file = 'postlist.csv'
+
     name = query.split(" ")
+    if len(name) > 0 and name[0] in otherteams:
+        file = 'giflists/' + name[0] + '.csv'
+        name = name[1:]
+
     for s in name:
         patterns.append(re.compile(s,re.IGNORECASE))
-        
-    f = open('postlist.csv','r')
+
+    f = open(file,'r')
     for line in f:
         search = ','.join(line.split(',')[:-1])
         matched = True
