@@ -4,7 +4,7 @@ import urllib.parse
 import json
 from fuzzywuzzy import fuzz
 
-otherteams = ['atl','sea','phi','nyy','stl']
+otherteams = ['atl','sea','phi','nyy','stl','chc']
 
 def gif(query):
     matches = []
