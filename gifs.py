@@ -33,14 +33,14 @@ def gif(query):
     f.close()
     
     if len(matches) == 0:
-        return fuzzygif(query)
+        return fuzzygif(query, file)
     num = random.randint(0,len(matches)-1)
     return matches[num].strip()
 
-def fuzzygif(query):
+def fuzzygif(query, file):
     highest,score = "",0
     matches = []
-    f = open('postlist.csv','r')
+    f = open(file,'r')
     for line in f:
         search = ','.join(line.split(',')[:-1])
         sc = fuzz.partial_token_sort_ratio(query,search)
