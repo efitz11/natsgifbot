@@ -2,7 +2,7 @@ import re, random
 from urllib.request import urlopen, Request
 import urllib.parse
 import json
-# from fuzzywuzzy import fuzz
+from fuzzywuzzy import fuzz
 
 def gif(query):
     matches = []
@@ -25,7 +25,7 @@ def gif(query):
     f.close()
     
     if len(matches) == 0:
-        return "no matches"
+        return fuzzygif(query)
     num = random.randint(0,len(matches)-1)
     return matches[num].strip()
 
@@ -35,7 +35,7 @@ def fuzzygif(query):
     f = open('postlist.csv','r')
     for line in f:
         search = ','.join(line.split(',')[:-1])
-        # sc = fuzz.partial_token_sort_ratio(query,search)
+        sc = fuzz.partial_token_sort_ratio(query,search)
         # if sc > 50:
         #     print (search, sc)
         if sc > score:
