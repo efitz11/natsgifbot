@@ -71,7 +71,7 @@ class Reddit():
         
     @commands.command()
     async def rh(self, text:str, num:int=-1):
-        """<num> <subreddit> get the #num post from subreddit/hot"""
+        """<subreddit> <num> get the #num post from subreddit/hot"""
         #subreddit = ''.join(text).lower()
         subreddit = text
         count = 0
@@ -92,7 +92,7 @@ class Reddit():
 
     @commands.command()
     async def rn(self, text:str, num:int=-1):
-        """<num> <subreddit> get the #num post from subreddit/new"""
+        """<subreddit> <num> get the #num post from subreddit/new"""
         subreddit = text
         count = 0
         if num > 0:
