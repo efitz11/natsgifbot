@@ -433,6 +433,7 @@ def get_single_game(team,delta=None,print_statcast=True):
         print_statcast = False
     else:
         teamid = get_teamid(team)
+    team = team.lower()
     for game in games:
         gamepk = str(game['gamePk'])
         match = False
@@ -442,10 +443,16 @@ def get_single_game(team,delta=None,print_statcast=True):
             if divid == awaydiv or divid == homediv:
                 match = True
         else:
-            awayid = game['teams']['away']['team']['id']
-            homeid = game['teams']['home']['team']['id']
-            if teamid == awayid or teamid == homeid:
-                match = True
+            if teamid is not None:
+                awayid = game['teams']['away']['team']['id']
+                homeid = game['teams']['home']['team']['id']
+                if teamid == awayid or teamid == homeid:
+                    match = True
+            else:
+                awayname = game['teams']['away']['team']['name'].lower()
+                homename = game['teams']['home']['team']['name'].lower()
+                if team in awayname or team in homename:
+                    match = True
         if match:
             output = output + get_single_game_info(gamepk,game, show_on_deck=True) + "\n"
             abstractstatus = game['status']['abstractGameState']
