@@ -549,65 +549,68 @@ def list_scoring_plays(team,delta=None,lastonly=False):
 def get_div_standings(div, year=None):
     wc = False
     div = div.lower()
-    if div == "ale":
+    idx = []
+    if div in ['ale','alc','alw','al','alwc']:
         id = 103
-        idx = 1
-    elif div == "alc":
-        id = 103
-        idx = 2
-    elif div == "alw":
-        id = 103
-        idx = 0
-    elif div == "nle":
+        if div == "ale":
+            idx.append(1)
+        elif div == "alc":
+            idx.append(2)
+        elif div == "alw":
+            idx.append(0)
+        elif div == "al":
+            idx.extend([1,2,0])
+        elif div == "alwc":
+            idx.append(0)
+            wc = True
+    elif div in ['nle','nlc','nlw','nl','nlwc']:
         id = 104
-        idx = 2
-    elif div == "nlc":
-        id = 104
-        idx = 0
-    elif div == "nlw":
-        id = 104
-        idx = 1
-    elif div == "nlwc":
-        id = 104
-        idx=0
-        wc = True
-    elif div == "alwc":
-        id = 103
-        idx=0
-        wc = True
+        if div == "nle":
+            idx.append(2)
+        elif div == "nlc":
+            idx.append(0)
+        elif div == "nlw":
+            idx.append(1)
+        elif div == "nl":
+            idx.extend([2,0,1])
+        elif div == "nlwc":
+            idx.append(0)
+            wc = True
     else:
         return
 
     standings = get_lg_standings(id,wc=wc, year=year)
-    div = standings['records'][idx]
-    output = "```python\n"
-    teams = []
-    for team in div['teamRecords']:
-        l = dict()
-        l['abv'] = team['team']['abbreviation']
-        l['w'] = str(team['wins'])
-        l['l'] = str(team['losses'])
-        l['pct'] = team['leagueRecord']['pct']
-        l['gb'] = team['gamesBack']
-        l['wcgb'] = team['wildCardGamesBack']
-        for split in team['records']['splitRecords']:
-            if split['type'] == "lastTen":
-                l['l10'] = "%s-%s" % (split['wins'],split['losses'])
-        l['stk'] = team['streak']['streakCode']
-        l['rd'] = str(team['runDifferential'])
-        l['rs'] = str(team['runsScored'])
-        l['ra'] = str(team['runsAllowed'])
-        l['e'] = str(team['eliminationNumber'])
-        try:
-            l['wce'] = str(team['wildCardEliminationNumber'])
-        except KeyError:
-            l['wce'] = "-"
-        teams.append(l)
+    output = ""
+    for i in idx:
+        output = output + "```python\n"
+        div = standings['records'][i]
+        teams = []
+        for team in div['teamRecords']:
+            l = dict()
+            l['abv'] = team['team']['abbreviation']
+            l['w'] = str(team['wins'])
+            l['l'] = str(team['losses'])
+            l['pct'] = team['leagueRecord']['pct']
+            l['gb'] = team['gamesBack']
+            l['wcgb'] = team['wildCardGamesBack']
+            for split in team['records']['splitRecords']:
+                if split['type'] == "lastTen":
+                    l['l10'] = "%s-%s" % (split['wins'],split['losses'])
+            l['stk'] = team['streak']['streakCode']
+            l['rd'] = str(team['runDifferential'])
+            l['rs'] = str(team['runsScored'])
+            l['ra'] = str(team['runsAllowed'])
+            l['e'] = str(team['eliminationNumber'])
+            try:
+                l['wce'] = str(team['wildCardEliminationNumber'])
+            except KeyError:
+                l['wce'] = "-"
+            teams.append(l)
 
-    repl_map = {'abv':''}
-    labs = ['abv','w','l','pct','gb','wcgb','l10','stk','rd','e','wce']
-    output = output + _print_table(labs,teams,repl_map=repl_map)
-    output = output + "```"
+        repl_map = {'abv':''}
+        labs = ['abv','w','l','pct','gb','wcgb','l10','stk','rd','e','wce']
+        output = output + _print_table(labs,teams,repl_map=repl_map)
+        output = output + "```"
     return output
 
 def get_stat_leader(stat):
