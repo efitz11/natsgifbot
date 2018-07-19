@@ -23,5 +23,8 @@
         "THE PENGUINS",
         "PETER ANGELOS",
         "ROB MANFRED"
-    ]
+    ],
+    "links": {
+        "test": "https://reddit.com/u/efitz11"
+    }
 }
