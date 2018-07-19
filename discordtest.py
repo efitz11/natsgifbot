@@ -306,7 +306,7 @@ async def link(ctx,*args):
                 await bot.say('link doesn\'t begin with `http`')
     else:
         if args[0] in links:
-            await bot.say(args[1])
+            await bot.say(links[args[0]])
         else:
             await bot.say("could not find a link named %s" % args[0])
 
