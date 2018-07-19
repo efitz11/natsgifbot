@@ -284,7 +284,32 @@ def convert_number_to_emoji(num):
     for s in snum:
         out = out + emoji_letter_map[s]
     return out
-    
+
+@bot.command(pass_context=True)
+async def link(ctx,*args):
+    objname = 'links'
+    with open(miscfile,'r') as f:
+        s = json.loads(f.read())
+    if objname not in s:
+        s[objname] = {}
+    links = s[objname]
+    if len(args) == 3 and args[0] == 'add':
+        if args[1] in links:
+            await bot.say('link name already in use')
+        else:
+            if args[2].startswith('http'):
+                s[objname][args[1]] = args[2]
+                with open(miscfile,'w') as f:
+                    f.write(json.dumps(s, indent=4))
+                await bot.say('link %s added.' % args[1])
+            else:
+                await bot.say('link doesn\'t begin with `http`')
+    else:
+        if args[0] in links:
+            await bot.say(args[1])
+        else:
+            await bot.say("could not find a link named %s" % args[0])
+
 @bot.command(pass_context=True)
 async def countdown(ctx, *addlist):
     with open(miscfile,'r') as f:
