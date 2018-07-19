@@ -1,14 +1,26 @@
 {
     "countdown": [
         {
-            "name": "2018 All Star Game",
             "month": 7,
+            "name": "/r/baseball trading begins",
+            "day": 16,
+            "year": 2018
+        },
+        {
+            "month": 7,
+            "name": "2018 All Star Game",
             "day": 17,
             "year": 2018
         },
         {
-            "name": "Non-waiver trade deadline",
             "month": 7,
+            "name": "/r/baseball trading game begins",
+            "day": 20,
+            "year": 2018
+        },
+        {
+            "month": 7,
+            "name": "Non-waiver trade deadline",
             "day": 31,
             "year": 2018
         }
@@ -22,6 +34,14 @@
         "THE DH",
         "THE PENGUINS",
         "PETER ANGELOS",
-        "ROB MANFRED"
+        "ROB MANFRED",
+        "TREVOR STORY",
+        "WARNING TRACK FLY OUTS",
+        "THIS TEAM",
+        "JAVY BAEZ",
+        "THIS UMPIRE",
+        "JOSE REYES",
+        "CHASE UTLEY",
+        "R/NATIONALS"
     ]
 }
