@@ -1132,6 +1132,8 @@ def get_player_season_stats(name, type=None, year=None, year2=None, active='Y', 
         d = int(year) - int(birth[0]) - ((7,1) < (int(birth[1]), int(birth[2])))
     if d is not None:
         infoline = "%s | Age: %d" % (infoline, d)
+    if now.month == int(birth[1]) and now.day == int(birth[2]):
+        infoline = infoline + "  **HAPPY BIRTHDAY**"
     # print(pos)
     if type is None and pos == 'P':
         type = "pitching"
