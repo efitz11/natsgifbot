@@ -1,28 +1,35 @@
 {
+    "links": {
+        "arod": "https://streamable.com/8nqds",
+        "don't": "https://twitter.com/rayknight25/status/921599441152434176?s=21",
+        "bot": "https://github.com/efitz11/natsgifbot",
+        "laugh": "https://streamable.com/xw2vb",
+        "dont": "https://twitter.com/rayknight25/status/921599441152434176?s=21"
+    },
     "countdown": [
         {
-            "month": 7,
-            "name": "/r/baseball trading begins",
             "day": 16,
-            "year": 2018
+            "month": 7,
+            "year": 2018,
+            "name": "/r/baseball trading begins"
         },
         {
-            "month": 7,
-            "name": "2018 All Star Game",
             "day": 17,
-            "year": 2018
+            "month": 7,
+            "year": 2018,
+            "name": "2018 All Star Game"
         },
         {
-            "month": 7,
-            "name": "/r/baseball trading game begins",
             "day": 20,
-            "year": 2018
+            "month": 7,
+            "year": 2018,
+            "name": "/r/baseball trading game begins"
         },
         {
-            "month": 7,
-            "name": "Non-waiver trade deadline",
             "day": 31,
-            "year": 2018
+            "month": 7,
+            "year": 2018,
+            "name": "Non-waiver trade deadline"
         }
     ],
     "fucklist": [
