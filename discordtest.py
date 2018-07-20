@@ -308,7 +308,12 @@ async def link(ctx,*args):
         else:
             await bot.say(links['dont'])
     else:
-        if args[0] in links:
+        if args[0] == 'list':
+            output = ""
+            for l in links:
+                output = output + l + ", "
+            await bot.say(output[:-2])
+        elif args[0] in links:
             await bot.say(links[args[0]])
         else:
             await bot.say("could not find a link named %s" % args[0])
