@@ -181,28 +181,47 @@ def get_single_game_info(gamepk, gamejson, show_on_deck=False, liveonly=False):
                 decisions = game['decisions']
                 wp = decisions['winner']['lastName']
                 lp = decisions['loser']['lastName']
-                wprec = ""
-                lprec = ""
+                wprec,wpw,wpl= "","",""
+                lprec,lpw,lpl = "","",""
                 for stat in decisions['winner']['stats']:
                     if 'gameLog' == stat['type']['displayName'] and \
                         'pitching' == stat['group']['displayName'] and \
                         'note' in stat['stats']:
                         wprec = stat['stats']['note']
+                    if 'statsSingleSeason' == stat['type']['displayName'] and \
+                        'pitching' == stat['group']['displayName']:
+                        if 'wins' in stat['stats']:
+                            wpw = stat['stats']['wins']
+                            wpl = stat['stats']['losses']
                 for stat in decisions['loser']['stats']:
                     if 'gameLog' == stat['type']['displayName'] and \
                             'pitching' == stat['group']['displayName'] and \
                             'note' in stat['stats']:
                         lprec = stat['stats']['note']
-                # output = output + "\t WP: %s LP: %s" % (wp.ljust(12), lp.ljust(12))
+                    if 'statsSingleSeason' == stat['type']['displayName'] and \
+                            'pitching' == stat['group']['displayName']:
+                        if 'wins' in stat['stats']:
+                            lpw = stat['stats']['wins']
+                            lpl = stat['stats']['losses']
+                if wprec == "":
+                    wprec = "(W, %s-%s)" % (wpw, wpl)
+                if lprec == "":
+                    lprec = "(L, %s-%s)" % (lpw, lpl)
                 save = ""
-                rec = ""
+                rec,sv = "",""
                 if 'save' in decisions:
                     for stat in decisions['save']['stats']:
                         if 'gameLog' == stat['type']['displayName'] and \
                                 'pitching' == stat['group']['displayName'] and \
                                 'note' in stat['stats']:
                             rec = stat['stats']['note']
+                        if 'statsSingleSeason' == stat['type']['displayName'] and \
+                            'pitching' == stat['group']['displayName']:
+                            if 'saves' in stat['stats']:
+                                sv = stat['stats']['saves']
                     save = "%s" % (decisions['save']['lastName'])
+                    if rec == "":
+                        rec = "(S, %s)" % sv
                 # output = output + "\n"
                 wpdisp = "%s %s" % (wp, wprec)
                 inning = ls['currentInning']
