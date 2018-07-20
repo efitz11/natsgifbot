@@ -75,6 +75,11 @@ class Baseball():
         if len(team) > 0 and len(team[-1].split('/')) == 3:
             now = datetime.now().date()
             datelist = team[-1].split('/')
+            if len(datelist[2]) == 2:
+                if int("20" + datelist[2]) <= now.year:
+                    datelist[2] = "20" + datelist[2]
+                else:
+                    datelist[2] = "19" + datelist[2]
             other = date(int(datelist[2]), int(datelist[0]), int(datelist[1]))
             delta = other - now
             direction = ''
