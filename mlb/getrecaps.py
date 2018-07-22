@@ -57,8 +57,11 @@ def get_sound_smarts():
     for game in games:
         url = "https://securea.mlb.com/gen/hb/content/mlb/" + str(game['gamePk']) + ".json"
         print(url)
-        req = Request(url, headers={'User-Agent' : "ubuntu"})
-        articles = json.loads(urlopen(req).read().decode("utf-8"))['list']
+        try:
+            req = Request(url, headers={'User-Agent' : "ubuntu"})
+            articles = json.loads(urlopen(req).read().decode("utf-8"))['list']
+        except:
+            continue
         items = []
         for article in articles:
             link = 'https://www.mlb.com/news/'+ article['seo-headline'] + '/c-' + str(article['contentId'])
