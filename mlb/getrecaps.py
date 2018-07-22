@@ -64,6 +64,8 @@ def get_sound_smarts():
             link = 'https://www.mlb.com/news/'+ article['seo-headline'] + '/c-' + str(article['contentId'])
             if link not in urls:
                 urls.append(link)
+            if 'body' not in article:
+                continue
             if line in article['body']:
                 if article['contentId'] in readarticles:
                     continue
