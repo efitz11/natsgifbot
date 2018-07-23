@@ -28,7 +28,7 @@ each of the previous commands can end in a number of (+days or -days) to change 
                     - 'p' forces pitching stats
 !mlb splits <split> <player> [year] - print players stats in that split
                                     - use 'all' or 'list' to list all available splits
-!mlb vs <team> <player> [year] - print players stats vs pitchers on that team
+!mlb vs <team> <player> - print stats for all batters vs a certain pitcher in the last 5 years
 
 !mlb [b]last [n] <player> - print the stats for the players last [n=7] days
                          - 'b' forces batting stats (for pitchers)

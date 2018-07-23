@@ -811,6 +811,34 @@ def _get_player_info_line(player):
     weight = "%s lbs" % (player['weight'])
     return "%s | B/T: %s/%s | %s | %s" % (pos, bats,throws, height, weight)
 
+def pitcher_vs_team(name, team):
+    teamid = get_teamid(team)
+    player = _get_player_search(name)
+    if player is None:
+        return "No matching player found"
+    now = datetime.now()
+    year = str(now.year)
+    url = "https://lookup-service-prod.mlb.com/json/named.team_bvp_5y.bam?" \
+          "vs_pitcher_id=" + player['player_id'] + "&game_type=%27R%27" \
+                                                   "&team_id=" + str(teamid) + "&year=" + year
+    print(url)
+    res = _get_json(url,encoding="ISO-8859-1")["team_bvp_5y"]["queryResults"]
+    batters = []
+    if int(res['totalSize']) == 0:
+        return "No stats available in the last 5 years."
+    elif int(res['totalSize']) == 1:
+        batters.append(res['row'])
+    else:
+        for row in res['row']:
+            batters.append(row)
+    output = "%s's stats vs batters, last 5 years:\n\n" % (player['name_display_first_last'])
+    stats = ['name','b_ab','b_total_hits','b_double','b_triple','b_home_run','b_walk','b_strikeout',
+             'b_batting_avg','b_on_base_avg','b_slugging_avg','b_on_base_slg_avg']
+    repl_map = {'b_ab':'ab','b_total_hits':'h','b_double':'2b','b_triple':'3b','b_home_run':'hr','b_walk':'bb','b_strikeout':'so',
+             'b_batting_avg':'avg','b_on_base_avg':'obp','b_slugging_avg':'slg','b_on_base_slg_avg':'ops'}
+    output = output + _print_table(stats,batters,repl_map=repl_map) + "\n\n"
+    return output
+
 def player_vs_team(name, team, year=None):
     teamid = get_teamid(team)
     player = _get_player_search(name)
