@@ -55,7 +55,7 @@ class Baseball():
 
         [h][c][b,p]stats <player> [year] [year2]
         splits <split> <player> [year]
-        vs <team> <player> [year]
+        vs <team> <player>
         [b]last <player> [n]
         [b]log [n] <player>
         [p,f]leaders <stat>
@@ -191,13 +191,14 @@ class Baseball():
             return
         elif team[0] == 'vs':
             opp = team[1]
-            if team[-1].isdigit():
-                year = team[-1]
-                player = ' '.join(team[2:-1])
-                await self.bot.say("```%s```" % mymlbstats.player_vs_team(player,opp,year=year))
-            else:
-                player = ' '.join(team[2:])
-                await self.bot.say("```%s```" % mymlbstats.player_vs_team(player,opp))
+            # if team[-1].isdigit():
+            #     year = team[-1]
+            #     player = ' '.join(team[2:-1])
+            #     await self.bot.say("```%s```" % mymlbstats.player_vs_team(player,opp,year=year))
+            # else:
+            player = ' '.join(team[2:])
+            # await self.bot.say("```%s```" % mymlbstats.player_vs_team(player,opp))
+            await self.bot.say("```%s```" % mymlbstats.pitcher_vs_team(player,opp))
             return
         elif team[0].lower() == "dl":
             team = ' '.join(team[1:])
