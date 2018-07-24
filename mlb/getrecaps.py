@@ -78,6 +78,8 @@ def get_sound_smarts():
                 body = body[lineidx:]
                 if '<p><b>' in body:
                     body = body[:body.find('<p><b>')-6].strip()
+                if '<p><p.><b>' in body:
+                    body = body[:body.find('<p><p.><b>')-9].strip()
                 body = body.replace('</span>', '')
                 body = body.replace('\n', ' ')
                 body = body.replace('<p>', '')
@@ -89,6 +91,7 @@ def get_sound_smarts():
                     end = body[endidx:]
                     body = start + end
                 while "<span" in body:
+                    print(body)
                     idx = body.find("<span")
                     endidx = body.find(">") + 1
                     start = body[:idx]
