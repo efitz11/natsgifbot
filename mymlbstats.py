@@ -443,6 +443,8 @@ def get_single_game(team,delta=None,print_statcast=True):
     """delta is + or - a number of days"""
     teamid = get_teamid(team)
     s = get_day_schedule(delta, teamid=teamid)
+    if s['totalGames'] == 0:
+        return "No games found."
     games = s['dates'][0]['games']
     output = ""
     if delta is not None:
