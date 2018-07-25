@@ -51,7 +51,8 @@ def get_single_game_info(gamepk, gamejson, show_on_deck=False, liveonly=False):
     awayabv = game['teams']['away']['team']['abbreviation'].ljust(3)
     homeabv = game['teams']['home']['team']['abbreviation'].ljust(3)
     # print(gamepk)
-    if abstractstatus == "Live":
+    pregame_statuses = ['Warmup']
+    if abstractstatus == "Live" and detailstatus not in pregame_statuses:
         # ls = get_linescore(gamepk)
         ls = game['linescore']
         if ls['isTopInning']:
@@ -112,7 +113,7 @@ def get_single_game_info(gamepk, gamejson, show_on_deck=False, liveonly=False):
             output = output + "\t##############################\n"
     elif liveonly:
         return ""
-    elif abstractstatus == "Preview" or detailstatus in ["Warmup"]:
+    elif abstractstatus == "Preview" or detailstatus in pregame_statuses:
         awaywins = game['teams']['away']['leagueRecord']['wins']
         awayloss = game['teams']['away']['leagueRecord']['losses']
         homewins = game['teams']['home']['leagueRecord']['wins']
