@@ -84,14 +84,16 @@ def get_sound_smarts():
                 body = body.replace('\n', ' ')
                 body = body.replace('<p>', '')
                 body = body.replace('</p>', '')
+                body = body.replace('</a>', '')
                 while "<a" in body:
+                    # print(body)
                     idx = body.find("<a")
-                    endidx = body.find("/a>") + 3
+                    endidx = body[idx:].find(">") + 1 + idx
                     start = body[:idx]
                     end = body[endidx:]
                     body = start + end
                 while "<span" in body:
-                    print(body)
+                    # print(body)
                     idx = body.find("<span")
                     endidx = body.find(">") + 1
                     start = body[:idx]
