@@ -828,19 +828,29 @@ def pitcher_vs_team(name, team):
     print(url)
     res = _get_json(url,encoding="ISO-8859-1")["team_bvp_5y"]["queryResults"]
     batters = []
+    empties = []
     if int(res['totalSize']) == 0:
         return "No stats available in the last 5 years."
     elif int(res['totalSize']) == 1:
         batters.append(res['row'])
     else:
         for row in res['row']:
-            batters.append(row)
+            if row['b_ab'] == '':
+                empties.append(row)
+            else:
+                batters.append(row)
     output = "%s's stats vs batters, last 5 years:\n\n" % (player['name_display_first_last'])
     stats = ['name','b_ab','b_total_hits','b_double','b_triple','b_home_run','b_walk','b_strikeout',
              'b_batting_avg','b_on_base_avg','b_slugging_avg','b_on_base_slg_avg']
     repl_map = {'b_ab':'ab','b_total_hits':'h','b_double':'2b','b_triple':'3b','b_home_run':'hr','b_walk':'bb','b_strikeout':'so',
              'b_batting_avg':'avg','b_on_base_avg':'obp','b_slugging_avg':'slg','b_on_base_slg_avg':'ops'}
     output = output + _print_table(stats,batters,repl_map=repl_map) + "\n\n"
+    if len(empties) > 0:
+        emplist = "No stats for "
+        for e in empties:
+            emplist = emplist + e['name'] + "; "
+        output = output + emplist[:-2]
+
     return output
 
 def player_vs_team(name, team, year=None):
