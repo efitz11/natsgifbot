@@ -277,14 +277,21 @@ def find_youtube_homeruns(return_str=False):
             if datestr in res['snippet']['title'] or otherdatestr in res['snippet']['title']:
                 id = res['id']['videoId']
                 title = res['snippet']['title']
+                if 'FastCast' in title:
+                    continue
                 url = "https://www.googleapis.com/youtube/v3/videos?id=" + id + "&part=contentDetails&key=" + key
                 print(url)
                 req = Request(url, headers={'User-Agent' : "ubuntu"})
                 s = json.loads(urlopen(req).read().decode("utf-8"))
                 duration = s['items'][0]['contentDetails']['duration']
                 duration = duration[2:]
-                duration = duration.replace('M',':')
-                duration = duration.replace('S','')
+                m = duration.find('M')
+                min = int(duration[:m])
+                if 'S' not in duration:
+                    sec = 0
+                else:
+                    sec = int(duration[m+1:duration.find('S')])
+                duration = "%d:%02d" % (min, sec)
                 url = "https://www.youtube.com/watch?v=" + id
                 s = "[%s](%s) - %s\n\n" % (title,url,duration)
                 print(s)
