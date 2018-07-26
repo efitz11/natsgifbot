@@ -102,9 +102,12 @@ def get_sound_smarts():
                 if body not in items:
                     items.append(body)
         awayteam = game['teams']['away']['team']['teamName']
-        awayscore = game['teams']['away']['score']
         hometeam = game['teams']['home']['team']['teamName']
-        homescore = game['teams']['home']['score']
+        awayscore,homescore = "",""
+        if 'score' in game['teams']['away']:
+            awayscore = game['teams']['away']['score']
+        if 'score' in game['teams']['home']:
+            homescore = game['teams']['home']['score']
         outstr = "**%s %d, %s %d:**\n\n" % (awayteam, awayscore, hometeam, homescore)
         output = output + outstr
         # print(outstr)
