@@ -108,7 +108,7 @@ def get_sound_smarts():
             awayscore = game['teams']['away']['score']
         if 'score' in game['teams']['home']:
             homescore = game['teams']['home']['score']
-        outstr = "**%s %d, %s %d:**\n\n" % (awayteam, awayscore, hometeam, homescore)
+        outstr = "**%s %s, %s %s:**\n\n" % (awayteam, str(awayscore), hometeam, str(homescore))
         output = output + outstr
         # print(outstr)
         if len(items) > 0:
