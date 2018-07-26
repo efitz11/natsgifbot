@@ -184,9 +184,39 @@ def find_top_plays(return_str=False):
     vids = []
     output = ""
     for res in results:
-        if date in res['display_timestamp'] or (res['blurb'] is not None and yest in res['blurb']):
+        if (date in res['display_timestamp'] or (res['blurb'] is not None and yest in res['blurb'])) and 'daily dash' not in res['blurb'].lower():
             blurb = res['blurb']
             if "top" in blurb.lower() and ("plays" in blurb.lower() or "home runs" in blurb.lower()):
+                url = res['url']
+                dir = get_direct_video_url(url)
+                if dir is not None:
+                    url = dir
+                duration = res['duration'][3:]
+                s = "[%s](%s) - %s\n\n" % (blurb,url,duration)
+                print(s)
+                if return_str:
+                    output = output + s
+                vids.append((blurb,url,duration))
+    if return_str:
+        return output
+    return vids
+
+def find_daily_dash(return_str=False):
+    url = "https://search-api.mlb.com/svc/search/v2/mlb_global_sitesearch_en/sitesearch?hl=true&facet=type&expand=partner.media&q=daily%2Bdash&page=1"
+    print(url)
+    req = Request(url, headers={'User-Agent' : "ubuntu"})
+    s = json.loads(urlopen(req).read().decode("utf-8"))
+    results = s['docs']
+    now = datetime.now()# - timedelta(days=1)
+    yesterday = now - timedelta(days=1)
+    yest = "%d/%d/%s:" % (yesterday.month, yesterday.day, str(yesterday.year)[2:])
+    date = "%d-%02d-%02d" % (now.year, now.month, now.day)
+    vids = []
+    output = ""
+    for res in results:
+        if date in res['display_timestamp'] or (res['blurb'] is not None and yest in res['blurb']):
+            blurb = res['blurb']
+            if "daily dash" in blurb.lower():
                 url = res['url']
                 dir = get_direct_video_url(url)
                 if dir is not None:
@@ -367,6 +397,7 @@ def get_all_outputs():
     output = output + find_quick_pitch(return_str=True)
     output = output + find_youtube_homeruns(return_str=True)
     output = output + find_top_plays(return_str=True)
+    output = output + find_daily_dash(return_str=True)
     output = output + "****\n"
     output = output + find_must_cs(return_str=True)
     output = output + "****\n"
