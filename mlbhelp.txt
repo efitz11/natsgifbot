@@ -19,6 +19,8 @@ each of the previous commands can end in a number of (+days or -days) to change 
 !mlb next [n] <team> - print the next [n] days of games for <team>
 
 !mlb dl <team> - print players on <team>'s disabled list
+!mlb batters <team> - print all batters on the team's roster
+!mlb pitchers <team> - print all pitchers on the team's roster
 
 !mlb [h][c][b,p]stats <player> [year] [year2]  - print the player's season stats, year defaults to current year
                     - year2 also optional, lists all years between [year] and [year2]

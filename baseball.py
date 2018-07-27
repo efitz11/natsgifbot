@@ -49,6 +49,8 @@ class Baseball():
             each of the previous commands can end in a number of (+days or -days) to change the date
 
         dl <team>
+        batters <team>
+        pitchers <team>
 
         last [n] <team>
         next [n] <team>
@@ -204,6 +206,10 @@ class Baseball():
             team = ' '.join(team[1:])
             await self.bot.say("```%s```" % mymlbstats.get_team_dl(team))
             return
+        elif team[0] in ['batters','pitchers']:
+            h = (team[0] == 'batters')
+            team = ' '.join(team[1:])
+            await self.bot.say("```%s```" % mymlbstats.print_roster(team, hitters=h))
         elif team[0] in ['past', 'next']:
             num = 2
             backwards = team[0] == 'past'
