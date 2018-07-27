@@ -1331,6 +1331,31 @@ def get_inning_plays(team, inning, delta=None):
         output = output + "\n"
     return output
 
+def print_roster(team,hitters=True):
+    teamid = get_teamid(team)
+    if teamid == None:
+        return "Team not found"
+    roster = get_team_info(teamid)['roster']
+    pitchers = []
+    batters = []
+    for player in roster:
+        s = player['person']['stats'][0]['splits'][0]['stat']
+        s['name'] = player['person']['fullName']
+        s['pos'] = player['position']['abbreviation']
+        if int(player['position']['code']) == 1:
+            pitchers.append(s)
+        else:
+            batters.append(s)
+    if hitters:
+        output = "List of batters:\n\n"
+        items = ['name','pos','gamesPlayed','atBats','ops']
+        output = output + _print_table(items,batters,repl_map={'gamesPlayed':'G','atBats':'ab'})
+    else:
+        output = "List of pitchers:\n\n"
+        items = ['name','gamesPlayed','inningsPitched','era','whip']
+        output = output + _print_table(items,pitchers,repl_map={'gamesPlayed':'G','inningsPitched':'ip'})
+    return output
+
 def _print_table(labels, dicts, repl_map={}):
     repl_map = {'d':'2B','t':'3B', **repl_map}
     lines = ['' for i in range(len(dicts)+1)]
@@ -1398,5 +1423,6 @@ if __name__ == "__main__":
     # print(get_player_season_splits("Bryce Harper","vsl", year="2017"))
     # print(player_vs_team("chris archer","wsh"))
     # print(get_game_highlights_plays("530753"))
-    print(get_inning_plays("col", 7))
+    # print(get_inning_plays("col", 7))
     # print(compare_player_stats(["ohtani", "harper"]))
+    print(print_roster('wsh',hitters=False))
