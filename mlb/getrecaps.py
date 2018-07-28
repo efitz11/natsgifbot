@@ -80,6 +80,8 @@ def get_sound_smarts():
                     body = body[:body.find('<p><b>')-6].strip()
                 if '<p><p.><b>' in body:
                     body = body[:body.find('<p><p.><b>')-9].strip()
+                if '<p><span class="token token-video"' in body:
+                    body = body[:body.find('<p><span class="token token-video"')].strip()
                 body = body.replace('</span>', '')
                 body = body.replace('\n', ' ')
                 body = body.replace('<p>', '')
@@ -93,7 +95,7 @@ def get_sound_smarts():
                     end = body[endidx:]
                     body = start + end
                 while "<span" in body:
-                    # print(body)
+                    print(body)
                     idx = body.find("<span")
                     endidx = body.find(">") + 1
                     start = body[:idx]
