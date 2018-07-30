@@ -9,6 +9,9 @@ import random
 import re
 
 class Reddit():
+    disabled_subs = ['coconutwater']
+    disabled_str = "Sorry, retrieving posts from that sub is not allowed"
+
     def __init__(self,bot):
         self.bot = bot
         # get tokens from file
@@ -20,8 +23,11 @@ class Reddit():
         self.reddit = praw.Reddit(client_id=reddit_clientid,
                      client_secret=reddit_token,
                      user_agent='windows:natsgifbot (by /u/efitz11)')
-        
+
+
     def sub(self, subreddit, selfpost=False,limit=25):
+        if subreddit in self.disabled_subs:
+            return self.disabled_str
         list = []
         try:
             for submission in self.reddit.subreddit(subreddit).hot(limit=limit):
@@ -74,6 +80,9 @@ class Reddit():
         """<subreddit> <num> get the #num post from subreddit/hot"""
         #subreddit = ''.join(text).lower()
         subreddit = text
+        if subreddit in self.disabled_subs:
+            await self.bot.say(self.disabled_str)
+            return
         count = 0
         if num > 0:
             for submission in self.reddit.subreddit(subreddit).hot(limit=(num+2)):
@@ -94,6 +103,9 @@ class Reddit():
     async def rn(self, text:str, num:int=-1):
         """<subreddit> <num> get the #num post from subreddit/new"""
         subreddit = text
+        if subreddit in self.disabled_subs:
+            await self.bot.say(self.disabled_str)
+            return
         count = 0
         if num > 0:
             for submission in self.reddit.subreddit(subreddit).new(limit=(num+2)):
@@ -115,11 +127,18 @@ class Reddit():
         for s in query:
             patterns.append(re.compile(s,re.IGNORECASE))
         if subreddit.endswith("/new"):
-            list = self.reddit.subreddit(subreddit[:subreddit.find("/")]).new(limit=100)
+            subreddit = subreddit[:subreddit.find("/")]
+            if subreddit in self.disabled_subs:
+                await self.bot.say(self.disabled_str)
+                return
+            list = self.reddit.subreddit(subreddit).new(limit=100)
         else:
             i = subreddit.find("/")
             if i != -1:
                 subreddit = subreddit[:i]
+            if subreddit in self.disabled_subs:
+                await self.bot.say(self.disabled_str)
+                return
             list = self.reddit.subreddit(subreddit).hot(limit=100)
         for submission in list:
             matched = True
