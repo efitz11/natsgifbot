@@ -45,10 +45,11 @@ def fuzzygif(query, file):
     for line in f:
         search = ','.join(line.split(',')[:-1])
         sc = fuzz.partial_token_sort_ratio(query,search)
-        # if sc > 50:
-        #     print (search, sc)
+        if sc < 70:
+            continue
         if sc > score:
             highest,score = line,sc
+            print(highest,score)
             matches = [line]
         elif sc == score:
             matches.append(line)
@@ -56,7 +57,7 @@ def fuzzygif(query, file):
     if len(matches) == 0:
         return "no matches"
     # for match in matches:
-    #     print(match)
+        # print(match)
     num = random.randint(0,len(matches)-1)
     return matches[num].strip()
 
