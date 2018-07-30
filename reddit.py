@@ -9,7 +9,7 @@ import random
 import re
 
 class Reddit():
-    disabled_subs = ['coconutwater']
+    disabled_subs = ['coconutwater','trypophobia']
     disabled_str = "Sorry, retrieving posts from that sub is not allowed"
 
     def __init__(self,bot):
