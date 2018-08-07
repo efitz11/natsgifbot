@@ -791,6 +791,8 @@ def get_player_gamelogs(name, num=5, forcebatting=False):
     gamelog = s['sport_%s_game_log_composed' % type]['sport_%s_game_log' % type]['queryResults']['row']
     output = "Game Log for %s's last %d games:\n\n" % (player['name_display_first_last'], num)
     games = []
+    if num > len(gamelog):
+        num = len(gamelog)
     for i in range(num):
         game = gamelog[-i-1]
         games.append(game)
