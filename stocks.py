@@ -27,8 +27,10 @@ def get_quote(symbol):
     elif mcap >= 1e6:
         cap = round(mcap/1e6, 1)
         cap = str(cap) + "M"
-    else:
+    elif mcap >= 1e3:
         cap = str(round(mcap/1e3,1))+ "k"
+    else:
+        cap = str(mcap)
     if change != "n/a" and change > 0:
         ch = "+" + ch
         chper = "+" + chper
