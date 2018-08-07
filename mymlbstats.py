@@ -410,9 +410,12 @@ def print_linescore(team, delta=None):
                 line2 = "%s %s" % (line2, hr.rjust(lenstr))
             away = game['linescore']['teams']['away']
             home = game['linescore']['teams']['home']
-            (ar, hr) = (str(away['runs']), str(home['runs']))
-            (ah, hh) = (str(away['hits']), str(home['hits']))
-            (ae, he) = (str(away['errors']), str(home['errors']))
+            if 'runs' in away:
+                (ar, hr) = (str(away['runs']), str(home['runs']))
+                (ah, hh) = (str(away['hits']), str(home['hits']))
+                (ae, he) = (str(away['errors']), str(home['errors']))
+            else:
+                continue
             rlen = max(len(ar),len(hr))
             hlen = max(len(ah),len(hh))
             elen = max(len(ae),len(he))
