@@ -1317,7 +1317,15 @@ def get_inning_plays(team, inning, delta=None):
                 dist = str(int(hitdata['totalDistance']))
             except:
                 dist = str(hitdata['totalDistance'])
-            data = data + " | %s ft, %.1f mph, %d degrees" % (dist, hitdata['launchSpeed'], hitdata['launchAngle'])
+            try:
+                speed = "%.1f mph" % hitdata['launchSpeed']
+            except:
+                speed = str(hitdata['launchSpeed'])
+            try:
+                angle = "%d" % hitdata['launchAngle']
+            except:
+                angle = str(hitdata['launchAngle'])
+            data = data + " | %s ft, %s mph, %s degrees" % (dist, speed, angle)
         data = data + ")"
         if play['about']['isScoringPlay']:
             desc = desc + "(%d-%d)" % (play['result']['awayScore'], play['result']['homeScore'])
