@@ -282,7 +282,7 @@ def get_game_feed(gamepk):
 
 def get_team_info(teamid):
     url = "http://statsapi.mlb.com/api/v1/teams/%d/roster?hydrate=person(stats(splits=statsSingleSeason))" % teamid
-    # print(url)
+    print(url)
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     s = json.loads(urlopen(req).read().decode("utf-8"))
     return s
@@ -1362,7 +1362,10 @@ def print_roster(team,hitters=True):
     pitchers = []
     batters = []
     for player in roster:
-        s = player['person']['stats'][0]['splits'][0]['stat']
+        if 'stats' in player['person']:
+            s = player['person']['stats'][0]['splits'][0]['stat']
+        else:
+            s = dict()
         s['name'] = player['person']['fullName']
         s['pos'] = player['position']['abbreviation']
         if int(player['position']['code']) == 1:
@@ -1374,6 +1377,8 @@ def print_roster(team,hitters=True):
         items = ['name','pos','gamesPlayed','atBats','ops']
         output = output + _print_table(items,batters,repl_map={'gamesPlayed':'G','atBats':'ab'})
     else:
+        for p in pitchers:
+            print(p['name'])
         output = "List of pitchers:\n\n"
         items = ['name','gamesPlayed','inningsPitched','era','whip']
         output = output + _print_table(items,pitchers,repl_map={'gamesPlayed':'G','inningsPitched':'ip'})
@@ -1388,11 +1393,17 @@ def _print_table(labels, dicts, repl_map={}):
             l = repl_map[label]
         length = len(l)
         for d in dicts:
-            r = str(d[label])
+            if label in d:
+                r = str(d[label])
+            else:
+                r = ""
             length = max(length, len(r))
         lines[0] = "%s %s" % (lines[0], l.rjust(length).upper())
         for i in range(len(dicts)):
-            r = str(dicts[i][label])
+            if label in dicts[i]:
+                r = str(dicts[i][label])
+            else:
+                r = ""
             lines[i+1] = "%s %s" % (lines[i+1], r.rjust(length))
     return '\n'.join(lines)
 
@@ -1400,7 +1411,10 @@ def _print_labeled_list(labels, dict, header=True, repl_map={'d':'2B','t':'3B'})
     line1 = ""
     line2 = ""
     for label in labels:
-        r = str(dict[label])
+        if label in dict:
+            r = str(dict[label])
+        else:
+            r = ""
         if label in repl_map:
             label = repl_map[label]
         l = max(len(r), len(label))
