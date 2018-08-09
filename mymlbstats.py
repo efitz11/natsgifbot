@@ -823,9 +823,19 @@ def _get_player_info_line(player):
     weight = "%s lbs" % (player['weight'])
     return "%s | B/T: %s/%s | %s | %s" % (pos, bats,throws, height, weight)
 
-def pitcher_vs_team(name, team):
-    teamid = get_teamid(team)
+def batter_or_pitcher_vs(name, team):
     player = _get_player_search(name)
+    if player is None:
+        return "No matching player found"
+    if player['position'] == 'P':
+        return pitcher_vs_team(name,team, player=player)
+    else:
+        return player_vs_team(name,team)
+
+def pitcher_vs_team(name, team, player=None):
+    teamid = get_teamid(team)
+    if player is None:
+        player = _get_player_search(name)
     if player is None:
         return "No matching player found"
     now = datetime.now()
