@@ -22,7 +22,6 @@ auth_users = ['fitz#6390']
 
 pattern69 = re.compile('(^|[\s\.]|\$)[6][\.]*[9]([\s\.]|x|%|$|th)')
 patterncheer = re.compile('cheer$', re.IGNORECASE)
-patternsolis = re.compile('solis', re.IGNORECASE)
 patternpoop = re.compile('mets|phillies|braves',re.IGNORECASE)
 patternperf = re.compile('perfect game',re.IGNORECASE)
 patternbenoit = re.compile('benoit$',re.IGNORECASE)
@@ -596,8 +595,6 @@ async def on_message(message):
             await bot.add_reaction(message, emoji_letter_map['a'])
             await bot.add_reaction(message, emoji_letter_map['t'])
             await bot.add_reaction(message, emoji_letter_map['s'])
-        if patternsolis.search(message.content):
-            await bot.add_reaction(message, u"\U0001F528")
         if patternperf.search(message.content):
             await bot.send_message(message.channel,"FUCK JOSE TABATA")
         if patternbenoit.search(message.content):
