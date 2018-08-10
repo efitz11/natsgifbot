@@ -101,12 +101,13 @@ def get_game(team, sport):
                 game['possteam'] = event['competitions'][0]['situation']['possession']
             except:
                 game['possteam'] = None
-            leaders = event['competitions'][0]['leaders'][0]['leaders']
-            game['passleader'] = leaders[0]['athlete']['displayName'] + " - " + str(leaders[0]['value']) + " yds"
-            leaders = event['competitions'][0]['leaders'][1]['leaders']
-            game['rushleader'] = leaders[0]['athlete']['displayName'] + " - " + str(leaders[0]['value']) + " yds"
-            leaders = event['competitions'][0]['leaders'][2]['leaders']
-            game['recleader'] = leaders[0]['athlete']['displayName'] + " - " + str(leaders[0]['value']) + " yds"
+            if 'leaders' in event['competitions'][0]:
+                leaders = event['competitions'][0]['leaders'][0]['leaders']
+                game['passleader'] = leaders[0]['athlete']['displayName'] + " - " + str(leaders[0]['value']) + " yds"
+                leaders = event['competitions'][0]['leaders'][1]['leaders']
+                game['rushleader'] = leaders[0]['athlete']['displayName'] + " - " + str(leaders[0]['value']) + " yds"
+                leaders = event['competitions'][0]['leaders'][2]['leaders']
+                game['recleader'] = leaders[0]['athlete']['displayName'] + " - " + str(leaders[0]['value']) + " yds"
             try:
                 game['situation'] = event['competitions'][0]['situation']['downDistanceText']
             except:
