@@ -193,6 +193,7 @@ class Baseball():
             return
         elif team[0] == 'vs':
             opp = team[1]
+            year = None
             if team[-1].isdigit():
                 year = team[-1]
                 team = team[0:-1]
