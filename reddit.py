@@ -25,6 +25,11 @@ class Reddit():
                      user_agent='windows:natsgifbot (by /u/efitz11)')
 
 
+    def get_comment(self, url):
+        # comment = self.reddit.comment(url=url)
+        comment = self.reddit.submission(url=url).comments[0]
+        return comment.body
+
     def sub(self, subreddit, selfpost=False,limit=25):
         if subreddit in self.disabled_subs:
             return self.disabled_str
