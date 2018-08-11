@@ -791,14 +791,21 @@ def get_player_gamelogs(name, num=5, forcebatting=False):
     print(url)
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     s = json.loads(urlopen(req).read().decode("utf-8"))
-    gamelog = s['sport_%s_game_log_composed' % type]['sport_%s_game_log' % type]['queryResults']['row']
-    output = "Game Log for %s's last %d games:\n\n" % (player['name_display_first_last'], num)
+    gamelog = s['sport_%s_game_log_composed' % type]['sport_%s_game_log' % type]['queryResults']
+    totalsize = int(gamelog['totalSize'])
+    if totalsize == 0:
+        return "No games played"
     games = []
-    if num > len(gamelog):
-        num = len(gamelog)
-    for i in range(num):
-        game = gamelog[-i-1]
-        games.append(game)
+    if totalsize == 1:
+        games.append(gamelog['row'])
+        num = 1
+    else:
+        if num > len(gamelog):
+            num = len(gamelog)
+        for i in range(num):
+            game = gamelog[-i-1]
+            games.append(game)
+    output = "Game Log for %s's last %d games:\n\n" % (player['name_display_first_last'], num)
     if not pitching:
         stats = ['game_day','opponent_abbrev','ab','h','d','t','hr','r','rbi','bb','so','sb','cs','avg','obp','slg','ops']
     else:
