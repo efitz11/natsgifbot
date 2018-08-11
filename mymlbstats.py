@@ -804,7 +804,6 @@ def get_player_gamelogs(name, num=5, forcebatting=False):
         if num > len(gamelog):
             num = len(gamelog)
         for i in range(num):
-            print(i)
             game = gamelog[-i-1]
             games.append(game)
     output = "Game Log for %s's last %d games:\n\n" % (player['name_display_first_last'], num)
