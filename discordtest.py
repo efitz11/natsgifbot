@@ -585,6 +585,11 @@ async def on_message(message):
         await bot.delete_message(message)
         await bot.process_commands(message)
     else:
+        if 'reddit.com' in message.content:
+            urls = re.findall(r'(https?://\S+)', message.content)
+            for url in urls:
+                print(url)
+                await bot.send_message(message.channel, "```%s```" % bot.cogs['Reddit'].get_comment(url))
         if pattern69.search(message.content):
             await bot.add_reaction(message, emoji_letter_map['n'])
             await bot.add_reaction(message, emoji_letter_map['i'])
