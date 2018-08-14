@@ -392,6 +392,11 @@ async def frink(*query:str):
 async def nice():
     """bot says 'nice''"""
     await bot.say("nice")
+
+@bot.command()
+async def zoop():
+    """zoop"""
+    await bot.say(":point_right: :sunglasses: :point_right:")
     
 @bot.command(pass_context=True)
 async def react(ctx, reactionstr:str, *search:str):
