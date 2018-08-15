@@ -25,6 +25,7 @@ patterncheer = re.compile('cheer$', re.IGNORECASE)
 patternpoop = re.compile('mets|phillies|braves',re.IGNORECASE)
 patternperf = re.compile('perfect game',re.IGNORECASE)
 patternbenoit = re.compile('benoit$',re.IGNORECASE)
+patternalexaplay = re.compile('alexa play', re.IGNORECASE)
 # patterneaton = re.compile('(?<!(Miami University Great ))(Adam Eaton)', re.IGNORECASE)
 
 pidfile = 'discordbotpid.txt'
@@ -242,22 +243,26 @@ async def flip():
 @bot.command()
 async def giflist():
     await bot.say("https://github.com/efitz11/natsgifbot/blob/master/postlist.csv")
-    
-@bot.command()
-async def youtube(*query:str):
-    """get the first youtube video for a query"""
-    q = '+'.join(query)
-    url = "https://www.youtube.com/results?search_query=" + q
-    
+
+def get_youtube(query):
+    query = query.replace(' ','+')
+    url = "https://www.youtube.com/results?search_query=" + query
+
     req = Request(url)
     req.headers["User-Agent"] = "windows 10 bot"
     resource = urlopen(req)
     content = resource.read().decode(resource.headers.get_content_charset())
-    
+
     findstr = "<li><div class=\"yt-lockup yt-lockup-tile yt-lockup-video vve-check clearfix\" data-context-item-id=\""
     contents = content[content.find(findstr)+len(findstr):]
     vid = contents[:contents.find("\"")]
-    await bot.say("https://youtube.com/watch?v="+vid)
+    return "https://youtube.com/watch?v="+vid
+
+@bot.command()
+async def youtube(*query:str):
+    """get the first youtube video for a query"""
+    q = '+'.join(query)
+    await bot.say(get_youtube(q))
 
 @bot.command()
 async def weather(*location:str):
@@ -609,6 +614,11 @@ async def on_message(message):
             await bot.send_message(message.channel,"FUCK JOSE TABATA")
         if patternbenoit.search(message.content):
             await bot.send_message(message.channel,"balls.")
+        match = patternalexaplay.search(message.content)
+        if match:
+            query = message.content[match.end():]
+            await bot.send_message(message.channel,get_youtube(query.strip()))
+
         # if patterneaton.search(message.content):
         #     await bot.send_message(message.channel,"Miami University Great Adam Eaton*")
 
