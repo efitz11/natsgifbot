@@ -52,6 +52,22 @@ def get_forecast(text):
             c = day['text']
             output = output + d.ljust(4) + h.rjust(3)+ "/" + l.ljust(3) + c + "\n"
         return output + "```"
-    
+
+def get_lat_lon(search):
+    query = search.replace(' ','+')
+    url = "https://maps.googleapis.com/maps/api/geocode/json?address=" + query + "&key="
+    with open("keys.json",'r') as f:
+        f = json.loads(f.read())
+    for k in f['keys']:
+        if k['name'] == 'google':
+            key = k['key']
+    if key is not None:
+        url = url + key
+        req = Request(url, headers={'User-Agent' : "ubuntu"})
+        s = json.loads(urlopen(req).read().decode("utf-8"))
+        lat = s['results'][0]['geometry']['location']['lat']
+        lon = s['results'][0]['geometry']['location']['lng']
+        return(lat,lon)
+
 #get_current_weather('%2C'.join(("fairfax,","va")))
 #print(get_current_weather('22203'))
