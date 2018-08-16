@@ -687,7 +687,7 @@ def _get_player_search(name, active='Y'):
     name = name.replace(' ', '+').upper()
     if name = 'SEVERINO':
         name = 'PEDRO SEVERINO'
-    if name = 'SOLIS'
+    if name = 'SOLIS':
         name = 'SAMMY SOLIS'
     url = "http://lookup-service-prod.mlb.com/json/named.search_player_all.bam?sport_code=%27mlb%27&name_part=%27"+ \
           name+"%25%27&active_sw=%27" + active + "%27"
