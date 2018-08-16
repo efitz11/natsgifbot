@@ -685,10 +685,6 @@ def get_stat_leader(stat):
 def _get_player_search(name, active='Y'):
     # find player id
     name = name.replace(' ', '+').upper()
-    if name == 'SEVERINO':
-        name = 'PEDRO SEVERINO'
-    if name == 'SOLIS':
-        name = 'SAMMY SOLIS'
     url = "http://lookup-service-prod.mlb.com/json/named.search_player_all.bam?sport_code=%27mlb%27&name_part=%27"+ \
           name+"%25%27&active_sw=%27" + active + "%27"
     print(url)
@@ -697,6 +693,9 @@ def _get_player_search(name, active='Y'):
     result = s['search_player_all']['queryResults']
     size = int(result['totalSize'])
     if size > 1:
+        for p in result['row']:
+            if p['team_id'] == '120':
+                return p
         return result['row'][0]
     elif size == 1:
         return result['row']
