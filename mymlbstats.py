@@ -405,7 +405,11 @@ def print_linescore(team, delta=None):
             line0 = "   "
             line1 = awayabv.upper().ljust(3)
             line2 = homeabv.upper().ljust(3)
-            inningslist = game['linescore']['innings']
+            try:
+                inningslist = game['linescore']['innings']
+            except:
+                continue
+
             for inning in inningslist:
                 if 'runs' in inning['away']:
                     ar = str(inning['away']['runs'])
