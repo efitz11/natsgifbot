@@ -729,61 +729,65 @@ def get_player_line(name, delta=None):
         game = s['dates'][0]['games'][0]
     except IndexError:
         return "Couldn't find a game for player %s" % (disp_name)
-    gamepk = game['gamePk']
-    if game['teams']['away']['team']['id'] == teamid:
-        opp = game['teams']['home']['team']['abbreviation']
-        side = 'away'
-    else:
-        opp = game['teams']['away']['team']['abbreviation']
-        side = 'home'
-    useDH = False
-    if game['teams']['home']['team']['league']['id'] == 103:
-        useDH = True
-    box = get_boxscore(str(gamepk))
-    try:
-        stats = box['teams'][side]['players']['ID' + str(pid)]['stats']
-    except KeyError:
-        return "No stats found for player %s" % disp_name
-    d = _get_date_from_delta(delta)
-    output = "%s %d/%d vs %s:\n\n" % (disp_name, d.month, d.day, opp.upper())
-    hasstats = False
-    pitcher = False
-    if 'inningsPitched' in stats['pitching']:
-        hasstats = True
-        pitcher = True
-        s = stats['pitching']
-        dec = ""
-        if 'note' in s:
-            dec = s['note']
-        output = output + " IP  H  R ER HR BB SO  P-S\n"
-        output = output + "%s %2d %2d %2d %2d %2d %2d %2d-%d %s\n\n" % (s['inningsPitched'],
-                                                               s['hits'],
-                                                               s['runs'],
-                                                               s['earnedRuns'],
-                                                               s['homeRuns'],
-                                                               s['baseOnBalls'],
-                                                               s['strikeOuts'],
-                                                               s['pitchesThrown'],
-                                                               s['strikes'],
-                                                               dec)
-    if 'atBats' in stats['batting'] and (not pitcher or (pitcher and not useDH)):
-        hasstats=True
-        s = stats['batting']
-        output = output + "AB H 2B 3B HR R RBI BB SO SB CS\n"
-        output = output + "%2d %d %2d %2d %2d %d %3d %2d %2d %2d %2d\n" % (
-            s['atBats'],
-            s['hits'],
-            s['doubles'],
-            s['triples'],
-            s['homeRuns'],
-            s['runs'],
-            s['rbi'],
-            s['baseOnBalls'],
-            s['strikeOuts'],
-            s['stolenBases'],
-            s['caughtStealing'])
-    if not hasstats:
-        return "No stats for %s on %d/%d vs %s" % (disp_name, d.month, d.day, opp.upper())
+    output = ""
+    for game in s['dates'][0]['games']:
+        gamepk = game['gamePk']
+        if game['teams']['away']['team']['id'] == teamid:
+            opp = game['teams']['home']['team']['abbreviation']
+            side = 'away'
+        else:
+            opp = game['teams']['away']['team']['abbreviation']
+            side = 'home'
+        useDH = False
+        if game['teams']['home']['team']['league']['id'] == 103:
+            useDH = True
+        box = get_boxscore(str(gamepk))
+        try:
+            stats = box['teams'][side]['players']['ID' + str(pid)]['stats']
+        except KeyError:
+            output = output + "No stats found for player %s" % disp_name
+            continue
+        d = _get_date_from_delta(delta)
+        output = output + "%s %d/%d vs %s:\n\n" % (disp_name, d.month, d.day, opp.upper())
+        hasstats = False
+        pitcher = False
+        if 'inningsPitched' in stats['pitching']:
+            hasstats = True
+            pitcher = True
+            s = stats['pitching']
+            dec = ""
+            if 'note' in s:
+                dec = s['note']
+            output = output + " IP  H  R ER HR BB SO  P-S\n"
+            output = output + "%s %2d %2d %2d %2d %2d %2d %2d-%d %s\n\n" % (s['inningsPitched'],
+                                                                   s['hits'],
+                                                                   s['runs'],
+                                                                   s['earnedRuns'],
+                                                                   s['homeRuns'],
+                                                                   s['baseOnBalls'],
+                                                                   s['strikeOuts'],
+                                                                   s['pitchesThrown'],
+                                                                   s['strikes'],
+                                                                   dec)
+        if 'atBats' in stats['batting'] and (not pitcher or (pitcher and not useDH)):
+            hasstats=True
+            s = stats['batting']
+            output = output + "AB H 2B 3B HR R RBI BB SO SB CS\n"
+            output = output + "%2d %d %2d %2d %2d %d %3d %2d %2d %2d %2d\n" % (
+                s['atBats'],
+                s['hits'],
+                s['doubles'],
+                s['triples'],
+                s['homeRuns'],
+                s['runs'],
+                s['rbi'],
+                s['baseOnBalls'],
+                s['strikeOuts'],
+                s['stolenBases'],
+                s['caughtStealing'])
+            print(output)
+        if not hasstats:
+            output = output + "No stats for %s on %d/%d vs %s\n" % (disp_name, d.month, d.day, opp.upper())
     return output
 
 def get_ohtani_line(delta=None):
