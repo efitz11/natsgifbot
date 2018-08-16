@@ -289,7 +289,9 @@ def get_team_info(teamid):
 
 def get_team_dl(team):
     teamid = get_teamid(team)
-    url = "http://statsapi.mlb.com/api/v1/teams/%d/roster/40Man/?hydrate=person(stats(splits=statsSingleSeason))" % teamid
+    # url = "http://statsapi.mlb.com/api/v1/teams/%d/roster/40Man/?hydrate=person(stats(splits=statsSingleSeason))" % teamid
+    url = "https://statsapi.mlb.com/api/v1/teams/%d/roster/depthChart/?hydrate=person" % teamid
+    print(url)
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     roster = json.loads(urlopen(req).read().decode("utf-8"))['roster']
     output = ""
@@ -299,11 +301,24 @@ def get_team_dl(team):
             desc = player['status']['description']
             if desc not in map:
                 map[desc] = []
-            map[desc].append(player['person']['fullName'])
+            note = player['note']
+            playerid = player['person']['id']
+            for p in map[desc]:
+                if p['person']['id'] == playerid:
+                    if p['note'] == "":
+                        p['note'] = note
+                    break
+            else:  # won't execute if loop was broken
+                map[desc].append(player)
+            # map[desc].append("%s - %s" % (player['person']['fullName'], player['note']))
     for key in map:
         output = output + key + ":\n"
         for player in map[key]:
-            output = output + "  %s\n" % player
+            output = output + "%s" % player['person']['fullName']
+            if player['note'] != "":
+                output = output + ": %s" % player['note']
+            output = output + "\n"
+            # output = output + "  %s\n" % player
         output = output + "\n"
     return output
 
