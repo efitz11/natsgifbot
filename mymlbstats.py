@@ -314,9 +314,9 @@ def get_team_dl(team):
     for key in map:
         output = output + key + ":\n"
         for player in map[key]:
-            output = output + "%s" % player['person']['fullName']
+            output = output + "  %s" % player['person']['fullName'].ljust(20)
             if player['note'] != "":
-                output = output + ": %s" % player['note']
+                output = output + "%s" % player['note']
             output = output + "\n"
             # output = output + "  %s\n" % player
         output = output + "\n"
