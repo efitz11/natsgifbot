@@ -561,6 +561,8 @@ def get_team_schedule(team, num, backward=True):
 
 def list_scoring_plays(team,delta=None,lastonly=False):
     teamid = get_teamid(team)
+    if teamid is None:
+        return []
     s = get_day_schedule(delta, teamid=teamid, scoringplays=True)
     games = s['dates'][0]['games']
     plays = []
