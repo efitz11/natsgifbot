@@ -17,8 +17,6 @@ GAME_STATUS_POST = 2
 type = "80" # 80 = FBS
 # Other leagues go here
 
-seasontype = "2"
-
 groupmap = {"acc":"1", 
             "american":"151", "aac":"151",
             "big 12":"4", 
@@ -49,7 +47,8 @@ def get_game(team):
         for t in groupmap:
             output = output + t + ", "
         return output
-       
+
+    seasontype = "2"
     now = datetime.now()
     year = now.year
     if (now.month == 12 and now.day > 10) or (now.month == 1):
@@ -64,7 +63,8 @@ def get_game(team):
     elif team.lower() in groupmap:
         url = "http://www.espn.com/college-football/scoreboard/_/group/" + groupmap[team.lower()] + "/year/"+str(year)+"/seasontype/"+seasontype
         all = True
-    
+
+    print(url)
     req = Request(url)
     req.headers["User-Agent"] = "windows 10 bot"
     # Load data
