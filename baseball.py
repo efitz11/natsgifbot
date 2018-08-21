@@ -303,28 +303,57 @@ class Baseball():
             else:
                 await self.bot.say("no games found")
 
-    @commands.command()
-    async def milb(self,*team:str):
-        """find minor league info
+    #######################################
+    ##### BEGIN MINOR LEAGUE COMMANDS #####
+    #######################################
+    @commands.group(pass_context=True)
+    async def milb(self, ctx):
+        """Get info on minor league players"""
+        if ctx.invoked_subcommand is None:
+            await self.bot.say('Invalid subcommand passed')
 
-        !milb stats <player> [parent=clubname] [year]
-        !milb log <player>
+    @milb.command()
+    async def stats(self, *team:str):
+        """get a minor league player's stats
+        !milb stats <player> [year] - year is optional, defaults to current"""
+        if team[-1].isdigit():
+            year = team[-1]
+            player = ' '.join(team[:-1])
+            await self.bot.say("```%s```" % mymlbstats.get_milb_season_stats(player,year=year))
+        else:
+            player = ' '.join(team)
+            await self.bot.say("```%s```" % mymlbstats.get_milb_season_stats(player))
 
-        """
-        if len(team) > 1:
-            if team[0] == 'stats':
-                if team[-1].isdigit():
-                    year = team[-1]
-                    player = ' '.join(team[1:-1])
-                    await self.bot.say("```%s```" % mymlbstats.get_milb_season_stats(player,year=year))
-                else:
-                    player = ' '.join(team[1:])
-                    await self.bot.say("```%s```" % mymlbstats.get_milb_season_stats(player))
-                return
-            elif team[0].endswith('log'):
-                player = ' '.join(team[1:])
-                await self.bot.say("```%s```" % mymlbstats.get_milb_log(player))
-                return
+    @milb.command()
+    async def log(self, *team:str):
+        """get a minor league player's game logs
+        !milb log <player>"""
+        player = ' '.join(team)
+        await self.bot.say("```%s```" % mymlbstats.get_milb_log(player))
+
+
+    # @commands.command()
+    # async def milb(self,*team:str):
+    #     """find minor league info
+    #
+    #     !milb stats <player> [parent=clubname] [year]
+    #     !milb log <player>
+    #
+    #     """
+    #     if len(team) > 1:
+    #         if team[0] == 'stats':
+    #             if team[-1].isdigit():
+    #                 year = team[-1]
+    #                 player = ' '.join(team[1:-1])
+    #                 await self.bot.say("```%s```" % mymlbstats.get_milb_season_stats(player,year=year))
+    #             else:
+    #                 player = ' '.join(team[1:])
+    #                 await self.bot.say("```%s```" % mymlbstats.get_milb_season_stats(player))
+    #             return
+    #         elif team[0].endswith('log'):
+    #             player = ' '.join(team[1:])
+    #             await self.bot.say("```%s```" % mymlbstats.get_milb_log(player))
+    #             return
 
 
 def setup(bot):
