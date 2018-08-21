@@ -313,27 +313,27 @@ class Baseball():
             await self.bot.say('Invalid subcommand passed')
 
     @milb.command()
-    async def stats(self, *team:str):
+    async def stats(self, *query:str):
         """get a minor league player's stats
         !milb stats <player> [year] - year is optional, defaults to current"""
-        if team[-1].isdigit():
-            year = team[-1]
-            player = ' '.join(team[:-1])
+        if query[-1].isdigit():
+            year = query[-1]
+            player = ' '.join(query[:-1])
             await self.bot.say("```%s```" % mymlbstats.get_milb_season_stats(player,year=year))
         else:
-            player = ' '.join(team)
+            player = ' '.join(query)
             await self.bot.say("```%s```" % mymlbstats.get_milb_season_stats(player))
 
     @milb.command()
-    async def log(self, *team:str):
+    async def log(self, *query:str):
         """get a minor league player's game logs
         !milb log <player> [num] - num defaults to last 5 games, maximum of 15"""
-        if team[-1].isdigit():
-            num = team[-1]
-            player = ' '.join(team[:-1])
+        if query[-1].isdigit():
+            num = query[-1]
+            player = ' '.join(query[:-1])
             await self.bot.say("```%s```" % mymlbstats.get_milb_log(player,number=num))
         else:
-            player = ' '.join(team)
+            player = ' '.join(query)
             await self.bot.say("```%s```" % mymlbstats.get_milb_log(player))
 
 
