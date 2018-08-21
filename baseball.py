@@ -327,9 +327,14 @@ class Baseball():
     @milb.command()
     async def log(self, *team:str):
         """get a minor league player's game logs
-        !milb log <player>"""
-        player = ' '.join(team)
-        await self.bot.say("```%s```" % mymlbstats.get_milb_log(player))
+        !milb log <player> [num] - num defaults to last 5 games, maximum of 15"""
+        if team[-1].isdigit():
+            num = team[-1]
+            player = ' '.join(team[:-1])
+            await self.bot.say("```%s```" % mymlbstats.get_milb_log(player,number=num))
+        else:
+            player = ' '.join(team)
+            await self.bot.say("```%s```" % mymlbstats.get_milb_log(player))
 
 
     # @commands.command()
