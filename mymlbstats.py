@@ -1036,6 +1036,10 @@ def milb_player_search(name,parent=None):
             for player in s['row']:
                 if parent.lower() in player['parent_team'].lower():
                     return player
+        else:
+            for player in s['row']:
+                if player['parent_team'].lower() == 'nationals':
+                    return player
         return s['row'][0]
 
 def get_milb_season_stats(name, type="hitting",year=None):
