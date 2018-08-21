@@ -1,11 +1,9 @@
-import discord
 from discord.ext import commands
 
 from urllib.request import urlopen, Request
 import urllib.parse
 from datetime import datetime, timedelta, time, date
 
-import mlbgame, mymlbgame
 import mymlbstats
 from bs4 import BeautifulSoup
 
@@ -335,30 +333,6 @@ class Baseball():
         else:
             player = ' '.join(query)
             await self.bot.say("```%s```" % mymlbstats.get_milb_log(player))
-
-
-    # @commands.command()
-    # async def milb(self,*team:str):
-    #     """find minor league info
-    #
-    #     !milb stats <player> [parent=clubname] [year]
-    #     !milb log <player>
-    #
-    #     """
-    #     if len(team) > 1:
-    #         if team[0] == 'stats':
-    #             if team[-1].isdigit():
-    #                 year = team[-1]
-    #                 player = ' '.join(team[1:-1])
-    #                 await self.bot.say("```%s```" % mymlbstats.get_milb_season_stats(player,year=year))
-    #             else:
-    #                 player = ' '.join(team[1:])
-    #                 await self.bot.say("```%s```" % mymlbstats.get_milb_season_stats(player))
-    #             return
-    #         elif team[0].endswith('log'):
-    #             player = ' '.join(team[1:])
-    #             await self.bot.say("```%s```" % mymlbstats.get_milb_log(player))
-    #             return
 
 
 def setup(bot):
