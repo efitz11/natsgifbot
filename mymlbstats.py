@@ -96,8 +96,14 @@ def get_single_game_info(gamepk, gamejson, show_on_deck=False, liveonly=False):
         count = "(%s-%s)" % (balls, strikes)
         output = "%s %s %2d %d | %s %s | %s | %s\n" % (awayabv, str(awayruns).rjust(2), awayhits, awayerrs, inninghalf, inning,
                                                      bases.center(5), "P: " + pitcher)
-        output = output + "%s %s %2d %d |  %s %s  | %s | %s %s\n" % (homeabv, str(homeruns).rjust(2), homehits, homeerrs,
+        if detailstatus != 'Delayed':
+            output = output + "%s %s %2d %d |  %s %s  | %s | %s %s\n" % (homeabv, str(homeruns).rjust(2), homehits, homeerrs,
                                                                      outs, "out".ljust(outjust), count, "B: " + batter, ondeck)
+        else:
+            outs = detailstatus
+            output = output + "%s %s %2d %d | %s | %s | %s %s\n" % (homeabv, str(homeruns).rjust(2), homehits, homeerrs,
+                                                                         outs, count, "B: " + batter, ondeck)
+
         special = None
         if game['flags']['noHitter']:
             special = "NO H*TTER"
