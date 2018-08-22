@@ -288,6 +288,11 @@ async def radar(*query):
         await bot.say("https://api.weather.com/v2/maps/dynamic?geocode=%.2f,%.2f&h=320&w=568&lod=8&product=twcRadarMosaic&map=light&format=jpg&language=en&apiKey=d522aa97197fd864d36b418f39ebb323&a=0" % (lat,lon)
                       + randstr)
 
+@bot.command()
+async def metar(airport_code:str):
+    """get airport metar"""
+    await bot.say(weathermodule.get_current_metar(airport_code))
+
 def convert_number_to_emoji(num):
     snum = str(num)
     out = ""
