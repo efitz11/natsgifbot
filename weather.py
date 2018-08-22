@@ -70,7 +70,8 @@ def get_lat_lon(search):
         return(lat,lon)
 
 def get_current_metar(airport_code):
-    url = "https://www.aviationweather.gov/adds/dataserver_current/httpparam?dataSource=metars&requestType=retrieve&format=xml&hoursBeforeNow=3&mostRecent=true&stationString=PHNL%20" + airport_code
+    url = "https://www.aviationweather.gov/adds/dataserver_current/httpparam?dataSource=metars&requestType=retrieve&format=xml&hoursBeforeNow=3&mostRecent=true&stationString=" + airport_code
+    print(url)
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     open = urlopen(req)
     content = open.read().decode('utf-8')
