@@ -510,7 +510,8 @@ def get_single_game(team,delta=None,print_statcast=True):
         if match:
             output = output + get_single_game_info(gamepk,game, show_on_deck=True) + "\n"
             abstractstatus = game['status']['abstractGameState']
-            if abstractstatus == "Live" and print_statcast:
+            detailedstatus = game['status']['detailedState']
+            if abstractstatus == "Live" and detailedstatus != 'Delayed' and print_statcast:
                 pbp = get_pbp(gamepk)
                 try:
                     if 'description' not in pbp['allPlays'][-1]['result']:
