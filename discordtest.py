@@ -280,12 +280,12 @@ async def radar(*query):
     randstr = "?%d" % random.randint(0,9999)
     if len(query) == 0:
         await bot.say("<https://weather.com/weather/radar/interactive/l/20003:4:US?layer=radar>")
-        await bot.say("https://api.weather.com/v2/maps/dynamic?geocode=38.85,-76.95&h=320&w=568&lod=8&product=twcRadarMosaic&map=light&format=jpg&language=en&apiKey=d522aa97197fd864d36b418f39ebb323&a=0"
+        await bot.say("https://api.weather.com/v2/maps/dynamic?geocode=38.85,-76.95&h=600&w=800&lod=8&product=twcRadarMosaic&map=light&format=jpg&language=en&apiKey=d522aa97197fd864d36b418f39ebb323&a=0"
                       + randstr)
     else:
         lat,lon = weathermodule.get_lat_lon('+'.join(query))
         lat,lon = (round(lat,1),round(lon,1))
-        await bot.say("https://api.weather.com/v2/maps/dynamic?geocode=%.2f,%.2f&h=320&w=568&lod=8&product=twcRadarMosaic&map=light&format=jpg&language=en&apiKey=d522aa97197fd864d36b418f39ebb323&a=0" % (lat,lon)
+        await bot.say("https://api.weather.com/v2/maps/dynamic?geocode=%.2f,%.2f&h=600&w=800&lod=8&product=twcRadarMosaic&map=light&format=jpg&language=en&apiKey=d522aa97197fd864d36b418f39ebb323&a=0" % (lat,lon)
                       + randstr)
 
 @bot.command()
