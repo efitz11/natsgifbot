@@ -1422,12 +1422,13 @@ def print_roster(team,hitters=True):
         else:
             batters.append(s)
     if hitters:
+        from operator import itemgetter
+        batters = sorted(batters, key=itemgetter('atBats'), reverse=True)
         output = "List of batters:\n\n"
-        items = ['name','pos','gamesPlayed','atBats','ops']
+        items = ['name','pos','gamesPlayed','atBats','avg','ops']
         output = output + _print_table(items,batters,repl_map={'gamesPlayed':'G','atBats':'ab'})
     else:
-        for p in pitchers:
-            print(p['name'])
+        pitchers = sorted(pitchers, key=lambda x: float(x['inningsPitched']), reverse=True)
         output = "List of pitchers:\n\n"
         items = ['name','gamesPlayed','inningsPitched','era','whip']
         output = output + _print_table(items,pitchers,repl_map={'gamesPlayed':'G','inningsPitched':'ip'})
