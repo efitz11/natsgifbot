@@ -141,7 +141,7 @@ def get_single_game_info(gamepk, gamejson, show_on_deck=False, liveonly=False):
                         break
         if 'probablePitcher' in game['teams']['home']:
             probhome = game['teams']['home']['probablePitcher']['lastName']
-            if 'stats' in game['teams']['away']['probablePitcher']:
+            if 'stats' in game['teams']['home']['probablePitcher']:
                 for statgroup in game['teams']['home']['probablePitcher']['stats']:
                     if statgroup['type']['displayName'] == "statsSingleSeason" and \
                             statgroup['group']['displayName'] == "pitching":
@@ -1151,6 +1151,36 @@ def get_milb_log(name,number=5):
     output = output + _print_table(stats,games,repl_map=repl_map) + "\n"
     return output
 
+def get_milb_aff_scores(team=None, delta=None):
+    now = _get_date_from_delta(delta)
+    year = str(now.year)
+    month = str(now.month)
+    day = str(now.day)
+    url = "http://lookup-service-prod.bamgrid.com/lookup/json/named.schedule_vw_complete_affiliate.bam?" \
+          "game_date=%27" + year + "/" + month + "/" + day + "%27&season=" + year + "&org_id=120"
+    req = Request(url, headers={'User-Agent' : "ubuntu"})
+    s = json.loads(urlopen(req).read().decode("utf-8"))['schedule_vw_complete_affiliate']['queryResults']
+    output = ""
+    if s['totalSize'] == '1':
+        affs = [s['row']]
+    else:
+        affs = s['row']
+
+    sportmap = {'aaa':11, 'aax':12, 'afa':13, 'afx':14, 'asx':15, 'rok':16}
+    for aff in affs:
+        sportcode = aff['home_sport_code']
+        homeid = aff['home_team_id']
+        url = "http://statsapi.mlb.com/api/v1/schedule?sportId=" + str(sportmap[sportcode]) + "&teamId=" + homeid
+        hydrates = "&hydrate=probablePitcher,person,decisions,team,stats,flags,linescore(matchup,runners),previousPlay"
+        url = url + hydrates
+        req = Request(url, headers={'User-Agent' : "ubuntu"})
+        s = json.loads(urlopen(req).read().decode("utf-8"))['dates'][0]['games']
+        for game in s:
+            gamepk = str(game['gamePk'])
+            output = output + get_single_game_info(gamepk, game) + "\n"
+
+    return output
+
 def _calc_age(birthdate, year=None):
     byear,month,day = birthdate[:birthdate.find('T')].split('-')
     if year is None:
@@ -1512,4 +1542,5 @@ if __name__ == "__main__":
     # print(get_game_highlights_plays("530753"))
     # print(get_inning_plays("col", 7))
     # print(compare_player_stats(["ohtani", "harper"]))
-    print(print_roster('wsh',hitters=False))
+    # print(print_roster('wsh',hitters=False))
+    print(get_milb_aff_scores())
