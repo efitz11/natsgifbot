@@ -27,6 +27,21 @@ class Baseball():
         res = urlopen(req)
         await self.bot.say("<"+res.url+">")#disable embed because it's shit
 
+    def convert_date_to_delta(self, args):
+        now = datetime.now().date()
+        datelist = args[-1].split('/')
+        if len(datelist[2]) == 2:
+            if int("20" + datelist[2]) <= now.year:
+                datelist[2] = "20" + datelist[2]
+            else:
+                datelist[2] = "19" + datelist[2]
+        other = date(int(datelist[2]), int(datelist[0]), int(datelist[1]))
+        delta = other - now
+        direction = ''
+        if delta.days > 0:
+            direction = '+'
+        return direction + str(delta.days)
+
     @commands.command()
     async def mlb(self,*team :str):
         """Get MLB info
@@ -73,19 +88,7 @@ class Baseball():
             team = team[:-1]
 
         if len(team) > 0 and len(team[-1].split('/')) == 3:
-            now = datetime.now().date()
-            datelist = team[-1].split('/')
-            if len(datelist[2]) == 2:
-                if int("20" + datelist[2]) <= now.year:
-                    datelist[2] = "20" + datelist[2]
-                else:
-                    datelist[2] = "19" + datelist[2]
-            other = date(int(datelist[2]), int(datelist[0]), int(datelist[1]))
-            delta = other - now
-            direction = ''
-            if delta.days > 0:
-                direction = '+'
-            delta = direction + str(delta.days)
+            delta = self.convert_date_to_delta(team)
             team = team[:-1]
 
         if len(team) == 0 or (len(team) == 1 and team[0] == 'live'):
@@ -313,6 +316,10 @@ class Baseball():
             delta = None
             if len(args) > 0 and (args[-1].startswith('-') or args[-1].startswith('+')):
                 delta = args[-1]
+                args = args[:-1]
+
+            if len(args) > 0 and len(args[-1].split('/')) == 3:
+                delta = self.convert_date_to_delta(args)
                 args = args[:-1]
 
             if len(args) == 0:
