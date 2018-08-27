@@ -74,8 +74,12 @@ class Reddit():
 
     def get_submission_string(self, submission):
         ret = []
+        if submission.link_flair_text is not None:
+            flair = "*[%s]*" % submission.link_flair_text
+        else:
+            flair = ""
         if submission.is_self:
-            ret.append("[%s] **%s** - posted by /u/%s to /r/%s" % (self.getsubmissionscore(submission), submission.title, submission.author, submission.subreddit))
+            ret.append("[%s] **%s** %s - posted by /u/%s to /r/%s" % (self.getsubmissionscore(submission), submission.title, flair, submission.author, submission.subreddit))
             if len(submission.selftext) > 0:
                 ret.append("```%s```" % submission.selftext)
             ret.append("<%s>" % submission.shortlink[:1995])
