@@ -305,10 +305,14 @@ class Baseball():
     ##### BEGIN MINOR LEAGUE COMMANDS #####
     #######################################
     @commands.group(pass_context=True)
-    async def milb(self, ctx):
-        """Get info on minor league players"""
+    async def milb(self, ctx, *args):
+        """Get info on minor leagues
+        !milb with no args returns Nationals affiliate scores"""
         if ctx.invoked_subcommand is None:
-            await self.bot.say('Invalid subcommand passed')
+            if len(args) == 0:
+                await self.bot.say("```%s```" % mymlbstats.get_milb_aff_scores())
+            else:
+                await self.bot.say('Invalid subcommand passed')
 
     @milb.command()
     async def stats(self, *query:str):
@@ -333,7 +337,6 @@ class Baseball():
         else:
             player = ' '.join(query)
             await self.bot.say("```%s```" % mymlbstats.get_milb_log(player))
-
 
 def setup(bot):
     bot.add_cog(Baseball(bot))
