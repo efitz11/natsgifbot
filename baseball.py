@@ -307,12 +307,17 @@ class Baseball():
     @commands.group(pass_context=True)
     async def milb(self, ctx, *args):
         """Get info on minor leagues
-        !milb with no args returns Nationals affiliate scores"""
+        !milb [team] - print scoreboard for [team] affiliates, defaults to Nats
+        """
         if ctx.invoked_subcommand is None:
             if len(args) == 0:
-                await self.bot.say("```%s```" % mymlbstats.get_milb_aff_scores())
+                await self.bot.say("```python\n%s```" % mymlbstats.get_milb_aff_scores())
             else:
-                await self.bot.say('Invalid subcommand passed')
+                teamid = mymlbstats.get_teamid(' '.join(args))
+                if teamid is None:
+                    await self.bot.say('Invalid subcommand passed')
+                else:
+                    await self.bot.say("```python\n%s```" % mymlbstats.get_milb_aff_scores(teamid=teamid))
 
     @milb.command()
     async def stats(self, *query:str):

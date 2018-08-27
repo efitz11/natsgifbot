@@ -1151,13 +1151,13 @@ def get_milb_log(name,number=5):
     output = output + _print_table(stats,games,repl_map=repl_map) + "\n"
     return output
 
-def get_milb_aff_scores(team=None, delta=None):
+def get_milb_aff_scores(teamid=120, delta=None):
     now = _get_date_from_delta(delta)
     year = str(now.year)
     month = str(now.month)
     day = str(now.day)
     url = "http://lookup-service-prod.bamgrid.com/lookup/json/named.schedule_vw_complete_affiliate.bam?" \
-          "game_date=%27" + year + "/" + month + "/" + day + "%27&season=" + year + "&org_id=120"
+          "game_date=%27" + year + "/" + month + "/" + day + "%27&season=" + year + "&org_id=" + str(teamid)
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     s = json.loads(urlopen(req).read().decode("utf-8"))['schedule_vw_complete_affiliate']['queryResults']
     output = ""
