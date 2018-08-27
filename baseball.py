@@ -310,14 +310,19 @@ class Baseball():
         !milb [team] - print scoreboard for [team] affiliates, defaults to Nats
         """
         if ctx.invoked_subcommand is None:
+            delta = None
+            if len(args) > 0 and (args[-1].startswith('-') or args[-1].startswith('+')):
+                delta = args[-1]
+                args = args[:-1]
+
             if len(args) == 0:
-                await self.bot.say("```python\n%s```" % mymlbstats.get_milb_aff_scores())
+                await self.bot.say("```python\n%s```" % mymlbstats.get_milb_aff_scores(delta=delta))
             else:
                 teamid = mymlbstats.get_teamid(' '.join(args))
                 if teamid is None:
                     await self.bot.say('Invalid subcommand passed')
                 else:
-                    await self.bot.say("```python\n%s```" % mymlbstats.get_milb_aff_scores(teamid=teamid))
+                    await self.bot.say("```python\n%s```" % mymlbstats.get_milb_aff_scores(teamid=teamid, delta=delta))
 
     @milb.command()
     async def stats(self, *query:str):

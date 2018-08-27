@@ -1156,8 +1156,10 @@ def get_milb_aff_scores(teamid=120, delta=None):
     year = str(now.year)
     month = str(now.month)
     day = str(now.day)
+    date = str(now.year) + "-" + str(now.month).zfill(2) + "-" + str(now.day).zfill(2)
     url = "http://lookup-service-prod.bamgrid.com/lookup/json/named.schedule_vw_complete_affiliate.bam?" \
           "game_date=%27" + year + "/" + month + "/" + day + "%27&season=" + year + "&org_id=" + str(teamid)
+    print(url)
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     s = json.loads(urlopen(req).read().decode("utf-8"))['schedule_vw_complete_affiliate']['queryResults']
     output = ""
@@ -1167,10 +1169,10 @@ def get_milb_aff_scores(teamid=120, delta=None):
         affs = s['row']
 
     sportmap = {'aaa':11, 'aax':12, 'afa':13, 'afx':14, 'asx':15, 'rok':16}
-    for aff in affs:
+    for aff in sorted(affs, key=lambda x: sportmap[x['home_sport_code']]):
         sportcode = aff['home_sport_code']
         homeid = aff['home_team_id']
-        url = "http://statsapi.mlb.com/api/v1/schedule?sportId=" + str(sportmap[sportcode]) + "&teamId=" + homeid
+        url = "http://statsapi.mlb.com/api/v1/schedule?sportId=" + str(sportmap[sportcode]) + "&teamId=" + homeid + "&date=" + date
         hydrates = "&hydrate=probablePitcher,person,decisions,team,stats,flags,linescore(matchup,runners),previousPlay"
         url = url + hydrates
         req = Request(url, headers={'User-Agent' : "ubuntu"})
