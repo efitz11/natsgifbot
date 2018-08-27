@@ -1162,7 +1162,8 @@ def get_milb_aff_scores(teamid=120, delta=None):
     print(url)
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     s = json.loads(urlopen(req).read().decode("utf-8"))['schedule_vw_complete_affiliate']['queryResults']
-    output = ""
+    import calendar
+    output = "For %s, %d/%d/%d:\n\n" % (calendar.day_name[now.weekday()],now.month,now.day,now.year)
     if s['totalSize'] == '1':
         affs = [s['row']]
     else:
