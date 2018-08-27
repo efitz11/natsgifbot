@@ -30,40 +30,16 @@ class Reddit():
         comment = self.reddit.submission(url=url).comments[0]
         return comment.body
 
-    def get_submission_string(self, submission):
-        ret = []
-        if submission.is_self:
-            ret.append("[%s] **%s** - posted by /u/%s to /r/%s" % (self.getsubmissionscore(submission), submission.title, submission.author, submission.subreddit))
-            ret.append("```%s```" % submission.selftext)
-            ret.append("<%s>" % submission.shortlink[:1995])
-        else:
-            ret.append("[%s] **%s** - posted by /u/%s to /r/%s" % (self.getsubmissionscore(submission), submission.title, submission.author, submission.subreddit))
-            if submission.over_18:
-                ret.append("**post is NSFW; embed hidden**\n<%s>\t\t<%s>" % (submission.url, submission.shortlink))
-            else:
-                ret.append("%s\t\t<%s>"% (submission.url, submission.shortlink))
-        return ret
-
     def sub(self, subreddit, selfpost=False,limit=25):
         if subreddit in self.disabled_subs:
             return self.disabled_str
         list = []
         try:
             for submission in self.reddit.subreddit(subreddit).hot(limit=limit):
-        #        if submission.is_self == selfpost and not submission.stickied and not submission.over_18:
                 if submission.is_self == selfpost and not submission.stickied:
-                    if submission.is_self:
-                        list.append(submission.title)
-                    else:
-                        url = submission.url
-                        s = ""
-                        if submission.over_18:
-                            s = "**post is NSFW; embed hidden**\n"
-                            url = "<" + url + ">"
-                        s = s + submission.title + "\n" + url + "  \t<" + submission.shortlink+">"
-                        list.append(s)
+                    list.append(submission)
             num = random.randint(0,len(list)-1)
-            return (list[num])
+            return self.get_submission_string(list[num])
         except prawcore.exceptions.Redirect:
             return ("Error: subreddit not found")
         
@@ -71,7 +47,9 @@ class Reddit():
     async def r(self,*text:str):
         """<subreddit> get a random link post from a subreddit"""
         text = ''.join(text)
-        await self.bot.say(self.sub(text))
+        for string in self.sub(text):
+            await self.bot.say(string)
+        # await self.bot.say(self.sub(text))
         
     def getsubmissiontext(self, submission):
         url = submission.url
@@ -93,7 +71,22 @@ class Reddit():
         else:
             score = str(score)
         return score
-        
+
+    def get_submission_string(self, submission):
+        ret = []
+        if submission.is_self:
+            ret.append("[%s] **%s** - posted by /u/%s to /r/%s" % (self.getsubmissionscore(submission), submission.title, submission.author, submission.subreddit))
+            if len(submission.selftext) > 0:
+                ret.append("```%s```" % submission.selftext)
+            ret.append("<%s>" % submission.shortlink[:1995])
+        else:
+            ret.append("[%s] **%s** - posted by /u/%s to /r/%s" % (self.getsubmissionscore(submission), submission.title, submission.author, submission.subreddit))
+            if submission.over_18:
+                ret.append("**post is NSFW; embed hidden**\n<%s>\t\t<%s>" % (submission.url, submission.shortlink))
+            else:
+                ret.append("%s\t\t<%s>"% (submission.url, submission.shortlink))
+        return ret
+
     @commands.command()
     async def rh(self, text:str, num:int=-1):
         """<subreddit> <num> get the #num post from subreddit/hot"""
@@ -175,30 +168,8 @@ class Reddit():
     @commands.command()
     async def fp(self):
         """get a random FP quote"""
-        await self.bot.say(self.sub('justFPthings',selfpost=True, limit=250))    
-        
-            
-    @commands.command()
-    async def pup(self):
-        """show a random pic of a pupper"""
-        await self.bot.say(self.sub('puppies'))
-
-    @commands.command()
-    async def kit(self):
-        """show a random pic of a kitten"""
-        await self.bot.say(self.sub('kittens'))
-
-    @commands.command()
-    async def corg(self):
-        """show a random pic of a corgi"""
-        await self.bot.say(self.sub('corgi'))    
-
-    @commands.command()
-    async def car(self):
-        """show a random pic of a car"""
-        l = ["cars","carporn","autos","shitty_car_mods"]
-        i =  random.randint(0,len(l)-1)
-        await self.bot.say(self.sub(l[i]))
+        for string in self.sub('justFPthings',selfpost=True, limit=250):
+            await self.bot.say(string)
         
 def setup(bot):
     bot.add_cog(Reddit(bot))
