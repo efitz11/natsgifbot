@@ -30,6 +30,20 @@ class Reddit():
         comment = self.reddit.submission(url=url).comments[0]
         return comment.body
 
+    def get_submission_string(self, submission):
+        ret = []
+        if submission.is_self:
+            ret.append("[%s] **%s** - posted by /u/%s to /r/%s" % (self.getsubmissionscore(submission), submission.title, submission.author, submission.subreddit))
+            ret.append("```%s```" % submission.selftext)
+            ret.append("<%s>" % submission.shortlink[:1995])
+        else:
+            ret.append("[%s] **%s** - posted by /u/%s to /r/%s" % (self.getsubmissionscore(submission), submission.title, submission.author, submission.subreddit))
+            if submission.over_18:
+                ret.append("**post is NSFW; embed hidden**\n<%s>\t\t<%s>" % (submission.url, submission.shortlink))
+            else:
+                ret.append("%s\t\t<%s>"% (submission.url, submission.shortlink))
+        return ret
+
     def sub(self, subreddit, selfpost=False,limit=25):
         if subreddit in self.disabled_subs:
             return self.disabled_str
@@ -95,8 +109,8 @@ class Reddit():
                     continue
                 count += 1
                 if count == num:
-                    output = self.getsubmissiontext(submission)
-                    await self.bot.say(output)
+                    for string in self.get_submission_string(submission):
+                        await self.bot.say(string)
         else:
             output = "10 hottest posts from r/%s\n" % text
             for submission in self.reddit.subreddit(subreddit).hot(limit=10):
@@ -116,8 +130,8 @@ class Reddit():
             for submission in self.reddit.subreddit(subreddit).new(limit=(num+2)):
                 count += 1
                 if count == num:
-                    output = self.getsubmissiontext(submission)
-                    await self.bot.say(output)
+                    for string in self.get_submission_string(submission):
+                        await self.bot.say(string)
         else:
             output = "10 newest posts from r/%s\n" % text
             for submission in self.reddit.subreddit(subreddit).new(limit=10):
@@ -152,8 +166,10 @@ class Reddit():
                     matched = False
                     break
                 if matched:
-                    output = self.getsubmissiontext(submission)
-                    await self.bot.say(output)
+                    # output = self.getsubmissiontext(submission)
+                    # await self.bot.say(output)
+                    for string in self.get_submission_string(submission):
+                        await self.bot.say(string)
                     return
 
     @commands.command()
