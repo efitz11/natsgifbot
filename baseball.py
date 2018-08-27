@@ -310,7 +310,8 @@ class Baseball():
     @commands.group(pass_context=True)
     async def milb(self, ctx, *args):
         """Get info on minor leagues
-        !milb [team] - print scoreboard for [team] affiliates, defaults to Nats
+        !milb [team] [date or delta] - print scoreboard for [team] affiliates, defaults to Nats
+                date/delta optional - date is MM/DD/[YY]YY format, delta is +days or -days
         """
         if ctx.invoked_subcommand is None:
             delta = None
