@@ -307,23 +307,30 @@ class Baseball():
     #######################################
     ##### BEGIN MINOR LEAGUE COMMANDS #####
     #######################################
+
+    def _find_delta(self, args):
+        delta = None
+        if len(args) > 0 and (args[-1].startswith('-') or args[-1].startswith('+')):
+            delta = args[-1]
+            args = args[:-1]
+
+        if len(args) > 0 and len(args[-1].split('/')) == 3:
+            delta = self.convert_date_to_delta(args)
+            args = args[:-1]
+        return delta, args
+
     @commands.group(pass_context=True)
-    async def milb(self, ctx, *args):
+    async def milb(self, ctx):
         """Get info on minor leagues
         !milb [team] [date or delta] - print scoreboard for [team] affiliates, defaults to Nats
                 date/delta optional - date is MM/DD/[YY]YY format, delta is +days or -days
         """
         if ctx.invoked_subcommand is None:
-            delta = None
-            if len(args) > 0 and (args[-1].startswith('-') or args[-1].startswith('+')):
-                delta = args[-1]
-                args = args[:-1]
+            args = ctx.message.system_content[6:].split(' ')
+            delta, args = self._find_delta(args)
+            print(args)
 
-            if len(args) > 0 and len(args[-1].split('/')) == 3:
-                delta = self.convert_date_to_delta(args)
-                args = args[:-1]
-
-            if len(args) == 0:
+            if args[0] == '':
                 await self.bot.say("```python\n%s```" % mymlbstats.get_milb_aff_scores(delta=delta))
             else:
                 teamid = mymlbstats.get_teamid(' '.join(args))
@@ -355,6 +362,24 @@ class Baseball():
         else:
             player = ' '.join(query)
             await self.bot.say("```%s```" % mymlbstats.get_milb_log(player))
+
+    @milb.command()
+    async def batting(self, *query:str):
+        """print minor league team batting box score
+        !milb batting <team> - prints the team's batting part of the box score
+        """
+        delta, query = self._find_delta(query)
+        team = ' '.join(query)
+        await self.bot.say("```%s```" % mymlbstats.get_milb_box(team))
+
+    @milb.command()
+    async def pitching(self, *query:str):
+        """print minor league team pitching box score
+        !milb pitching <team> - prints the team's pitching part of the box score
+        """
+        delta, query = self._find_delta(query)
+        team = ' '.join(query)
+        await self.bot.say("```%s```" % mymlbstats.get_milb_box(team,part='pitching'))
 
 def setup(bot):
     bot.add_cog(Baseball(bot))

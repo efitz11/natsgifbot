@@ -36,6 +36,7 @@ def get_mlb_teams():
     return (abbrevmap, teammap)
 
 def get_teamid(search):
+    print(search)
     abvs,names = get_mlb_teams()
     if search in abvs:
         return abvs[search]
@@ -1184,6 +1185,35 @@ def get_milb_aff_scores(teamid=120, delta=None):
 
     return output
 
+def get_milb_box(team, part='batting', teamid=120, delta=None):
+    now = _get_date_from_delta(delta)
+    year = str(now.year)
+    month = str(now.month)
+    day = str(now.day)
+    date = str(now.year) + "-" + str(now.month).zfill(2) + "-" + str(now.day).zfill(2)
+    url = "http://lookup-service-prod.bamgrid.com/lookup/json/named.schedule_vw_complete_affiliate.bam?" \
+          "game_date=%27" + year + "/" + month + "/" + day + "%27&season=" + year + "&org_id=" + str(teamid)
+    print(url)
+    req = Request(url, headers={'User-Agent' : "ubuntu"})
+    s = json.loads(urlopen(req).read().decode("utf-8"))['schedule_vw_complete_affiliate']['queryResults']
+    if s['totalSize'] == '1':
+        affs = [s['row']]
+    else:
+        affs = s['row']
+    team = team.lower()
+    for aff in affs:
+        match = False
+        if team in aff['home_team_full'].lower() or team in aff['home_team_abbrev'].lower():
+            match = True
+            side = 'home'
+        if team in aff['away_team_full'].lower() or team in aff['away_team_abbrev'].lower():
+            match = True
+            side = 'away'
+        if match:
+            gamepk = aff['game_pk']
+            bs = BoxScore.BoxScore(get_boxscore(gamepk))
+            return bs.print_box(side=side, part=part)
+
 def _calc_age(birthdate, year=None):
     byear,month,day = birthdate[:birthdate.find('T')].split('-')
     if year is None:
@@ -1546,4 +1576,5 @@ if __name__ == "__main__":
     # print(get_inning_plays("col", 7))
     # print(compare_player_stats(["ohtani", "harper"]))
     # print(print_roster('wsh',hitters=False))
-    print(get_milb_aff_scores())
+    # print(get_milb_aff_scores())
+    print(get_milb_box('syr'))
