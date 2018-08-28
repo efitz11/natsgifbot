@@ -1230,7 +1230,6 @@ def compare_player_stats(playerlist,career=False,year=None):
         if p is not None:
             players.append(p)
             output = output + p['name_display_first_last'] + " vs "
-    output = output[:-4] + "\n\n"
     pos = players[0]['position']
     type = 'hitting'
     statlist = ['name','ab','h','d','t','hr','r','rbi','bb','so','sb','cs','avg','obp','slg','ops']
@@ -1242,6 +1241,7 @@ def compare_player_stats(playerlist,career=False,year=None):
     now = datetime.now()
     if year is None:
         year = str(now.year)
+    output = output[:-4] + " (%s)\n\n" % year
     for player in players:
         pid = player['player_id']
         disp_name = player['name_display_first_last']
