@@ -41,7 +41,7 @@ class Reddit():
             num = random.randint(0,len(list)-1)
             return self.get_submission_string(list[num])
         except prawcore.exceptions.Redirect:
-            return ("Error: subreddit not found")
+            return ["Error: subreddit not found"]
         
     @commands.command()
     async def r(self,*text:str):
