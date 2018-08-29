@@ -97,7 +97,8 @@ def get_single_game_info(gamepk, gamejson, show_on_deck=False, liveonly=False):
         count = "(%s-%s)" % (balls, strikes)
         output = "%s %s %2d %d | %s %s | %s | %s\n" % (awayabv, str(awayruns).rjust(2), awayhits, awayerrs, inninghalf, inning,
                                                      bases.center(5), "P: " + pitcher)
-        if detailstatus != 'Delayed':
+        delayedlist = ['Delayed','Suspended']
+        if detailstatus not in delayedlist:
             output = output + "%s %s %2d %d |  %s %s  | %s | %s %s\n" % (homeabv, str(homeruns).rjust(2), homehits, homeerrs,
                                                                      outs, "out".ljust(outjust), count, "B: " + batter, ondeck)
         else:
