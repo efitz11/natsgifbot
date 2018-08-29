@@ -381,6 +381,15 @@ class Baseball():
         team = ' '.join(query)
         await self.bot.say("```%s```" % mymlbstats.get_milb_box(team,part='pitching'))
 
+    @milb.command()
+    async def notes(self, *query:str):
+        """print minor league team batting notes
+        !milb pitching <team> - prints the team's batting notes from the box score
+        """
+        delta, query = self._find_delta(query)
+        team = ' '.join(query)
+        await self.bot.say("```%s```" % mymlbstats.get_milb_box(team,part='notes'))
+
 def setup(bot):
     bot.add_cog(Baseball(bot))
 
