@@ -36,6 +36,7 @@ def get_mlb_teams():
     return (abbrevmap, teammap)
 
 def get_teamid(search):
+    search = search.replace('barves','braves')
     print(search)
     abvs,names = get_mlb_teams()
     if search in abvs:
