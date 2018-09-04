@@ -5,12 +5,23 @@ import cfbgame, nflgame, nhlscores, cbbgame
 class Sports():
     def __init__(self,bot):
         self.bot = bot
-        
+
+    def _find_delta(self, args):
+        delta = None
+        if len(args) > 0 and (args[-1].startswith('-') or args[-1].startswith('+')):
+            delta = int(args[-1])
+            args = args[:-1]
+        return delta, args
+
     @commands.command()
     async def cfb(self,*team:str):
         """display score of team's cfb game"""
+        delta, team = self._find_delta(team)
         t = ' '.join(team)
-        await self.bot.say(cfbgame.get_game(t))
+        if delta is None:
+            await self.bot.say(cfbgame.get_game(t))
+        else:
+            await self.bot.say(cfbgame.get_game(t, delta=delta))
         
     @commands.command()
     async def cbb(self,*team:str):
