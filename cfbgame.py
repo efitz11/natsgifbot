@@ -41,7 +41,7 @@ groupmap = {"acc":"1",
             "southern":"29",
             "southland":"30"}
 
-def get_game(team):
+def get_game(team, delta=0):
     if team == "conferences":
         output = ""
         for t in groupmap:
@@ -55,7 +55,11 @@ def get_game(team):
         seasontype = "3"
         if now.month == 1:
             year = now.year-1
-    url = "http://espn.go.com/college-football/scoreboard/_/group/" + type + "/year/"+str(year)+"/seasontype/"+seasontype+"/?t=" + str(time.time())
+    week2 = datetime(2018,9,4)
+    week = int(2 + (now - week2).days/7 + delta)
+
+    # url = "http://espn.go.com/college-football/scoreboard/_/group/" + type + "/year/"+str(year)+"/seasontype/"+seasontype+"/?t=" + str(time.time())
+    url = "http://espn.go.com/college-football/scoreboard/_/group/" + type + "/year/"+str(year)+"/seasontype/"+seasontype
     all = False
     if team == None or team == "":
         url = "http://www.espn.com/college-football/scoreboard/_/year/" + str(year)+"/seasontype/"+seasontype
@@ -64,6 +68,9 @@ def get_game(team):
         url = "http://www.espn.com/college-football/scoreboard/_/group/" + groupmap[team.lower()] + "/year/"+str(year)+"/seasontype/"+seasontype
         all = True
 
+    if delta != 0:
+        url = url + "/week/" + str(week)
+
     print(url)
     req = Request(url)
     req.headers["User-Agent"] = "windows 10 bot"
@@ -71,10 +78,10 @@ def get_game(team):
     scoreData = urlopen(req).read().decode("utf-8")
     scoreData = scoreData[scoreData.find('window.espn.scoreboardData 	= ')+len('window.espn.scoreboardData 	= '):]
     scoreData = json.loads(scoreData[:scoreData.find('};')+1])
-    #print(scoreData)
-    #f = open('espnout.txt','w')
-    #f.write(json.dumps(scoreData))
-    #f.close()
+    # print(scoreData)
+    # f = open('espnout.txt','w')
+    # f.write(json.dumps(scoreData))
+    # f.close()
 
     games = []
     for event in scoreData['events']:

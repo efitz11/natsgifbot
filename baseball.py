@@ -328,7 +328,6 @@ class Baseball():
         if ctx.invoked_subcommand is None:
             args = ctx.message.system_content[6:].split(' ')
             delta, args = self._find_delta(args)
-            print(args)
 
             if args[0] == '':
                 await self.bot.say("```python\n%s```" % mymlbstats.get_milb_aff_scores(delta=delta))
