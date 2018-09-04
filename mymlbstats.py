@@ -1488,8 +1488,7 @@ def print_roster(team,hitters=True):
         else:
             batters.append(s)
     if hitters:
-        from operator import itemgetter
-        batters = sorted(batters, key=itemgetter('atBats'), reverse=True)
+        batters = sorted(batters, key=lambda x: x['atBats'] if 'atBats' in x else 0, reverse=True)
         output = "List of batters:\n\n"
         items = ['name','pos','gamesPlayed','atBats','avg','ops']
         output = output + _print_table(items,batters,repl_map={'gamesPlayed':'G','atBats':'ab'})
