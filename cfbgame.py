@@ -41,7 +41,7 @@ groupmap = {"acc":"1",
             "southern":"29",
             "southland":"30"}
 
-def get_game(team, delta=0):
+def get_game(team, delta=0,fcs=False):
     if team == "conferences":
         output = ""
         for t in groupmap:
@@ -64,6 +64,8 @@ def get_game(team, delta=0):
     if team == None or team == "":
         url = "http://www.espn.com/college-football/scoreboard/_/year/" + str(year)+"/seasontype/"+seasontype
         all = True
+    elif fcs:
+        url = "http://www.espn.com/college-football/scoreboard/_/group/35/year/"+str(year)+"/seasontype/"+seasontype
     elif team.lower() in groupmap:
         url = "http://www.espn.com/college-football/scoreboard/_/group/" + groupmap[team.lower()] + "/year/"+str(year)+"/seasontype/"+seasontype
         all = True

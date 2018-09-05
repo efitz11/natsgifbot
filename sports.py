@@ -22,7 +22,19 @@ class Sports():
             await self.bot.say(cfbgame.get_game(t))
         else:
             await self.bot.say(cfbgame.get_game(t, delta=delta))
-        
+
+    @commands.command()
+    async def fcs(self,*team:str):
+        """display score of an FCS game
+
+        this command will only display one team at a time"""
+        delta, team = self._find_delta(team)
+        t = ' '.join(team)
+        if delta is None:
+            await self.bot.say(cfbgame.get_game(t,fcs=True))
+        else:
+            await self.bot.say(cfbgame.get_game(t, delta=delta, fcs=True))
+
     @commands.command()
     async def cbb(self,*team:str):
         """display score of team's cfb game"""
