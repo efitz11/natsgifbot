@@ -16,6 +16,9 @@ def _get_date_from_delta(delta=None):
         now = now + timedelta(days=delta)
     return now
 
+def _timedelta_to_mlb(td):
+    return "%d-%02d-%02d" % (td.year, td.month, td.day)
+
 def get_ET_from_timestamp(timestamp):
     utc = datetime.strptime(timestamp,"%Y-%m-%dT%H:%M:00Z") #"2018-03-31T20:05:00Z",
     nowtime = time.time()
@@ -277,7 +280,7 @@ def get_linescore(gamepk):
     return s
 
 def get_boxscore(gamepk):
-    url = "https://statsapi.mlb.com/api/v1/game/" + gamepk + "/boxscore?hydrate=person"
+    url = "https://statsapi.mlb.com/api/v1/game/" + str(gamepk) + "/boxscore?hydrate=person"
     print(url)
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     s = json.loads(urlopen(req).read().decode("utf-8"))
@@ -346,6 +349,15 @@ def get_day_schedule(delta=None,teamid=None,scoringplays=False):
     s = json.loads(urlopen(req).read().decode("utf-8"))
     return s
 
+def get_days_schedule(startdate, enddate, teamid=None):
+    hydrates = "&hydrate=probablePitcher,person,decisions,team,stats,flags,linescore(matchup,runners),previousPlay"
+    team = ""
+    if teamid is not None:
+        team = "&teamId=" + str(teamid)
+    url = "https://statsapi.mlb.com/api/v1/schedule?sportId=1" + team + "&startDate=" + startdate + "&endDate=" + enddate + hydrates
+    print(url)
+    return _get_json(url)
+
 def get_pbp(gamepk):
     url = "https://statsapi.mlb.com/api/v1/game/" + gamepk + "/playByPlay"
     req = Request(url, headers={'User-Agent' : "ubuntu"})
@@ -383,9 +395,23 @@ def print_box(team,part, delta=None):
                 gamepk = str(game['gamePk'])
                 bs = BoxScore.BoxScore(get_boxscore(gamepk))
                 dp = False
-                if delta is None:
+                boxes = []
+                if part == 'bullpen' and delta is None:
                     dp = True
-                out = bs.print_box(side=side, part=part, display_pitches=dp)
+                    schedule = get_days_schedule(_timedelta_to_mlb(_get_date_from_delta(-3)), _timedelta_to_mlb(_get_date_from_delta(-1)),teamid=teamid)
+                    gamepks = []
+                    for date in schedule['dates']:
+                        for game in date['games']:
+                            gamedate = game['gameDate'][:game['gameDate'].find('T')]
+                            parts = gamedate.split('-')
+                            month, day = int(parts[1]), int(parts[2])
+                            gamepks.append((game['gamePk'], "%s/%s" % (month, day)))
+                    for game in gamepks:
+                        boxes.append(BoxScore.BoxScore(get_boxscore(game[0])))
+                        boxes[-1].box['date'] = game[1]
+                        print(game[1])
+
+                out = bs.print_box(side=side, part=part, display_pitches=dp, oldboxes=boxes)
                 return out
 
 def print_linescore(team, delta=None):

@@ -22,7 +22,7 @@ class BoxScore:
                 pid = self.box['teams'][t]['players'][p]['person']['id']
                 self.players[pid] = self.box['teams'][t]['players'][p]
 
-    def print_box(self, side="home", part="batting", display_pitches=False):
+    def print_box(self, side="home", part="batting", display_pitches=False, oldboxes=[]):
         output = None
         if part == "batting":
             output = "%s %s %s %s %s %s %s %s %s %s %s\n" % ("".ljust(18),'AB','R','H','RBI','BB','SO','LOB',' AVG', ' OBP',' SLG')
@@ -84,6 +84,17 @@ class BoxScore:
                     output = output + " " + s
 
                 output = output + "\n"
+        # elif part == 'bullpen':
+        #     teamid = self.box['teams'][side]['team']['id']
+        #     table = {}
+        #     for playerid in self.box['teams'][side][part]:
+        #         player = self.players[playerid]
+        #         data = dict()
+        #         data['name'] = player['person']['boxscoreName']
+        #         data['era'] = player['seasonStats']['pitching']['era']
+        #         data['throws'] = player['person']['pitchHand']['code']
+        #         for box in oldboxes:
+        #             data[box['date']] = box['teams']
         elif part in ['bench','bullpen']:
             if part == 'bench':
                 output = "%s %s %s %s\n" % ("".ljust(15),"B","Pos"," AVG")
