@@ -409,7 +409,7 @@ def print_box(team,part, delta=None):
                     for game in gamepks:
                         boxes.append(BoxScore.BoxScore(get_boxscore(game[0])))
                         boxes[-1].box['date'] = game[1]
-                        print(game[1])
+                        # print(game[1])
 
                 out = bs.print_box(side=side, part=part, display_pitches=dp, oldboxes=boxes)
                 return out
@@ -1561,6 +1561,8 @@ def _print_labeled_list(labels, dict, header=True, repl_map={'d':'2B','t':'3B'})
         l = max(len(r), len(label))
         line1 = "%s %s" % (line1, label.rjust(l).upper())
         line2 = "%s %s" % (line2, r.rjust(l))
+        print(line1)
+        print(line2)
     if not header:
         return line2
     return "%s\n%s" % (line1, line2)
