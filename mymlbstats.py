@@ -1525,8 +1525,9 @@ def print_roster(team,hitters=True):
         output = output + _print_table(items,pitchers,repl_map={'gamesPlayed':'G','inningsPitched':'ip'})
     return output
 
-def _print_table(labels, dicts, repl_map={}):
-    repl_map = {'d':'2B','t':'3B', **repl_map}
+def _print_table(labels, dicts, repl_map={}, useDefaultMap=True):
+    if useDefaultMap:
+        repl_map = {'d':'2B','t':'3B', **repl_map}
     lines = ['' for i in range(len(dicts)+1)]
     for label in labels:
         l = label

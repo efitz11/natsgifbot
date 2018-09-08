@@ -110,7 +110,7 @@ class BoxScore:
                 labels.append(b.box['date'])
             # print(labels)
             # print(mymlbstats._print_table(labels, table))
-            return mymlbstats._print_table(labels, table)
+            return mymlbstats._print_table(labels, table, useDefaultMap=False)
 
         elif part in ['bench','bullpen']:
             if part == 'bench':
