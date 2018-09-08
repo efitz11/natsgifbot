@@ -84,17 +84,34 @@ class BoxScore:
                     output = output + " " + s
 
                 output = output + "\n"
-        # elif part == 'bullpen':
-        #     teamid = self.box['teams'][side]['team']['id']
-        #     table = {}
-        #     for playerid in self.box['teams'][side][part]:
-        #         player = self.players[playerid]
-        #         data = dict()
-        #         data['name'] = player['person']['boxscoreName']
-        #         data['era'] = player['seasonStats']['pitching']['era']
-        #         data['throws'] = player['person']['pitchHand']['code']
-        #         for box in oldboxes:
-        #             data[box['date']] = box['teams']
+        elif part == 'bullpen':
+            teamid = self.box['teams'][side]['team']['id']
+            table = []
+            for playerid in self.box['teams'][side][part]:
+                player = self.players[playerid]
+                data = dict()
+                data['name'] = player['person']['boxscoreName']
+                data['era'] = player['seasonStats']['pitching']['era']
+                data['t'] = player['person']['pitchHand']['code']
+                for box in oldboxes:
+                    oldside = 'away'
+                    if box.box['teams']['home']['team']['id'] == teamid:
+                        oldside = 'home'
+                    try:
+                        data[box.box['date']] = box.box['teams'][oldside]['players']["ID" + str(playerid)]['stats']['pitching']['pitchesThrown']
+                    except:
+                        data[box.box['date']] = ""
+                table.append(data)
+            import sys, os
+            sys.path.insert(1, os.path.join(sys.path[0],'..'))
+            import mymlbstats
+            labels = ['name','t','era']
+            for b in oldboxes:
+                labels.append(b.box['date'])
+            # print(labels)
+            # print(mymlbstats._print_table(labels, table))
+            return mymlbstats._print_table(labels, table)
+
         elif part in ['bench','bullpen']:
             if part == 'bench':
                 output = "%s %s %s %s\n" % ("".ljust(15),"B","Pos"," AVG")
@@ -156,8 +173,8 @@ class BoxScore:
             for i in self.box['pitchingNotes']:
                 output = output + "%s\n" % (i)
         # print(output)
-        if part == 'bullpen' and display_pitches:
-            output = output + "NP is pitches thrown in the last 3 days.\n"
+        # if part == 'bullpen' and display_pitches:
+        #     output = output + "NP is pitches thrown in the last 3 days.\n"
         return output
 
 if __name__ == "__main__":
