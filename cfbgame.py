@@ -72,6 +72,7 @@ def get_game(team, delta=0,fcs=False):
 
     if delta != 0:
         url = url + "/week/" + str(week)
+    url = url + "/?t=" + str(time.time())
 
     print(url)
     req = Request(url)

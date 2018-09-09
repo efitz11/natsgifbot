@@ -28,7 +28,8 @@ def get_game(team, sport):
         link = "http://espn.go.com/"+sport+"/scoreboard/_/year/" + str(datetime.now().year) + "/seasontype/2/week/" + str(w)
     else:
         link = "http://espn.go.com/"+sport+"/scoreboard"
-        
+
+    link = link + "/?t=" + str(time.time())
     req = Request(link)
     req.headers["User-Agent"] = "windows 10 bot"
     # Load data
