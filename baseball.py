@@ -228,12 +228,12 @@ class Baseball():
             if team[0].startswith('blast'):
                 team[0] = team[0][1:]
                 forcebatting = True
-            days = 7
             if team[1].isdigit():
                 days = int(team[1])
                 team = team[2:]
             else:
                 team = team[1:]
+                days = None
             await self.bot.say("```%s```" % mymlbstats.get_player_trailing_splits('+'.join(team), days, forcebatting=forcebatting))
             return
         elif team[0].endswith("log"):
