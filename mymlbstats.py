@@ -1026,36 +1026,57 @@ def get_player_season_splits(name, split, type=None, year=None, active='Y'):
     output = output + _print_labeled_list(stats,results)
     return output
 
-def get_player_trailing_splits(name, days, forcebatting=False):
+def get_player_trailing_splits(name, days=None, forcebatting=False):
     player = _get_player_search(name)
     if player is None:
         return "No matching player found"
     pitching = player['position'] == 'P'
     if forcebatting:
         pitching = False
-    url = "http://mlb.mlb.com/pubajax/wf/flow/stats.splayer?season=2018&sort_order=%27desc%27&sort_column=%27avg%27&stat_type=hitting&page_type=SortablePlayer" \
-          "&team_id=" + player['team_id'] + "&game_type=%27R%27&last_x_days="+str(days)+"&player_pool=ALL&season_type=ANY&sport_code=%27mlb%27&results=1000&recSP=1&recPP=50"
-    if pitching:
-        url = "http://mlb.mlb.com/pubajax/wf/flow/stats.splayer?season=2018&sort_order=%27asc%27&sort_column=%27era%27&stat_type=pitching&page_type=SortablePlayer" \
-          "&team_id=" + player['team_id'] + "&game_type=%27R%27&last_x_days="+str(days)+"&player_pool=ALL&season_type=ANY&sport_code=%27mlb%27&results=1000&position=%271%27&recSP=1&recPP=50"
-    print(url)
-    req = Request(url, headers={'User-Agent' : "ubuntu"})
-    s = json.loads(urlopen(req).read().decode("utf-8"))
-    s = s['stats_sortable_player']['queryResults']
-    if int(s['totalSize']) == 0:
-        return "No matching team found for player " + player['name_display_first_last']
-    for p in s['row']:
-        if p['player_id'] == player['player_id']:
-            output = "Last %d days for %s (%s):\n\n" % (days, player['name_display_first_last'], player['team_abbrev'])
-            if not pitching:
-                stats = ['g','ab','h','d','t','hr','r','rbi','bb','so','sb','cs','avg','obp','slg','ops']
-            else:
-                stats = ['w','l','g','svo','sv','ip','so','bb','hr','era','whip']
-            repl_map = {'d':'2B','t':'3B'}
-            output = output + _print_labeled_list(stats,p,repl_map=repl_map)
-            return output
+
+    if days is None:
+        dayslist = [7,15,30,45,60]
     else:
+        dayslist = [days]
+    urllist = []
+    for days in dayslist:
+        if pitching:
+            urllist.append("http://mlb.mlb.com/pubajax/wf/flow/stats.splayer?season=2018&sort_order=%27asc%27&sort_column=%27era%27&stat_type=pitching&page_type=SortablePlayer" \
+              "&team_id=" + player['team_id'] + "&game_type=%27R%27&last_x_days="+str(days)+"&player_pool=ALL&season_type=ANY&sport_code=%27mlb%27&results=1000&position=%271%27&recSP=1&recPP=50")
+        else:
+            urllist.append("http://mlb.mlb.com/pubajax/wf/flow/stats.splayer?season=2018&sort_order=%27desc%27&sort_column=%27avg%27&stat_type=hitting&page_type=SortablePlayer" \
+                  "&team_id=" + player['team_id'] + "&game_type=%27R%27&last_x_days="+str(days)+"&player_pool=ALL&season_type=ANY&sport_code=%27mlb%27&results=1000&recSP=1&recPP=50")
+    count = 0
+    splits = []
+    for url in urllist:
+        daynum = dayslist[count]
+        count += 1
+        print(url)
+        req = Request(url, headers={'User-Agent' : "ubuntu"})
+        s = json.loads(urlopen(req).read().decode("utf-8"))
+        s = s['stats_sortable_player']['queryResults']
+        if int(s['totalSize']) == 0:
+            return "No matching team found for player " + player['name_display_first_last']
+        for p in s['row']:
+            if p['player_id'] == player['player_id']:
+                p['days'] = daynum
+                splits.append(p)
+
+    if len(splits) == 0:
         return "%s not found on team %s" % (player['name_display_first_last'],player['team_abbrev'])
+
+    if not pitching:
+        stats = ['days','g','ab','h','d','t','hr','r','rbi','bb','so','sb','cs','avg','obp','slg','ops']
+    else:
+        stats = ['days','w','l','g','svo','sv','ip','so','bb','hr','era','whip']
+    if len(dayslist) == 1:
+        output = "Last %d days for %s (%s):\n\n" % (dayslist[0], player['name_display_first_last'], player['team_abbrev'])
+        stats.pop(0)
+    else:
+        output = "Trailing splits for %s (%s):\n\n" % (player['name_display_first_last'], player['team_abbrev'])
+    repl_map = {'d':'2B','t':'3B'}
+    output = output + _print_table(stats,splits,repl_map=repl_map)
+    return output
 
 def milb_player_search(name,parent=None):
     name = name.replace(' ','%25')
@@ -1593,7 +1614,7 @@ if __name__ == "__main__":
     # print(get_player_line("cole"))
     # print(get_player_line("ryan zimmerman", delta="-4382"))
     # print(print_box('nationals','batting'))
-    # print(get_player_trailing_splits("Adam Eaton", 7))
+    # print(get_player_trailing_splits("Bryce Harper", days=7))
     # print(get_player_gamelogs("Max Scherzer"))
     # print(get_team_schedule("wsh",3,backward=False))
     # print(get_team_dl('wsh'))
