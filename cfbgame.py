@@ -1,6 +1,7 @@
 from urllib.request import urlopen, Request
 import time, json,html
 from datetime import datetime
+import utils
 '''
 borrowed some code from /r/cfb's IRC bot, thank you
 https://github.com/diagonalfish/FootballBotX2
@@ -86,6 +87,9 @@ def get_game(team, delta=0,fcs=False):
     # f.write(json.dumps(scoreData))
     # f.close()
 
+    if not all:
+        return "```python\n%s\n```" % get_game_str(team,scoreData)
+
     games = []
     for event in scoreData['events']:
         game = dict()
@@ -148,3 +152,85 @@ def get_game(team, delta=0,fcs=False):
             homer = "("+str(game['homerank']['current'])+") " if game['homerank']['current'] <= 25 else ""
             return "```python\n%s%s %s @ %s%s %s # %s%s```" % (awayr,game['awayabv'], game['awayscore'], homer,game['homeabv'], game['homescore'], game['time'], game['odds'])
     return "game not found"
+
+def _fix_rank(rank):
+    """erases rank if >25 and returns a string"""
+    if rank > 25:
+        return ""
+    else:
+        return "(%d)" % rank
+
+def _add_linescores(d, teamjson):
+    if 'linescores' in teamjson:
+        count = 1
+        for score in teamjson['linescores']:
+            letter = 'q'
+            if count > 4:
+                letter = 'o'
+            d[letter + str(count)] = score['value']
+            count += 1
+    return d
+
+def get_game_str(team, scoreData):
+    team = team.lower()
+    for event in scoreData['events']:
+        teams = [html.unescape(event['competitions'][0]['competitors'][0]['team']['location']).lower(),
+                 html.unescape(event['competitions'][0]['competitors'][1]['team']['location']).lower(),
+                 event['competitions'][0]['competitors'][0]['team']['abbreviation'].lower(),
+                 event['competitions'][0]['competitors'][1]['team']['abbreviation'].lower()]
+        teams = [t.replace("hawai'i","hawaii") for t in teams]
+        if team in teams:
+            away = dict()
+            home = dict()
+
+            game = event['competitions'][0]
+            if game['competitors'][0]['homeAway'] == 'away':
+                awayjson = game['competitors'][0]
+                homejson = game['competitors'][1]
+                away['name'], home['name'] = teams[0], teams[1]
+                away['abv'], home['abv'] = teams[2].upper(), teams[3].upper()
+            else:
+                awayjson = game['competitors'][1]
+                homejson = game['competitors'][0]
+                away['name'], home['name'] = teams[1], teams[0]
+                away['abv'], home['abv'] = teams[3].upper(), teams[2].upper()
+
+            away['id'], home['id'] = awayjson['id'], homejson['id']
+            away['rank'], home['rank'] = _fix_rank(awayjson['curatedRank']['current']), _fix_rank(homejson['curatedRank']['current'])
+
+            away = _add_linescores(away, awayjson)
+            home = _add_linescores(home, homejson)
+            away['score'] = awayjson['score']
+            home['score'] = homejson['score']
+            away['sep'], home['sep'] = '│','│'
+            try:
+                if game['situation']['possession'] == away['id']:
+                    away['pos'] = "🏈"
+                elif game['situation']['possession'] == home['id']:
+                    home['pos'] = "🏈"
+            except KeyError:
+                pass
+
+            g = [away, home]
+            status = event['status']['type']['state']
+            away['status'] = event['status']['type']['shortDetail']
+
+            if status == 'pre':
+                if 'odds' in game:
+                    home['status'] = game['odds'][0]['details']
+                labels = ['rank','abv','sep','status']
+                return utils.format_table(labels,g, showlabels=False)
+            elif status == 'in' or status == 'post':
+                labels = ['rank','abv','score','pos','sep']
+                quarters = ['q1','q2','q3','q4','o1','o2','o3','o4','o5','o6']
+                #add overtimes to labels if necessary
+                if 'linescores' in awayjson:
+                    labels.extend(quarters[:len(awayjson['linescores'])])
+                labels.extend(['sep','status'])
+                return utils.format_table(labels,g, showlabels=False)
+
+
+if __name__ == "__main__":
+    # print(get_game("vt"))
+    # print(get_game("vt",delta=-2))
+    print(get_game("vt",delta=1))
