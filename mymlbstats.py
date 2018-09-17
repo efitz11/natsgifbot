@@ -61,9 +61,9 @@ def get_single_game_info(gamepk, gamejson, show_on_deck=False, liveonly=False):
         # ls = get_linescore(gamepk)
         ls = game['linescore']
         if ls['isTopInning']:
-            inninghalf = "Top"
+            inninghalf = "▲"
         else:
-            inninghalf= "Bot"
+            inninghalf= "▼"
         # inning = inning + " " + ls["currentInningOrdinal"]
         inning = ls["currentInningOrdinal"]
         outs = ls['outs']
@@ -103,7 +103,7 @@ def get_single_game_info(gamepk, gamejson, show_on_deck=False, liveonly=False):
                                                      bases.center(5), "P: " + pitcher)
         delayedlist = ['Delayed','Suspended']
         if detailstatus not in delayedlist:
-            output = output + "%s %s %2d %d |  %s %s  | %s | %s %s\n" % (homeabv, str(homeruns).rjust(2), homehits, homeerrs,
+            output = output + "%s %s %2d %d | %s %s | %s | %s %s\n" % (homeabv, str(homeruns).rjust(2), homehits, homeerrs,
                                                                      outs, "out".ljust(outjust), count, "B: " + batter, ondeck)
         else:
             outs = detailstatus
