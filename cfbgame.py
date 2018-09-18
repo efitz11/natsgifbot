@@ -15,6 +15,8 @@ GAME_STATUS_PRE = 0
 GAME_STATUS_IN = 1
 GAME_STATUS_POST = 2
 
+LINE_SEP = "\n──────────────────────────────────────\n"
+
 type = "80" # 80 = FBS
 # Other leagues go here
 
@@ -225,7 +227,6 @@ def get_game_str(scoreData, team=None):
                 if 'odds' in game:
                     home['status'] = game['odds'][0]['details']
                 labels = ['rank','abv','sep','status']
-                output = output + utils.format_table(labels,g, showlabels=False) + "\n\n"
             elif status == 'in' or status == 'post':
                 labels = ['rank','abv','score','pos','sep']
                 quarters = ['q1','q2','q3','q4','o1','o2','o3','o4','o5','o6']
@@ -233,7 +234,11 @@ def get_game_str(scoreData, team=None):
                 if 'linescores' in awayjson:
                     labels.extend(quarters[:len(awayjson['linescores'])])
                 labels.extend(['sep','status'])
-                output = output + utils.format_table(labels,g, showlabels=False) + "\n\n"
+            output = output + utils.format_table(labels,g, showlabels=False)
+            if team is None:
+                output += LINE_SEP
+    if team is None:
+        output = output[:-len(LINE_SEP)]
     return output
 
 
