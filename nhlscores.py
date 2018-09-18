@@ -1,5 +1,6 @@
 import json, html
 from urllib.request import urlopen, Request
+import mymlbstats
 
 
 def get_scores(team):
@@ -46,5 +47,5 @@ def parse_game(game):
         output = output + " - %s %s\n" % (period, time)
     else:
         state = game['status']['detailedState']
-        output = output + " - %s\n" % state
+        output = output + " - %s - %s\n" % (state, mymlbstats.get_ET_from_timestamp(game['gameDate']))
     return output
