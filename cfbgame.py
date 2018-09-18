@@ -62,6 +62,7 @@ def get_game(team, delta=0,fcs=False):
     # url = "http://espn.go.com/college-football/scoreboard/_/group/" + type + "/year/"+str(year)+"/seasontype/"+seasontype+"/?t=" + str(time.time())
     url = "http://espn.go.com/college-football/scoreboard/_/group/" + type + "/year/"+str(year)+"/seasontype/"+seasontype
     all = False
+    conf = False
     if team == None or team == "":
         url = "http://www.espn.com/college-football/scoreboard/_/year/" + str(year)+"/seasontype/"+seasontype
         all = True
@@ -69,7 +70,8 @@ def get_game(team, delta=0,fcs=False):
         url = "http://www.espn.com/college-football/scoreboard/_/group/81/year/"+str(year)+"/seasontype/"+seasontype
     elif team.lower() in groupmap:
         url = "http://www.espn.com/college-football/scoreboard/_/group/" + groupmap[team.lower()] + "/year/"+str(year)+"/seasontype/"+seasontype
-        all = True
+        # all = True
+        conf = True
 
     if delta != 0:
         url = url + "/week/" + str(week)
@@ -87,8 +89,10 @@ def get_game(team, delta=0,fcs=False):
     # f.write(json.dumps(scoreData))
     # f.close()
 
+    if conf:
+        return "```python\n%s\n```" % get_game_str(scoreData)
     if not all:
-        return "```python\n%s\n```" % get_game_str(team,scoreData)
+        return "```python\n%s\n```" % get_game_str(scoreData, team=team)
 
     games = []
     for event in scoreData['events']:
@@ -171,15 +175,17 @@ def _add_linescores(d, teamjson):
             count += 1
     return d
 
-def get_game_str(team, scoreData):
-    team = team.lower()
+def get_game_str(scoreData, team=None):
+    output = ""
     for event in scoreData['events']:
         teams = [html.unescape(event['competitions'][0]['competitors'][0]['team']['location']).lower(),
                  html.unescape(event['competitions'][0]['competitors'][1]['team']['location']).lower(),
                  event['competitions'][0]['competitors'][0]['team']['abbreviation'].lower(),
                  event['competitions'][0]['competitors'][1]['team']['abbreviation'].lower()]
         teams = [t.replace("hawai'i","hawaii") for t in teams]
-        if team in teams:
+        if team is not None:
+            team = team.lower()
+        if team is None or team in teams:
             away = dict()
             home = dict()
 
@@ -219,7 +225,7 @@ def get_game_str(team, scoreData):
                 if 'odds' in game:
                     home['status'] = game['odds'][0]['details']
                 labels = ['rank','abv','sep','status']
-                return utils.format_table(labels,g, showlabels=False)
+                output = output + utils.format_table(labels,g, showlabels=False) + "\n\n"
             elif status == 'in' or status == 'post':
                 labels = ['rank','abv','score','pos','sep']
                 quarters = ['q1','q2','q3','q4','o1','o2','o3','o4','o5','o6']
@@ -227,7 +233,8 @@ def get_game_str(team, scoreData):
                 if 'linescores' in awayjson:
                     labels.extend(quarters[:len(awayjson['linescores'])])
                 labels.extend(['sep','status'])
-                return utils.format_table(labels,g, showlabels=False)
+                output = output + utils.format_table(labels,g, showlabels=False) + "\n\n"
+    return output
 
 
 if __name__ == "__main__":
