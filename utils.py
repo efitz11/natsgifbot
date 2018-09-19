@@ -6,7 +6,8 @@ def get_json(url,encoding="utf-8"):
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     return json.loads(urlopen(req).read().decode(encoding))
 
-def format_table(labels, dicts, repl_map={}, showlabels=True):
+def format_table(labels, dicts, repl_map={}, showlabels=True, linebreaknum=0, linebreak=''):
+    '''linebreak args will break every linebreaknum lines with the specified string'''
     lines = ['' for i in range(len(dicts)+1)]
     for label in labels:
         l = label
@@ -31,7 +32,17 @@ def format_table(labels, dicts, repl_map={}, showlabels=True):
                 r = ""
             if length > 0:
                 lines[i+1] = "%s %s" % (lines[i+1], r.rjust(length))
-    if showlabels:
-        return '\n'.join(lines)
-    else:
-        return '\n'.join(lines[1:])
+
+    if not showlabels:
+        lines = lines[1:]
+
+    if linebreaknum > 0:
+        newlines = []
+        while len(lines) > 0:
+            for i in range(linebreaknum):
+                if len(lines) > 0:
+                    newlines.append(lines.pop(0))
+            newlines.append(linebreak)
+        lines = newlines[:-1]
+
+    return '\n'.join(lines)
