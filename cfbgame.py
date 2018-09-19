@@ -260,10 +260,12 @@ def get_game_str(scoreData, team=None):
     labels_post.extend(['sep','status'])
     if len(teamlistin) > 0:
         output = output + utils.format_table(labels_post, teamlistin, showlabels=False, linebreaknum=2, linebreak=LINE_SEP)
-        output = output + "\n" + LINE_SEP + "\n"
+        if len(teamlistpost) > 0 or len(teamlistpre) > 0:
+            output = output + "\n" + LINE_SEP + "\n"
     if len(teamlistpre) > 0:
         output = output + utils.format_table(labels_pre, teamlistpre, showlabels=False, linebreaknum=2, linebreak=LINE_SEP)
-        output = output + "\n" + LINE_SEP + "\n"
+        if len(teamlistpost) > 0:
+            output = output + "\n" + LINE_SEP + "\n"
     output = output + utils.format_table(labels_post, teamlistpost, showlabels=False, linebreaknum=2, linebreak=LINE_SEP)
 
     # if team is None:
