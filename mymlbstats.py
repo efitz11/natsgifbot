@@ -63,7 +63,7 @@ def get_single_game_info(gamepk, gamejson, show_on_deck=False, liveonly=False):
         else:
             inninghalf= "▼"
         # inning = ls["currentInningOrdinal"]
-        inning = str(ls["currentInning"])
+        inning = str(ls["currentInning"]).rjust(2)
         outs = ls['outs']
         outsnum = int(outs)
         outs = outsnum * '●' + (3-outsnum) * '○'
@@ -99,7 +99,7 @@ def get_single_game_info(gamepk, gamejson, show_on_deck=False, liveonly=False):
         # if ls['currentInning'] > 9:
         #     outjust = 4
         count = "(%s-%s)" % (balls, strikes)
-        output = "%s %s %2d %d | %s %s | %s | %s\n" % (awayabv, str(awayruns).rjust(2), awayhits, awayerrs, inninghalf, inning,
+        output = "%s %s %2d %d | %s%s | %s | %s\n" % (awayabv, str(awayruns).rjust(2), awayhits, awayerrs, inninghalf, inning,
                                                      bases.center(5), "P: " + pitcher)
         delayedlist = ['Delayed','Suspended']
         if detailstatus not in delayedlist:
