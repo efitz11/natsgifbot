@@ -15,7 +15,7 @@ GAME_STATUS_PRE = 0
 GAME_STATUS_IN = 1
 GAME_STATUS_POST = 2
 
-LINE_SEP = "\n──────────────────────────────────────\n"
+LINE_SEP = "──────────────────────────────────────"
 
 type = "80" # 80 = FBS
 # Other leagues go here
@@ -179,6 +179,10 @@ def _add_linescores(d, teamjson):
 
 def get_game_str(scoreData, team=None):
     output = ""
+    teamlistpre = []
+    teamlistin = []
+    teamlistpost = []
+    longest_qtr = 0 # number of quarters in the longest game so far
     for event in scoreData['events']:
         teams = [html.unescape(event['competitions'][0]['competitors'][0]['team']['location']).lower(),
                  html.unescape(event['competitions'][0]['competitors'][1]['team']['location']).lower(),
@@ -219,26 +223,47 @@ def get_game_str(scoreData, team=None):
             except KeyError:
                 pass
 
-            g = [away, home]
+            # g = [away, home]
             status = event['status']['type']['state']
             away['status'] = event['status']['type']['shortDetail']
-
             if status == 'pre':
                 if 'odds' in game:
                     home['status'] = game['odds'][0]['details']
-                labels = ['rank','abv','sep','status']
-            elif status == 'in' or status == 'post':
-                labels = ['rank','abv','score','pos','sep']
-                quarters = ['q1','q2','q3','q4','o1','o2','o3','o4','o5','o6']
-                #add overtimes to labels if necessary
+                teamlistpre.extend([away,home])
+            else:
                 if 'linescores' in awayjson:
-                    labels.extend(quarters[:len(awayjson['linescores'])])
-                labels.extend(['sep','status'])
-            output = output + utils.format_table(labels,g, showlabels=False)
-            if team is None:
-                output += LINE_SEP
-    if team is None:
-        output = output[:-len(LINE_SEP)]
+                    longest_qtr = max(longest_qtr, len(awayjson['linescores']))
+                if status == 'in':
+                    teamlistin.extend([away,home])
+                else:
+                    teamlistpost.extend([away,home])
+
+            # if status == 'pre':
+            #     if 'odds' in game:
+            #         home['status'] = game['odds'][0]['details']
+            #     labels = ['rank','abv','sep','status']
+            # elif status == 'in' or status == 'post':
+            #     labels = ['rank','abv','score','pos','sep']
+            #     quarters = ['q1','q2','q3','q4','o1','o2','o3','o4','o5','o6']
+            #     #add overtimes to labels if necessary
+            #     if 'linescores' in awayjson:
+            #         labels.extend(quarters[:len(awayjson['linescores'])])
+            #     labels.extend(['sep','status'])
+            # output = output + utils.format_table(labels,g, showlabels=False)
+            # if team is None:
+            #     output += LINE_SEP
+
+    labels_pre = ['rank','abv','sep','status']
+    labels_post = ['rank','abv','score','pos','sep']
+    quarters = ['q1','q2','q3','q4','o1','o2','o3','o4','o5','o6']
+    labels_post.extend(quarters[:longest_qtr])
+    labels_post.extend(['sep','status'])
+    output = output + utils.format_table(labels_post, teamlistin, showlabels=False, linebreaknum=2, linebreak=LINE_SEP)
+    output = output + utils.format_table(labels_pre, teamlistpre, showlabels=False, linebreaknum=2, linebreak=LINE_SEP)
+    output = output + utils.format_table(labels_post, teamlistpost, showlabels=False, linebreaknum=2, linebreak=LINE_SEP)
+
+    # if team is None:
+    #     output = output[:-len(LINE_SEP)]
     return output
 
 
