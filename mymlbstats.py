@@ -55,18 +55,18 @@ def get_single_game_info(gamepk, gamejson, show_on_deck=False, liveonly=False):
     detailstatus = game['status']['detailedState']
     awayabv = game['teams']['away']['team']['abbreviation'].ljust(3)
     homeabv = game['teams']['home']['team']['abbreviation'].ljust(3)
-    # print(gamepk)
     pregame_statuses = ['Warmup']
     if abstractstatus == "Live" and detailstatus not in pregame_statuses:
-        # ls = get_linescore(gamepk)
         ls = game['linescore']
         if ls['isTopInning']:
             inninghalf = "▲"
         else:
             inninghalf= "▼"
-        # inning = inning + " " + ls["currentInningOrdinal"]
-        inning = ls["currentInningOrdinal"]
+        # inning = ls["currentInningOrdinal"]
+        inning = str(ls["currentInning"])
         outs = ls['outs']
+        outsnum = int(outs)
+        outs = outsnum * '●' + (3-outsnum) * '○'
         strikes = ls['strikes']
         balls = ls['balls']
         awayruns = ls['teams']['away']['runs']
@@ -95,16 +95,18 @@ def get_single_game_info(gamepk, gamejson, show_on_deck=False, liveonly=False):
                     pitcher = "%s %s" % (pitcher, ps)
         except:
             pitcher = ""
-        outjust = 3
-        if ls['currentInning'] > 9:
-            outjust = 4
+        # outjust = 3
+        # if ls['currentInning'] > 9:
+        #     outjust = 4
         count = "(%s-%s)" % (balls, strikes)
         output = "%s %s %2d %d | %s %s | %s | %s\n" % (awayabv, str(awayruns).rjust(2), awayhits, awayerrs, inninghalf, inning,
                                                      bases.center(5), "P: " + pitcher)
         delayedlist = ['Delayed','Suspended']
         if detailstatus not in delayedlist:
-            output = output + "%s %s %2d %d | %s %s | %s | %s %s\n" % (homeabv, str(homeruns).rjust(2), homehits, homeerrs,
-                                                                     outs, "out".ljust(outjust), count, "B: " + batter, ondeck)
+            output = output + "%s %s %2d %d | %s | %s | %s %s\n" % (homeabv, str(homeruns).rjust(2), homehits, homeerrs,
+                                                                       outs, count, "B: " + batter, ondeck)
+            # output = output + "%s %s %2d %d | %s %s | %s | %s %s\n" % (homeabv, str(homeruns).rjust(2), homehits, homeerrs,
+                                                                     # outs, "out".ljust(outjust), count, "B: " + batter, ondeck)
         else:
             outs = detailstatus
             output = output + "%s %s %2d %d | %s | %s | %s %s\n" % (homeabv, str(homeruns).rjust(2), homehits, homeerrs,
