@@ -676,6 +676,7 @@ def get_div_standings(div, year=None):
 
     standings = get_lg_standings(id,wc=wc, year=year)
     output = ""
+    uselegend = False
     for i in idx:
         output = output + "```python\n"
         div = standings['records'][i]
@@ -683,6 +684,12 @@ def get_div_standings(div, year=None):
         for team in div['teamRecords']:
             l = dict()
             l['abv'] = team['team']['abbreviation']
+            if team['divisionChamp']:
+                l['abv'] = 'y' + l['abv']
+                uselegend = True
+            elif team['clinched']:
+                l['abv'] = 'x' + l['abv']
+                uselegend = True
             l['w'] = str(team['wins'])
             l['l'] = str(team['losses'])
             l['pct'] = team['leagueRecord']['pct']
@@ -706,6 +713,9 @@ def get_div_standings(div, year=None):
         labs = ['abv','w','l','pct','gb','wcgb','l10','stk','rd','e','wce']
         output = output + _print_table(labs,teams,repl_map=repl_map)
         output = output + "```"
+    if uselegend:
+        output = output + "```x: Clinched playoff berth\n" + \
+                 "y: Clinched division title```"
     return output
 
 def get_stat_leader(stat):
