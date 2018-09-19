@@ -258,8 +258,12 @@ def get_game_str(scoreData, team=None):
     quarters = ['q1','q2','q3','q4','o1','o2','o3','o4','o5','o6']
     labels_post.extend(quarters[:longest_qtr])
     labels_post.extend(['sep','status'])
-    output = output + utils.format_table(labels_post, teamlistin, showlabels=False, linebreaknum=2, linebreak=LINE_SEP)
-    output = output + utils.format_table(labels_pre, teamlistpre, showlabels=False, linebreaknum=2, linebreak=LINE_SEP)
+    if len(teamlistin) > 0:
+        output = output + utils.format_table(labels_post, teamlistin, showlabels=False, linebreaknum=2, linebreak=LINE_SEP)
+        output = output + "\n" + LINE_SEP + "\n"
+    if len(teamlistpre) > 0:
+        output = output + utils.format_table(labels_pre, teamlistpre, showlabels=False, linebreaknum=2, linebreak=LINE_SEP)
+        output = output + "\n" + LINE_SEP + "\n"
     output = output + utils.format_table(labels_post, teamlistpost, showlabels=False, linebreaknum=2, linebreak=LINE_SEP)
 
     # if team is None:
