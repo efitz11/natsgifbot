@@ -10,7 +10,7 @@ import re
 
 class Reddit():
     disabled_subs = ['coconutwater','trypophobia']
-    disabled_str = ["Sorry, retrieving posts from that sub is not allowed"]
+    disabled_str = "Sorry, retrieving posts from that sub is not allowed"
 
     def __init__(self,bot):
         self.bot = bot
@@ -32,7 +32,7 @@ class Reddit():
 
     def sub(self, subreddit, selfpost=False,limit=25):
         if subreddit in self.disabled_subs:
-            return self.disabled_str
+            return [self.disabled_str]
         list = []
         try:
             for submission in self.reddit.subreddit(subreddit).hot(limit=limit):
