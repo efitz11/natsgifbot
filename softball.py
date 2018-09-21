@@ -1,5 +1,3 @@
-#from discord.ext import commands
-
 from urllib.request import urlopen, Request
 from html.parser import HTMLParser
 from utils import format_table
