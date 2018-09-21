@@ -30,6 +30,7 @@ def get_game(team, sport):
         link = "http://espn.go.com/"+sport+"/scoreboard"
 
     link = link + "/?t=" + str(time.time())
+    print(link)
     req = Request(link)
     req.headers["User-Agent"] = "windows 10 bot"
     # Load data
@@ -104,11 +105,14 @@ def get_game(team, sport):
                 game['possteam'] = None
             if 'leaders' in event['competitions'][0]:
                 leaders = event['competitions'][0]['leaders'][0]['leaders']
-                game['passleader'] = leaders[0]['athlete']['displayName'] + " - " + str(leaders[0]['value']) + " yds"
+                if leaders[0] is not None:
+                    game['passleader'] = leaders[0]['athlete']['displayName'] + " - " + str(leaders[0]['value']) + " yds"
                 leaders = event['competitions'][0]['leaders'][1]['leaders']
-                game['rushleader'] = leaders[0]['athlete']['displayName'] + " - " + str(leaders[0]['value']) + " yds"
+                if leaders[0] is not None:
+                    game['rushleader'] = leaders[0]['athlete']['displayName'] + " - " + str(leaders[0]['value']) + " yds"
                 leaders = event['competitions'][0]['leaders'][2]['leaders']
-                game['recleader'] = leaders[0]['athlete']['displayName'] + " - " + str(leaders[0]['value']) + " yds"
+                if leaders[0] is not None:
+                    game['recleader'] = leaders[0]['athlete']['displayName'] + " - " + str(leaders[0]['value']) + " yds"
             try:
                 game['situation'] = event['competitions'][0]['situation']['downDistanceText']
             except:
