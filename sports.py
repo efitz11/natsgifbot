@@ -79,7 +79,7 @@ class Sports():
         """get FAS scores or standings to try and inflate our egos by putting FAS on the same level as major sports"""
         if ctx.invoked_subcommand is None:
             args = ctx.message.system_content[5:].split(' ')
-            if len(args) == 0:
+            if len(args) == 1 and args[0] == '':
                 await self.bot.say(softball.fas_schedule())
             elif len(args) == 1 and args[-1].isdigit():
                 await self.bot.say(softball.fas_schedule(args[0]))
