@@ -40,8 +40,8 @@ def format_table(labels, dicts, repl_map={}, showlabels=True, linebreaknum=0, li
             else:
                 r = ""
             length = max(length, len(r))
-        # hide column if none of the dicts have an entry
-        # here we're adding the label to the top if one of the dicts does have an entry
+        # hide column if none of the dicts have an entry and column names are hidden
+        # here we're adding the label to the top if one of the dicts does have an entry and top row is hidden
         if length > 0:
             lines[0] = "%s %s" % (lines[0], l.rjust(length).upper())
         # construct the column
