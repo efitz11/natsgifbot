@@ -656,11 +656,11 @@ async def my_bg_task():
 async def update_mlbtr():
     await bot.wait_until_ready()
     channel = bot.get_channel(id = main_chid)
-    triviach = discord.utils.find(lambda m: m.name == 'trivia', channel.server.channels)
+    # triviach = discord.utils.find(lambda m: m.name == 'trivia', channel.server.channels)
     while not bot.is_closed:
-        if hqmod.check_hq():
+        # if hqmod.check_hq():
             # await bot.send_message(channel,":rotating_light: HQ is starting soon :rotating_light: --- head to %s" % (triviach.mention))
-            await bot.send_message(triviach,":rotating_light: HQ is starting soon :rotating_light:")
+            # await bot.send_message(triviach,":rotating_light: HQ is starting soon :rotating_light:")
             # await bot.send_message(triviach, hqmod.list_users(mention=True))
             
         out = mlbtr.mlbtr()
