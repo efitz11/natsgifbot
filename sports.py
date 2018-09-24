@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-import cfbgame, nflgame, nhlscores, cbbgame
+import cfbgame, nflgame, nhlscores, cbbgame, softball
 
 class Sports():
     def __init__(self,bot):
@@ -73,6 +73,17 @@ class Sports():
         """display score(s) of nhl game"""
         t = ' '.join(team)
         await self.bot.say(nhlscores.get_scores(t))
+        
+    @commands.command()
+    async def fas(self,*args:str):
+        """get FAS scores or standings to try and inflate our egos by putting FAS on the same level as major sports"""
+        if len(args) > 0:
+            if args[0] == "standings":
+                await self.bot.say(softball.fas_standings())
+            else:
+                await self.bot.say(softball.fas_schedule(args[0]))
+        else:
+            await self.bot.say(softball.fas_schedule())
 
         
 def setup(bot):
