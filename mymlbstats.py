@@ -684,12 +684,14 @@ def get_div_standings(div, year=None):
         for team in div['teamRecords']:
             l = dict()
             l['abv'] = team['team']['abbreviation']
-            if team['divisionChamp']:
-                l['abv'] = 'y' + l['abv']
-                uselegend = True
-            elif team['clinched']:
-                l['abv'] = 'x' + l['abv']
-                uselegend = True
+            if 'clinchIndicator' in team:
+                l['abv'] = team['clinchIndicator'] + l['abv']
+            # if team['divisionChamp']:
+            #     l['abv'] = 'y' + l['abv']
+            #     uselegend = True
+            # elif team['clinched']:
+            #     l['abv'] = 'x' + l['abv']
+            #     uselegend = True
             l['w'] = str(team['wins'])
             l['l'] = str(team['losses'])
             l['pct'] = team['leagueRecord']['pct']
@@ -714,7 +716,8 @@ def get_div_standings(div, year=None):
         output = output + _print_table(labs,teams,repl_map=repl_map)
         output = output + "```"
     if uselegend:
-        output = output + "```x: Clinched playoff berth\n" + \
+        output = output + "```w: Clinched wildcard\n" \
+                          "x: Clinched playoff berth\n" + \
                  "y: Clinched division title```"
     return output
 
