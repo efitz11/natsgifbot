@@ -101,4 +101,4 @@ def fas_schedule(week=""):
             end = i
     parser.dicts = parser.dicts[start:end]
     
-    return "```python\n%s\n```" % format_table(parser.labels, parser.dicts)
+    return "```python\n%s\n```" % format_table(parser.labels[:-3], parser.dicts)
