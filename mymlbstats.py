@@ -686,6 +686,7 @@ def get_div_standings(div, year=None):
             l['abv'] = team['team']['abbreviation']
             if 'clinchIndicator' in team:
                 l['abv'] = team['clinchIndicator'] + l['abv']
+                uselegend = True
             # if team['divisionChamp']:
             #     l['abv'] = 'y' + l['abv']
             #     uselegend = True
