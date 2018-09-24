@@ -1,15 +1,26 @@
 from urllib.request import urlopen, Request
 import json
 
-def get_json(url,encoding="utf-8"):
+
+def get_json(url, encoding="utf-8"):
     print(url)
-    req = Request(url, headers={'User-Agent' : "ubuntu"})
+    req = Request(url, headers={'User-Agent': "ubuntu"})
     return json.loads(urlopen(req).read().decode(encoding))
 
+
 def format_table(labels, dicts, repl_map={}, showlabels=True, linebreaknum=0, linebreak=''):
-    '''linebreak args will break every linebreaknum lines with the specified string'''
-    #create a bunch of empty lines to start
-    lines = ['' for i in range(len(dicts)+1)]
+    """
+    Generates a formatted table if printed in monospace text
+    :param labels: A list of column labels
+    :param dicts: A list of python dictionaries, containing the data to be tabled. labels in the param labels should be the dict keys
+    :param repl_map: A python dict, with labels as keys mapped to names for display (replace map)
+    :param showlabels: Set to False to turn off the top row
+    :param linebreaknum: An int corresponding to how many rows between line breaks
+    :param linebreak: The string to print as a line break
+    :return: A string containing the formatted table
+    """
+    # create a bunch of empty lines to start
+    lines = ['' for i in range(len(dicts) + 1)]
 
     # construct table column by column from left to right
     for label in labels:
@@ -40,7 +51,7 @@ def format_table(labels, dicts, repl_map={}, showlabels=True, linebreaknum=0, li
             else:
                 r = ""  # empty cell
             if length > 0:
-                lines[i+1] = "%s %s" % (lines[i+1], r.rjust(length))
+                lines[i + 1] = "%s %s" % (lines[i + 1], r.rjust(length))
 
     # remove the top line if we want to hide column names
     if not showlabels:
