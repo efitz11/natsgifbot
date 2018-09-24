@@ -100,5 +100,5 @@ def fas_schedule(week=""):
         elif row["Visitor"] == "Week "+str(week+1):
             end = i
     parser.dicts = parser.dicts[start:end]
-    
-    return "```python\n%s\n```" % format_table(parser.labels[:-3], parser.dicts)
+
+    return "```python\n%s\n```" % format_table(parser.labels[:-3], parser.dicts, repl_map={"Score_":"score"})
