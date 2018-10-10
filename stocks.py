@@ -67,7 +67,8 @@ def get_stocks():
         # output = output + "%s - %s (%s, %s%%, %s%% YTD) - %s\n" % (symbol.upper(),quote['latestPrice'],ch,chper,chytd,quote['companyName'])
 #    output = "%s - %s:```python\n Last price: %s (%s, %s%%, %s%% YTD" % (symbol.upper(),quote['companyName'],quote['latestPrice'],ch,chper,chytd)+")"
     labels = ['symbol','price','change','%','% YTD','description']
-    output = output + utils.format_table(labels, stocks)
+    left = ['symbol','description']
+    output = output + utils.format_table(labels, stocks, left_list=left)
     output = output + "```"
     return output
 

@@ -39,7 +39,7 @@ def format_reddit_table(labels, dicts, repl_map={}):
 
     return '\n'.join(lines)
 
-def format_table(labels, dicts, repl_map={}, showlabels=True, linebreaknum=0, linebreak=''):
+def format_table(labels, dicts, repl_map={}, showlabels=True, linebreaknum=0, linebreak='', left_list=[]):
     """
     Generates a formatted table if printed in monospace text
     :param labels: A list of column labels
@@ -48,6 +48,7 @@ def format_table(labels, dicts, repl_map={}, showlabels=True, linebreaknum=0, li
     :param showlabels: Set to False to turn off the top row
     :param linebreaknum: An int corresponding to how many rows between line breaks
     :param linebreak: The string to print as a line break
+    :param justmap: A list of keys from `dicts` to left justify instead of right
     :return: A string containing the formatted table
     """
     # create a bunch of empty lines to start
@@ -74,7 +75,10 @@ def format_table(labels, dicts, repl_map={}, showlabels=True, linebreaknum=0, li
         # hide column if none of the dicts have an entry and column names are hidden
         # here we're adding the label to the top if one of the dicts does have an entry and top row is hidden
         if length > 0:
-            lines[0] = "%s %s" % (lines[0], l.rjust(length).upper())
+            if label in left_list:
+                lines[0] = "%s %s" % (lines[0], l.ljust(length).upper())
+            else:
+                lines[0] = "%s %s" % (lines[0], l.rjust(length).upper())
         # construct the column
         for i in range(len(dicts)):
             if label in dicts[i]:
@@ -82,7 +86,10 @@ def format_table(labels, dicts, repl_map={}, showlabels=True, linebreaknum=0, li
             else:
                 r = ""  # empty cell
             if length > 0:
-                lines[i + 1] = "%s %s" % (lines[i + 1], r.rjust(length))
+                if label in left_list:
+                    lines[i + 1] = "%s %s" % (lines[i + 1], r.ljust(length))
+                else:
+                    lines[i + 1] = "%s %s" % (lines[i + 1], r.rjust(length))
 
     # remove the top line if we want to hide column names
     if not showlabels:
