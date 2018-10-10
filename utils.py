@@ -8,14 +8,13 @@ def get_json(url, encoding="utf-8"):
     return json.loads(urlopen(req).read().decode(encoding))
 
 
-def format_reddit_table(labels, dicts, repl_map={}):
+def format_reddit_table(labels, dicts, repl_map={}, left_list=[]):
     """
     Generates a reddit formatted table from a list of keys and a list of dicts for the data
-    For now, everything is right justified. Later I may make justification customizable, but
-    it's easier just to fix it after the fact for now.
     :param labels: list of dictionary keys that function as column labels
     :param dicts: list of python dictionaries containing the table data
     :param repl_map: a dict containing label mappings (dict key : column name)
+    :param left_list: a list containing `dicts` keys to left justify (right is default)
     :return: string containing formatted table
     """
     # create a bunch of empty lines to start
@@ -28,7 +27,10 @@ def format_reddit_table(labels, dicts, repl_map={}):
         if l in repl_map:
             l = repl_map[label]
         lines[0] = "%s|%s" % (lines[0], l.upper())
-        lines[1] = "%s|--:" % (lines[1])
+        if label in left_list:
+            lines[1] = "%s|:--" % (lines[1])
+        else:
+            lines[1] = "%s|--:" % (lines[1])
         # construct the column
         for i in range(len(dicts)):
             if label in dicts[i]:
