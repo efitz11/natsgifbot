@@ -63,24 +63,18 @@ def get_latest_ig_post(username):
 def get_cryptocurrency_data(text):
     if len(text) == 0:
         text = "?limit=10"
-    # req = Request("https://api.coinmarketcap.com/v1/ticker/" +text)
-    # req.headers["User-Agent"] = "windows 10 bot"
-    # data = json.loads(urlopen(req).read().decode("utf-8"))
     url = "https://api.coinmarketcap.com/v1/ticker/" + text
     data = utils.get_json(url)
     if "error" in data:
         return
-    # output = "```python\n"
-    # for coin in data:
-    #     name = coin["name"]
-    #     price = coin["price_usd"]
-    #     change = coin["percent_change_24h"]
-    #     change7 = coin["percent_change_7d"]
-    #     output = output + name.ljust(12) + " $" + price.ljust(10) + change.rjust(6) + "% last 24h\t" + change7.rjust(6) + "% last 7d\n"
-    # return output+"```"
-    labels = ["Name","Price","Change", "24h", "7d"]
-    data = ['name','price_usd', 'percent_change_24h','percent_change_7d']
-    output = utils.format_table()
+    for coin in data:
+        coin["price_usd"] = "%.02f" % float(coin["price_usd"])
+        coin["percent_change_24h"] = "%.02f" % float(coin["percent_change_24h"])
+        coin["percent_change_7d"] = "%.02f" % float(coin["percent_change_7d"])
+    repl = {"price_usd":"price","percent_change_24h":"% 24h", "percent_change_7d":"% 7d"}
+    labels = ['name','price_usd', 'percent_change_24h','percent_change_7d']
+    output = utils.format_table(labels, data, repl_map=repl)
+    return "```python\n" + output + "```"
 
 def get_latest_tweet(user):
     with open("keys.json",'r') as f:
