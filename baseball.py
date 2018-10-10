@@ -83,6 +83,12 @@ class Baseball():
 
         team = ["wsh" if x.lower() == "nats" else x for x in team]
 
+        reddit = False
+        for i in team:
+            if i.lower() == 'reddit':
+                reddit = True
+                team.remove(i)
+
         if len(team) > 0 and (team[-1].startswith('-') or team[-1].startswith('+')):
             delta = team[-1]
             team = team[:-1]
@@ -167,7 +173,7 @@ class Baseball():
                 t = "hitting"
             elif team[0] == 'pstats':
                 t = "pitching"
-            await self.bot.say("```%s```" % mymlbstats.get_player_season_stats(player,type=t,year=year,year2=year2,active=active, career=career))
+            await self.bot.say("```%s```" % mymlbstats.get_player_season_stats(player,type=t,year=year,year2=year2,active=active, career=career, reddit=reddit))
             return
         elif team[0] == 'compare':
             year = None

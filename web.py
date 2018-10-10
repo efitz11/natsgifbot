@@ -73,7 +73,8 @@ def get_cryptocurrency_data(text):
         coin["percent_change_7d"] = "%.02f" % float(coin["percent_change_7d"])
     repl = {"price_usd":"price","percent_change_24h":"% 24h", "percent_change_7d":"% 7d"}
     labels = ['name','price_usd', 'percent_change_24h','percent_change_7d']
-    output = utils.format_table(labels, data, repl_map=repl)
+    left = ['name']
+    output = utils.format_table(labels, data, repl_map=repl, left_list=left)
     return "```python\n" + output + "```"
 
 def get_latest_tweet(user):

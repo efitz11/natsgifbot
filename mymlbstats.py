@@ -4,6 +4,7 @@ import time
 import json, os
 import mlb.BoxScore as BoxScore
 import mlb.getrecaps as recap
+import utils
 
 def _get_json(url,encoding="utf-8"):
     req = Request(url, headers={'User-Agent' : "ubuntu"})
@@ -1371,7 +1372,7 @@ def compare_player_stats(playerlist,career=False,year=None):
     output = output + _print_table(statlist, stats) + "\n\n" + errors
     return output
 
-def get_player_season_stats(name, type=None, year=None, year2=None, active='Y', career=False):
+def get_player_season_stats(name, type=None, year=None, year2=None, active='Y', career=False, reddit=True):
     player = _get_player_search(name, active=active)
     if player is None:
         return "No matching player found"
@@ -1452,7 +1453,10 @@ def get_player_season_stats(name, type=None, year=None, year2=None, active='Y', 
         stats = ['w','l','g','gs','svo','sv','ip','so','bb','hr','era','whip']
     if year2 is not None:
         stats = ['season'] + stats
-    output = output + _print_table(stats,s, repl_map={'season':'year'})
+    if reddit:
+        output = output + utils.format_reddit_table(stats, s, repl_map={'season':'year'})
+    else:
+        output = output + _print_table(stats,s, repl_map={'season':'year'})
     return output
 
 def search_highlights(query):
