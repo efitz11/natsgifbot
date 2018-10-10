@@ -8,6 +8,37 @@ def get_json(url, encoding="utf-8"):
     return json.loads(urlopen(req).read().decode(encoding))
 
 
+def format_reddit_table(labels, dicts, repl_map={}):
+    """
+    Generates a reddit formatted table from a list of keys and a list of dicts for the data
+    For now, everything is right justified. Later I may make justification customizable, but
+    it's easier just to fix it after the fact for now.
+    :param labels: list of dictionary keys that function as column labels
+    :param dicts: list of python dictionaries containing the table data
+    :param repl_map: a dict containing label mappings (dict key : column name)
+    :return: string containing formatted table
+    """
+    # create a bunch of empty lines to start
+    lines = ['' for i in range(len(dicts) + 2)]
+
+    # construct table column by column from left to right
+    for label in labels:
+        l = label
+        # replace label with display label if mapped
+        if l in repl_map:
+            l = repl_map[label]
+        lines[0] = "%s|%s" % (lines[0], l.upper())
+        lines[1] = "%s|--:" % (lines[1])
+        # construct the column
+        for i in range(len(dicts)):
+            if label in dicts[i]:
+                r = str(dicts[i][label])
+            else:
+                r = ""  # empty cell
+            lines[i + 2] = "%s|%s" % (lines[i + 2], r)
+
+    return '\n'.join(lines)
+
 def format_table(labels, dicts, repl_map={}, showlabels=True, linebreaknum=0, linebreak=''):
     """
     Generates a formatted table if printed in monospace text
