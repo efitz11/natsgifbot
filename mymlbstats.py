@@ -1015,8 +1015,12 @@ def get_player_season_splits(name, split, type=None, year=None, active='Y'):
         for key in splitsmap:
             output = "%s %s," % (output, key)
         return output + " months"
-    if split != 'months' and split not in splitsmap:
-        return "split not found"
+
+    if '/' in split:
+        splits = split.split('/')
+    else:
+        splits = []
+
     player = _get_player_search(name, active=active)
     if player is None:
         return "No matching player found"
@@ -1030,12 +1034,15 @@ def get_player_season_splits(name, split, type=None, year=None, active='Y'):
     if pos == 'P':
         type="pitching"
 
-    if split != 'months':
-        splits = [split]
-    else:
+    if len(splits) == 0 and split == "months":
         splits = ['march','april','may','june','july','august','september','october']
+    elif len(splits) == 0:
+        splits = [split]
+
     results = []
     for split in splits:
+        if split != 'months' and split not in splitsmap:
+            return "split %s not found" % split
         url = "http://lookup-service-prod.mlb.com/json/named.sport_" + type + "_sits_composed.bam?league_list_id=%27mlb_hist%27&game_type=%27R%27" \
               "&season=" + year + "&player_id=" + player['player_id'] + "&sit_code=%27" + splitsmap[split] + "%27"
         print(url)
