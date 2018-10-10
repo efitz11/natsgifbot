@@ -1,5 +1,6 @@
 from urllib.request import urlopen, Request
 import json
+import utils
 
 def get_quote(symbol):
     url = "https://api.iextrading.com/1.0/stock/"+symbol+"/quote?displayPercent=true"
@@ -41,12 +42,14 @@ def get_quote(symbol):
 
 def get_stocks():
     output = "Latest quotes:\n```python\n"
+    stocks = []
     for symbol in ["DIA","VOO","VTI","ONEQ","VXUS"]:
         url = "https://api.iextrading.com/1.0/stock/"+symbol+"/quote?displayPercent=true"
         req = Request(url)
         req.headers["User-Agent"] = "windows 10 bot"
         # Load data
         quote = json.loads(urlopen(req).read().decode("utf-8"))
+        stock = dict()
         change = float(quote['change'])
         ch = "%0.2f" %(change)
         chper = "%0.2f" %(quote['changePercent'])
@@ -54,8 +57,17 @@ def get_stocks():
         if change > 0:
             ch = "+" + ch
             chper = "+" + chper
-        output = output + "%s - %s (%s, %s%%, %s%% YTD) - %s\n" % (symbol.upper(),quote['latestPrice'],ch,chper,chytd,quote['companyName'])
+        stock['symbol'] = symbol.upper()
+        stock['price'] = "%.2f" % float(quote['latestPrice'])
+        stock['change'] = ch
+        stock['%'] = chper
+        stock['% YTD'] = chytd
+        stock['description'] = quote['companyName']
+        stocks.append(stock)
+        # output = output + "%s - %s (%s, %s%%, %s%% YTD) - %s\n" % (symbol.upper(),quote['latestPrice'],ch,chper,chytd,quote['companyName'])
 #    output = "%s - %s:```python\n Last price: %s (%s, %s%%, %s%% YTD" % (symbol.upper(),quote['companyName'],quote['latestPrice'],ch,chper,chytd)+")"
+    labels = ['symbol','price','change','%','% YTD','description']
+    output = output + utils.format_table(labels, stocks)
     output = output + "```"
     return output
 
