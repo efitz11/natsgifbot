@@ -6,6 +6,8 @@ import mlb.BoxScore as BoxScore
 import mlb.getrecaps as recap
 import utils
 
+REPL_MAP = {'d':'2B','t':'3B'}
+
 def _get_json(url,encoding="utf-8"):
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     return json.loads(urlopen(req).read().decode(encoding))
@@ -1453,10 +1455,7 @@ def get_player_season_stats(name, type=None, year=None, year2=None, active='Y', 
         stats = ['w','l','g','gs','svo','sv','ip','so','bb','hr','era','whip']
     if year2 is not None:
         stats = ['season'] + stats
-    if reddit:
-        output = output + utils.format_reddit_table(stats, s, repl_map={'season':'year'})
-    else:
-        output = output + _print_table(stats,s, repl_map={'season':'year'})
+    output = output + utils.format_table(stats, s, repl_map={'season':'year', **REPL_MAP}, reddit=reddit)
     return output
 
 def search_highlights(query):
