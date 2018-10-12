@@ -955,6 +955,7 @@ def pitcher_vs_team(name, team, player=None, reddit=False):
     repl_map = {'b_ab':'ab','b_total_hits':'h','b_double':'2b','b_triple':'3b','b_home_run':'hr','b_walk':'bb','b_strikeout':'so',
              'b_batting_avg':'avg','b_on_base_avg':'obp','b_slugging_avg':'slg','b_on_base_slg_avg':'ops'}
     # output = output + _print_table(stats,batters,repl_map=repl_map) + "\n\n"
+    batters = sorted(batters, key=lambda x: int(x['b_ab']), reverse=True)
     output = output + utils.format_table(stats, batters, repl_map=repl_map, reddit=reddit, left_list=left) + "\n\n"
     if len(empties) > 0:
         emplist = "No stats for "
