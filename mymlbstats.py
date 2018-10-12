@@ -914,16 +914,16 @@ def _get_player_info_line(player):
     weight = "%s lbs" % (player['weight'])
     return "%s | B/T: %s/%s | %s | %s" % (pos, bats,throws, height, weight)
 
-def batter_or_pitcher_vs(name, team, year=None):
+def batter_or_pitcher_vs(name, team, year=None, reddit=False):
     player = _get_player_search(name)
     if player is None:
         return "No matching player found"
     if player['position'] == 'P':
-        return pitcher_vs_team(name,team, player=player)
+        return pitcher_vs_team(name,team, player=player, reddit=reddit)
     else:
         return player_vs_team(name,team, year=year)
 
-def pitcher_vs_team(name, team, player=None):
+def pitcher_vs_team(name, team, player=None, reddit=False):
     teamid = get_teamid(team)
     if player is None:
         player = _get_player_search(name)
@@ -951,9 +951,11 @@ def pitcher_vs_team(name, team, player=None):
     output = "%s's stats vs batters, last 5 years:\n\n" % (player['name_display_first_last'])
     stats = ['name','b_ab','b_total_hits','b_double','b_triple','b_home_run','b_walk','b_strikeout',
              'b_batting_avg','b_on_base_avg','b_slugging_avg','b_on_base_slg_avg']
+    left = ['name']
     repl_map = {'b_ab':'ab','b_total_hits':'h','b_double':'2b','b_triple':'3b','b_home_run':'hr','b_walk':'bb','b_strikeout':'so',
              'b_batting_avg':'avg','b_on_base_avg':'obp','b_slugging_avg':'slg','b_on_base_slg_avg':'ops'}
-    output = output + _print_table(stats,batters,repl_map=repl_map) + "\n\n"
+    # output = output + _print_table(stats,batters,repl_map=repl_map) + "\n\n"
+    output = output + utils.format_table(stats, batters, repl_map=repl_map, reddit=reddit, left_list=left) + "\n\n"
     if len(empties) > 0:
         emplist = "No stats for "
         for e in empties:
