@@ -94,10 +94,11 @@ def get_game(team, sport):
             if 'details' in event['competitions'][0]['odds'][0]:
                 game['odds'] = " - " + event['competitions'][0]['odds'][0]['details']
         game['broadcast'] = ""
-        for b in event['competitions'][0]['broadcasts']:
-            if b['market'] == 'national':
-                game['broadcast'] = b['names'][0]
-                break
+        if game['status'] != GAME_STATUS_POST:
+            for b in event['competitions'][0]['broadcasts']:
+                if b['market'] == 'national':
+                    game['broadcast'] = b['names'][0]
+                    break
         if sport == "nfl":
             try:
                 game['possteam'] = event['competitions'][0]['situation']['possession']
