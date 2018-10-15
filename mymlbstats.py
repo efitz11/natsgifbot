@@ -921,7 +921,7 @@ def batter_or_pitcher_vs(name, team, year=None, reddit=False):
     if player['position'] == 'P':
         return pitcher_vs_team(name,team, player=player, reddit=reddit)
     else:
-        return player_vs_team(name,team, year=year)
+        return player_vs_team(name,team, year=year, reddit=reddit)
 
 def pitcher_vs_team(name, team, player=None, reddit=False):
     teamid = get_teamid(team)
@@ -965,7 +965,7 @@ def pitcher_vs_team(name, team, player=None, reddit=False):
 
     return output
 
-def player_vs_team(name, team, year=None):
+def player_vs_team(name, team, year=None, reddit=False):
     teamid = get_teamid(team)
     player = _get_player_search(name)
     if player is None:
@@ -984,7 +984,7 @@ def player_vs_team(name, team, year=None):
               + "&team_id=" + str(teamid) + "&season=" + year
     print(url)
     json = _get_json(url,encoding="ISO-8859-1")["stats_batter_vs_pitcher_composed"]
-    totals = json["stats_batter_vs_pitcher_total"]["queryResults"]["row"]
+    totals = [json["stats_batter_vs_pitcher_total"]["queryResults"]["row"]]
     json = json["stats_batter_vs_pitcher"]["queryResults"]
     pitchers = []
     if int(json['totalSize']) == 1:
@@ -1001,12 +1001,13 @@ def player_vs_team(name, team, year=None):
         output = "%s's stats vs %s batters (%s):\n\n" % (player['name_display_first_last'], pitchers[0]['team'], pitchers[0]['season'])
         stats = ['player_first_last_html','ab','h','d','t','hr','bb','so','avg','obp','slg','ops']
     repl_map = {'d':'2B', 't':'3B', 'pitcher_first_last_html':'pitcher', 'player_first_last_html':'batter'}
-    output = output + _print_table(stats,pitchers,repl_map=repl_map) + "\n\n"
+    output = output + utils.format_table(stats,pitchers,repl_map=repl_map, reddit=reddit) + "\n\n"
     if pitching:
         stats = ['team','ab','h','d','t','hr','bb','so','avg','obp','slg','ops']
     else:
         stats = ['opponent','ab','h','d','t','hr','bb','so','avg','obp','slg','ops']
-    output = output + _print_labeled_list(stats,totals)
+    # output = output + _print_labeled_list(stats,totals)
+    output = output + utils.format_table(stats, totals, repl_map=repl_map, reddit=reddit)
     return output
 
 def get_player_season_splits(name, split, type=None, year=None, active='Y'):
