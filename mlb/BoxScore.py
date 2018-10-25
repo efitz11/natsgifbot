@@ -61,7 +61,7 @@ class BoxScore:
                     output = output + " " + s
                 output = output + "\n"
         elif part == "pitching":
-            output = "%s %s %s %s %s %s %s %s %s %s %s\n" % ("".ljust(15)," IP"," H"," R","ER","BB","SO","HR", "ERA","  P", " S")
+            output = "%s %s %s %s %s %s %s %s %s %s %s\n" % ("".ljust(15)," IP"," H"," R","ER","BB","SO","HR", "  ERA","  P", " S")
             for pitcher in self.box['teams'][side]['pitchers']:
                 player = self.players[pitcher]
                 name = player['person']['boxscoreName']
