@@ -893,7 +893,7 @@ def get_player_gamelogs(name, num=5, forcebatting=False):
     if not pitching:
         stats = ['game_day','opponent_abbrev','ab','h','d','t','hr','r','rbi','bb','so','sb','cs','avg','obp','slg','ops']
     else:
-        stats = ['game_day','opponent_abbrev','w','l','svo','sv','ip','h','r','er','so','bb','hr','era','whip']
+        stats = ['game_day','opponent_abbrev','w','l','svo','sv','ip','h','r','er','hr','bb','so','era','whip']
     repl_map = {'game_day':'day','opponent_abbrev':'opp', 'd':'2B', 't':'3B'}
     # output = output + _print_labeled_list(stats,game,header=(i==0),repl_map=repl_map) + "\n"
     output = output + _print_table(stats,games,repl_map=repl_map) + "\n"
