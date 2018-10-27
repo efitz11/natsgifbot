@@ -1577,6 +1577,7 @@ def print_roster(team,hitters=True):
             s = dict()
         s['name'] = player['person']['fullName']
         s['pos'] = player['position']['abbreviation']
+        s['throws'] = player['person']['pitchHand']['code']
         if int(player['position']['code']) == 1:
             pitchers.append(s)
         else:
@@ -1589,8 +1590,8 @@ def print_roster(team,hitters=True):
     else:
         pitchers = sorted(pitchers, key=lambda x: float(x['inningsPitched']), reverse=True)
         output = "List of pitchers:\n\n"
-        items = ['name','gamesPlayed','inningsPitched','era','whip']
-        output = output + _print_table(items,pitchers,repl_map={'gamesPlayed':'G','inningsPitched':'ip'})
+        items = ['name','throws','gamesPlayed','inningsPitched','era','whip']
+        output = output + utils.format_table(items,pitchers,repl_map={'gamesPlayed':'G','inningsPitched':'ip', 'throws':'t'}, left_list=['name'])
     return output
 
 def _print_table(labels, dicts, repl_map={}, useDefaultMap=True):
