@@ -310,28 +310,30 @@ async def link(ctx,*args):
     links = s[objname]
     if len(args) == 3 and args[0] == 'add':
         if str(ctx.message.author) in auth_users:
-            if args[1] in links:
+            linkname = args[1].lower()
+            if linkname in links:
                 await bot.say('link name already in use')
             else:
                 if args[2].startswith('http'):
-                    s[objname][args[1]] = args[2]
+                    s[objname][linkname] = args[2]
                     with open(miscfile,'w') as f:
                         f.write(json.dumps(s, indent=4))
-                    await bot.say('link %s added.' % args[1])
+                    await bot.say('link %s added.' % linkname)
                 else:
                     await bot.say('link doesn\'t begin with `http`')
         else:
             await bot.say(links['dont'])
     else:
-        if args[0] == 'list':
+        name = args[0].lower()
+        if name == 'list':
             output = ""
             for l in links:
                 output = output + l + ", "
             await bot.say(output[:-2])
-        elif args[0] in links:
-            await bot.say(links[args[0]])
+        elif name in links:
+            await bot.say(links[name])
         else:
-            await bot.say("could not find a link named %s" % args[0])
+            await bot.say("could not find a link named %s" % name)
 
 @bot.command(pass_context=True)
 async def countdown(ctx, *addlist):
