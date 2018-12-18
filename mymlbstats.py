@@ -1319,7 +1319,7 @@ def _calc_age(birthdate, year=None):
     else:
         return int(year) - int(byear) - ((7,1) < (int(month), int(day)))
 
-def compare_player_stats(playerlist,career=False,year=None):
+def compare_player_stats(playerlist,career=False,year=None, reddit=False):
     players = []
     output = ""
     for player in playerlist:
@@ -1373,9 +1373,14 @@ def compare_player_stats(playerlist,career=False,year=None):
         if 'season' not in s:
             errors = errors + "No %s stats for %s\n" % (year, disp_name)
             continue
-        s['name'] = player['name_last'][:5]
+        if reddit:
+            s['name'] = player['name_last']
+        else:
+            s['name'] = player['name_last'][:5]
         stats.append(s)
-    output = output + _print_table(statlist, stats) + "\n\n" + errors
+    # output = output + _print_table(statlist, stats) + "\n\n" + errors
+    left = ['name']
+    output = output + utils.format_table(statlist, stats, reddit=reddit, left_list=left, repl_map=REPL_MAP)
     return output
 
 def get_player_season_stats(name, type=None, year=None, year2=None, active='Y', career=False, reddit=True):
