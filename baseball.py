@@ -185,9 +185,9 @@ class Baseball():
             for t in team:
                 playerlist.append(t)
             if year is None:
-                await self.bot.say("```%s```" % mymlbstats.compare_player_stats(playerlist))
+                await self.bot.say("```%s```" % mymlbstats.compare_player_stats(playerlist, reddit=reddit))
             else:
-                await self.bot.say("```%s```" % mymlbstats.compare_player_stats(playerlist, year=year))
+                await self.bot.say("```%s```" % mymlbstats.compare_player_stats(playerlist, year=year, reddit=reddit))
         elif team[0] == 'splits':
             split = team[1]
             if team[-1].isdigit():
