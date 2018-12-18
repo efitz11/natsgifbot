@@ -266,7 +266,10 @@ def get_game_str(scoreData, team=None):
         output = output + utils.format_table(labels_pre, teamlistpre, showlabels=False, linebreaknum=2, linebreak=LINE_SEP)
         if len(teamlistpost) > 0:
             output = output + "\n" + LINE_SEP + "\n"
-    output = output + utils.format_table(labels_post, teamlistpost, showlabels=False, linebreaknum=2, linebreak=LINE_SEP)
+    if len(teamlistin) + len(teamlistpost) + len(teamlistpre) == 0:
+        output = "vasolinetigers wants you to know that you suck at spelling that team name"
+    else:
+        output = output + utils.format_table(labels_post, teamlistpost, showlabels=False, linebreaknum=2, linebreak=LINE_SEP)
 
     # if team is None:
     #     output = output[:-len(LINE_SEP)]
