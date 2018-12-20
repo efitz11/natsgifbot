@@ -193,10 +193,10 @@ class Baseball():
             if team[-1].isdigit():
                 year = team[-1]
                 player = ' '.join(team[2:-1])
-                await self.bot.say("```%s```" % mymlbstats.get_player_season_splits(player,split,year=year))
+                await self.bot.say("```%s```" % mymlbstats.get_player_season_splits(player,split,year=year, reddit=reddit))
             else:
                 player = ' '.join(team[2:])
-                await self.bot.say("```%s```" % mymlbstats.get_player_season_splits(player,split))
+                await self.bot.say("```%s```" % mymlbstats.get_player_season_splits(player,split, reddit=reddit))
             return
         elif team[0] == 'vs':
             opp = team[1]
