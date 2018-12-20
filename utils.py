@@ -41,7 +41,7 @@ def format_reddit_table(labels, dicts, repl_map={}, left_list=[]):
 
     return '\n'.join(lines)
 
-def format_table(labels, dicts, repl_map={}, showlabels=True, linebreaknum=0, linebreak='', left_list=[], reddit=False):
+def format_table(labels, dicts, repl_map={}, showlabels=True, linebreaknum=0, linebreak='', left_list=[], reddit=False, def_repl=True):
     """
     Generates a formatted table if printed in monospace text
     :param labels: A list of column labels
@@ -54,6 +54,9 @@ def format_table(labels, dicts, repl_map={}, showlabels=True, linebreaknum=0, li
     :param reddit: True if you want to return a table formatted for reddit
     :return: A string containing the formatted table
     """
+    if def_repl:
+        repl_map = {'d':'2B', 't':'3B', **repl_map}
+
     if reddit:
         return format_reddit_table(labels, dicts, repl_map=repl_map, left_list=left_list)
 

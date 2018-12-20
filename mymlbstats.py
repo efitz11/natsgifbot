@@ -1010,7 +1010,7 @@ def player_vs_team(name, team, year=None, reddit=False):
     output = output + utils.format_table(stats, totals, repl_map=repl_map, reddit=reddit)
     return output
 
-def get_player_season_splits(name, split, type=None, year=None, active='Y'):
+def get_player_season_splits(name, split, type=None, year=None, active='Y', reddit=False):
     split = split.lower()
     splitsmap = {'vsl':'vl','vsr':'vr','home':'h','away':'a','grass':'g','turf':'t','day':'d','night':'n',
                  'march':'3','april':'4','may':'5','june':'6','july':'7','august':'8','september':'9','october':'10',
@@ -1070,7 +1070,8 @@ def get_player_season_splits(name, split, type=None, year=None, active='Y'):
             stats.pop(0)
         else:
             output = "%s's splits (%s):\n\n" % (player['name_display_first_last'], results[0]['season'])
-        output = output + _print_table(stats,results,repl_map={'situation':'split'})
+        # output = output + _print_table(stats,results,repl_map={'situation':'split'})
+        output = output + utils.format_table(stats,results,repl_map={'situation':'split'}, reddit=reddit)
         return output
 
 def get_player_trailing_splits(name, days=None, forcebatting=False):
