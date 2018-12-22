@@ -600,7 +600,7 @@ async def log():
     """print the last few lines of the bot log to see errors"""
     from collections import deque
     out = ""
-    d = deque(open("bot.log"), 15)
+    d = deque(open("bot.log"), 25)
     for s in d:
         out = out + s
     out = "```%s```" % out
