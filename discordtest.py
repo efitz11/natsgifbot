@@ -595,6 +595,17 @@ async def cocktail(*query):
     """get info about a cocktail"""
     await bot.say(web.cocktail(' '.join(query)))
 
+@bot.command()
+async def log():
+    """print the last few lines of the bot log to see errors"""
+    from collections import deque
+    out = ""
+    d = deque(open("bot.log"), 15)
+    for s in d:
+        out = out + s
+    out = "```%s```" % out
+    await bot.say(out)
+
 @bot.event
 async def on_message(message):
     #stuff
