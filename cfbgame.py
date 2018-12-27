@@ -217,9 +217,12 @@ def get_game_str(scoreData, team=None):
             away['sep'], home['sep'] = '│','│'
             try:
                 if game['situation']['possession'] == away['id']:
-                    away['pos'] = "🏈"
+                    home['status'] = "%s 🏈" % away['abv']
+                    # away['pos'] = "🏈"
                 elif game['situation']['possession'] == home['id']:
-                    home['pos'] = "🏈"
+                    home['status'] = "%s 🏈" % home['abv']
+                    # home['pos'] = "🏈"
+                home['status'] = "%s - %s" % (home['status'], game['situation']['downDistanceText'])
             except KeyError:
                 pass
 
@@ -256,10 +259,11 @@ def get_game_str(scoreData, team=None):
     labels_pre = ['rank','abv','sep','status']
     labels_post = ['rank','abv','score','pos','sep']
     quarters = ['q1','q2','q3','q4','o1','o2','o3','o4','o5','o6']
+    left = ['status']
     labels_post.extend(quarters[:longest_qtr])
     labels_post.extend(['sep','status'])
     if len(teamlistin) > 0:
-        output = output + utils.format_table(labels_post, teamlistin, showlabels=False, linebreaknum=2, linebreak=LINE_SEP)
+        output = output + utils.format_table(labels_post, teamlistin, showlabels=False, linebreaknum=2, linebreak=LINE_SEP, left_list=left)
         if len(teamlistpost) > 0 or len(teamlistpre) > 0:
             output = output + "\n" + LINE_SEP + "\n"
     if len(teamlistpre) > 0:
