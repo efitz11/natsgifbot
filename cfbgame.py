@@ -218,11 +218,9 @@ def get_game_str(scoreData, team=None):
             try:
                 if game['situation']['possession'] == away['id']:
                     home['status'] = "%s 🏈" % away['abv']
-                    # away['pos'] = "🏈"
                 elif game['situation']['possession'] == home['id']:
                     home['status'] = "%s 🏈" % home['abv']
-                    # home['pos'] = "🏈"
-                home['status'] = "%s - %s" % (home['status'], game['situation']['downDistanceText'])
+                home['status'] = "%s %s" % (home['status'], game['situation']['downDistanceText'])
             except KeyError:
                 pass
 
