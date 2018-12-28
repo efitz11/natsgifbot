@@ -1,5 +1,5 @@
 # natsgifbot
-A discord bot built for the unofficial Nationals discord.
+A discord bot.
 
 Supported commands:
 ```
