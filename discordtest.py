@@ -606,6 +606,11 @@ async def log():
     out = "```%s```" % out
     await bot.say(out)
 
+@bot.command()
+async def meme(*query):
+    """Get information about a meme, provided by KnowYourMeme"""
+    await bot.say(web.kym(' '.join(query)))
+
 @bot.event
 async def on_message(message):
     #stuff
