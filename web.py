@@ -171,10 +171,31 @@ def cocktail(query):
         output = "%s%s" % (output, drink['strDrinkThumb'])
         return output
 
+def kym(query):
+    url = "https://knowyourmeme.com/search?q=" + urllib.parse.quote_plus(query)
+    req = Request(url, headers={'User-Agent' : "ubuntu"})
+    data = urlopen(req).read().decode('utf-8')
+    soup = BeautifulSoup(data, 'html.parser')
+    table = soup.find_all("table",class_="entry_list")[0]
+    entries = table.find_all("td")
+    link = entries[0].find("h2").find("a")
+    title = link.contents[0]
+    url = "https://knowyourmeme.com" + link['href']
+    print(title, url)
+    req = Request(url, headers={'User-Agent' : "ubuntu"})
+    data = urlopen(req).read().decode('utf-8')
+    soup = BeautifulSoup(data, 'html.parser')
+    content = soup.find('div', {"id":"content"})
+    article = content.find('article', class_="entry")
+    body = article.find('div',{'id':'entry_body'}).find('p').get_text()
+    body = body + "\n\nMore info at <%s>" % url
+    return(body)
+
 if __name__ == "__main__":
     # print(search_untappd("heineken"))
     # print(get_latest_tweet("nationalsump"))
     # print(get_latest_tweet("chelsea_janes"))
     # print(ud_def("word"))
     # search_imdb("ryan reynolds")
-    print(cocktail("margarita"))
+    # print(cocktail("margarita"))
+    print(kym("iphone"))
