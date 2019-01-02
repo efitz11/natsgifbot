@@ -188,7 +188,10 @@ def kym(query):
     content = soup.find('div', {"id":"content"})
     article = content.find('article', class_="entry")
     body = article.find('div',{'id':'entry_body'}).find('p').get_text()
-    body = body + "\n\nMore info at <%s>" % url
+    img = article.find("header").find("img")['data-src']
+
+    body = img + "\n\n" + body
+    body = body + "\n\nMore info at <%s>" % (url)
     return(body)
 
 if __name__ == "__main__":
