@@ -1,6 +1,7 @@
 from urllib.request import urlopen, Request
 import json
 import utils
+from bs4 import BeautifulSoup
 
 def get_quote(symbol):
     url = "https://api.iextrading.com/1.0/stock/"+symbol+"/quote?displayPercent=true"
@@ -72,5 +73,28 @@ def get_stocks():
     output = output + "```"
     return output
 
+def get_indexes():
+    indexes = {'Dow','S&P 500','Nasdaq'}
+    labels = ['Index','Last','Change','%']
+    left = [labels[0]]
+    url = "https://www.marketwatch.com/investing/index/spx"
+    req = Request(url, headers={'User-Agent' : "ubuntu"})
+    data = urlopen(req).read().decode('utf-8')
+    soup = BeautifulSoup(data, 'html.parser')
+    table = soup.find("div", class_="markets__table").find("table")
+    table_data = [[cell.text.strip() for cell in row("td")]
+                             for row in table("tr")]
+    rows = []
+    for row in table_data:
+        if row[1] in indexes:
+            idx = {}
+            idx[labels[0]] = row[1]
+            idx[labels[1]] = row[2]
+            idx[labels[2]] = row[3]
+            idx[labels[3]] = row[4]
+            rows.append(idx)
+    return utils.format_table(labels,rows, left_list=left)
+
 if __name__ == "__main__":
-    print(get_quote("msft"))
+    # print(get_quote("msft"))
+    print(get_indexes())
