@@ -187,7 +187,13 @@ def kym(query):
     soup = BeautifulSoup(data, 'html.parser')
     content = soup.find('div', {"id":"content"})
     article = content.find('article', class_="entry")
-    body = article.find('div',{'id':'entry_body'}).find('p').get_text()
+    # body = article.find('div',{'id':'entry_body'}).find('p').get_text()
+    body = article.find('section',class_="bodycopy")
+    paras = body.find_all('p')
+    for p in paras:
+        if len(p.get_text()) > 1:
+            body = p.get_text()
+            break
     img = article.find("header").find("img")['data-src']
 
     body = img + "\n\n" + body
@@ -201,4 +207,5 @@ if __name__ == "__main__":
     # print(ud_def("word"))
     # search_imdb("ryan reynolds")
     # print(cocktail("margarita"))
-    print(kym("iphone"))
+    print(kym("wednesday my dudes"))
+    # print(kym("iphone"))
