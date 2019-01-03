@@ -93,7 +93,7 @@ def get_indexes():
             idx[labels[2]] = row[3]
             idx[labels[3]] = row[4]
             rows.append(idx)
-    return utils.format_table(labels,rows, left_list=left)
+    return "```%s```" % utils.format_table(labels,rows, left_list=left)
 
 if __name__ == "__main__":
     # print(get_quote("msft"))
