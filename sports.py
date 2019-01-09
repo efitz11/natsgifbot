@@ -37,7 +37,7 @@ class Sports():
 
     @commands.command()
     async def cbb(self,*team:str):
-        """display score of team's cfb game"""
+        """display score of team's cbb game"""
         delta = None
         if len(team) > 0:
             if team[-1].startswith('-') or team[-1].startswith('+'):
