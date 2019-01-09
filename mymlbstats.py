@@ -1384,7 +1384,7 @@ def compare_player_stats(playerlist,career=False,year=None, reddit=False):
     output = output + utils.format_table(statlist, stats, reddit=reddit, left_list=left, repl_map=REPL_MAP)
     return output
 
-def get_player_season_stats(name, type=None, year=None, year2=None, active='Y', career=False, reddit=True):
+def get_player_season_stats(name, type=None, year=None, year2=None, active='Y', career=False, reddit=False):
     player = _get_player_search(name, active=active)
     if player is None:
         return "No matching player found"
@@ -1436,6 +1436,9 @@ def get_player_season_stats(name, type=None, year=None, year2=None, active='Y', 
             if sport_tm['season'] == year:
                 teamabv = sport_tm['team_abbrev']
             else:
+                if year == str(now.year):
+                    print(now.year-1)
+                    return "No stats for %s this year \n\n"  % disp_name + get_player_season_stats(name, year=str(now.year-1))
                 return "No stats for %s" % disp_name
         else:
             for season in seasonstats:
