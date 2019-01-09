@@ -596,11 +596,11 @@ async def cocktail(*query):
     await bot.say(web.cocktail(' '.join(query)))
 
 @bot.command()
-async def log():
+async def log(numlines=5):
     """print the last few lines of the bot log to see errors"""
     from collections import deque
     out = ""
-    d = deque(open("bot.log"), 25)
+    d = deque(open("bot.log"), numlines)
     for s in d:
         out = out + s
     out = "```%s```" % out
