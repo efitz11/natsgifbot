@@ -1,4 +1,6 @@
+from datetime import datetime
 import json
+import time
 from urllib.request import urlopen, Request
 import requests
 
@@ -12,35 +14,69 @@ emojimap = {'Sunny':':sunny:',
             'Thunderstorms':':thunder_cloud_rain:',
             'Severe Thunderstorms':'Severe :thunder_cloud_rain:'}
 
+def _convert_ctof(temp):
+    '''convert celsius to fahrenheit'''
+    return 9.0/5.0 * temp + 32
+
+def _get_ET_from_timestamp(timestamp):
+    # utc = datetime.strptime(timestamp,"%Y-%m-%dT%H:%M:00Z") #"2018-03-31T20:05:00Z",
+    utc = datetime.strptime(timestamp,"%Y-%m-%dT%H:%M:00+00:00") # 2019-01-10T18:52:00+00:00
+    nowtime = time.time()
+    diff = datetime.fromtimestamp(nowtime) - datetime.utcfromtimestamp(nowtime)
+    utc = utc + diff
+    return datetime.strftime(utc, "%I:%M ET")
+
 def get_current_weather(text):
     '''get current weather conditions'''
-    req = Request("https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20weather.forecast%20where%20woeid%20in%20(select%20woeid%20from%20geo.places(1)%20where%20text%3D%22"+text+"%22)&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys")
-    req.headers["User-Agent"] = "windows 10 bot"
-    # Load data
-    data = json.loads(urlopen(req).read().decode("utf-8"))
-    if data['query']['count']>0:
-        data = data['query']['results']['channel']
-        unit = data['units']['temperature']
-        condition = data['item']['condition']['text']
-        fcondition = data['item']['forecast'][0]['text']
-        if condition in emojimap:
-            condition = emojimap[condition]
-        if fcondition in emojimap:
-            fcondition = emojimap[fcondition]
-        hum=data['atmosphere']['humidity']
-        output = data['item']['title'] + '\n'
-        output = output + data['item']['condition']['temp'] + ' ' + unit + " - "
-        output = output + condition + "\tWind Chill: " + data['wind']['chill'] + ' ' + unit + '\tHumidity: ' + hum + "%\n"
-        output = output + data['item']['forecast'][0]['day'] + "'s forecast: " + data['item']['forecast'][0]['high'] + "/" + data['item']['forecast'][0]['low'] + ", " + fcondition
-    return output
+    loc = get_lat_lon(text)
+    url = "https://api.weather.gov/points/%.4f,%.4f" % (loc[0], loc[1])
+    data = requests.get(url).json()
+    stations_url = data['properties']['observationStations']
+    data = requests.get(stations_url).json()
+    station = data['features'][0]['properties']['stationIdentifier']
+    station_name = data['features'][0]['properties']['name']
+    station_url = "https://api.weather.gov/stations/%s/observations?limit=1" % station
+    print(station_url)
+    data = requests.get(station_url).json()
+    data = data['features'][0]['properties']
+    temp = _convert_ctof(data['temperature']['value'])
+    text = data['textDescription']
+    try:
+        wind_chill = _convert_ctof(data['windChill']['value'])
+    except:
+        wind_chill = None
+
+    humidity = data['relativeHumidity']['value']
+    updated = _get_ET_from_timestamp(data['timestamp'])
+    retval = "%d F, %s\nHumidity: %d\n" % (temp, text, humidity)
+    if wind_chill is not None:
+        retval = "%sWind Chill: %d F\n" % (retval, wind_chill)
+    retval = "%sUpdated: %s" % (retval, updated)
+    return "```python\n%s```" % retval
+
+    # req = Request("https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20weather.forecast%20where%20woeid%20in%20(select%20woeid%20from%20geo.places(1)%20where%20text%3D%22"+text+"%22)&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys")
+    # req.headers["User-Agent"] = "windows 10 bot"
+    # # Load data
+    # data = json.loads(urlopen(req).read().decode("utf-8"))
+    # if data['query']['count']>0:
+    #     data = data['query']['results']['channel']
+    #     unit = data['units']['temperature']
+    #     condition = data['item']['condition']['text']
+    #     fcondition = data['item']['forecast'][0]['text']
+    #     if condition in emojimap:
+    #         condition = emojimap[condition]
+    #     if fcondition in emojimap:
+    #         fcondition = emojimap[fcondition]
+    #     hum=data['atmosphere']['humidity']
+    #     output = data['item']['title'] + '\n'
+    #     output = output + data['item']['condition']['temp'] + ' ' + unit + " - "
+    #     output = output + condition + "\tWind Chill: " + data['wind']['chill'] + ' ' + unit + '\tHumidity: ' + hum + "%\n"
+    #     output = output + data['item']['forecast'][0]['day'] + "'s forecast: " + data['item']['forecast'][0]['high'] + "/" + data['item']['forecast'][0]['low'] + ", " + fcondition
+    # return output
     
 def get_forecast(text):
     '''get a 10 day weather forecast'''
     loc = get_lat_lon(text)
-    # req = Request("https://api.weather.gov/points/%.4f,%.4f")
-    # req.headers["User-Agent"] = "windows 10 bot"
-    # Load data
-    # data = json.loads(urlopen(req).read().decode("utf-8"))
     url = "https://api.weather.gov/points/%.4f,%.4f" % (loc[0], loc[1])
     print(url)
     req = requests.get(url)
@@ -98,7 +134,7 @@ def get_current_metar(airport_code):
 
 if __name__ == "__main__":
     #get_current_weather('%2C'.join(("fairfax,","va")))
-    #print(get_current_weather('22203'))
+    print(get_current_weather('22203'))
     # print(get_current_metar('kiad'))
-    print(get_forecast("arlington,va"))
+    # print(get_forecast("arlington,va"))
 
