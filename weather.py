@@ -1,5 +1,6 @@
-import json, html
+import json
 from urllib.request import urlopen, Request
+import requests
 
 emojimap = {'Sunny':':sunny:',
             'Mostly Cloudy':':white_sun_cloud:',
@@ -35,23 +36,38 @@ def get_current_weather(text):
     
 def get_forecast(text):
     '''get a 10 day weather forecast'''
-    req = Request("https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20weather.forecast%20where%20woeid%20in%20(select%20woeid%20from%20geo.places(1)%20where%20text%3D%22"+text+"%22)&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys")
-    req.headers["User-Agent"] = "windows 10 bot"
+    loc = get_lat_lon(text)
+    # req = Request("https://api.weather.gov/points/%.4f,%.4f")
+    # req.headers["User-Agent"] = "windows 10 bot"
     # Load data
-    data = json.loads(urlopen(req).read().decode("utf-8"))
-    if data['query']['count']>0:
-        data = data['query']['results']['channel']
-        city = data['location']['city']
-        region = data['location']['region']
-        output = "Forecast for %s, %s\n```python\n" % (city,region)
-        forecast = data['item']['forecast']
-        for day in forecast:
-            d = day['day']
-            h = day['high']
-            l = day['low']
-            c = day['text']
-            output = output + d.ljust(4) + h.rjust(3)+ "/" + l.ljust(3) + c + "\n"
-        return output + "```"
+    # data = json.loads(urlopen(req).read().decode("utf-8"))
+    url = "https://api.weather.gov/points/%.4f,%.4f" % (loc[0], loc[1])
+    print(url)
+    req = requests.get(url)
+    data = req.json()
+    forecast_url = data['properties']['forecast']
+    req = requests.get(forecast_url)
+    data = req.json()
+    periods = data['properties']['periods']
+    out = ""
+    if len(periods) > 0:
+        for period in periods[:10]:
+            out = out + "%s: %d%s\n%s\n\n" % (period['name'], period['temperature'], period['temperatureUnit'], period['detailedForecast'])
+    return "```python\n%s```" % out
+
+    # if data['query']['count']>0:
+    #     data = data['query']['results']['channel']
+    #     city = data['location']['city']
+    #     region = data['location']['region']
+    #     output = "Forecast for %s, %s\n```python\n" % (city,region)
+    #     forecast = data['item']['forecast']
+    #     for day in forecast:
+    #         d = day['day']
+    #         h = day['high']
+    #         l = day['low']
+    #         c = day['text']
+    #         output = output + d.ljust(4) + h.rjust(3)+ "/" + l.ljust(3) + c + "\n"
+    #     return output + "```"
 
 def get_lat_lon(search):
     query = search.replace(' ','+')
@@ -80,6 +96,9 @@ def get_current_metar(airport_code):
     metar = content[content.find(tag) + len(tag):content.find(close)]
     return metar
 
-#get_current_weather('%2C'.join(("fairfax,","va")))
-#print(get_current_weather('22203'))
-# print(get_current_metar('kiad'))
+if __name__ == "__main__":
+    #get_current_weather('%2C'.join(("fairfax,","va")))
+    #print(get_current_weather('22203'))
+    # print(get_current_metar('kiad'))
+    print(get_forecast("arlington,va"))
+
