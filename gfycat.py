@@ -3,6 +3,23 @@ import requests
 import urllib.parse
 import json
 
+def gfy_str(gfy, embed=True):
+    name = gfy['gfyName']
+    title = gfy['title']
+    desc = gfy['description']
+    url = "https://gfycat.com/%s" % name
+    if not embed:
+        url = "<%s>" % url
+    tags = None
+    if 'tags' in gfy and gfy['tags'] is not None:
+        tags = ', '.join(gfy['tags'])
+    str = "%s" % title
+    if len(desc) > 0:
+        str = "%s - %s" % (str, desc)
+    if tags is not None:
+        str = "%s [%s]" % (str, tags)
+    return "%s, %s" % (str, url)
+
 def search_gfys(query, num=0):
     api_url = "https://api.gfycat.com/v1/"
     oauth_url = api_url+"oauth/token"
@@ -20,19 +37,11 @@ def search_gfys(query, num=0):
     try:
         if len(s['gfycats']) > 0:
             if num == 0:
-                return "https://gfycat.com/%s" % s['gfycats'][0]['gfyName']
+                return gfy_str(s['gfycats'][0])
             else:
                 out = ""
                 for i in range(min(num, len(s['gfycats']))):
-                    gfy = s['gfycats'][i]
-                    url = "https://gfycat.com/%s" % gfy['gfyName']
-                    title = gfy['title']
-                    desc = gfy['description']
-                    if 'tags' in gfy and gfy['tags'] is not None:
-                        tags = ', '.join(gfy['tags'])
-                    else:
-                        tags = ""
-                    out = out + "%s - %s (%s), <%s>\n" % (title, desc, tags, url)
+                    out = "%s%s\n" % (out, gfy_str(s['gfycats'][i], embed=False))
                 return out
         else:
             print("query: %s\n%s\n\n" % (query, s))
