@@ -9,7 +9,7 @@ import asyncio
 from urllib.request import urlopen, Request
 import urllib.parse
 
-import mymlbgame, cfbgame, nflgame, xmlreader, nhlscores, cbbgame, stocks, olympics, gifs
+import mymlbgame, cfbgame, nflgame, xmlreader, nhlscores, cbbgame, stocks, olympics, gifs, gfycat
 import weather as weathermodule
 import frinkiac, web
 import hq as hqmod
@@ -96,6 +96,12 @@ async def gif(*name : str):
     """returns a nationals gif matching the search query"""
     # await bot.say(gifs.fuzzygif(' '.join(name)))
     await bot.say(gifs.gif(' '.join(name)))
+
+@bot.command()
+async def gfy(*name : str):
+    """returns a gif from efitz111 on gfycat"""
+    await bot.say(gfycat.search_gfys(' '.join(name)))
+
 @bot.command()
 async def mlbgif(*name : str):
     """returns a nationals gif matching the search query"""
