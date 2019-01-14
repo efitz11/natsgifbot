@@ -7,6 +7,17 @@ def get_json(url, encoding="utf-8"):
     req = Request(url, headers={'User-Agent': "ubuntu"})
     return json.loads(urlopen(req).read().decode(encoding))
 
+def get_keys(name):
+    """
+    Returns the keys listed in keys.json
+    :param name: name of the service you want the keys for
+    :return: dictionary containing the keys
+    """
+    with open("keys.json",'r') as f:
+        f = json.loads(f.read())
+    for k in f['keys']:
+        if k['name'] == name:
+            return k
 
 def format_reddit_table(labels, dicts, repl_map={}, left_list=[]):
     """
