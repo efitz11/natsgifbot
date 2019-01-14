@@ -9,3 +9,4 @@ channelids.txt
 *.log
 .idea/*
 keys.json
+errors/

@@ -103,6 +103,11 @@ async def gfy(*name : str):
     await bot.say(gfycat.search_gfys(' '.join(name)))
 
 @bot.command()
+async def gfyall(*name : str):
+    """returns up to 20 gifs from efitz111 on gfycat"""
+    await bot.say(gfycat.search_gfys(' '.join(name), num=20))
+
+@bot.command()
 async def mlbgif(*name : str):
     """returns a nationals gif matching the search query"""
     await bot.say(gifs.get_mlb_gif(' '.join(name)))    

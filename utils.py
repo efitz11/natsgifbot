@@ -1,5 +1,6 @@
 from urllib.request import urlopen, Request
 import json
+import os
 
 
 def get_json(url, encoding="utf-8"):
@@ -126,3 +127,15 @@ def format_table(labels, dicts, repl_map={}, showlabels=True, linebreaknum=0, li
         lines = newlines[:-1]
 
     return '\n'.join(lines)
+
+def write_to_file(contents, filename, subdir, prependtimestamp=False):
+    if prependtimestamp:
+        import time
+        timestr = time.strftime('%Y%m%d-%H%M%S')
+        filename = "%s-%s" % (timestr, filename)
+    if not os.path.exists(subdir):
+        os.makedirs(subdir)
+    filename = os.path.join(subdir,filename)
+    with open(filename, 'w') as f:
+        f.write(contents)
+    return filename
