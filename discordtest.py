@@ -102,10 +102,13 @@ async def gfy(*name : str):
     """returns a gif from efitz111 on gfycat"""
     await bot.say(gfycat.search_gfys(' '.join(name)))
 
-@bot.command()
-async def gfyall(*name : str):
+@bot.command(pass_context=True)
+async def gfyall(ctx, *name : str):
     """returns up to 20 gifs from efitz111 on gfycat"""
-    await bot.say(gfycat.search_gfys(' '.join(name), num=20))
+    if 'bot' in str(ctx.message.channel):
+        await bot.say(gfycat.search_gfys(' '.join(name), num=20))
+    else:
+        await bot.say("this command is only allowed in the bot channel")
 
 @bot.command()
 async def mlbgif(*name : str):
@@ -280,10 +283,13 @@ async def weather(*location:str):
     """oh the weather outside is weather"""
     output = weathermodule.get_current_weather('%2C'.join(location))
     await bot.say(output)
-@bot.command()
-async def forecast(*location:str):
-    output = weathermodule.get_forecast('%2C'.join(location))
-    await bot.say(output)
+@bot.command(pass_context=True)
+async def forecast(ctx, *location:str):
+    if 'bot' in str(ctx.message.channel):
+        output = weathermodule.get_forecast('%2C'.join(location))
+        await bot.say(output)
+    else:
+        await bot.say("this command is only allowed in the bot channel")
 
 @bot.command()
 async def radar(*query):
