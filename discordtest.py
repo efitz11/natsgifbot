@@ -634,7 +634,7 @@ async def meme(*query):
 @bot.command()
 async def fitz(*message):
     """fitz"""
-    await bot.say(":fitz: %s :fitz:" % ' '.join(message).upper())
+    await bot.say("<:fitz:535186966451322930> %s <:fitz:535186966451322930>" % ' '.join(message).upper())
 
 @bot.event
 async def on_message(message):
