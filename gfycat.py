@@ -32,7 +32,7 @@ def search_gfys(query, num=0):
     # print(r.json())
     access_token = r.json()['access_token']
     headers = {'Authorization':'Bearer {}'.format(access_token)}
-    url = search_url+"?search_text=%s" % urllib.parse.quote_plus(query)
+    url = search_url+"?search_text=%s&count=20" % urllib.parse.quote_plus(query)
     s = requests.get(url,headers=headers).json()
     try:
         if len(s['gfycats']) > 0:
