@@ -115,9 +115,12 @@ async def mlbgif(*name : str):
     """returns a nationals gif matching the search query"""
     await bot.say(gifs.get_mlb_gif(' '.join(name)))    
     
-@bot.command()
-async def gifall(*name:str):
+@bot.command(pass_context=True)
+async def gifall(ctx, *name:str):
     """returns all gifs matching the search query"""
+    if 'bot' not in str(ctx.message.channel):
+        await bot.say("this command is only allowed in the bot channel")
+        return
     matches = []
     patterns = []
     query = ""
