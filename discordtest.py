@@ -631,6 +631,11 @@ async def meme(*query):
     """Get information about a meme, provided by KnowYourMeme"""
     await bot.say(web.kym(' '.join(query)))
 
+@bot.command()
+async def fitz(*message):
+    """fitz"""
+    await bot.say(":fitz: %s :fitz:" % ' '.join(message).upper())
+
 @bot.event
 async def on_message(message):
     #stuff
