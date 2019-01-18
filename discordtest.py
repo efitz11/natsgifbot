@@ -639,13 +639,13 @@ async def fitz(*message):
 @bot.event
 async def on_message(message):
     #stuff
+    # print(bot.commands)
     if message.author == bot.user:
         return
-    # message.content = message.content.lower()
     if message.content.startswith(bot.command_prefix):
         print("%s input command: %s" % (message.author, message.content))
         await bot.process_commands(message)
-    elif message.content.startswith('?') and not message.content.endswith('?') and not message.content[1] == ' ':
+    elif message.content.split(' ')[0][1:] in bot.commands:
         print("%s input command: %s" % (message.author, message.content))
         message.content = '!'+message.content[1:]
         await bot.delete_message(message)
