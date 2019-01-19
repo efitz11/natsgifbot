@@ -645,7 +645,7 @@ async def on_message(message):
     if message.content.startswith(bot.command_prefix):
         print("%s input command: %s" % (message.author, message.content))
         await bot.process_commands(message)
-    elif message.content.split(' ')[0][1:] in bot.commands:
+    elif message.content.split(' ')[0][1:] in bot.commands and message.content.startswith('?'):
         print("%s input command: %s" % (message.author, message.content))
         message.content = '!'+message.content[1:]
         await bot.delete_message(message)
