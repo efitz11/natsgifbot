@@ -14,6 +14,8 @@ GAME_STATUS_PRE = 0
 GAME_STATUS_IN = 1
 GAME_STATUS_POST = 2
 
+LINE_SEP = "──────────────────────────────────────"
+
 base_url = "http://espn.go.com/mens-college-basketball/scoreboard/_/"
 
 type = "50"
@@ -165,9 +167,14 @@ def get_game(team,delta=None):
             hr = game['homerank']['current']
             awayr = "("+str(ar)+")" if (ar <= 25 and ar > 0) else ""
             homer = "("+str(hr)+")" if (hr <= 25 and hr > 0) else ""
-            output = output +  "%s %s %s @ %s %s %s # %s%s%s\n" % (awayr.rjust(4),game['awayabv'].rjust(5), game['awayscore'].rjust(2), homer.rjust(4),game['homeabv'].rjust(5), game['homescore'].rjust(2), game['time'],game['broadcast'],game['odds'])
-            #output = output + pretty_print_game(game)
-        return (dateline + "\n```python\n" + output+"```")
+            if len(games) >= 10:
+                output = output + "%s %s %s @ %s %s %s # %s%s%s\n" % (awayr.rjust(4),game['awayabv'].rjust(5), game['awayscore'].rjust(2), homer.rjust(4),game['homeabv'].rjust(5), game['homescore'].rjust(2), game['time'],game['broadcast'],game['odds'])
+            else:
+                output = output + pretty_print_game(game)
+                if game != games[-1] :
+                    output = "%s%s\n" % (output, LINE_SEP)
+        return dateline + "\n```python\n" + output+"```"
+
     for game in games:
         if game['hometeam'].lower() == team.lower() or game['homeabv'].lower() == team.lower() or game['awayteam'].lower() == team.lower() or game['awayabv'].lower() == team.lower():
             # ar = game['awayrank']['current']
@@ -207,4 +214,3 @@ def pretty_print_games(games):
             started.append(game)
         else:
             pregame.append(game)
-    
