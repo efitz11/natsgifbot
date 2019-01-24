@@ -48,7 +48,7 @@ def get_current_weather(text):
 
     humidity = data['relativeHumidity']['value']
     updated = _get_ET_from_timestamp(data['timestamp'])
-    retval = "At %s:\n%d F, %s\nHumidity: %d\n" % (station_name, temp, text, humidity)
+    retval = "At %s:\n%d F, %s\nHumidity: %d%%\n" % (station_name, temp, text, humidity)
     if wind_chill is not None:
         retval = "%sWind Chill: %d F\n" % (retval, wind_chill)
     retval = "%sUpdated: %s" % (retval, updated)
