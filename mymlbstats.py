@@ -1542,15 +1542,24 @@ def get_inning_plays(team, inning, delta=None):
         if 'hitData' in curplayevent:
             hitdata = curplayevent['hitData']
             try:
-                dist = str(int(hitdata['totalDistance']))
+                if 'totalDistance' in hitdata:
+                    dist = str(int(hitdata['totalDistance']))
+                else:
+                    dist = "n/a"
             except:
                 dist = str(hitdata['totalDistance'])
             try:
-                speed = "%.1f mph" % hitdata['launchSpeed']
+                if 'launchSpeed' in hitdata:
+                    speed = "%.1f mph" % hitdata['launchSpeed']
+                else:
+                    speed = "n/a"
             except:
                 speed = str(hitdata['launchSpeed'])
             try:
-                angle = "%d" % hitdata['launchAngle']
+                if 'launchAngle' in hitdata:
+                    angle = "%d" % hitdata['launchAngle']
+                else:
+                    angle = "n/a"
             except:
                 angle = str(hitdata['launchAngle'])
             data = data + " | %s ft, %s mph, %s degrees" % (dist, speed, angle)
