@@ -1550,9 +1550,12 @@ def get_inning_plays(team, inning, delta=None):
         desc = ""
         if 'description' in play['result']:
             desc = "With %s pitching, %s" % (opppitcher, play['result']['description'])
-        pitch = curplayevent['details']['type']['description']
-        pspeed = curplayevent['pitchData']['startSpeed']
-        data = "(%.1f mph %s" % (pspeed, pitch)
+        if 'type' in curplayevent['details']:
+            pitch = curplayevent['details']['type']['description']
+            pspeed = curplayevent['pitchData']['startSpeed']
+            data = "(%.1f mph %s" % (pspeed, pitch)
+        else:
+            data = "("
         if 'hitData' in curplayevent:
             hitdata = curplayevent['hitData']
             try:
