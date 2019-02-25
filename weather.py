@@ -3,6 +3,7 @@ import json
 import time
 from urllib.request import urlopen, Request
 import requests
+import utils
 
 emojimap = {'Sunny':':sunny:',
             'Mostly Cloudy':':white_sun_cloud:',
@@ -97,15 +98,21 @@ def get_lat_lon(search):
         return(lat,lon)
 
 def get_current_metar(airport_code):
-    url = "https://www.aviationweather.gov/adds/dataserver_current/httpparam?dataSource=metars&requestType=retrieve&format=xml&hoursBeforeNow=3&mostRecent=true&stationString=" + airport_code
-    print(url)
-    req = Request(url, headers={'User-Agent' : "ubuntu"})
-    open = urlopen(req)
-    content = open.read().decode('utf-8')
-    tag = '<raw_text>'
-    close = '</raw_text>'
-    metar = content[content.find(tag) + len(tag):content.find(close)]
-    return metar
+    # url = "https://www.aviationweather.gov/adds/dataserver_current/httpparam?dataSource=metars&requestType=retrieve&format=xml&hoursBeforeNow=3&mostRecent=true&stationString=" + airport_code
+    # print(url)
+    # req = Request(url, headers={'User-Agent' : "ubuntu"})
+    # open = urlopen(req)
+    # content = open.read().decode('utf-8')
+    # tag = '<raw_text>'
+    # close = '</raw_text>'
+    # metar = content[content.find(tag) + len(tag):content.find(close)]
+    # return metar
+    url = 'https://api.weather.gov/stations/%s/observations?limit=1' % (airport_code)
+    data = utils.get_json(url)
+    if len(data['features']) > 0:
+        return "```%s```" % data['features'][0]['properties']['rawMessage']
+    else:
+        return "Airport code not found"
 
 if __name__ == "__main__":
     #get_current_weather('%2C'.join(("fairfax,","va")))
