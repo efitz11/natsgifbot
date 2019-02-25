@@ -110,7 +110,9 @@ def get_current_metar(airport_code):
     url = 'https://api.weather.gov/stations/%s/observations?limit=1' % (airport_code)
     data = utils.get_json(url)
     if len(data['features']) > 0:
-        return "```%s```" % data['features'][0]['properties']['rawMessage']
+        ts = data['features'][0]['properties']['timestamp']
+        updated = _get_ET_from_timestamp(ts)
+        return "```Time: %s\n%s```" % (updated, data['features'][0]['properties']['rawMessage'])
     else:
         return "Airport code not found"
 
