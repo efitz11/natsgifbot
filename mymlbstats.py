@@ -1623,7 +1623,8 @@ def print_roster(team,hitters=True):
         items = ['name','pos','gamesPlayed','atBats','avg','ops']
         output = output + _print_table(items,batters,repl_map={'gamesPlayed':'G','atBats':'ab'})
     else:
-        pitchers = sorted(pitchers, key=lambda x: float(x['inningsPitched']), reverse=True)
+        if 'inningsPitched' in pitchers:
+            pitchers = sorted(pitchers, key=lambda x: float(x['inningsPitched']), reverse=True)
         output = "List of pitchers:\n\n"
         items = ['name','throws','gamesPlayed','inningsPitched','era','whip']
         output = output + utils.format_table(items,pitchers,repl_map={'gamesPlayed':'G','inningsPitched':'ip', 'throws':'t'}, left_list=['name'])
