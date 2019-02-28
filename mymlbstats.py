@@ -1568,9 +1568,11 @@ def get_inning_plays(team, inning, delta=None):
             data = "("
         if 'hitData' in curplayevent:
             hitdata = curplayevent['hitData']
+            hasany = False
             try:
                 if 'totalDistance' in hitdata:
                     dist = str(int(hitdata['totalDistance']))
+                    hasany = True
                 else:
                     dist = "n/a"
             except:
@@ -1578,6 +1580,7 @@ def get_inning_plays(team, inning, delta=None):
             try:
                 if 'launchSpeed' in hitdata:
                     speed = "%.1f mph" % hitdata['launchSpeed']
+                    hasany = True
                 else:
                     speed = "n/a"
             except:
@@ -1585,12 +1588,16 @@ def get_inning_plays(team, inning, delta=None):
             try:
                 if 'launchAngle' in hitdata:
                     angle = "%d" % hitdata['launchAngle']
+                    hasany = True
                 else:
                     angle = "n/a"
             except:
                 angle = str(hitdata['launchAngle'])
-            data = data + " | %s ft, %s mph, %s degrees" % (dist, speed, angle)
+            if hasany:
+                data = data + " | %s ft, %s mph, %s degrees" % (dist, speed, angle)
         data = data + ")"
+        if data == "()":
+            data = ""
         if play['about']['isScoringPlay']:
             desc = desc + "(%d-%d)" % (play['result']['awayScore'], play['result']['homeScore'])
             desc = "**%s**" % desc
