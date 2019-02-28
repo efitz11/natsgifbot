@@ -369,7 +369,7 @@ def get_broadcasts(delta=None, teamid=None):
     team = ""
     if teamid is not None:
         team = "&teamId=" + str(teamid)
-    url = "https://statsapi.mlb.com/api/v1/schedule?sportId=1" + team + "&date=" + date + "&hydrate=broadcasts(all)"
+    url = "https://statsapi.mlb.com/api/v1/schedule?sportId=1" + team + "&date=" + date + "&hydrate=broadcasts(all),team"
     print(url)
     return _get_json(url)
 
@@ -1657,6 +1657,10 @@ def print_broadcasts(team, delta=None):
             elif b['type'] == "AM":
                 am = "%s %s," % (am, b['name'])
                 foundam = True
+        awayteam = game['teams']['away']['team']['abbreviation']
+        hometeam = game['teams']['home']['team']['abbreviation']
+        time = get_ET_from_timestamp(game['gameDate'])
+        out = out + "%s @ %s, %s:\n" % (awayteam, hometeam, time)
         if not foundam and not foundtv:
             out = out + "No broadcasts found.\n"
         else:
@@ -1664,6 +1668,7 @@ def print_broadcasts(team, delta=None):
                 out = out + tv[:-1] + "\n"
             if foundam:
                 out = out + am[:-1] + "\n"
+        out = out + "\n"
     return out
 
 def _print_table(labels, dicts, repl_map={}, useDefaultMap=True):
