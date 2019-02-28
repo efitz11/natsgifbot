@@ -435,7 +435,12 @@ async def nice():
 async def zoop():
     """zoop"""
     await bot.say(":point_right: :sunglasses: :point_right:")
-    
+
+@bot.command()
+async def pooz():
+    """pooz"""
+    await bot.say(":point_left: :sunglasses: :point_left:")
+
 @bot.command(pass_context=True)
 async def react(ctx, reactionstr:str, *search:str):
     """turn string into emoji and react to the most recent message that matches"""
