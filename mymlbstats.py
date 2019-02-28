@@ -363,6 +363,16 @@ def get_days_schedule(startdate, enddate, teamid=None):
     print(url)
     return _get_json(url)
 
+def get_broadcasts(delta=None, teamid=None):
+    now = _get_date_from_delta(delta)
+    date = str(now.year) + "-" + str(now.month).zfill(2) + "-" + str(now.day).zfill(2)
+    team = ""
+    if teamid is not None:
+        team = "&teamId=" + str(teamid)
+    url = "https://statsapi.mlb.com/api/v1/schedule?sportId=1" + team + "&date=" + date + "&hydrate=broadcasts(all)"
+    print(url)
+    return _get_json(url)
+
 def get_pbp(gamepk):
     url = "https://statsapi.mlb.com/api/v1/game/" + gamepk + "/playByPlay"
     req = Request(url, headers={'User-Agent' : "ubuntu"})
@@ -1630,6 +1640,32 @@ def print_roster(team,hitters=True):
         output = output + utils.format_table(items,pitchers,repl_map={'gamesPlayed':'G','inningsPitched':'ip', 'throws':'t'}, left_list=['name'])
     return output
 
+def print_broadcasts(team, delta=None):
+    teamid = get_teamid(team)
+    list = get_broadcasts(delta=delta, teamid=teamid)
+    out = ""
+    for game in list['dates'][0]['games']:
+        bc = game['broadcasts']
+        tv = "TV:"
+        am = "Radio:"
+        foundtv = False
+        foundam = False
+        for b in bc:
+            if b['type'] == "TV":
+                tv = "%s %s," % (tv, b['name'])
+                foundtv = True
+            elif b['type'] == "AM":
+                am = "%s %s," % (am, b['name'])
+                foundam = True
+        if not foundam and not foundtv:
+            out = out + "No broadcasts found.\n"
+        else:
+            if foundtv:
+                out = out + tv[:-1] + "\n"
+            if foundam:
+                out = out + am[:-1] + "\n"
+    return out
+
 def _print_table(labels, dicts, repl_map={}, useDefaultMap=True):
     if useDefaultMap:
         repl_map = {'d':'2B','t':'3B', **repl_map}
@@ -1706,7 +1742,7 @@ if __name__ == "__main__":
     # print(get_milb_season_stats("alejandro de aza"))
     # print(get_milb_season_stats("carter kieboom",year="2017"))
     # print(search_highlights("Murphy"))
-    print(get_player_season_splits("Bryce Harper","months"))
+    # print(get_player_season_splits("Bryce Harper","months"))
     # print(player_vs_team("chris archer","wsh"))
     # print(get_game_highlights_plays("530753"))
     # print(get_inning_plays("col", 7))
@@ -1714,3 +1750,4 @@ if __name__ == "__main__":
     # print(print_roster('wsh',hitters=False))
     # print(get_milb_aff_scores())
     # print(get_milb_box('syr'))
+    print(print_broadcasts("wsh"))

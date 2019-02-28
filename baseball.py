@@ -43,6 +43,12 @@ class Baseball():
         return direction + str(delta.days)
 
     @commands.command()
+    async def newmlb(self, *query:str):
+        """New version of mlb command, with proper subcommands (in progress)"""
+        delta = None
+        team = ["wsh" if x.lower() == "nats" else x for x in query]
+
+    @commands.command()
     async def mlb(self,*team :str):
         """Get MLB info
 
@@ -302,6 +308,10 @@ class Baseball():
         elif team[0] == "standings":
             div = team[1]
             await self.bot.say(mymlbstats.get_div_standings(div))
+        elif team[0] == "broadcasts":
+            team = ' '.join(team[1:]).lower()
+            out = mymlbstats.print_broadcasts(team, delta=delta)
+            await self.bot.say("```%s```" % out)
         else:
             teamname = ' '.join(team).lower()
             output = mymlbstats.get_single_game(teamname,delta=delta)
