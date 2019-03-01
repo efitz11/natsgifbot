@@ -22,6 +22,17 @@ def _get_date_from_delta(delta=None):
 def _timedelta_to_mlb(td):
     return "%d-%02d-%02d" % (td.year, td.month, td.day)
 
+def _is_spring():
+    sp_month = 3
+    sp_day = 28
+    now = datetime.now()
+    if now.month < sp_month:
+        return True
+    if now.month == sp_month:
+        if now.day < sp_day:
+            return True
+    return False
+
 def get_ET_from_timestamp(timestamp):
     utc = datetime.strptime(timestamp,"%Y-%m-%dT%H:%M:00Z") #"2018-03-31T20:05:00Z",
     nowtime = time.time()
@@ -1408,6 +1419,24 @@ def compare_player_stats(playerlist,career=False,year=None, reddit=False):
     output = output + utils.format_table(statlist, stats, reddit=reddit, left_list=left, repl_map=REPL_MAP)
     return output
 
+def get_player_spring_stats(playerid, year=None, type="hitting"):
+    if year is None:
+        year = datetime.now().year
+    url = "https://statsapi.mlb.com/api/v1/people/%s?hydrate=currentTeam,team,stats(type=season,season=%s,gameType=S)" % (playerid, year)
+    data = utils.get_json(url)['people'][0]['stats']
+    statgroup = None
+    for stat in data:
+        if stat['group']['displayName'] == type:
+            statgroup = [stat['splits'][0]['stat']]
+    if type == "hitting":
+        stats = ['atBats','hits','doubles','triples','homeRuns','runs','rbi','baseOnBalls','strikeOuts','stolenBases','caughtStealing','avg','obp','slg','ops']
+        repl_map = {'atBats':'ab','hits':'h', 'doubles':'2b', 'triples':'3b', 'homeRuns':'hr','runs':'r','baseOnBalls':'bb','strikeOuts':'so','stolenBases':'sb','caughtStealing':'cs'}
+    elif type == "pitching":
+        stats = ['wins','losses','gamesPitched','gamesStarted','saveOpportunities','saves','inningsPitched','strikeOuts','baseOnBalls','homeRuns','era','whip']
+        repl_map = {'wins':'w','losses':'l','gamesPitched':'g','gamesStarted':'gs','saveOpportunities':'svo','saves':'sv','inningsPitched':'ip','strikeOuts':'so','baseOnBalls':'bb','homeRuns':'hr'}
+    output = utils.format_table(stats, statgroup, repl_map=repl_map)
+    return output
+
 def get_player_season_stats(name, type=None, year=None, year2=None, active='Y', career=False, reddit=False):
     player = _get_player_search(name, active=active)
     if player is None:
@@ -1438,6 +1467,11 @@ def get_player_season_stats(name, type=None, year=None, year2=None, active='Y', 
         type = "pitching"
     elif type is None and pos != 'P':
         type = "hitting"
+    if year is None:
+        year = str(now.year)
+    if year == str(now.year) and _is_spring():
+        output = "%s spring stats for %s (%s):" % (year, disp_name, teamabv)
+        return "%s\n\t%s\n%s" % (output, infoline, get_player_spring_stats(pid, year=year, type=type))
     url = "http://lookup-service-prod.mlb.com/json/named.sport_" + type + "_composed.bam?game_type=%27R%27&league_list_id=%27mlb_hist%27&player_id=" + str(pid)
     print(url)
     req = Request(url, headers={'User-Agent' : "ubuntu"})
@@ -1450,8 +1484,6 @@ def get_player_season_stats(name, type=None, year=None, year2=None, active='Y', 
     seasonstats = s['sport_'+type+'_composed'][sport+type+"_agg"]["queryResults"]["row"]
     seasons = s['sport_'+type+'_composed']["sport_"+type+"_agg"]["queryResults"]["row"]
     sport_tm = s['sport_'+type+'_composed']['sport_'+type+"_tm"]['queryResults']['row']
-    if year is None:
-        year = str(now.year)
     s = []
     if not career:
         if "season" in seasonstats:
@@ -1762,4 +1794,5 @@ if __name__ == "__main__":
     # print(print_roster('wsh',hitters=False))
     # print(get_milb_aff_scores())
     # print(get_milb_box('syr'))
-    print(print_broadcasts("wsh"))
+    # print(print_broadcasts("wsh"))
+    print(get_player_season_stats("max scherzer"))
