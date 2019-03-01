@@ -610,6 +610,45 @@ def get_team_schedule(team, num, backward=True):
             output = output + get_single_game_info(None, game) + "\n"
     return output
 
+def list_home_runs(team, delta=None):
+    teamid = get_teamid(team)
+    if teamid is None:
+        return "No matching team found"
+    now = _get_date_from_delta(delta)
+    date = str(now.year) + "-" + str(now.month).zfill(2) + "-" + str(now.day).zfill(2)
+    url = "https://statsapi.mlb.com/api/v1/schedule?sportId=1&teamId=%d&date=%s&hydrate=scoringplays" % (teamid, date)
+    games = _get_json(url)['dates'][0]['games']
+    output = ""
+    numgames = len(games)
+    count = 0
+    repl_map = {'inning':'inn'}
+    labs = ['batter', 'inning', 'runs', 'pitcher']
+    left = ['batter', 'pitcher', 'inning']
+
+    for game in games:
+        sp = game['scoringPlays']
+        homers = []
+        for p in sp:
+            if p['result']['eventType'] == "home_run":
+                h = dict()
+                h['batter'] = p['matchup']['batter']['fullName']
+                h['pitcher'] = p['matchup']['pitcher']['fullName']
+                h['inning'] = p['about']['halfInning']
+                if h['inning'] == 'bottom':
+                    h['inning'] = 'bot'
+                h['inning'] = "%s %s" % (h['inning'], p['about']['inning'])
+                h['runs'] = p['result']['rbi']
+                homers.append(h)
+                # output = output + "%s, %s %d, %d rbi, off %s\n" % (p['matchup']['batter']['fullName'],
+                #                                                    p['about']['halfInning'], p['about']['inning'],
+                #                                                    p['result']['rbi'], p['matchup']['pitcher']['fullName'])
+
+        output = output + utils.format_table(labs, homers,repl_map=repl_map, left_list=left)
+        count += 1
+        if count < numgames:
+            output = output + "==============="
+    return output
+
 def list_scoring_plays(team,delta=None,lastonly=False):
     teamid = get_teamid(team)
     if teamid is None:
