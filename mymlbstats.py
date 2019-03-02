@@ -1693,7 +1693,7 @@ def print_broadcasts(team, delta=None):
             if b['type'] == "TV":
                 tv = "%s %s," % (tv, b['name'])
                 foundtv = True
-            elif b['type'] == "AM":
+            elif b['type'] in ["AM", "FM"]:
                 am = "%s %s," % (am, b['name'])
                 foundam = True
         awayteam = game['teams']['away']['team']['abbreviation']
