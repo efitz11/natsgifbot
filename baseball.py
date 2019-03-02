@@ -141,6 +141,10 @@ class Baseball():
             else:
                 await self.bot.say("No scoring plays")
                 return
+        elif team[0] == 'homers':
+            teamname = ' '.join(team[1:])
+            await self.bot.say("```python\n%s```" % mymlbstats.list_home_runs(teamname, delta=delta))
+            return
         elif team[0] == 'line':
             player = '+'.join(team[1:])
             if len(player) == 0:
