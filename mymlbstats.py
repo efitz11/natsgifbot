@@ -1462,7 +1462,11 @@ def get_player_spring_stats(playerid, year=None, type="hitting"):
     if year is None:
         year = datetime.now().year
     url = "https://statsapi.mlb.com/api/v1/people/%s?hydrate=currentTeam,team,stats(type=season,season=%s,gameType=S)" % (playerid, year)
-    data = utils.get_json(url)['people'][0]['stats']
+    data = utils.get_json(url)['people'][0]
+    if 'stats' in data:
+        data = data['stats']
+    else:
+        return "No stats this spring"
     statgroup = None
     for stat in data:
         if stat['group']['displayName'] == type:
