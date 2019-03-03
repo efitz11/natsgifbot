@@ -1508,7 +1508,7 @@ def get_player_season_stats(name, type=None, year=None, year2=None, active='Y', 
         type = "hitting"
     if year is None:
         year = str(now.year)
-    if year == str(now.year) and _is_spring():
+    if not career and year == str(now.year) and _is_spring():
         output = "%s spring stats for %s (%s):" % (year, disp_name, teamabv)
         return "%s\n\t%s\n\n%s" % (output, infoline, get_player_spring_stats(pid, year=year, type=type))
     url = "http://lookup-service-prod.mlb.com/json/named.sport_" + type + "_composed.bam?game_type=%27R%27&league_list_id=%27mlb_hist%27&player_id=" + str(pid)
