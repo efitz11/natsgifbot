@@ -312,7 +312,7 @@ class Baseball():
         elif team[0] == "standings":
             div = team[1]
             await self.bot.say(mymlbstats.get_div_standings(div))
-        elif team[0] == "broadcasts":
+        elif team[0] in ["broadcast","broadcasts"]:
             team = ' '.join(team[1:]).lower()
             out = mymlbstats.print_broadcasts(team, delta=delta)
             await self.bot.say("```%s```" % out)
