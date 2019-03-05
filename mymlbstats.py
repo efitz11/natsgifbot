@@ -1729,6 +1729,10 @@ def print_broadcasts(team, delta=None):
     for game in list['dates'][0]['games']:
         foundtv = False
         foundam = False
+        awayteam = game['teams']['away']['team']['abbreviation']
+        hometeam = game['teams']['home']['team']['abbreviation']
+        time = get_ET_from_timestamp(game['gameDate'])
+        out = out + "%s @ %s, %s:\n" % (awayteam, hometeam, time)
         if 'broadcasts' in game:
             bc = game['broadcasts']
             tv = "TV:"
@@ -1740,10 +1744,6 @@ def print_broadcasts(team, delta=None):
                 elif b['type'] in ["AM", "FM"]:
                     am = "%s %s," % (am, b['name'])
                     foundam = True
-            awayteam = game['teams']['away']['team']['abbreviation']
-            hometeam = game['teams']['home']['team']['abbreviation']
-            time = get_ET_from_timestamp(game['gameDate'])
-            out = out + "%s @ %s, %s:\n" % (awayteam, hometeam, time)
         if not foundam and not foundtv:
             out = out + "No broadcasts found.\n"
         else:
