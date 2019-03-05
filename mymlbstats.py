@@ -1462,7 +1462,11 @@ def get_player_spring_stats(playerid, year=None, type="hitting"):
     if year is None:
         year = datetime.now().year
     url = "https://statsapi.mlb.com/api/v1/people/%s?hydrate=currentTeam,team,stats(type=season,season=%s,gameType=S)" % (playerid, year)
-    data = utils.get_json(url)['people'][0]['stats']
+    data = utils.get_json(url)['people'][0]
+    if 'stats' in data:
+        data = data['stats']
+    else:
+        return "No stats this spring"
     statgroup = None
     for stat in data:
         if stat['group']['displayName'] == type:
@@ -1508,7 +1512,7 @@ def get_player_season_stats(name, type=None, year=None, year2=None, active='Y', 
         type = "hitting"
     if year is None:
         year = str(now.year)
-    if year == str(now.year) and _is_spring():
+    if not career and year == str(now.year) and _is_spring():
         output = "%s spring stats for %s (%s):" % (year, disp_name, teamabv)
         return "%s\n\t%s\n\n%s" % (output, infoline, get_player_spring_stats(pid, year=year, type=type))
     url = "http://lookup-service-prod.mlb.com/json/named.sport_" + type + "_composed.bam?game_type=%27R%27&league_list_id=%27mlb_hist%27&player_id=" + str(pid)
@@ -1723,23 +1727,22 @@ def print_broadcasts(team, delta=None):
     list = get_broadcasts(delta=delta, teamid=teamid)
     out = ""
     for game in list['dates'][0]['games']:
+        bc = game['broadcasts']
+        tv = "TV:"
+        am = "Radio:"
         foundtv = False
         foundam = False
-        if 'broadcasts' in game:
-            bc = game['broadcasts']
-            tv = "TV:"
-            am = "Radio:"
-            for b in bc:
-                if b['type'] == "TV":
-                    tv = "%s %s," % (tv, b['name'])
-                    foundtv = True
-                elif b['type'] == "AM":
-                    am = "%s %s," % (am, b['name'])
-                    foundam = True
-            awayteam = game['teams']['away']['team']['abbreviation']
-            hometeam = game['teams']['home']['team']['abbreviation']
-            time = get_ET_from_timestamp(game['gameDate'])
-            out = out + "%s @ %s, %s:\n" % (awayteam, hometeam, time)
+        for b in bc:
+            if b['type'] == "TV":
+                tv = "%s %s," % (tv, b['name'])
+                foundtv = True
+            elif b['type'] in ["AM", "FM"]:
+                am = "%s %s," % (am, b['name'])
+                foundam = True
+        awayteam = game['teams']['away']['team']['abbreviation']
+        hometeam = game['teams']['home']['team']['abbreviation']
+        time = get_ET_from_timestamp(game['gameDate'])
+        out = out + "%s @ %s, %s:\n" % (awayteam, hometeam, time)
         if not foundam and not foundtv:
             out = out + "No broadcasts found.\n"
         else:
