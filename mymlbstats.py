@@ -1540,11 +1540,20 @@ def get_player_season_stats(name, type=None, year=None, year2=None, active='Y', 
                     return "No stats for %s this year \n\n"  % disp_name + get_player_season_stats(name, year=str(now.year-1))
                 return "No stats for %s" % disp_name
         else:
+            # map teams to years
+            teammap = dict()
+            for r in sport_tm:
+                if r['season'] in teammap:
+                    teammap[r['season']] = teammap[r['season']] + "/" + r['team_abbrev']
+                else:
+                    teammap[r['season']] = r['team_abbrev']
+
             for season in seasonstats:
                 syear = season['season']
                 if year2 is None and syear == year:
                         s.append(season)
                 elif year2 is not None and int(syear)>= int(year) and int(syear) <= int(year2):
+                    season['tm'] = teammap[syear]
                     s.append(season)
             for r in sport_tm:
                 if r['season'] == year:
@@ -1566,8 +1575,8 @@ def get_player_season_stats(name, type=None, year=None, year2=None, active='Y', 
     elif type == "pitching":
         stats = ['w','l','g','gs','svo','sv','ip','so','bb','hr','era','whip']
     if year2 is not None:
-        stats = ['season'] + stats
-    output = output + utils.format_table(stats, s, repl_map={'season':'year', **REPL_MAP}, reddit=reddit)
+        stats = ['season', 'tm'] + stats
+    output = output + utils.format_table(stats, s, repl_map={'season':'year', **REPL_MAP}, reddit=reddit, left_list=['tm'])
     return output
 
 def search_highlights(query):
