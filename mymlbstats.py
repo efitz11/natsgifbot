@@ -1557,7 +1557,7 @@ def get_player_season_stats(name, type=None, year=None, year2=None, active='Y', 
                     s.append(season)
             for r in sport_tm:
                 if r['season'] == year:
-                    teamabv = r['team_abbrev']
+                    teamabv = teammap[year]
             if s is None:
                 return "No stats for %s" % disp_name
         output = "%s season stats for %s (%s):" % (year, disp_name, teamabv)
