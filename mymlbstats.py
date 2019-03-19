@@ -1560,7 +1560,10 @@ def get_player_season_stats(name, type=None, year=None, year2=None, active='Y', 
                     teamabv = teammap[year]
             if s is None:
                 return "No stats for %s" % disp_name
-        output = "%s season stats for %s (%s):" % (year, disp_name, teamabv)
+        if year2 is None:
+            output = "%s season stats for %s (%s):" % (year, disp_name, teamabv)
+        else:
+            output = "%s-%s seasons stats for %s:" % (year, year2, disp_name)
     else:
         if "season" in seasons:
             years = seasons["season"]
