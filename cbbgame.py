@@ -18,7 +18,7 @@ LINE_SEP = "──────────────────────�
 
 base_url = "http://espn.go.com/mens-college-basketball/scoreboard/_/"
 
-type = "50"
+TYPE = "50"
 # Other leagues go here
 
 groupmap = {
@@ -55,7 +55,7 @@ groupmap = {
             "wac":"30",
             "wcc":"29"}
 
-def get_game(team,delta=None):
+def get_game(team,delta=None,runagain=True,type=TYPE):
     if team == "conferences":
         output = ""
         for t in groupmap:
@@ -97,7 +97,11 @@ def get_game(team,delta=None):
 
     games = []
     if delta is None:
-        date = scoreData['events'][0]['date']
+        try:
+            date = scoreData['events'][0]['date']
+        except IndexError:
+            if runagain:
+                return get_game(team, delta, runagain=False, type="100")
         date = date[:date.find('T')].split('-')
         date = date[1] + "/" + date[2] + "/" + date[0]
     else:
