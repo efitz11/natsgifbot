@@ -39,6 +39,7 @@ class Sports():
     async def cbb(self,*team:str):
         """display score of team's cbb game"""
         delta = None
+        liveonly = False
         if len(team) > 0:
             if team[-1].startswith('-') or team[-1].startswith('+'):
                 delta = team[-1]
@@ -50,9 +51,11 @@ class Sports():
                 t = ' '.join(team)
         else:
             t = None
-            
+        if t == 'live':
+            liveonly = True
+            t = None
         if delta is None:
-            await self.bot.say(cbbgame.get_game(t))
+            await self.bot.say(cbbgame.get_game(t, liveonly=liveonly))
         else:
             await self.bot.say(cbbgame.get_game(t,delta=int(delta)))
             

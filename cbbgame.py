@@ -55,7 +55,7 @@ groupmap = {
             "wac":"30",
             "wcc":"29"}
 
-def get_game(team,delta=None,runagain=True,type=TYPE):
+def get_game(team,delta=None,runagain=True,type=TYPE,liveonly=False):
     if team == "conferences":
         output = ""
         for t in groupmap:
@@ -111,6 +111,8 @@ def get_game(team,delta=None,runagain=True,type=TYPE):
 
         game["date"] = event['date']
         status = event['status']['type']['state']
+        if liveonly and status != "in":
+            continue
         if status == "pre":
             game['status'] = GAME_STATUS_PRE
             game['time'] = event['status']['type']['shortDetail']
