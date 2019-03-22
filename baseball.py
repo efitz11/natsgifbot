@@ -30,6 +30,8 @@ class Baseball():
     def convert_date_to_delta(self, args):
         now = datetime.now().date()
         datelist = args[-1].split('/')
+        if len(datelist) == 2:
+            datelist.append(str(now.year))
         if len(datelist[2]) == 2:
             if int("20" + datelist[2]) <= now.year:
                 datelist[2] = "20" + datelist[2]
@@ -99,7 +101,7 @@ class Baseball():
             delta = team[-1]
             team = team[:-1]
 
-        if len(team) > 0 and len(team[-1].split('/')) == 3:
+        if len(team) > 0 and len(team[-1].split('/')) in [2,3]:
             delta = self.convert_date_to_delta(team)
             team = team[:-1]
 
