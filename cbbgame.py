@@ -194,6 +194,8 @@ def get_game(team,delta=None,runagain=True,type=TYPE,liveonly=False):
             else:
                 link = ""
             return (dateline + " - " + link + "\n```python\n" + output + "```")
+    if runagain:
+        return get_game(team, delta, runagain=False, type="100")
     return "game not found"
 
 def pretty_print_game(game):
@@ -220,3 +222,6 @@ def pretty_print_games(games):
             started.append(game)
         else:
             pregame.append(game)
+
+if __name__ == "__main__":
+    print(get_game("md"))
