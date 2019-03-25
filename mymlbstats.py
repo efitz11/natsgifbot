@@ -1481,6 +1481,7 @@ def get_player_spring_stats(playerid, year=None, type="hitting"):
     return output
 
 def get_player_season_stats(name, type=None, year=None, year2=None, active='Y', career=False, reddit=False):
+    # TODO: potentially use endpoint: https://statsapi.mlb.com/api/v1/people/448281?hydrate=currentTeam,team,stats(type=yearByYear)
     player = _get_player_search(name, active=active)
     if player is None:
         return "No matching player found"
