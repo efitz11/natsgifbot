@@ -1717,7 +1717,7 @@ def print_roster(team,hitters=True):
         s['name'] = player['person']['fullName']
         s['pos'] = player['position']['abbreviation']
         s['throws'] = player['person']['pitchHand']['code']
-        if int(player['position']['code']) == 1:
+        if player['position']['code'] == "1":
             pitchers.append(s)
         else:
             batters.append(s)
