@@ -1726,7 +1726,7 @@ def print_roster(team,hitters=True):
         batters = sorted(batters, key=lambda x: x['atBats'] if 'atBats' in x else 0, reverse=True)
         output = "List of batters:\n\n"
         items = ['name','pos','gamesPlayed','atBats','avg','ops']
-        output = output + _print_table(items,batters,repl_map={'gamesPlayed':'G','atBats':'ab'})
+        output = output + utils.format_table(items,batters,repl_map={'gamesPlayed':'G','atBats':'ab'},left_list=["name"])
     else:
         if 'inningsPitched' in pitchers:
             pitchers = sorted(pitchers, key=lambda x: float(x['inningsPitched']), reverse=True)
