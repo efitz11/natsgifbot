@@ -7,6 +7,7 @@ import urllib.parse
 from datetime import datetime, timedelta, time
 import random
 import re
+import utils
 
 class Reddit():
     disabled_subs = ['coconutwater','trypophobia']
@@ -78,13 +79,14 @@ class Reddit():
             flair = "*[%s]*" % submission.link_flair_text
         else:
             flair = ""
+        time = utils.prettydate(int(submission.created))
         if submission.is_self:
-            ret.append("[%s] **%s** %s - posted by /u/%s to /r/%s" % (self.getsubmissionscore(submission), submission.title, flair, submission.author, submission.subreddit))
+            ret.append("[%s] **%s** %s - posted by /u/%s to /r/%s, %s" % (self.getsubmissionscore(submission), submission.title, flair, submission.author, submission.subreddit, time))
             if len(submission.selftext) > 0:
                 ret.append("```%s```" % submission.selftext)
             ret.append("<%s>" % submission.shortlink[:1995])
         else:
-            ret.append("[%s] **%s** - posted by /u/%s to /r/%s" % (self.getsubmissionscore(submission), submission.title, submission.author, submission.subreddit))
+            ret.append("[%s] **%s** - posted by /u/%s to /r/%s, %s" % (self.getsubmissionscore(submission), submission.title, submission.author, submission.subreddit, time))
             if submission.over_18:
                 ret.append("**post is NSFW; embed hidden**\n<%s>\t\t<%s>" % (submission.url, submission.shortlink))
             else:
