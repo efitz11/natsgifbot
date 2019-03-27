@@ -57,8 +57,16 @@ def get_latest_ig_post(username):
     s = s[s.find(srchstr)+len(srchstr):]
     s = s[:s.find("};")+1]
     s = json.loads(s)
+    print(s)
     #print("%s" % s['entry_data']['ProfilePage'][0]['user']['media']['nodes'][0]['code'])
-    return "https://www.instagram.com/p/" + s['entry_data']['ProfilePage'][0]['graphql']['user']['edge_owner_to_timeline_media']['edges'][0]['node']['shortcode']
+    post = s['entry_data']['ProfilePage'][0]['graphql']['user']['edge_owner_to_timeline_media']['edges'][0]['node']
+    caption = post['edge_media_to_caption']['edges'][0]['node']['text']
+    timestamp = utils.prettydate(post['taken_at_timestamp'])
+    location = ""
+    if 'location' in post:
+        location = " *(%s)* " % post['location']['name']
+    url = "https://www.instagram.com/p/" + post['shortcode']
+    return "%s**%s**: %s (%s)\n\n%s" % (location, username, caption, timestamp, url)
 
 def get_cryptocurrency_data(text):
     if len(text) == 0:
