@@ -1,6 +1,7 @@
 from urllib.request import urlopen, Request
 import json
 import os
+import datetime
 
 
 def get_json(url, encoding="utf-8"):
@@ -139,3 +140,26 @@ def write_to_file(contents, filename, subdir, prependtimestamp=False):
     with open(filename, 'w') as f:
         f.write(contents)
     return filename
+
+def prettydate(d):
+    d = datetime.datetime.fromtimestamp(d)
+    diff = datetime.datetime.now() - d
+    s = diff.seconds
+    if diff.days > 7 or diff.days < 0:
+        return d.strftime('%d %b %y')
+    elif diff.days == 1:
+        return '1 day ago'
+    elif diff.days > 1:
+        return '{:.0f} days ago'.format(diff.days)
+    elif s <= 1:
+        return 'just now'
+    elif s < 60:
+        return '{:.0f} seconds ago'.format(s)
+    elif s < 120:
+        return '1 minute ago'
+    elif s < 3600:
+        return '{:.0f} minutes ago'.format(s/60)
+    elif s < 7200:
+        return '1 hour ago'
+    else:
+        return '{:.0f} hours ago'.format(s/3600)
