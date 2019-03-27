@@ -120,9 +120,9 @@ def get_latest_tweet(user):
     # local = local.strftime("%Y-%m-%d %I:%M:%S")
     # print(json.dumps(tweet._json))
 
-    prefix = "Tweet posted "
+    prefix = "Tweet posted"
     if "retweeted_status" in tweet._json:
-        prefix = "Retweeted "
+        prefix = "Retweeted"
     return "%s %s: https://twitter.com/%s/status/%s" % (prefix, local, user, tid)
 
 def search_imdb(query):
