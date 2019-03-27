@@ -142,7 +142,10 @@ def write_to_file(contents, filename, subdir, prependtimestamp=False):
     return filename
 
 def prettydate(d):
-    d = datetime.datetime.fromtimestamp(d)
+    """get an instagram-style relative date
+        can pass in epoch time or a datetime instance"""
+    if isinstance(d, int):
+        d = datetime.datetime.fromtimestamp(d)
     diff = datetime.datetime.now() - d
     s = diff.seconds
     if diff.days > 7 or diff.days < 0:

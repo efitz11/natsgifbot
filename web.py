@@ -95,7 +95,10 @@ def get_latest_tweet(user):
             secret = key['api_secret']
             token = key['token']
             token_secret = key['token_secret']
-    map = json.loads(s)['accounts']
+    if 'accounts' in json.loads(s):
+        map = json.loads(s)['accounts']
+    else:
+        map = dict()
     user = user.lower()
     if user == "list":
         output = ""
@@ -113,12 +116,13 @@ def get_latest_tweet(user):
     nowtime = time.time()
     diff = datetime.fromtimestamp(nowtime) - datetime.utcfromtimestamp(nowtime)
     local = t + diff
-    local = local.strftime("%Y-%m-%d %I:%M:%S")
+    local = utils.prettydate(local)
+    # local = local.strftime("%Y-%m-%d %I:%M:%S")
     # print(json.dumps(tweet._json))
 
-    prefix = "Tweet posted at"
+    prefix = "Tweet posted "
     if "retweeted_status" in tweet._json:
-        prefix = "Retweeted at"
+        prefix = "Retweeted "
     return "%s %s: https://twitter.com/%s/status/%s" % (prefix, local, user, tid)
 
 def search_imdb(query):
