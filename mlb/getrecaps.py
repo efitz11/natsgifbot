@@ -20,24 +20,44 @@ def get_recaps(return_str=False):
     s = json.loads(urlopen(req).read().decode("utf-8"))
     games = s['dates'][0]['games']
     recaps = []
+    statcasts = []
+    mustcs = []
     output = ""
+    statout = ""
+    mustcout = ""
     for game in games:
         content = "https://statsapi.mlb.com" + game['content']['link']
         req = Request(content, headers={'User-Agent' : "ubuntu"})
         c = json.loads(urlopen(req).read().decode("utf-8"))
-        for item in c['highlights']['live']['items']:
-            if item['title'].startswith("Recap:"):
+        highlights = ['Recap', 'Must C:', 'Statcast']
+        for item in c['highlights']['highlights']['items']:
+            if any(x in item['title'] for x in highlights):
                 title = item['title']
+                link = None
                 for pb in item['playbacks']:
-                    if "2500K" in pb['url']:
+                    if pb['name'] == "mp4Avc":
                         link = pb['url']
-                        break
-                # link = item['playbacks'][3]['url']
+                if link is None:
+                    continue
                 duration = item['duration'][3:]
-                s = "[%s](%s) - %s\n" % (title, link, duration)
+                if 'Recap' in title:
+                    list = recaps
+                    s = "[%s](%s) - %s\n" % (title, link, duration)
+                    output = output + s + "\n"
+                elif 'Must C:' in title:
+                    list = mustcs
+                    s = "[%s](%s) - %s\n" % (item['blurb'], link, duration)
+                    mustcout = mustcout + s + "\n"
+                elif 'Statcast' in title:
+                    list = statcasts
+                    s = "[%s](%s) - %s\n" % (title, link, duration)
+                    statout = statout + s + "\n"
                 print(s)
-                output = output + s + "\n"
-                recaps.append((title, link, duration))
+                list.append((title, link, duration))
+    if len(mustcs) > 0:
+        output = mustcout + "****\n" + output
+    if len(statcasts) > 0:
+        output = statout + "****\n" + output
     if return_str:
         return output
     return recaps
@@ -149,29 +169,34 @@ def get_direct_video_url(indirecturl):
         return
 
 def find_fastcast(return_str=False):
-    url = "https://search-api.mlb.com/svc/search/v2/mlb_global_sitesearch_en/sitesearch?hl=true&facet=type&expand=partner.media&q=fastcast&page=1"
+    url = "https://www.mlb.com/data-service/en/search?tags.slug=fastcast&page=1"
     print(url)
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     s = json.loads(urlopen(req).read().decode("utf-8"))
-    result = s['docs'][0]
-    title = result['title']
-    now = datetime.now()
-    date = "%d-%02d-%02d" % (now.year, now.month, now.day)
-    print(date)
-    if "MLB.com FastCast".lower() in title.lower() and date in result['display_timestamp']:
-        blurb = result['blurb']
-        url = result['url']
-        dir = get_direct_video_url(url)
-        if dir is not None:
-            url = dir
-        duration = result['duration'][3:]
-        s = "[%s](%s) - %s\n\n" % (blurb,url,duration)
-        print(s)
-        if return_str:
-            return s
-        return (blurb,url,duration)
-    if return_str:
-        return ""
+
+    # url = "https://search-api.mlb.com/svc/search/v2/mlb_global_sitesearch_en/sitesearch?hl=true&facet=type&expand=partner.media&q=fastcast&page=1"
+    # print(url)
+    # req = Request(url, headers={'User-Agent' : "ubuntu"})
+    # s = json.loads(urlopen(req).read().decode("utf-8"))
+    # result = s['docs'][0]
+    # title = result['title']
+    # now = datetime.now()
+    # date = "%d-%02d-%02d" % (now.year, now.month, now.day)
+    # print(date)
+    # if "MLB.com FastCast".lower() in title.lower() and date in result['display_timestamp']:
+    #     blurb = result['blurb']
+    #     url = result['url']
+    #     dir = get_direct_video_url(url)
+    #     if dir is not None:
+    #         url = dir
+    #     duration = result['duration'][3:]
+    #     s = "[%s](%s) - %s\n\n" % (blurb,url,duration)
+    #     print(s)
+    #     if return_str:
+    #         return s
+    #     return (blurb,url,duration)
+    # if return_str:
+    #     return ""
 
 def find_top_plays(return_str=False):
     url = "https://search-api.mlb.com/svc/search/v2/mlb_global_sitesearch_en/sitesearch?hl=true&facet=type&expand=partner.media&q=top%2Bplays&page=1"
@@ -403,14 +428,14 @@ def pm_user(subject, body, user="efitz11"):
 
 def get_all_outputs():
     output = find_fastcast(return_str=True)
-    output = output + find_quick_pitch(return_str=True)
-    output = output + find_youtube_homeruns(return_str=True)
-    output = output + find_top_plays(return_str=True)
-    output = output + find_daily_dash(return_str=True)
+    # output = output + find_quick_pitch(return_str=True)
+    # output = output + find_youtube_homeruns(return_str=True)
+    # output = output + find_top_plays(return_str=True)
+    # output = output + find_daily_dash(return_str=True)
     output = output + "****\n"
-    output = output + find_must_cs(return_str=True)
+    # output = output + find_must_cs(return_str=True)
     output = output + "****\n"
-    output = output + find_statcasts(return_str=True)
+    # output = output + find_statcasts(return_str=True)
     output = output + "****\n"
     output = output + get_recaps(return_str=True)
     return output
