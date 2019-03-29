@@ -29,7 +29,9 @@ def get_recaps(return_str=False):
         content = "https://statsapi.mlb.com" + game['content']['link']
         req = Request(content, headers={'User-Agent' : "ubuntu"})
         c = json.loads(urlopen(req).read().decode("utf-8"))
-        highlights = ['Recap', 'Must C:', 'Statcast']
+        highlights = ['Recap', 'Must C:', 'Statcast', 'CG:']
+        recapstr = ""
+        cgstr = ""
         for item in c['highlights']['highlights']['items']:
             if any(x in item['title'] for x in highlights):
                 title = item['title']
@@ -42,8 +44,9 @@ def get_recaps(return_str=False):
                 duration = item['duration'][3:]
                 if 'Recap' in title:
                     list = recaps
-                    s = "[%s](%s) - %s\n" % (title, link, duration)
-                    output = output + s + "\n"
+                    recapstr = "[%s](%s) - %s\n" % (title, link, duration)
+                elif 'CG:' in title:
+                    cgstr = "[Condensed game](%s) - %s\n" % (link, duration)
                 elif 'Must C:' in title:
                     list = mustcs
                     s = "[%s](%s) - %s\n" % (item['blurb'], link, duration)
@@ -54,6 +57,7 @@ def get_recaps(return_str=False):
                     statout = statout + s + "\n"
                 print(s)
                 list.append((title, link, duration))
+        output = output + recapstr + " | " + cgstr + "\n"
     if len(mustcs) > 0:
         output = mustcout + "****\n" + output
     if len(statcasts) > 0:
@@ -466,9 +470,9 @@ def get_all_outputs():
     output = output + find_youtube_homeruns(return_str=True)
     output = output + find_top_plays(return_str=True)
     # output = output + find_daily_dash(return_str=True)
-    output = output + "****\n"
+    # output = output + "****\n"
     # output = output + find_must_cs(return_str=True)
-    output = output + "****\n"
+    # output = output + "****\n"
     # output = output + find_statcasts(return_str=True)
     output = output + "****\n"
     output = output + get_recaps(return_str=True)
