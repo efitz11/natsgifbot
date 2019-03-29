@@ -73,7 +73,7 @@ class Reddit():
             score = str(score)
         return score
 
-    def get_submission_string(self, submission):
+    def get_submission_string(self, submission, hide=False):
         ret = []
         if submission.link_flair_text is not None:
             flair = "*[%s]*" % submission.link_flair_text
@@ -90,7 +90,10 @@ class Reddit():
             if submission.over_18:
                 ret.append("**post is NSFW; embed hidden**\n<%s>\t\t<%s>" % (submission.url, submission.shortlink))
             else:
-                ret.append("%s\t\t<%s>"% (submission.url, submission.shortlink))
+                if hide:
+                    ret.append("**post embed hidden by request**\n<%s>\t\t<%s>" % (submission.url, submission.shortlink))
+                else:
+                    ret.append("%s\t\t<%s>"% (submission.url, submission.shortlink))
         return ret
 
     @commands.command()
@@ -142,6 +145,10 @@ class Reddit():
     async def rs(self, subreddit:str, *query:str):
         """<subreddit> get the first post (by hot) matching the query"""
         patterns = []
+        hidden = False
+        if "hide" in query:
+            query = ["" if x.lower() == "hide" else x for x in query]
+            hidden = True
         for s in query:
             patterns.append(re.compile(s,re.IGNORECASE))
         if subreddit.endswith("/new"):
@@ -167,7 +174,7 @@ class Reddit():
                 if matched:
                     # output = self.getsubmissiontext(submission)
                     # await self.bot.say(output)
-                    for string in self.get_submission_string(submission):
+                    for string in self.get_submission_string(submission, hide=hidden):
                         await self.bot.say(string)
                     return
 
