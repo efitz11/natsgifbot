@@ -455,7 +455,8 @@ class FG:
         pos = 'all'
         lg = 'all'
         qual = 'y'
-        season = '2018'
+        now = datetime.now()
+        season = now.year
         team = '0'
         month='33'
         if self.stat in self.count:
