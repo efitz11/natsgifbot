@@ -628,12 +628,13 @@ def list_home_runs(team, delta=None):
     now = _get_date_from_delta(delta)
     date = str(now.year) + "-" + str(now.month).zfill(2) + "-" + str(now.day).zfill(2)
     url = "https://statsapi.mlb.com/api/v1/schedule?sportId=1&teamId=%d&date=%s&hydrate=scoringplays" % (teamid, date)
+    print(url)
     games = _get_json(url)['dates'][0]['games']
     output = ""
     numgames = len(games)
     count = 0
     repl_map = {'inning':'inn'}
-    labs = ['batter', 'inning', 'runs', 'pitcher']
+    labs = ['batter', 'inning', 'runs', 'pitcher', 'dist']
     left = ['batter', 'pitcher', 'inning']
 
     for game in games:
@@ -649,6 +650,9 @@ def list_home_runs(team, delta=None):
                     h['inning'] = 'bot'
                 h['inning'] = "%s %s" % (h['inning'], p['about']['inning'])
                 h['runs'] = p['result']['rbi']
+                if 'hitData' in p['playEvents'][-1]:
+                    if 'totalDistance' in p['playEvents'][-1]['hitData']:
+                        h['dist'] = p['playEvents'][-1]['hitData']['totalDistance']
                 homers.append(h)
                 # output = output + "%s, %s %d, %d rbi, off %s\n" % (p['matchup']['batter']['fullName'],
                 #                                                    p['about']['halfInning'], p['about']['inning'],
