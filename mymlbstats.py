@@ -1771,6 +1771,32 @@ def print_broadcasts(team, delta=None):
         out = out + "\n"
     return out
 
+def print_long_dongs(delta=None):
+    games = get_day_schedule(delta=delta, scoringplays=True)['dates'][0]['games']
+    dongs = []
+    for game in games:
+        sp = game['scoringPlays']
+        for p in sp:
+            if p['result']['eventType'] == "home_run":
+                h = dict()
+                h['batter'] = p['matchup']['batter']['fullName']
+                h['pitcher'] = p['matchup']['pitcher']['fullName']
+                h['inning'] = p['about']['halfInning']
+                if h['inning'] == 'bottom':
+                    h['inning'] = 'bot'
+                h['inning'] = "%s %s" % (h['inning'], p['about']['inning'])
+                h['runs'] = p['result']['rbi']
+                if 'hitData' in p['playEvents'][-1]:
+                    if 'totalDistance' in p['playEvents'][-1]['hitData']:
+                        h['dist'] = p['playEvents'][-1]['hitData']['totalDistance']
+                dongs.append(h)
+    longdongs = sorted(dongs, key=lambda k: k['dist'], reverse=True)[:10]
+
+    repl_map = {'inning':'inn'}
+    labs = ['batter', 'inning', 'runs', 'pitcher', 'dist']
+    left = ['batter', 'pitcher', 'inning']
+    return utils.format_table(labs, longdongs, repl_map=repl_map, left_list=left)
+
 def _print_table(labels, dicts, repl_map={}, useDefaultMap=True):
     if useDefaultMap:
         repl_map = {'d':'2B','t':'3B', **repl_map}
@@ -1856,4 +1882,5 @@ if __name__ == "__main__":
     # print(get_milb_aff_scores())
     # print(get_milb_box('syr'))
     # print(print_broadcasts("wsh"))
-    print(get_player_season_stats("max scherzer"))
+    # print(get_player_season_stats("max scherzer"))
+    print(print_long_dongs(-1))
