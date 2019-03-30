@@ -323,6 +323,9 @@ class Baseball():
             team = ' '.join(team[1:]).lower()
             out = mymlbstats.print_broadcasts(team, delta=delta)
             await self.bot.say("```%s```" % out)
+        elif team[0] == "longdongs":
+            out = mymlbstats.print_long_dongs(delta=delta)
+            await self.bot.say("```%s```" % out)
         else:
             teamname = ' '.join(team).lower()
             output = mymlbstats.get_single_game(teamname,delta=delta)
