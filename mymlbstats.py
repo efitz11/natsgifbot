@@ -5,6 +5,7 @@ import json, os
 import mlb.BoxScore as BoxScore
 import mlb.getrecaps as recap
 import utils
+import re
 
 REPL_MAP = {'d':'2B','t':'3B'}
 
@@ -350,12 +351,13 @@ def get_team_dl(team):
         output = output + "\n"
     return output
 
-def get_day_schedule(delta=None,teamid=None,scoringplays=False):
+def get_day_schedule(delta=None,teamid=None,scoringplays=False,hydrates=None):
     now = _get_date_from_delta(delta)
     date = str(now.year) + "-" + str(now.month).zfill(2) + "-" + str(now.day).zfill(2)
-    hydrates = "&hydrate=probablePitcher,person,decisions,team,stats,flags,linescore(matchup,runners),previousPlay"
-    if scoringplays:
-        hydrates = hydrates + ",scoringplays"
+    if hydrates is None:
+        hydrates = "&hydrate=probablePitcher,person,decisions,team,stats,flags,linescore(matchup,runners),previousPlay"
+        if scoringplays:
+            hydrates = hydrates + ",scoringplays"
     team = ""
     if teamid is not None:
         team = "&teamId=" + str(teamid)
@@ -1772,7 +1774,8 @@ def print_broadcasts(team, delta=None):
     return out
 
 def print_long_dongs(delta=None):
-    games = get_day_schedule(delta=delta, scoringplays=True)['dates'][0]['games']
+    hydrates="&hydrate=scoringplays"
+    games = get_day_schedule(delta=delta, scoringplays=True,hydrates=hydrates)['dates'][0]['games']
     dongs = []
     for game in games:
         if 'scoringPlays' in game:
@@ -1787,6 +1790,8 @@ def print_long_dongs(delta=None):
                         h['inning'] = 'bot'
                     h['inning'] = "%s %s" % (h['inning'], p['about']['inning'])
                     h['runs'] = p['result']['rbi']
+                    number = p['result']['description']
+                    h['num'] = int(re.search('\(([^)]+)', number).group(1))
                     if 'hitData' in p['playEvents'][-1]:
                         if 'totalDistance' in p['playEvents'][-1]['hitData']:
                             h['dist'] = p['playEvents'][-1]['hitData']['totalDistance']
@@ -1794,7 +1799,7 @@ def print_long_dongs(delta=None):
     longdongs = sorted(dongs, key=lambda k: k['dist'], reverse=True)[:10]
 
     repl_map = {'inning':'inn'}
-    labs = ['batter', 'inning', 'runs', 'pitcher', 'dist']
+    labs = ['batter', 'num','inning', 'runs', 'pitcher', 'dist']
     left = ['batter', 'pitcher', 'inning', 'dist']
     return utils.format_table(labs, longdongs, repl_map=repl_map, left_list=left)
 
@@ -1884,4 +1889,4 @@ if __name__ == "__main__":
     # print(get_milb_box('syr'))
     # print(print_broadcasts("wsh"))
     # print(get_player_season_stats("max scherzer"))
-    print(print_long_dongs(-1))
+    print(print_long_dongs())
