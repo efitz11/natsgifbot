@@ -1775,26 +1775,27 @@ def print_long_dongs(delta=None):
     games = get_day_schedule(delta=delta, scoringplays=True)['dates'][0]['games']
     dongs = []
     for game in games:
-        sp = game['scoringPlays']
-        for p in sp:
-            if p['result']['eventType'] == "home_run":
-                h = dict()
-                h['batter'] = p['matchup']['batter']['fullName']
-                h['pitcher'] = p['matchup']['pitcher']['fullName']
-                h['inning'] = p['about']['halfInning']
-                if h['inning'] == 'bottom':
-                    h['inning'] = 'bot'
-                h['inning'] = "%s %s" % (h['inning'], p['about']['inning'])
-                h['runs'] = p['result']['rbi']
-                if 'hitData' in p['playEvents'][-1]:
-                    if 'totalDistance' in p['playEvents'][-1]['hitData']:
-                        h['dist'] = p['playEvents'][-1]['hitData']['totalDistance']
-                dongs.append(h)
+        if 'scoringPlays' in game:
+            sp = game['scoringPlays']
+            for p in sp:
+                if p['result']['eventType'] == "home_run":
+                    h = dict()
+                    h['batter'] = p['matchup']['batter']['fullName']
+                    h['pitcher'] = p['matchup']['pitcher']['fullName']
+                    h['inning'] = p['about']['halfInning']
+                    if h['inning'] == 'bottom':
+                        h['inning'] = 'bot'
+                    h['inning'] = "%s %s" % (h['inning'], p['about']['inning'])
+                    h['runs'] = p['result']['rbi']
+                    if 'hitData' in p['playEvents'][-1]:
+                        if 'totalDistance' in p['playEvents'][-1]['hitData']:
+                            h['dist'] = p['playEvents'][-1]['hitData']['totalDistance']
+                    dongs.append(h)
     longdongs = sorted(dongs, key=lambda k: k['dist'], reverse=True)[:10]
 
     repl_map = {'inning':'inn'}
     labs = ['batter', 'inning', 'runs', 'pitcher', 'dist']
-    left = ['batter', 'pitcher', 'inning']
+    left = ['batter', 'pitcher', 'inning', 'dist']
     return utils.format_table(labs, longdongs, repl_map=repl_map, left_list=left)
 
 def _print_table(labels, dicts, repl_map={}, useDefaultMap=True):
