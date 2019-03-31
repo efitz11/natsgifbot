@@ -106,11 +106,13 @@ class BoxScore:
             sys.path.insert(1, os.path.join(sys.path[0],'..'))
             import mymlbstats
             labels = ['name','t','era']
+            leftlist = ['name']
             for b in oldboxes:
                 labels.append(b.box['date'])
             # print(labels)
             # print(mymlbstats._print_table(labels, table))
-            return mymlbstats._print_table(labels, table, useDefaultMap=False)
+            import utils
+            return utils.format_table(labels, table, left_list=leftlist, def_repl=False)
 
         elif part in ['bench','bullpen']:
             if part == 'bench':
