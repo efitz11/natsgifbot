@@ -1792,15 +1792,17 @@ def print_long_dongs(delta=None):
                     h['runs'] = p['result']['rbi']
                     number = p['result']['description']
                     h['num'] = int(re.search('\(([^)]+)', number).group(1))
+                    h['dist'] = 0
                     if 'hitData' in p['playEvents'][-1]:
                         if 'totalDistance' in p['playEvents'][-1]['hitData']:
                             h['dist'] = p['playEvents'][-1]['hitData']['totalDistance']
                     dongs.append(h)
+    repl_map = {'inning':'inn'}
+    labs = ['batter', 'num', 'pitcher', 'dist']
+    left = ['batter', 'pitcher', 'dist']
+
     longdongs = sorted(dongs, key=lambda k: k['dist'], reverse=True)[:10]
 
-    repl_map = {'inning':'inn'}
-    labs = ['batter', 'num','inning', 'runs', 'pitcher', 'dist']
-    left = ['batter', 'pitcher', 'inning', 'dist']
     return utils.format_table(labs, longdongs, repl_map=repl_map, left_list=left)
 
 def _print_table(labels, dicts, repl_map={}, useDefaultMap=True):
@@ -1889,4 +1891,4 @@ if __name__ == "__main__":
     # print(get_milb_box('syr'))
     # print(print_broadcasts("wsh"))
     # print(get_player_season_stats("max scherzer"))
-    print(print_long_dongs())
+    print(print_long_dongs(delta="-1"))
