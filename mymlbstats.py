@@ -1167,12 +1167,16 @@ def get_player_trailing_splits(name, days=None, forcebatting=False):
     else:
         dayslist = [days]
     urllist = []
+
+    now = datetime.now()
+    year = str(now.year)
+
     for days in dayslist:
         if pitching:
-            urllist.append("http://mlb.mlb.com/pubajax/wf/flow/stats.splayer?season=2018&sort_order=%27asc%27&sort_column=%27era%27&stat_type=pitching&page_type=SortablePlayer" \
+            urllist.append("http://mlb.mlb.com/pubajax/wf/flow/stats.splayer?season=" + year +"&sort_order=%27asc%27&sort_column=%27era%27&stat_type=pitching&page_type=SortablePlayer" \
               "&team_id=" + player['team_id'] + "&game_type=%27R%27&last_x_days="+str(days)+"&player_pool=ALL&season_type=ANY&sport_code=%27mlb%27&results=1000&position=%271%27&recSP=1&recPP=50")
         else:
-            urllist.append("http://mlb.mlb.com/pubajax/wf/flow/stats.splayer?season=2018&sort_order=%27desc%27&sort_column=%27avg%27&stat_type=hitting&page_type=SortablePlayer" \
+            urllist.append("http://mlb.mlb.com/pubajax/wf/flow/stats.splayer?season=" + year +"&sort_order=%27desc%27&sort_column=%27avg%27&stat_type=hitting&page_type=SortablePlayer" \
                   "&team_id=" + player['team_id'] + "&game_type=%27R%27&last_x_days="+str(days)+"&player_pool=ALL&season_type=ANY&sport_code=%27mlb%27&results=1000&recSP=1&recPP=50")
     count = 0
     splits = []
