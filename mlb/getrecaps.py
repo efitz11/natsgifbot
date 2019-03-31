@@ -12,10 +12,32 @@ def search_video(query):
     s = json.loads(urlopen(req).read().decode("utf-8"))['docs']
     return s
 
+def get_vid_info(id):
+    url = "https://www.mlb.com/data-service/en/videos/" + id
+    req = Request(url, headers={'User-Agent' : "ubuntu"})
+    return json.loads(urlopen(req).read().decode("utf-8"))
+
+
+def search_mlbn():
+    yest = datetime.now() - timedelta(days=1)
+    yest_md = str(yest.month) + "/" + str(yest.day)
+    yest_monthday = yest.strftime("%B") + " " + str(yest.day)
+    date = str(yest.month) + "-" + str(yest.day)
+    url = "https://www.mlb.com/data-service/en/search?tags.slug=mlb-network&page=1"
+    req = Request(url, headers={'User-Agent' : "ubuntu"})
+    s = json.loads(urlopen(req).read().decode("utf-8"))['docs']
+    output = ""
+    for v in s:
+        if yest_md in v['blurb'] or yest_monthday in v['blurb'] or date in v['id']:
+            t = get_vid_info(v['id'])
+            output = output + "[%s](%s) - %s\n\n" % (t['blurb'], t['url'], t['duration'][3:])
+    return output
+
 def get_recaps(return_str=False):
     now = datetime.now() - timedelta(days=1)
     date = str(now.year) + "-" + str(now.month).zfill(2) + "-" + str(now.day).zfill(2)
-    url = "https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=" + date
+    url = "https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=" + date + "&hydrate=team"
+    print(url)
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     s = json.loads(urlopen(req).read().decode("utf-8"))
     games = s['dates'][0]['games']
@@ -29,6 +51,17 @@ def get_recaps(return_str=False):
         content = "https://statsapi.mlb.com" + game['content']['link']
         req = Request(content, headers={'User-Agent' : "ubuntu"})
         c = json.loads(urlopen(req).read().decode("utf-8"))
+        if game['status']['detailedState'] == "Final":
+            deftitle = "%s %d, %s %d, no recap" % (game['teams']['away']['team']['abbreviation'],
+                                                game['teams']['away']['score'],
+                                                game['teams']['home']['team']['abbreviation'],
+                                                game['teams']['home']['score'])
+        else:
+            output = output +  "%s, %s - %s\n\n" % (game['teams']['away']['team']['abbreviation'],
+                                        game['teams']['home']['team']['abbreviation'],
+                                        game['status']['detailedState'])
+            continue
+
         highlights = ['Recap', 'Must C:', 'Statcast', 'CG:']
         recapstr = ""
         cgstr = ""
@@ -55,9 +88,15 @@ def get_recaps(return_str=False):
                     list = statcasts
                     s = "[%s](%s) - %s\n" % (title, link, duration)
                     statout = statout + s + "\n"
-                print(s)
+                # print(s)
                 list.append((title, link, duration))
-        output = output + recapstr + " | " + cgstr + "\n"
+
+        if recapstr == "":
+            recapstr = deftitle
+        if cgstr != "":
+            output = output + recapstr + " | " + cgstr + "\n\n"
+        else:
+            output = output + recapstr + " | No condensed game\n\n"
     if len(mustcs) > 0:
         output = mustcout + "****\n" + output
     if len(statcasts) > 0:
@@ -236,6 +275,7 @@ def find_top_plays(return_str=False):
         if return_str:
             return s
         return (s['blurb'],s['url'],duration)
+    return ""
 
     # url = "https://search-api.mlb.com/svc/search/v2/mlb_global_sitesearch_en/sitesearch?hl=true&facet=type&expand=partner.media&q=top%2Bplays&page=1"
     # print(url)
@@ -467,13 +507,14 @@ def pm_user(subject, body, user="efitz11"):
 def get_all_outputs():
     output = find_fastcast(return_str=True)
     # output = output + find_quick_pitch(return_str=True)
-    output = output + find_youtube_homeruns(return_str=True)
-    output = output + find_top_plays(return_str=True)
+    # output = output + find_youtube_homeruns(return_str=True)
+    # output = output + find_top_plays(return_str=True)
     # output = output + find_daily_dash(return_str=True)
     # output = output + "****\n"
     # output = output + find_must_cs(return_str=True)
     # output = output + "****\n"
     # output = output + find_statcasts(return_str=True)
+    output = output + search_mlbn()
     output = output + "****\n"
     output = output + get_recaps(return_str=True)
     return output
