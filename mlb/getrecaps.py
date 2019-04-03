@@ -541,6 +541,9 @@ def get_all_outputs():
     output = output + search_mlbn()
     output = output + "****\n"
     output = output + get_recaps(return_str=True)
+    output = output + "****\n"
+    import mymlbstats
+    output = output + "Longest dongs of the day:\n\n" + mymlbstats.print_long_dongs(-1, reddit=True)
     return output
 
 if __name__ == "__main__":
