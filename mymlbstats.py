@@ -1782,8 +1782,12 @@ def print_long_dongs(delta=None, reddit=False):
     games = get_day_schedule(delta=delta, scoringplays=True,hydrates=hydrates)['dates'][0]['games']
     dongs = []
     for game in games:
+        gamepk = game['gamePk']
         if 'scoringPlays' in game:
             sp = game['scoringPlays']
+            url = "https://statsapi.mlb.com/api/v1/game/" + str(gamepk) + "/content"
+            print(url)
+            content = _get_json(url)['highlights']['highlights']['items']
             for p in sp:
                 if p['result']['eventType'] == "home_run":
                     h = dict()
@@ -1806,10 +1810,21 @@ def print_long_dongs(delta=None, reddit=False):
                             h['ev'] = p['playEvents'][-1]['hitData']['launchSpeed']
                         if 'launchAngle' in p['playEvents'][-1]['hitData']:
                             h['angle'] = p['playEvents'][-1]['hitData']['launchAngle']
+                    playid = p['playEvents'][-1]['playId']
+                    h['video'] = ""
+                    for item in content:
+                        if 'guid' in item:
+                            if item['guid'] == playid:
+                                for pb in item['playbacks']:
+                                    if pb['name'] == 'mp4Avc':
+                                        h['video'] = '[video](%s)' % pb['url']
                     dongs.append(h)
     repl_map = {'inning':'inn'}
     labs = ['num', 'batter', 'pitcher', 'dist', 'ev', 'angle']
     left = ['batter', 'pitcher', 'dist', 'ev', 'angle']
+    if reddit:
+        labs.append('video')
+        left.append('video')
 
     longdongs = sorted(dongs, key=lambda k: k['dist'], reverse=True)[:10]
 
