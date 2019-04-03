@@ -233,6 +233,8 @@ def find_fastcast(return_str=False):
                     if return_str:
                         return s
                     return (blurb,url,duration)
+    if return_str:
+        return ""
 
 
 
