@@ -1797,13 +1797,19 @@ def print_long_dongs(delta=None, reddit=False):
                     number = p['result']['description']
                     h['num'] = int(re.search('\(([^)]+)', number).group(1))
                     h['dist'] = 0
+                    h['ev'] = 0
+                    h['angle'] = 0
                     if 'hitData' in p['playEvents'][-1]:
                         if 'totalDistance' in p['playEvents'][-1]['hitData']:
                             h['dist'] = p['playEvents'][-1]['hitData']['totalDistance']
+                        if 'launchSpeed' in p['playEvents'][-1]['hitData']:
+                            h['ev'] = p['playEvents'][-1]['hitData']['launchSpeed']
+                        if 'launchAngle' in p['playEvents'][-1]['hitData']:
+                            h['angle'] = p['playEvents'][-1]['hitData']['launchAngle']
                     dongs.append(h)
     repl_map = {'inning':'inn'}
-    labs = ['batter', 'num', 'pitcher', 'dist']
-    left = ['batter', 'pitcher', 'dist']
+    labs = ['batter', 'num', 'pitcher', 'dist', 'ev', 'angle']
+    left = ['batter', 'pitcher', 'dist', 'ev', 'angle']
 
     longdongs = sorted(dongs, key=lambda k: k['dist'], reverse=True)[:10]
 
