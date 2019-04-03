@@ -1808,7 +1808,7 @@ def print_long_dongs(delta=None, reddit=False):
                             h['angle'] = p['playEvents'][-1]['hitData']['launchAngle']
                     dongs.append(h)
     repl_map = {'inning':'inn'}
-    labs = ['batter', 'num', 'pitcher', 'dist', 'ev', 'angle']
+    labs = ['num', 'batter', 'pitcher', 'dist', 'ev', 'angle']
     left = ['batter', 'pitcher', 'dist', 'ev', 'angle']
 
     longdongs = sorted(dongs, key=lambda k: k['dist'], reverse=True)[:10]
