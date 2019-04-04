@@ -617,9 +617,24 @@ def get_team_schedule(team, num, backward=True):
     s = json.loads(urlopen(req).read().decode("utf-8"))
     dates = s['dates']
     output = ""
+    import calendar
+    # now = datetime.now()
     for date in dates:
         for game in date['games']:
-            output = output + date['date'] + ":\n"
+            dt = datetime.strptime(date['date'], "%Y-%m-%d")
+            if now.day-dt.day == 0:
+                day = "Today"
+            elif backward:
+                if now.day-dt.day == 1:
+                    day = "Yesterday"
+                else:
+                    day = calendar.day_name[dt.weekday()]
+            else:
+                if dt.day-now.day == 1:
+                    day = "Tomorrow"
+                else:
+                    day = calendar.day_name[dt.weekday()]
+            output = output + date['date'] + " (%s):\n" % (day)
             output = output + get_single_game_info(None, game) + "\n"
     return output
 
@@ -944,12 +959,13 @@ def get_player_gamelogs(name, num=5, forcebatting=False):
     pitching = player['position'] == 'P'
     if forcebatting:
         pitching = False
+    now = datetime.now()
     url = "http://lookup-service-prod.mlb.com/json/named.sport_hitting_game_log_composed.bam?game_type=%27R%27&league_list_id=%27mlb_hist%27\
-            &player_id="+ player['player_id'] +"&season=2018&sit_code=%271%27&sit_code=%272%27&sit_code=%273%27&sit_code=%274%27&sit_code=%275%27&sit_code=%276%27&sit_code=%277%27&sit_code=%278%27&sit_code=%279%27&sit_code=%2710%27&sit_code=%2711%27&sit_code=%2712%27"
+            &player_id="+ player['player_id'] +"&season=" + str(now.year) + "&sit_code=%271%27&sit_code=%272%27&sit_code=%273%27&sit_code=%274%27&sit_code=%275%27&sit_code=%276%27&sit_code=%277%27&sit_code=%278%27&sit_code=%279%27&sit_code=%2710%27&sit_code=%2711%27&sit_code=%2712%27"
     type = "hitting"
     if pitching:
         url = "http://lookup-service-prod.mlb.com/json/named.sport_pitching_game_log_composed.bam?game_type=%27R%27&league_list_id=%27mlb_hist%27" \
-              "&player_id=" + player['player_id'] + "&season=2018&sit_code=%271%27&sit_code=%272%27&sit_code=%273%27&sit_code=%274%27&sit_code=%275%27&sit_code=%276%27&sit_code=%277%27&sit_code=%278%27&sit_code=%279%27&sit_code=%2710%27&sit_code=%2711%27&sit_code=%2712%27"
+              "&player_id=" + player['player_id'] + "&season=" + str(now.year) + "&sit_code=%271%27&sit_code=%272%27&sit_code=%273%27&sit_code=%274%27&sit_code=%275%27&sit_code=%276%27&sit_code=%277%27&sit_code=%278%27&sit_code=%279%27&sit_code=%2710%27&sit_code=%2711%27&sit_code=%2712%27"
         type = "pitching"
     print(url)
     req = Request(url, headers={'User-Agent' : "ubuntu"})
