@@ -555,6 +555,8 @@ def get_all_outputs():
     output = output + "****\n"
     output = output + get_recaps(return_str=True)
     output = output + "****\n"
+    import sys, os
+    sys.path.insert(1, os.path.join(sys.path[0],'..'))
     import mymlbstats
     output = output + "Longest dongs of the day:\n\n" + mymlbstats.print_long_dongs(-1, reddit=True)
     return output
