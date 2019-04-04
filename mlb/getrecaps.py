@@ -517,6 +517,19 @@ def post_on_reddit(cron=False):
             print("didn't find ATH, checking in 5 minutes...")
             time.sleep(5*60)
 
+def post_self_submission(selftext):
+    import praw
+    with open('.fitz.json', 'r') as f:
+        f = json.loads(f.read())['keys']['efitz11']
+    reddit = praw.Reddit(client_id=f['client_id'],
+                         client_secret=f['token'],
+                         user_agent='recap bot on ubuntu (/u/efitz11)',
+                         username=f['user'],password=f['password'])
+    yest = datetime.now() - timedelta(days=1)
+    title = "%d/%d Highlight Roundup: FastCast, top plays, recaps/condensed games and longest dongs of the day" % (yest.month, yest.day)
+    reddit.subreddit('baseball').submit(title, selftext=selftext)
+
+
 def pm_user(subject, body, user="efitz11"):
     import praw
     with open('.fitz.json', 'r') as f:
@@ -548,10 +561,11 @@ def get_all_outputs():
 
 if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == "post":
-        if len(sys.argv) > 2 and sys.argv[2] == "cron":
-            post_on_reddit(cron=True)
-        else:
-            post_on_reddit()
+        post_self_submission(get_all_outputs())
+        # if len(sys.argv) > 2 and sys.argv[2] == "cron":
+        #     post_on_reddit(cron=True)
+        # else:
+        #     post_on_reddit()
     elif len(sys.argv) == 2 and sys.argv[1] == "smart":
         out = get_sound_smarts()
         #print(out[1])
