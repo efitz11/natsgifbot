@@ -617,9 +617,24 @@ def get_team_schedule(team, num, backward=True):
     s = json.loads(urlopen(req).read().decode("utf-8"))
     dates = s['dates']
     output = ""
+    import calendar
+    # now = datetime.now()
     for date in dates:
         for game in date['games']:
-            output = output + date['date'] + ":\n"
+            dt = datetime.strptime(date['date'], "%Y-%m-%d")
+            if now.day-dt.day == 0:
+                day = "Today"
+            elif backward:
+                if now.day-dt.day == 1:
+                    day = "Yesterday"
+                else:
+                    day = calendar.day_name[dt.weekday()]
+            else:
+                if dt.day-now.day == 1:
+                    day = "Tomorrow"
+                else:
+                    day = calendar.day_name[dt.weekday()]
+            output = output + date['date'] + " (%s):\n" % (day)
             output = output + get_single_game_info(None, game) + "\n"
     return output
 
