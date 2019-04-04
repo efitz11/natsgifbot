@@ -233,7 +233,30 @@ def find_fastcast(return_str=False):
                     if return_str:
                         return s
                     return (blurb,url,duration)
+    if return_str:
+        return ""
 
+def find_realfast():
+    url = "https://www.mlb.com/data-service/en/search?tags.slug=real-fast&page=1"
+    print(url)
+    req = Request(url, headers={'User-Agent' : "ubuntu"})
+    s = json.loads(urlopen(req).read().decode("utf-8"))
+    now = datetime.now()
+    date = "%d-%02d-%02d" % (now.year, now.month, now.day)
+    for item in s['docs']:
+        if date in item['date'] and "real fast" in item['blurb'].lower():
+            url = "https://www.mlb.com/data-service/en/videos/" + item['id']
+            print(url)
+            req = Request(url, headers={'User-Agent' : "ubuntu"})
+            t = json.loads(urlopen(req).read().decode("utf-8"))
+            for p in t['playbacks']:
+                if p['name'] == "mp4Avc":
+                    blurb = t['blurb']
+                    url = p['url']
+                    duration = t['duration'][3:]
+                    s = "[%s](%s) - %s\n\n" % (blurb,url,duration)
+                    return s
+    return ""
 
 
     # url = "https://search-api.mlb.com/svc/search/v2/mlb_global_sitesearch_en/sitesearch?hl=true&facet=type&expand=partner.media&q=fastcast&page=1"
@@ -514,9 +537,13 @@ def get_all_outputs():
     # output = output + find_must_cs(return_str=True)
     # output = output + "****\n"
     # output = output + find_statcasts(return_str=True)
+    output = output + find_realfast()
     output = output + search_mlbn()
     output = output + "****\n"
     output = output + get_recaps(return_str=True)
+    output = output + "****\n"
+    import mymlbstats
+    output = output + "Longest dongs of the day:\n\n" + mymlbstats.print_long_dongs(-1, reddit=True)
     return output
 
 if __name__ == "__main__":
