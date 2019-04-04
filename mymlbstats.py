@@ -1760,7 +1760,7 @@ def print_roster(team,hitters=True):
         items = ['name','pos','gamesPlayed','atBats','avg','ops']
         output = output + utils.format_table(items,batters,repl_map={'gamesPlayed':'G','atBats':'ab'},left_list=["name"])
     else:
-        if 'inningsPitched' in pitchers:
+        if 'inningsPitched' in pitchers[0]:
             pitchers = sorted(pitchers, key=lambda x: float(x['inningsPitched']), reverse=True)
         output = "List of pitchers:\n\n"
         items = ['name','throws','gamesPlayed','inningsPitched','era','whip']
@@ -1933,10 +1933,10 @@ if __name__ == "__main__":
     # print(get_game_highlights_plays("530753"))
     # print(get_inning_plays("col", 7))
     # print(compare_player_stats(["ohtani", "harper"]))
-    # print(print_roster('wsh',hitters=False))
+    print(print_roster('wsh',hitters=False))
     # print(get_milb_aff_scores())
     # print(get_milb_box('syr'))
     # print(print_broadcasts("wsh"))
     # print(get_player_season_stats("max scherzer"))
     # print(print_long_dongs(delta="-1"))
-    print(batter_or_pitcher_vs("strasburg","nym"))
+    # print(batter_or_pitcher_vs("strasburg","nym"))
