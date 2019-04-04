@@ -49,19 +49,25 @@ def get_mlb_teams():
     teammap = {}
     abbrevmap = {}
     for s in teams:
-        teammap[s['name']] = s['id']
-        abbrevmap[s['abbreviation'].lower()] = s['id']
+        teammap[s['name']] = (s['id'], s)
+        abbrevmap[s['abbreviation'].lower()] = (s['id'], s)
     return (abbrevmap, teammap)
 
-def get_teamid(search):
+def get_teamid(search, extradata=False):
     search = search.replace('barves','braves')
     print(search)
     abvs,names = get_mlb_teams()
     if search in abvs:
-        return abvs[search]
+        if not extradata:
+            return abvs[search][0]
+        else:
+            return abvs[search][0], abvs[search][1]
     for name in names:
         if search.lower() in name.lower():
-            return names[name]
+            if not extradata:
+                return names[name][0]
+            else:
+                return names[name][0], names[name][1]
 
 def get_single_game_info(gamepk, gamejson, show_on_deck=False, liveonly=False):
     game = gamejson
@@ -1020,7 +1026,7 @@ def batter_or_pitcher_vs(name, team, year=None, reddit=False):
         return player_vs_team(name,team, year=year, reddit=reddit)
 
 def pitcher_vs_team(name, team, player=None, reddit=False):
-    teamid = get_teamid(team)
+    teamid, teamdata = get_teamid(team, extradata=True)
     if player is None:
         player = _get_player_search(name)
     if player is None:
@@ -1044,7 +1050,7 @@ def pitcher_vs_team(name, team, player=None, reddit=False):
                 empties.append(row)
             else:
                 batters.append(row)
-    output = "%s's stats vs batters, last 5 years:\n\n" % (player['name_display_first_last'])
+    output = "%s's stats vs %s batters, last 5 years:\n\n" % (player['name_display_first_last'], teamdata['teamName'])
     stats = ['name','b_ab','b_total_hits','b_double','b_triple','b_home_run','b_walk','b_strikeout',
              'b_batting_avg','b_on_base_avg','b_slugging_avg','b_on_base_slg_avg']
     left = ['name']
@@ -1932,4 +1938,5 @@ if __name__ == "__main__":
     # print(get_milb_box('syr'))
     # print(print_broadcasts("wsh"))
     # print(get_player_season_stats("max scherzer"))
-    print(print_long_dongs(delta="-1"))
+    # print(print_long_dongs(delta="-1"))
+    print(batter_or_pitcher_vs("strasburg","nym"))
