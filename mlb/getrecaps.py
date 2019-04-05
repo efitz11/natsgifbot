@@ -76,20 +76,20 @@ def get_recaps(return_str=False):
                     continue
                 duration = item['duration'][3:]
                 if 'Recap' in title:
-                    list = recaps
+                    # list = recaps
                     recapstr = "[%s](%s) - %s\n" % (title, link, duration)
                 elif 'CG:' in title:
                     cgstr = "[Condensed game](%s) - %s\n" % (link, duration)
                 elif 'Must C:' in title:
-                    list = mustcs
+                    # list = mustcs
                     s = "[%s](%s) - %s\n" % (item['blurb'], link, duration)
                     mustcout = mustcout + s + "\n"
                 elif 'Statcast' in title:
-                    list = statcasts
+                    # list = statcasts
                     s = "[%s](%s) - %s\n" % (title, link, duration)
                     statout = statout + s + "\n"
                 # print(s)
-                list.append((title, link, duration))
+                # list.append((title, link, duration))
 
         if recapstr == "":
             recapstr = deftitle
