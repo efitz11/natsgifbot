@@ -79,14 +79,21 @@ class Reddit():
             flair = "*[%s]*" % submission.link_flair_text
         else:
             flair = ""
+        userflair = ""
+        if submission.author_flair_type == 'text':
+            userflair = " [*%s*] " % submission.author_flair_text
+        if submission.author_flair_type == 'richtext':
+            for i in submission.author_flair_richtext:
+                if 'e' in i and i['e'] == 'text':
+                    userflair = " [*%s*] " % i['t'].strip()
         time = utils.prettydate(int(submission.created))
         if submission.is_self:
-            ret.append("[%s] **%s** %s - posted by /u/%s to /r/%s, %s" % (self.getsubmissionscore(submission), submission.title, flair, submission.author, submission.subreddit, time))
+            ret.append("[%s] **%s** %s - posted by /u/%s%s to /r/%s, %s" % (self.getsubmissionscore(submission), submission.title, flair, submission.author, userflair, submission.subreddit, time))
             if len(submission.selftext) > 0:
                 ret.append("```%s```" % submission.selftext)
             ret.append("<%s>" % submission.shortlink[:1995])
         else:
-            ret.append("[%s] **%s** - posted by /u/%s to /r/%s, %s" % (self.getsubmissionscore(submission), submission.title, submission.author, submission.subreddit, time))
+            ret.append("[%s] **%s** - posted by /u/%s%s to /r/%s, %s" % (self.getsubmissionscore(submission), submission.title, submission.author, userflair, submission.subreddit, time))
             if submission.over_18:
                 ret.append("**post is NSFW; embed hidden**\n<%s>\t\t<%s>" % (submission.url, submission.shortlink))
             else:
