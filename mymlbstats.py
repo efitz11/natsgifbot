@@ -673,9 +673,15 @@ def list_home_runs(team, delta=None):
                     h['inning'] = 'bot'
                 h['inning'] = "%s %s" % (h['inning'], p['about']['inning'])
                 h['runs'] = p['result']['rbi']
-                if 'hitData' in p['playEvents'][-1]:
-                    if 'totalDistance' in p['playEvents'][-1]['hitData']:
-                        h['dist'] = p['playEvents'][-1]['hitData']['totalDistance']
+
+                event = None
+                for e in p['playEvents']:
+                    if 'isInPlay' in e['details'] and e['details']['isInPlay']:
+                        event = e
+
+                if 'hitData' in event:
+                    if 'totalDistance' in event['hitData']:
+                        h['dist'] = event['hitData']['totalDistance']
                 homers.append(h)
                 # output = output + "%s, %s %d, %d rbi, off %s\n" % (p['matchup']['batter']['fullName'],
                 #                                                    p['about']['halfInning'], p['about']['inning'],
@@ -1825,15 +1831,20 @@ def print_long_dongs(delta=None, reddit=False):
                     h['dist'] = 0
                     h['ev'] = 0
                     h['angle'] = 0
-                    if 'hitData' in p['playEvents'][-1]:
-                        if 'totalDistance' in p['playEvents'][-1]['hitData']:
-                            h['dist'] = p['playEvents'][-1]['hitData']['totalDistance']
-                        if 'launchSpeed' in p['playEvents'][-1]['hitData']:
-                            h['ev'] = p['playEvents'][-1]['hitData']['launchSpeed']
-                        if 'launchAngle' in p['playEvents'][-1]['hitData']:
-                            h['angle'] = p['playEvents'][-1]['hitData']['launchAngle']
-                    playid = p['playEvents'][-1]['playId']
+                    event = None
+                    for e in p['playEvents']:
+                        if 'isInPlay' in e['details'] and e['details']['isInPlay']:
+                            event = e
+
+                    if 'hitData' in event:
+                        if 'totalDistance' in event['hitData']:
+                            h['dist'] = event['hitData']['totalDistance']
+                        if 'launchSpeed' in event['hitData']:
+                            h['ev'] = event['hitData']['launchSpeed']
+                        if 'launchAngle' in event['hitData']:
+                            h['angle'] = event['hitData']['launchAngle']
                     h['video'] = ""
+                    playid = event['playId']
                     for item in content:
                         if 'guid' in item:
                             if item['guid'] == playid:
@@ -1933,10 +1944,11 @@ if __name__ == "__main__":
     # print(get_game_highlights_plays("530753"))
     # print(get_inning_plays("col", 7))
     # print(compare_player_stats(["ohtani", "harper"]))
-    print(print_roster('wsh',hitters=False))
+    # print(print_roster('wsh',hitters=False))
     # print(get_milb_aff_scores())
     # print(get_milb_box('syr'))
     # print(print_broadcasts("wsh"))
     # print(get_player_season_stats("max scherzer"))
+    print(list_home_runs('tex', delta="-1"))
     # print(print_long_dongs(delta="-1"))
     # print(batter_or_pitcher_vs("strasburg","nym"))
