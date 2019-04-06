@@ -1809,13 +1809,17 @@ def print_long_dongs(delta=None, reddit=False):
     hydrates="&hydrate=scoringplays"
     games = get_day_schedule(delta=delta, scoringplays=True,hydrates=hydrates)['dates'][0]['games']
     dongs = []
+    find_videos = False
+    if reddit:
+        find_videos = True
     for game in games:
         gamepk = game['gamePk']
         if 'scoringPlays' in game:
             sp = game['scoringPlays']
-            url = "https://statsapi.mlb.com/api/v1/game/" + str(gamepk) + "/content"
-            print(url)
-            content = _get_json(url)['highlights']['highlights']['items']
+            if find_videos:
+                url = "https://statsapi.mlb.com/api/v1/game/" + str(gamepk) + "/content"
+                print(url)
+                content = _get_json(url)['highlights']['highlights']['items']
             for p in sp:
                 if p['result']['eventType'] == "home_run":
                     h = dict()
@@ -1827,7 +1831,10 @@ def print_long_dongs(delta=None, reddit=False):
                     h['inning'] = "%s %s" % (h['inning'], p['about']['inning'])
                     h['runs'] = p['result']['rbi']
                     number = p['result']['description']
-                    h['num'] = int(re.search('\(([^)]+)', number).group(1))
+                    search = "homers"
+                    if 'grand slam' in number:
+                        search = "grand slam"
+                    h['num'] = int(re.search('\(([^)]+)', number[number.index(search):]).group(1))
                     h['dist'] = 0
                     h['ev'] = 0
                     h['angle'] = 0
@@ -1844,13 +1851,14 @@ def print_long_dongs(delta=None, reddit=False):
                         if 'launchAngle' in event['hitData']:
                             h['angle'] = event['hitData']['launchAngle']
                     h['video'] = ""
-                    playid = event['playId']
-                    for item in content:
-                        if 'guid' in item:
-                            if item['guid'] == playid:
-                                for pb in item['playbacks']:
-                                    if pb['name'] == 'mp4Avc':
-                                        h['video'] = '[video](%s)' % pb['url']
+                    if find_videos:
+                        playid = event['playId']
+                        for item in content:
+                            if 'guid' in item:
+                                if item['guid'] == playid:
+                                    for pb in item['playbacks']:
+                                        if pb['name'] == 'mp4Avc':
+                                            h['video'] = '[video](%s)' % pb['url']
                     dongs.append(h)
     repl_map = {'inning':'inn'}
     labs = ['num', 'batter', 'pitcher', 'dist', 'ev', 'angle']
@@ -1949,6 +1957,6 @@ if __name__ == "__main__":
     # print(get_milb_box('syr'))
     # print(print_broadcasts("wsh"))
     # print(get_player_season_stats("max scherzer"))
-    print(list_home_runs('tex', delta="-1"))
-    # print(print_long_dongs(delta="-1"))
+    # print(list_home_runs('tex', delta="-1"))
+    print(print_long_dongs())
     # print(batter_or_pitcher_vs("strasburg","nym"))
