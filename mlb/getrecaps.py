@@ -97,9 +97,9 @@ def get_recaps(return_str=False):
             output = output + recapstr + " | " + cgstr + "\n\n"
         else:
             output = output + recapstr + " | No condensed game\n\n"
-    if len(mustcs) > 0:
+    if len(mustcout) > 0:
         output = mustcout + "****\n" + output
-    if len(statcasts) > 0:
+    if len(statout) > 0:
         output = statout + "****\n" + output
     if return_str:
         return output
