@@ -737,7 +737,7 @@ def list_scoring_plays(team,delta=None,lastonly=False):
                                 if 'hitData' in j:
                                     data = j['hitData']
                                     if 'totalDistance' in data or 'launchSpeed' in data or 'launchAngle' in data:
-                                        out = "Statcast: "
+                                        out = "\nStatcast: "
                                         if 'totalDistance' in data:
                                             out = out + "%d ft, " % data['totalDistance']
                                         if 'launchSpeed' in data:
