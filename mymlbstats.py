@@ -736,16 +736,16 @@ def list_scoring_plays(team,delta=None,lastonly=False):
                                     desc = desc + "(%s-%s)" % (j['details']['awayScore'], j['details']['homeScore'])
                                 if 'hitData' in j:
                                     data = j['hitData']
-                                if 'totalDistance' in data or 'launchSpeed' in data or 'launchAngle' in data:
-                                    out = "Statcast: "
-                                    if 'totalDistance' in data:
-                                        out = out + "%d ft, " % data['totalDistance']
-                                    if 'launchSpeed' in data:
-                                        out = out + "%d mph, " % data['launchSpeed']
-                                    if 'launchAngle' in data:
-                                        out = out + "%d degrees," % data['launchAngle']
-                                    out = out[:-1] + "\n"
-                                    desc = desc + out
+                                    if 'totalDistance' in data or 'launchSpeed' in data or 'launchAngle' in data:
+                                        out = "Statcast: "
+                                        if 'totalDistance' in data:
+                                            out = out + "%d ft, " % data['totalDistance']
+                                        if 'launchSpeed' in data:
+                                            out = out + "%d mph, " % data['launchSpeed']
+                                        if 'launchAngle' in data:
+                                            out = out + "%d degrees," % data['launchAngle']
+                                        out = out[:-1] + "\n"
+                                        desc = desc + out
                             plays.append((inning, desc))
     if lastonly:
         return [plays[-1]]
