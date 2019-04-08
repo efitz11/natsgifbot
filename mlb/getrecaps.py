@@ -517,7 +517,7 @@ def post_on_reddit(cron=False):
             print("didn't find ATH, checking in 5 minutes...")
             time.sleep(5*60)
 
-def post_self_submission(selftext):
+def post_self_submission(selftext, cron=False):
     import praw
     with open('.fitz.json', 'r') as f:
         f = json.loads(f.read())['keys']['efitz11']
@@ -527,8 +527,18 @@ def post_self_submission(selftext):
                          username=f['user'],password=f['password'])
     yest = datetime.now() - timedelta(days=1)
     title = "%d/%d Highlight Roundup: FastCast, top plays, recaps/condensed games and longest dongs of the day" % (yest.month, yest.day)
-    reddit.subreddit('baseball').submit(title, selftext=selftext)
+    post = reddit.subreddit('baseball').submit(title, selftext=selftext)
 
+    # check every 30 minutes for new videos
+    if cron:
+        numchecks = 0
+        while numchecks <= 8:
+            time.sleep(30*60)
+            newout = get_all_outputs()
+            if newout != selftext:
+                post.edit(newout)
+                selftext = newout
+            numchecks += 1
 
 def pm_user(subject, body, user="efitz11"):
     import praw
@@ -563,7 +573,11 @@ def get_all_outputs():
 
 if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == "post":
-        post_self_submission(get_all_outputs())
+        if len(sys.argv) > 2 and sys.argv[2] == "cron":
+            post_self_submission(get_all_outputs(), cron=True)
+        else:
+            post_self_submission(get_all_outputs())
+
         # if len(sys.argv) > 2 and sys.argv[2] == "cron":
         #     post_on_reddit(cron=True)
         # else:
