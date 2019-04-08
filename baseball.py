@@ -257,7 +257,7 @@ class Baseball():
             else:
                 team = team[1:]
                 days = None
-            await self.bot.say("```%s```" % mymlbstats.get_player_trailing_splits('+'.join(team), days, forcebatting=forcebatting))
+            await self.bot.say("```%s```" % mymlbstats.get_player_trailing_splits('+'.join(team), days, forcebatting=forcebatting, reddit=reddit))
             return
         elif team[0].endswith("log"):
             forcebatting = team[0].startswith("b")

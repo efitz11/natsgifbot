@@ -1182,7 +1182,7 @@ def get_player_season_splits(name, split, type=None, year=None, active='Y', redd
         output = output + utils.format_table(stats,results,repl_map={'situation':'split'}, reddit=reddit)
         return output
 
-def get_player_trailing_splits(name, days=None, forcebatting=False):
+def get_player_trailing_splits(name, days=None, forcebatting=False, reddit=False):
     player = _get_player_search(name)
     if player is None:
         return "No matching player found"
@@ -1235,7 +1235,8 @@ def get_player_trailing_splits(name, days=None, forcebatting=False):
     else:
         output = "Trailing splits for %s (%s):\n\n" % (player['name_display_first_last'], player['team_abbrev'])
     repl_map = {'d':'2B','t':'3B'}
-    output = output + _print_table(stats,splits,repl_map=repl_map)
+    # output = output + _print_table(stats,splits,repl_map=repl_map)
+    output = output + utils.format_table(stats, splits, repl_map=repl_map, reddit=reddit)
     return output
 
 def milb_player_search(name,parent=None):
