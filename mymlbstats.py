@@ -393,7 +393,8 @@ def get_broadcasts(delta=None, teamid=None):
     return _get_json(url)
 
 def get_pbp(gamepk):
-    url = "https://statsapi.mlb.com/api/v1/game/" + gamepk + "/playByPlay"
+    url = "https://statsapi.mlb.com/api/v1/game/" + str(gamepk) + "/playByPlay"
+    print(url)
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     s = json.loads(urlopen(req).read().decode("utf-8"))
     return s
@@ -1903,6 +1904,27 @@ def print_dongs(type, delta=None, reddit=False):
 
     return utils.format_table(labs, sorteddongs, repl_map=repl_map, left_list=left, reddit=reddit)
 
+def print_at_bats(name, delta=None):
+    player = _get_player_search(name)
+    if player is None:
+        return "No matching player found"
+    teamid = player['team_id']
+    playerid = int(player['player_id'])
+    games = get_day_schedule(teamid=teamid, delta=delta)['dates'][0]['games']
+    output = ""
+    for game in games:
+        gamepk = game['gamePk']
+        pbp = get_pbp(gamepk)['allPlays']
+        for play in pbp:
+            if play['matchup']['batter']['id'] == playerid:
+                half = play['about']['halfInning']
+                if half == "bottom":
+                    half = "bot"
+                output = output + "%s %d: %s\n" % (half, play['about']['inning'], play['result']['description'])
+
+    return output
+
+
 def _print_table(labels, dicts, repl_map={}, useDefaultMap=True):
     if useDefaultMap:
         repl_map = {'d':'2B','t':'3B', **repl_map}
@@ -1990,5 +2012,6 @@ if __name__ == "__main__":
     # print(print_broadcasts("wsh"))
     # print(get_player_season_stats("max scherzer"))
     # print(list_home_runs('tex', delta="-1"))
-    print(print_dongs("recent", delta="-1"))
+    # print(print_dongs("recent", delta="-1"))
     # print(batter_or_pitcher_vs("strasburg","nym"))
+    print(print_at_bats("Chris Davis", delta="-1"))
