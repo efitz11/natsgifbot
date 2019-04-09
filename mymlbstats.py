@@ -1880,8 +1880,6 @@ def print_dongs(type, delta=None, reddit=False):
         sorteddongs = sorted(dongs, key=lambda k: k['dist'], reverse=True)[:10]
     elif type == "recent":
         sorteddongs = sorted(dongs, key=lambda k: k['time'], reverse=True)[:10]
-    for dong in sorteddongs:
-        print(dong['time'], dong['batter'])
 
     return utils.format_table(labs, sorteddongs, repl_map=repl_map, left_list=left, reddit=reddit)
 
