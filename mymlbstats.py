@@ -1824,6 +1824,9 @@ def print_dongs(type, delta=None, reddit=False):
         gamepk = game['gamePk']
         awayteam = game['teams']['away']['team']['abbreviation']
         hometeam = game['teams']['home']['team']['abbreviation']
+        if not reddit:
+            awayteam = awayteam.ljust(4)
+            hometeam = hometeam.ljust(4)
         if 'scoringPlays' in game:
             sp = game['scoringPlays']
             if find_videos:
@@ -1835,14 +1838,24 @@ def print_dongs(type, delta=None, reddit=False):
                     h = dict()
                     h['batter'] = p['matchup']['batter']['fullName']
                     h['pitcher'] = p['matchup']['pitcher']['fullName']
+
                     h['inning'] = p['about']['halfInning']
                     if h['inning'] == 'bottom':
                         h['inning'] = 'bot'
-                        h['batter'] = "[](/%s)" % hometeam + h['batter']
-                        h['pitcher'] = "[](/%s)" % awayteam + h['pitcher']
+                        if reddit:
+                            h['batter'] = "[](/%s)" % hometeam + h['batter']
+                            h['pitcher'] = "[](/%s)" % awayteam + h['pitcher']
+                        else:
+                            h['batter'] = "%s" % hometeam + h['batter']
+                            h['pitcher'] = "%s" % awayteam + h['pitcher']
                     else:
-                        h['batter'] = "[](/%s)" % awayteam + h['batter']
-                        h['pitcher'] = "[](/%s)" % hometeam + h['pitcher']
+                        if reddit:
+                            h['batter'] = "[](/%s)" % awayteam + h['batter']
+                            h['pitcher'] = "[](/%s)" % hometeam + h['pitcher']
+                        else:
+                            h['batter'] = "%s" % awayteam + h['batter']
+                            h['pitcher'] = "%s" % hometeam + h['pitcher']
+
                     h['inning'] = "%s %s" % (h['inning'], p['about']['inning'])
                     h['runs'] = p['result']['rbi']
                     number = p['result']['description']
