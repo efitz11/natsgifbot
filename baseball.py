@@ -326,7 +326,7 @@ class Baseball():
         elif team[0] == "longdongs":
             out = mymlbstats.print_dongs("long", delta=delta, reddit=reddit)
             await self.bot.say("```%s```" % out)
-        elif team[0] == "newdongs":
+        elif team[0] in ["dongs", "newdongs"]:
             out = mymlbstats.print_dongs("recent", delta=delta, reddit=reddit)
             await self.bot.say("```%s```" % out)
         elif team[0] == "abs":
