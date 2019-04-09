@@ -1814,7 +1814,7 @@ def print_dongs(type, delta=None, reddit=False):
     :param reddit:
     :return:
     """
-    hydrates="&hydrate=scoringplays"
+    hydrates="&hydrate=scoringplays,team"
     games = get_day_schedule(delta=delta, scoringplays=True,hydrates=hydrates)['dates'][0]['games']
     dongs = []
     find_videos = False
@@ -1822,6 +1822,8 @@ def print_dongs(type, delta=None, reddit=False):
         find_videos = True
     for game in games:
         gamepk = game['gamePk']
+        awayteam = game['teams']['away']['team']['abbreviation']
+        hometeam = game['teams']['home']['team']['abbreviation']
         if 'scoringPlays' in game:
             sp = game['scoringPlays']
             if find_videos:
@@ -1836,6 +1838,11 @@ def print_dongs(type, delta=None, reddit=False):
                     h['inning'] = p['about']['halfInning']
                     if h['inning'] == 'bottom':
                         h['inning'] = 'bot'
+                        h['batter'] = "[](/%s)" % hometeam + h['batter']
+                        h['pitcher'] = "[](/%s)" % awayteam + h['pitcher']
+                    else:
+                        h['batter'] = "[](/%s)" % awayteam + h['batter']
+                        h['pitcher'] = "[](/%s)" % hometeam + h['pitcher']
                     h['inning'] = "%s %s" % (h['inning'], p['about']['inning'])
                     h['runs'] = p['result']['rbi']
                     number = p['result']['description']
@@ -1970,5 +1977,5 @@ if __name__ == "__main__":
     # print(print_broadcasts("wsh"))
     # print(get_player_season_stats("max scherzer"))
     # print(list_home_runs('tex', delta="-1"))
-    print(print_dongs("recent"))
+    print(print_dongs("recent", delta="-1"))
     # print(batter_or_pitcher_vs("strasburg","nym"))
