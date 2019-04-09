@@ -4,7 +4,6 @@ from datetime import datetime, timedelta
 from xml.etree import ElementTree
 import time
 import sys, os
-import utils
 
 def search_video(query):
     query = query.replace(' ', "%2B")
@@ -571,6 +570,7 @@ def get_all_outputs():
 if __name__ == "__main__":
     sys.path.insert(1, os.path.join(sys.path[0],'..'))
     import mymlbstats
+    import utils
 
     if len(sys.argv) > 1 and sys.argv[1] == "post":
         if len(sys.argv) > 2 and sys.argv[2] == "cron":
