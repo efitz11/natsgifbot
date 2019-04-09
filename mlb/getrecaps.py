@@ -54,8 +54,10 @@ def get_recaps():
         req = Request(content, headers={'User-Agent' : "ubuntu"})
         c = json.loads(urlopen(req).read().decode("utf-8"))
         if game['status']['detailedState'] == "Final":
-            deftitle = "%s %d, %s %d" % (game['teams']['away']['team']['abbreviation'],
+            deftitle = "[](/%s)%s %d, [](/%s)%s %d" % (game['teams']['away']['team']['abbreviation'],
+                                                       game['teams']['away']['team']['abbreviation'],
                                                 game['teams']['away']['score'],
+                                                game['teams']['home']['team']['abbreviation'],
                                                 game['teams']['home']['team']['abbreviation'],
                                                 game['teams']['home']['score'])
         else:
