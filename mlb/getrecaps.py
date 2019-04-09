@@ -2,7 +2,11 @@ from urllib.request import urlopen, Request
 import json
 from datetime import datetime, timedelta
 from xml.etree import ElementTree
-import sys, time
+import time
+import sys, os
+sys.path.insert(1, os.path.join(sys.path[0],'..'))
+import mymlbstats
+import utils
 
 def search_video(query):
     query = query.replace(' ', "%2B")
@@ -33,7 +37,7 @@ def search_mlbn():
             output = output + "[%s](%s) - %s\n\n" % (t['blurb'], t['url'], t['duration'][3:])
     return output
 
-def get_recaps(return_str=False):
+def get_recaps():
     now = datetime.now() - timedelta(days=1)
     date = str(now.year) + "-" + str(now.month).zfill(2) + "-" + str(now.day).zfill(2)
     url = "https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=" + date + "&hydrate=team"
@@ -41,18 +45,16 @@ def get_recaps(return_str=False):
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     s = json.loads(urlopen(req).read().decode("utf-8"))
     games = s['dates'][0]['games']
-    recaps = []
-    statcasts = []
-    mustcs = []
     output = ""
     statout = ""
     mustcout = ""
+    game_vids = []
     for game in games:
         content = "https://statsapi.mlb.com" + game['content']['link']
         req = Request(content, headers={'User-Agent' : "ubuntu"})
         c = json.loads(urlopen(req).read().decode("utf-8"))
         if game['status']['detailedState'] == "Final":
-            deftitle = "%s %d, %s %d, no recap" % (game['teams']['away']['team']['abbreviation'],
+            deftitle = "%s %d, %s %d" % (game['teams']['away']['team']['abbreviation'],
                                                 game['teams']['away']['score'],
                                                 game['teams']['home']['team']['abbreviation'],
                                                 game['teams']['home']['score'])
@@ -61,6 +63,9 @@ def get_recaps(return_str=False):
                                         game['teams']['home']['team']['abbreviation'],
                                         game['status']['detailedState'])
             continue
+
+        vids = dict()
+        vids['title'] = deftitle
 
         highlights = ['Recap', 'Must C:', 'Statcast', 'CG:']
         recapstr = ""
@@ -76,34 +81,29 @@ def get_recaps(return_str=False):
                     continue
                 duration = item['duration'][3:]
                 if 'Recap' in title:
-                    # list = recaps
                     recapstr = "[%s](%s) - %s\n" % (title, link, duration)
+                    vids["recap"] = "[recap](%s) - %s" % (link, duration)
                 elif 'CG:' in title:
                     cgstr = "[Condensed game](%s) - %s\n" % (link, duration)
+                    vids["cg"] = "[condensed](%s) - %s" % (link, duration)
                 elif 'Must C:' in title:
-                    # list = mustcs
                     s = "[%s](%s) - %s\n" % (item['blurb'], link, duration)
                     mustcout = mustcout + s + "\n"
                 elif 'Statcast' in title:
-                    # list = statcasts
                     s = "[%s](%s) - %s\n" % (title, link, duration)
                     statout = statout + s + "\n"
-                # print(s)
-                # list.append((title, link, duration))
 
         if recapstr == "":
-            recapstr = deftitle
-        if cgstr != "":
-            output = output + recapstr + " | " + cgstr + "\n\n"
-        else:
-            output = output + recapstr + " | No condensed game\n\n"
+            vids["recap"] = "no recap"
+        if cgstr == "":
+            vids["cg"] = "no condensed game"
+        game_vids.append(vids)
     if len(mustcout) > 0:
         output = mustcout + "****\n" + output
     if len(statout) > 0:
         output = statout + "****\n" + output
-    if return_str:
-        return output
-    return recaps
+    labs = ['title', 'recap', 'cg']
+    return output + utils.format_reddit_table(labs, game_vids, left_list=labs)
 
 def get_sound_smarts():
     now = datetime.now() - timedelta(days=1)
@@ -563,11 +563,8 @@ def get_all_outputs():
     output = output + find_realfast()
     output = output + search_mlbn()
     output = output + "****\n"
-    output = output + get_recaps(return_str=True)
-    output = output + "****\n"
-    import sys, os
-    sys.path.insert(1, os.path.join(sys.path[0],'..'))
-    import mymlbstats
+    output = output + get_recaps()
+    output = output + "\n****\n"
     output = output + "Longest dongs of the day:\n\n" + mymlbstats.print_dongs("long", delta="-1", reddit=True)
     return output
 
