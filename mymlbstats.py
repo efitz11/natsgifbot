@@ -1846,6 +1846,7 @@ def print_dongs(type, delta=None, reddit=False):
                     h['dist'] = 0
                     h['ev'] = 0
                     h['angle'] = 0
+                    h['time'] = p['about']['endTime']
                     event = None
                     for e in p['playEvents']:
                         if 'isInPlay' in e['details'] and e['details']['isInPlay']:
@@ -1877,6 +1878,10 @@ def print_dongs(type, delta=None, reddit=False):
 
     if type == "long":
         sorteddongs = sorted(dongs, key=lambda k: k['dist'], reverse=True)[:10]
+    elif type == "recent":
+        sorteddongs = sorted(dongs, key=lambda k: k['time'], reverse=True)[:10]
+    for dong in sorteddongs:
+        print(dong['time'], dong['batter'])
 
     return utils.format_table(labs, sorteddongs, repl_map=repl_map, left_list=left, reddit=reddit)
 
@@ -1967,5 +1972,5 @@ if __name__ == "__main__":
     # print(print_broadcasts("wsh"))
     # print(get_player_season_stats("max scherzer"))
     # print(list_home_runs('tex', delta="-1"))
-    print(print_long_dongs())
+    print(print_dongs("recent"))
     # print(batter_or_pitcher_vs("strasburg","nym"))
