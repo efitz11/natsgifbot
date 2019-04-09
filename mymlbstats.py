@@ -1807,7 +1807,13 @@ def print_broadcasts(team, delta=None):
         out = out + "\n"
     return out
 
-def print_long_dongs(delta=None, reddit=False):
+def print_dongs(type, delta=None, reddit=False):
+    """
+    :param type: ['long', 'recent']
+    :param delta:
+    :param reddit:
+    :return:
+    """
     hydrates="&hydrate=scoringplays"
     games = get_day_schedule(delta=delta, scoringplays=True,hydrates=hydrates)['dates'][0]['games']
     dongs = []
@@ -1869,9 +1875,10 @@ def print_long_dongs(delta=None, reddit=False):
         labs.append('video')
         left.append('video')
 
-    longdongs = sorted(dongs, key=lambda k: k['dist'], reverse=True)[:10]
+    if type == "long":
+        sorteddongs = sorted(dongs, key=lambda k: k['dist'], reverse=True)[:10]
 
-    return utils.format_table(labs, longdongs, repl_map=repl_map, left_list=left, reddit=reddit)
+    return utils.format_table(labs, sorteddongs, repl_map=repl_map, left_list=left, reddit=reddit)
 
 def _print_table(labels, dicts, repl_map={}, useDefaultMap=True):
     if useDefaultMap:
