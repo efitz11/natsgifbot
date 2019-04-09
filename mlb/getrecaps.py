@@ -568,7 +568,7 @@ def get_all_outputs():
     import sys, os
     sys.path.insert(1, os.path.join(sys.path[0],'..'))
     import mymlbstats
-    output = output + "Longest dongs of the day:\n\n" + mymlbstats.print_long_dongs(-1, reddit=True)
+    output = output + "Longest dongs of the day:\n\n" + mymlbstats.print_dongs("long", delta="-1", reddit=True)
     return output
 
 if __name__ == "__main__":
