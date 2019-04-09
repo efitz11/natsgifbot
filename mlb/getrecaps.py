@@ -105,7 +105,7 @@ def get_recaps():
     if len(statout) > 0:
         output = statout + "****\n" + output
     labs = ['title', 'recap', 'cg']
-    return output + utils.format_reddit_table(labs, game_vids, left_list=labs)
+    return output + utils.format_reddit_table(labs, game_vids, repl_map={'title':'game'}, left_list=labs)
 
 def get_sound_smarts():
     now = datetime.now() - timedelta(days=1)
