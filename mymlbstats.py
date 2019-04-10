@@ -1338,12 +1338,14 @@ def get_milb_line(name, delta=None):
     except:
         print("%s is an OF" % name)
         part = "batting"
-    output = "Game line for %s (%s - %s):\n\n" % (name, teamabv, level)
-
     now = _get_date_from_delta(delta)
     year = str(now.year)
     month = str(now.month)
     day = str(now.day)
+    date = "%s/%s/%s" % (month,day,year)
+
+    output = "%s game line for %s (%s - %s):\n\n" % (date, name, teamabv, level)
+
     url = "http://lookup-service-prod.bamgrid.com/lookup/json/named.schedule_vw_complete_affiliate.bam?" \
           "game_date=%27" + year + "/" + month + "/" + day + "%27&season=" + year + "&org_id=" + str(orgid)
     print(url)
