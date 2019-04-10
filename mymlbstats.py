@@ -1338,6 +1338,7 @@ def get_milb_line(name, delta=None):
     except:
         print("%s is an OF" % name)
         part = "batting"
+    output = "Game line for %s (%s - %s):\n\n" % (name, teamabv, level)
 
     now = _get_date_from_delta(delta)
     year = str(now.year)
@@ -1362,7 +1363,6 @@ def get_milb_line(name, delta=None):
             gamepks.append((aff['game_pk'], side))
     if len(gamepks) == 0:
         return "No games found for team"
-    output = ""
     for gamepk, side in gamepks:
         bs = BoxScore.BoxScore(get_boxscore(gamepk))
         output = output + bs.print_box(side=side, part=part, playerid=id) + "\n\n"
