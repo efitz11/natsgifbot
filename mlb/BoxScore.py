@@ -22,7 +22,7 @@ class BoxScore:
                 pid = self.box['teams'][t]['players'][p]['person']['id']
                 self.players[pid] = self.box['teams'][t]['players'][p]
 
-    def print_box(self, side="home", part="batting", display_pitches=False, oldboxes=[]):
+    def print_box(self, side="home", part="batting", display_pitches=False, oldboxes=[], playerid=None):
         output = None
         if part == "batting":
             output = "%s %s %s %s %s %s %s %s %s %s %s\n" % ("".ljust(18),'AB','R','H','RBI','BB','SO','LOB',' AVG', ' OBP',' SLG')
@@ -30,6 +30,9 @@ class BoxScore:
             count = 0
             for batter in self.box['teams'][side]['batters']:
                 player = self.players[batter]
+                if playerid is not None:
+                    if player['person']['id'] != playerid:
+                        continue
                 if lastbatter not in self.box['teams'][side]['battingOrder'] and lastbatter is not None:
                     name = " " + player['person']['boxscoreName']
                 else:
@@ -64,6 +67,9 @@ class BoxScore:
             output = "%s %s %s %s %s %s %s %s %s %s %s\n" % ("".ljust(15)," IP"," H"," R","ER","BB","SO","HR", "  ERA","  P", " S")
             for pitcher in self.box['teams'][side]['pitchers']:
                 player = self.players[pitcher]
+                if playerid is not None:
+                    if player['person']['id'] != playerid:
+                        continue
                 name = player['person']['boxscoreName']
                 pos = player['position']['abbreviation']
                 output = output + name.ljust(15)
