@@ -1440,13 +1440,22 @@ def get_milb_aff_scores(teamid=120, delta=None):
     for aff in sorted(affs, key=lambda x: sportmap[x['home_sport_code']]):
         sportcode = aff['home_sport_code']
         homeid = aff['home_team_id']
-        url = "http://statsapi.mlb.com/api/v1/schedule?sportId=" + str(sportmap[sportcode]) + "&teamId=" + homeid + "&date=" + date
+        gamepk = aff['game_pk']
+        url = "http://statsapi.mlb.com/api/v1/schedule?gamePk=" + gamepk + "&date=" + date
         hydrates = "&hydrate=probablePitcher,person,decisions,team,stats,flags,linescore(matchup,runners),previousPlay"
         url = url + hydrates
+        print(url)
         req = Request(url, headers={'User-Agent' : "ubuntu"})
-        s = json.loads(urlopen(req).read().decode("utf-8"))['dates'][0]['games']
+        s = json.loads(urlopen(req).read().decode("utf-8"))['dates']
+        matched = False
+        for d in s:
+            if d['date'] == date:
+                s = d['games']
+                matched = True
+                break
+        if not matched:
+            s = s[0]['games']
         for game in s:
-            gamepk = str(game['gamePk'])
             output = output + get_single_game_info(gamepk, game) + "\n"
 
     return output
@@ -2063,9 +2072,9 @@ if __name__ == "__main__":
     # print(get_inning_plays("col", 7))
     # print(compare_player_stats(["ohtani", "harper"]))
     # print(print_roster('wsh',hitters=False))
-    # print(get_milb_aff_scores())
+    print(get_milb_aff_scores(delta="-1"))
     # print(get_milb_box('syr'))
-    print(get_milb_line("kershaw", delta="-1"))
+    # print(get_milb_line("kershaw", delta="-1"))
     # print(print_broadcasts("wsh"))
     # print(get_player_season_stats("max scherzer"))
     # print(list_home_runs('tex', delta="-1"))
