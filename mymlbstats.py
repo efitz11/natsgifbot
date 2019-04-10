@@ -1948,12 +1948,15 @@ def print_dongs(type, delta=None, reddit=False):
         labs.append('video')
         left.append('video')
 
+    out = ""
     if type == "long":
         sorteddongs = sorted(dongs, key=lambda k: k['dist'], reverse=True)[:10]
     elif type == "recent":
         sorteddongs = sorted(dongs, key=lambda k: k['time'], reverse=True)[:10]
+        out = "Most recent home runs (most recent on top):\n\n"
 
-    return utils.format_table(labs, sorteddongs, repl_map=repl_map, left_list=left, reddit=reddit)
+
+    return out + utils.format_table(labs, sorteddongs, repl_map=repl_map, left_list=left, reddit=reddit)
 
 def print_at_bats(name, delta=None):
     player = _get_player_search(name)
