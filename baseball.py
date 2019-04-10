@@ -365,7 +365,7 @@ class Baseball():
             args = ctx.message.system_content[6:].split(' ')
             delta, args = self._find_delta(args)
 
-            if args[0] == '':
+            if len(args) == 0 or args[0] == '':
                 await self.bot.say("```python\n%s```" % mymlbstats.get_milb_aff_scores(delta=delta))
             else:
                 teamid = mymlbstats.get_teamid(' '.join(args))
@@ -385,6 +385,14 @@ class Baseball():
         else:
             player = ' '.join(query)
             await self.bot.say("```%s```" % mymlbstats.get_milb_season_stats(player))
+
+    @milb.command()
+    async def line(self, *query:str):
+        """get a minor league player's game line
+        !milb line <player> [delta]"""
+        delta, query = self._find_delta(query)
+        player = ' '.join(query)
+        await self.bot.say("```%s```" % mymlbstats.get_milb_line(player, delta=delta))
 
     @milb.command()
     async def log(self, *query:str):

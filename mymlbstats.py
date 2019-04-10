@@ -1318,6 +1318,57 @@ def get_milb_season_stats(name, type="hitting",year=None):
     output = output + "\n" + _print_table(stats,leagues,repl_map={'d':'2B','t':'3B','sport':'lev'})
     return output
 
+def get_milb_line(name, delta=None):
+    player = milb_player_search(name)
+    if player is None:
+        return "No player found"
+    name = player['name_first_last']
+    teamabv = player['team_name_abbrev']
+    teamid = player['team_id']
+    orgid = player['parent_team_id']
+    level = player['level']
+    parent = player['parent_team']
+    id = int(player['player_id'])
+    try:
+        pos = int(player['primary_position'])
+        if pos == 1:
+            part = "pitching"
+        else:
+            part = "batting"
+    except:
+        print("%s is an OF" % name)
+        part = "batting"
+
+    now = _get_date_from_delta(delta)
+    year = str(now.year)
+    month = str(now.month)
+    day = str(now.day)
+    url = "http://lookup-service-prod.bamgrid.com/lookup/json/named.schedule_vw_complete_affiliate.bam?" \
+          "game_date=%27" + year + "/" + month + "/" + day + "%27&season=" + year + "&org_id=" + str(orgid)
+    print(url)
+    req = Request(url, headers={'User-Agent' : "ubuntu"})
+    s = json.loads(urlopen(req).read().decode("utf-8"))['schedule_vw_complete_affiliate']['queryResults']
+    if s['totalSize'] == '1':
+        affs = [s['row']]
+    else:
+        affs = s['row']
+    gamepks = []
+    for aff in affs:
+        if aff['home_team_id'] == teamid or aff['away_team_id'] == teamid:
+            if aff['home_team_id'] == teamid:
+                side = 'home'
+            else:
+                side = 'away'
+            gamepks.append((aff['game_pk'], side))
+    if len(gamepks) == 0:
+        return "No games found for team"
+    output = ""
+    for gamepk, side in gamepks:
+        bs = BoxScore.BoxScore(get_boxscore(gamepk))
+        output = output + bs.print_box(side=side, part=part, playerid=id) + "\n\n"
+    return output
+
+
 def get_milb_log(name,number=5):
     player = milb_player_search(name)
     if player is None:
@@ -2009,9 +2060,10 @@ if __name__ == "__main__":
     # print(print_roster('wsh',hitters=False))
     # print(get_milb_aff_scores())
     # print(get_milb_box('syr'))
+    print(get_milb_line("kershaw", delta="-1"))
     # print(print_broadcasts("wsh"))
     # print(get_player_season_stats("max scherzer"))
     # print(list_home_runs('tex', delta="-1"))
     # print(print_dongs("recent", delta="-1"))
     # print(batter_or_pitcher_vs("strasburg","nym"))
-    print(print_at_bats("Chris Davis", delta="-1"))
+    # print(print_at_bats("Chris Davis", delta="-1"))
