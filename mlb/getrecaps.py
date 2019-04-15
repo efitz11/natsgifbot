@@ -34,6 +34,29 @@ def search_mlbn():
             output = output + "[%s](%s) - %s\n\n" % (t['blurb'], t['url'], t['duration'][3:])
     return output
 
+def find_defense():
+    yest = datetime.now() - timedelta(days=1)
+    yest_ymd = str(yest.year) + "/" + str(yest.month).zfill(2) + "/" + str(yest.day).zfill(2)
+    url = "https://www.mlb.com/data-service/en/search?tags.slug=defense&page=1"
+    print(url)
+    req = Request(url, headers={'User-Agent' : "ubuntu"})
+    s = json.loads(urlopen(req).read().decode("utf-8"))['docs']
+    output = ""
+    for vid in s:
+        match = False
+        for k in vid['keywordsDisplay']:
+            if yest_ymd in k['displayName']:
+                match = True
+                break
+        if match:
+            info = get_vid_info(vid['id'])
+            output = output + "[%s](%s) - %s\n\n" % (vid['blurb'], info['url'], vid['duration'][3:])
+    if len(output) > 0:
+        output = "Some defensive highlights:\n\n" + output
+        return output
+    else:
+        return None
+
 def get_recaps():
     now = datetime.now() - timedelta(days=1)
     date = str(now.year) + "-" + str(now.month).zfill(2) + "-" + str(now.day).zfill(2)
