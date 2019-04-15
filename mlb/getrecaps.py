@@ -73,24 +73,25 @@ def get_recaps():
             if any(x in item['title'] for x in highlights):
                 title = item['title']
                 link = None
-                for pb in item['playbacks']:
-                    if pb['name'] == "mp4Avc":
-                        link = pb['url']
-                if link is None:
-                    continue
-                duration = item['duration'][3:]
-                if 'Recap' in title:
-                    recapstr = "[%s](%s) - %s\n" % (title, link, duration)
-                    vids["recap"] = "[recap](%s) - %s" % (link, duration)
-                elif 'CG:' in title:
-                    cgstr = "[Condensed game](%s) - %s\n" % (link, duration)
-                    vids["cg"] = "[condensed](%s) - %s" % (link, duration)
-                elif 'Must C:' in title:
-                    s = "[%s](%s) - %s\n" % (item['blurb'], link, duration)
-                    mustcout = mustcout + s + "\n"
-                elif 'Statcast' in title:
-                    s = "[%s](%s) - %s\n" % (title, link, duration)
-                    statout = statout + s + "\n"
+                if 'playbacks' in item:
+                    for pb in item['playbacks']:
+                        if pb['name'] == "mp4Avc":
+                            link = pb['url']
+                    if link is None:
+                        continue
+                    duration = item['duration'][3:]
+                    if 'Recap' in title:
+                        recapstr = "[%s](%s) - %s\n" % (title, link, duration)
+                        vids["recap"] = "[recap](%s) - %s" % (link, duration)
+                    elif 'CG:' in title:
+                        cgstr = "[Condensed game](%s) - %s\n" % (link, duration)
+                        vids["cg"] = "[condensed](%s) - %s" % (link, duration)
+                    elif 'Must C:' in title:
+                        s = "[%s](%s) - %s\n" % (item['blurb'], link, duration)
+                        mustcout = mustcout + s + "\n"
+                    elif 'Statcast' in title:
+                        s = "[%s](%s) - %s\n" % (title, link, duration)
+                        statout = statout + s + "\n"
 
         if recapstr == "":
             vids["recap"] = "no recap"
