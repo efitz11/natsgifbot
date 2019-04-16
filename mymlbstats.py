@@ -1985,10 +1985,51 @@ def print_at_bats(name, delta=None):
                 half = play['about']['halfInning']
                 if half == "bottom":
                     half = "bot"
-                output = output + "%s %d: %s\n" % (half, play['about']['inning'], play['result']['description'])
-
+                output = output + "%s %d: %s " % (half, play['about']['inning'], play['result']['description'])
+                output = output + _get_single_line_statcast(play['playEvents'][-1]) + "\n\n"
     return output
 
+def _get_single_line_statcast(play):
+    curplayevent = play
+    if 'type' in curplayevent['details']:
+        pitch = curplayevent['details']['type']['description']
+        pspeed = curplayevent['pitchData']['startSpeed']
+        data = "(%.1f mph %s" % (pspeed, pitch)
+    else:
+        data = "("
+    if 'hitData' in curplayevent:
+        hitdata = curplayevent['hitData']
+        hasany = False
+        try:
+            if 'totalDistance' in hitdata:
+                dist = str(int(hitdata['totalDistance']))
+                hasany = True
+            else:
+                dist = "n/a"
+        except:
+            dist = str(hitdata['totalDistance'])
+        try:
+            if 'launchSpeed' in hitdata:
+                speed = "%.1f mph" % hitdata['launchSpeed']
+                hasany = True
+            else:
+                speed = "n/a"
+        except:
+            speed = str(hitdata['launchSpeed'])
+        try:
+            if 'launchAngle' in hitdata:
+                angle = "%d" % hitdata['launchAngle']
+                hasany = True
+            else:
+                angle = "n/a"
+        except:
+            angle = str(hitdata['launchAngle'])
+        if hasany:
+            data = data + " | %s ft, %s mph, %s degrees" % (dist, speed, angle)
+    data = data + ")"
+    if data == "()":
+        data = ""
+    return data
 
 def _print_table(labels, dicts, repl_map={}, useDefaultMap=True):
     if useDefaultMap:
@@ -2072,7 +2113,7 @@ if __name__ == "__main__":
     # print(get_inning_plays("col", 7))
     # print(compare_player_stats(["ohtani", "harper"]))
     # print(print_roster('wsh',hitters=False))
-    print(get_milb_aff_scores(delta="-1"))
+    # print(get_milb_aff_scores(delta="-1"))
     # print(get_milb_box('syr'))
     # print(get_milb_line("kershaw", delta="-1"))
     # print(print_broadcasts("wsh"))
@@ -2080,4 +2121,4 @@ if __name__ == "__main__":
     # print(list_home_runs('tex', delta="-1"))
     # print(print_dongs("recent", delta="-1"))
     # print(batter_or_pitcher_vs("strasburg","nym"))
-    # print(print_at_bats("Chris Davis", delta="-1"))
+    print(print_at_bats("Chris Davis", delta="-1"))
