@@ -1,4 +1,5 @@
 from urllib.request import urlopen, Request
+import urllib
 from datetime import datetime, timedelta
 import time
 import json, os
@@ -1034,6 +1035,33 @@ def batter_or_pitcher_vs(name, team, year=None, reddit=False):
         return pitcher_vs_team(name,team, player=player, reddit=reddit)
     else:
         return player_vs_team(name,team, year=year, reddit=reddit)
+
+def player_vs_pitcher(player1, player2, reddit=False):
+    p1 = _get_player_search(player1)
+    p2 = _get_player_search(player2)
+    url = "https://statsapi.mlb.com/api/v1/people/" + p1['player_id'] + "/stats?stats=vsPlayer&" \
+          "opposingPlayerId=" + p2['player_id'] + "&language=en&hydrate=person"
+    try:
+        res = utils.get_json(url)['stats']
+    except urllib.error.HTTPError:
+        return "format:\n!mlb bvp <batter> <pitcher>"
+    output = "%s vs %s:\n\n" % (p1['name_display_first_last'], p2['name_display_first_last'])
+    seasons = []
+    for s in res:
+        if s['type']['displayName'] == "vsPlayer":
+            for t in s['splits']:
+                season = t['stat']
+                season['season'] = t['season']
+                seasons.append(season)
+        elif s['type']['displayName'] == "vsPlayerTotal":
+            season = s['splits'][0]['stat']
+            season['season'] = "Total"
+            seasons.append(season)
+    labs = ['season','plateAppearances','hits','doubles','triples','homeRuns','baseOnBalls','strikeOuts','stolenBases','avg','ops']
+    repl = {'side':'b','plateAppearances':'pa','hits':'h','doubles':'2B','triples':'3b','homeRuns':'hr','baseOnBalls':'bb','strikeOuts':'so', 'stolenBases':'sb'}
+    leftlist = ['name','side']
+    output = output + utils.format_table(labs, seasons, repl_map=repl, left_list=leftlist, reddit=reddit)
+    return output
 
 def pitcher_vs_team(name, team, player=None, reddit=False):
     teamid, teamdata = get_teamid(team, extradata=True)
@@ -2130,7 +2158,9 @@ if __name__ == "__main__":
     # print(search_highlights("Murphy"))
     # print(get_player_season_splits("Bryce Harper","months"))
     # print(player_vs_team("chris archer","wsh"))
-    print(pitcher_vs_team("corbin", "sf"))
+    # print(pitcher_vs_team("corbin", "sf"))
+    # print(player_vs_pitcher("kendrick", "samardzija"))
+    print(player_vs_pitcher("samardzija", "kendrick"))
     # print(get_game_highlights_plays("530753"))
     # print(get_inning_plays("col", 7))
     # print(compare_player_stats(["ohtani", "harper"]))
