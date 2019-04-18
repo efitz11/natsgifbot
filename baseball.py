@@ -228,6 +228,10 @@ class Baseball():
             # await self.bot.say("```%s```" % mymlbstats.player_vs_team(player,opp))
             await self.bot.say("```%s```" % mymlbstats.batter_or_pitcher_vs(player,opp,year=year,reddit=reddit))
             return
+        elif team[0] == 'bvp':
+            p1 = team[1]
+            p2 = team[2]
+            await self.bot.say("```%s```" % mymlbstats.player_vs_pitcher(p1, p2, reddit=reddit))
         elif team[0].lower() == "dl":
             team = ' '.join(team[1:])
             await self.bot.say("```%s```" % mymlbstats.get_team_dl(team))
