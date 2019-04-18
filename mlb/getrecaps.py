@@ -27,6 +27,9 @@ def search_mlbn():
     url = "https://www.mlb.com/data-service/en/search?tags.slug=mlb-network&page=1"
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     s = json.loads(urlopen(req).read().decode("utf-8"))['docs']
+    url = "https://www.mlb.com/data-service/en/search?tags.slug=mlb-network&page=2"
+    req = Request(url, headers={'User-Agent' : "ubuntu"})
+    s = s + json.loads(urlopen(req).read().decode("utf-8"))['docs']
     output = ""
     for v in s:
         if yest_md in v['blurb'] or yest_monthday in v['blurb'] or date in v['id']:
