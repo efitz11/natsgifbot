@@ -1043,39 +1043,57 @@ def pitcher_vs_team(name, team, player=None, reddit=False):
         return "No matching player found"
     now = datetime.now()
     year = str(now.year)
-    url = "https://lookup-service-prod.mlb.com/json/named.team_bvp_5y.bam?" \
-          "vs_pitcher_id=" + player['player_id'] + "&game_type=%27R%27" \
-                                                   "&team_id=" + str(teamid) + "&year=" + year
-    print(url)
-    res = _get_json(url,encoding="ISO-8859-1")["team_bvp_5y"]["queryResults"]
+    url = "https://statsapi.mlb.com/api/v1/people/" + player['player_id'] + "/stats?stats=vsTeam5Y&group=pitching" \
+          "&opposingTeamId=" + str(teamid) + "&language=en&hydrate=person"
+    res = utils.get_json(url)['stats'][0]['splits']
     batters = []
-    empties = []
-    if int(res['totalSize']) == 0:
-        return "No stats available in the last 5 years."
-    elif int(res['totalSize']) == 1:
-        batters.append(res['row'])
-    else:
-        for row in res['row']:
-            if row['b_ab'] == '':
-                empties.append(row)
-            else:
-                batters.append(row)
+    for s in res:
+        stats = s['stat']
+        stats['name'] = s['batter']['fullName']
+        stats['side'] = s['batter']['batSide']['code']
+        batters.append(stats)
+
+    batters = sorted(batters, key=lambda k: k['plateAppearances'] if 'plateAppearances' in k else 0, reverse=True)
+    labs = ['name','side','plateAppearances','hits','doubles','triples','homeRuns','baseOnBalls','strikeOuts','avg','ops']
+    repl = {'side':'b','plateAppearances':'pa','hits':'h','doubles':'2B','triples':'3b','homeRuns':'hr','baseOnBalls':'bb','strikeOuts':'so'}
+    leftlist = ['name','side']
     output = "%s's stats vs %s batters, last 5 years:\n\n" % (player['name_display_first_last'], teamdata['teamName'])
-    stats = ['name','b_ab','b_total_hits','b_double','b_triple','b_home_run','b_walk','b_strikeout',
-             'b_batting_avg','b_on_base_avg','b_slugging_avg','b_on_base_slg_avg']
-    left = ['name']
-    repl_map = {'b_ab':'ab','b_total_hits':'h','b_double':'2b','b_triple':'3b','b_home_run':'hr','b_walk':'bb','b_strikeout':'so',
-             'b_batting_avg':'avg','b_on_base_avg':'obp','b_slugging_avg':'slg','b_on_base_slg_avg':'ops'}
-    # output = output + _print_table(stats,batters,repl_map=repl_map) + "\n\n"
-    batters = sorted(batters, key=lambda x: int(x['b_ab']), reverse=True)
-    output = output + utils.format_table(stats, batters, repl_map=repl_map, reddit=reddit, left_list=left) + "\n\n"
-    if len(empties) > 0:
-        emplist = "No stats for "
-        for e in empties:
-            emplist = emplist + e['name'] + "; "
-        output = output + emplist[:-2]
+    output = output + utils.format_table(labs, batters, repl_map=repl, left_list=leftlist, reddit=reddit)
 
     return output
+    # url = "https://lookup-service-prod.mlb.com/json/named.team_bvp_5y.bam?" \
+    #       "vs_pitcher_id=" + player['player_id'] + "&game_type=%27R%27" \
+    #                                                "&team_id=" + str(teamid) + "&year=" + year
+    # print(url)
+    # res = _get_json(url,encoding="ISO-8859-1")["team_bvp_5y"]["queryResults"]
+    # batters = []
+    # empties = []
+    # if int(res['totalSize']) == 0:
+    #     return "No stats available in the last 5 years."
+    # elif int(res['totalSize']) == 1:
+    #     batters.append(res['row'])
+    # else:
+    #     for row in res['row']:
+    #         if row['b_ab'] == '':
+    #             empties.append(row)
+    #         else:
+    #             batters.append(row)
+    # output = "%s's stats vs %s batters, last 5 years:\n\n" % (player['name_display_first_last'], teamdata['teamName'])
+    # stats = ['name','b_ab','b_total_hits','b_double','b_triple','b_home_run','b_walk','b_strikeout',
+    #          'b_batting_avg','b_on_base_avg','b_slugging_avg','b_on_base_slg_avg']
+    # left = ['name']
+    # repl_map = {'b_ab':'ab','b_total_hits':'h','b_double':'2b','b_triple':'3b','b_home_run':'hr','b_walk':'bb','b_strikeout':'so',
+    #          'b_batting_avg':'avg','b_on_base_avg':'obp','b_slugging_avg':'slg','b_on_base_slg_avg':'ops'}
+    # # output = output + _print_table(stats,batters,repl_map=repl_map) + "\n\n"
+    # batters = sorted(batters, key=lambda x: int(x['b_ab']), reverse=True)
+    # output = output + utils.format_table(stats, batters, repl_map=repl_map, reddit=reddit, left_list=left) + "\n\n"
+    # if len(empties) > 0:
+    #     emplist = "No stats for "
+    #     for e in empties:
+    #         emplist = emplist + e['name'] + "; "
+    #     output = output + emplist[:-2]
+    #
+    # return output
 
 def player_vs_team(name, team, year=None, reddit=False):
     teamid = get_teamid(team)
@@ -2112,6 +2130,7 @@ if __name__ == "__main__":
     # print(search_highlights("Murphy"))
     # print(get_player_season_splits("Bryce Harper","months"))
     # print(player_vs_team("chris archer","wsh"))
+    print(pitcher_vs_team("corbin", "sf"))
     # print(get_game_highlights_plays("530753"))
     # print(get_inning_plays("col", 7))
     # print(compare_player_stats(["ohtani", "harper"]))
@@ -2124,4 +2143,4 @@ if __name__ == "__main__":
     # print(list_home_runs('tex', delta="-1"))
     # print(print_dongs("recent", delta="-1"))
     # print(batter_or_pitcher_vs("strasburg","nym"))
-    print(print_at_bats("Chris Davis", delta="-1"))
+    # print(print_at_bats("Chris Davis", delta="-1"))
