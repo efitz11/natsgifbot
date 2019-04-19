@@ -1746,21 +1746,31 @@ def search_highlights(query):
     url = recap.get_direct_video_url(first['url'])
     return "(%s) %s - %s:\n%s" % (date, blurb, length, url)
 
-def get_game_highlights_plays(gamepk):
+def get_game_highlights_plays(gamepk, new=False):
     url = "https://statsapi.mlb.com/api/v1/game/" + str(gamepk) + "/content"
     print(url)
-    items = _get_json(url)['highlights']['live']['items']
+    if new:
+        items = _get_json(url)['highlights']['highlights']['items']
+    else:
+        items = _get_json(url)['highlights']['live']['items']
     plays = dict()
     for item in items:
-        for keyword in item['keywordsAll']:
-            if keyword['type'] == "sv_id":
-                svid = keyword['value']
-                plays[svid] = item
+        if new:
+            if 'guid' in item:
+                for pb in item['playbacks']:
+                    if pb['name'] == 'mp4Avc':
+                        plays[item['guid']] = item
+        else:
+            for keyword in item['keywordsAll']:
+                if keyword['type'] == "sv_id":
+                    svid = keyword['value']
+                    plays[svid] = item
     return plays
 
 def get_inning_plays(team, inning, delta=None):
     teamid = get_teamid(team)
     s = get_day_schedule(teamid=teamid, delta=delta)
+    date = _get_date_from_delta(delta)
     try:
         game = s['dates'][0]['games'][0]
     except IndexError:
@@ -1770,7 +1780,10 @@ def get_inning_plays(team, inning, delta=None):
         side = 'top'
     else:
         side = 'bottom'
-    highlights = get_game_highlights_plays(gamepk)
+    if date.year >= 2019:
+        highlights = get_game_highlights_plays(gamepk, new=True)
+    else:
+        highlights = get_game_highlights_plays(gamepk)
     url = "https://statsapi.mlb.com/api/v1/game/" + str(gamepk) + "/playByPlay"
     print(url)
     plays = _get_json(url)
@@ -1844,14 +1857,22 @@ def get_inning_plays(team, inning, delta=None):
         data = data# + "\n"
         output = "%s%s %s %s\n" % (output, count, desc, data)
         # output = output + "\n\n" + desc
+        print(highlights)
         for event in play['playEvents']:
             if 'playId' in event:
                 if event['playId'] in highlights:
                     blurb = highlights[event['playId']]['blurb']
-                    for playback in highlights[event['playId']]['playbacks']:
-                        if playback['name'] == "FLASH_2500K_1280X720":
-                            url = playback['url']
-                            output = output + " -- %s: <" % blurb + url + ">\n"
+                    if date.year >= 2019:
+                        for playback in highlights[event['playId']]['playbacks']:
+                            if playback['name'] == 'mp4Avc':
+                                url = playback['url']
+                                break
+                        output = output + " -- %s: <" % blurb + url + ">\n"
+                    else:
+                        for playback in highlights[event['playId']]['playbacks']:
+                                if playback['name'] == "FLASH_2500K_1280X720":
+                                    url = playback['url']
+                                    output = output + " -- %s: <" % blurb + url + ">\n"
         output = output + "\n"
     return output
 
