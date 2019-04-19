@@ -1147,7 +1147,7 @@ def player_vs_team(name, team, year=None, reddit=False):
     pitchers = []
     if int(json['totalSize']) == 1:
         pitchers.append(json['row'])
-    elif int(json['totalSize']) == 1:
+    elif int(json['totalSize']) == 0:
         return "No stats for %s." % (player['name_display_first_last'])
     else:
         for row in json['row']:
