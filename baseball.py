@@ -44,6 +44,18 @@ class Baseball():
             direction = '+'
         return direction + str(delta.days)
 
+    def split_long_message(self, message):
+        separate = []
+        while len(message) > 0:
+            cut = message[:2000]
+            idx = cut.rfind('\n')
+            cut = message[:idx]
+            separate.append(cut)
+            message = message[idx+1:]
+            print(len(message))
+
+        return separate
+
     @commands.command()
     async def newmlb(self, *query:str):
         """New version of mlb command, with proper subcommands (in progress)"""
@@ -316,6 +328,13 @@ class Baseball():
             query = ' '.join(team[1:])
             await self.bot.say(mymlbstats.search_highlights(query))
             return
+        elif team[0] == "videos":
+            team = ' '.join(team[1:]).lower()
+            print(team)
+            # await self.bot.say(mymlbstats.find_game_highlights(team, delta=delta))
+            msg = self.split_long_message(mymlbstats.find_game_highlights(team, delta=delta))
+            for m in msg:
+                await self.bot.say(m)
         elif team[0] == "plays":
             inning = int(team[-1])
             team = ' '.join(team[1:-1]).lower()

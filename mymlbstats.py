@@ -1746,6 +1746,35 @@ def search_highlights(query):
     url = recap.get_direct_video_url(first['url'])
     return "(%s) %s - %s:\n%s" % (date, blurb, length, url)
 
+def find_game_highlights(team, delta=None):
+    teamid = get_teamid(team)
+    s = get_day_schedule(delta=delta, teamid=teamid)
+    output = ""
+    for d in s['dates']:
+        for g in d['games']:
+            print(g['gamePk'])
+            output = output + get_all_game_highlights(g['gamePk'])
+    return output
+
+def get_all_game_highlights(gamepk):
+    url = "https://statsapi.mlb.com/api/v1/game/" + str(gamepk) + "/content"
+    print(url)
+    data = _get_json(url)['highlights']
+    if 'highlights' in data:
+        items = data['highlights']['items']
+    else:
+        items = data['live']['items']
+
+    output = ""
+    for item in items:
+        url = ""
+        for pb in item['playbacks']:
+            if pb['name'] == 'mp4Avc':
+                url = pb['url']
+                break
+        output = output + "%s - <%s>\n" % (item['headline'],url)
+    return output
+
 def get_game_highlights_plays(gamepk, new=False):
     url = "https://statsapi.mlb.com/api/v1/game/" + str(gamepk) + "/content"
     print(url)
@@ -2181,7 +2210,7 @@ if __name__ == "__main__":
     # print(player_vs_team("chris archer","wsh"))
     # print(pitcher_vs_team("corbin", "sf"))
     # print(player_vs_pitcher("kendrick", "samardzija"))
-    print(player_vs_pitcher("samardzija", "kendrick"))
+    # print(player_vs_pitcher("samardzija", "kendrick"))
     # print(get_game_highlights_plays("530753"))
     # print(get_inning_plays("col", 7))
     # print(compare_player_stats(["ohtani", "harper"]))
@@ -2195,3 +2224,5 @@ if __name__ == "__main__":
     # print(print_dongs("recent", delta="-1"))
     # print(batter_or_pitcher_vs("strasburg","nym"))
     # print(print_at_bats("Chris Davis", delta="-1"))
+    # print(get_all_game_highlights("565905"))
+    print(find_game_highlights('wsh', delta="-1"))
