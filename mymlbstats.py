@@ -1768,12 +1768,26 @@ def get_all_game_highlights(gamepk):
     output = ""
     if len(items) == 0:
         return "No highlights found."
+    map = {'FLASH_450K_400X224':0, 'FLASH_1200K_640X360':1,
+           'FLASH_1800K_960X540':2, 'FLASH_2500K_1280X720':3}
     for item in items:
         url = ""
+        flash = -1
         for pb in item['playbacks']:
             if pb['name'] == 'mp4Avc':
                 url = pb['url']
                 break
+            elif 'FLASH' in pb['name']:
+                if '2500K' in pb['name']:
+                    url = pb['url']
+                    break
+                if flash == -1:
+                    flash = map[pb['name']]
+                    url = pb['url']
+                else:
+                    if map[pb['name']] > flash:
+                        flash = map[pb['name']]
+                        url = pb['url']
         output = output + "%s - <%s>\n" % (item['headline'],url)
     return output
 
