@@ -6,6 +6,7 @@ from datetime import datetime, timedelta, time, date
 
 import mymlbstats
 from bs4 import BeautifulSoup
+import utils
 
 class Baseball():
     def __init__(self,bot):
@@ -44,20 +45,6 @@ class Baseball():
             direction = '+'
         return direction + str(delta.days)
 
-    def split_long_message(self, message):
-        MAX_LEN = 2000
-        if len(message) < MAX_LEN:
-            return [message]
-
-        separate = []
-        while len(message) > 0:
-            cut = message[:MAX_LEN]
-            idx = cut.rfind('\n')
-            cut = message[:idx]
-            separate.append(cut)
-            message = message[idx+1:]
-
-        return separate
 
     @commands.command()
     async def newmlb(self, *query:str):
@@ -335,7 +322,7 @@ class Baseball():
             team = ' '.join(team[1:]).lower()
             print(team)
             # await self.bot.say(mymlbstats.find_game_highlights(team, delta=delta))
-            msg = self.split_long_message(mymlbstats.find_game_highlights(team, delta=delta))
+            msg = utils.split_long_message(mymlbstats.find_game_highlights(team, delta=delta))
             for m in msg:
                 await self.bot.say(m)
         elif team[0] == "plays":

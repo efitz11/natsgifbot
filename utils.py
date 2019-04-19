@@ -21,6 +21,21 @@ def get_keys(name):
         if k['name'] == name:
             return k
 
+def split_long_message(message):
+    MAX_LEN = 2000
+    if len(message) < MAX_LEN:
+        return [message]
+
+    separate = []
+    while len(message) > 0:
+        cut = message[:MAX_LEN]
+        idx = cut.rfind('\n')
+        cut = message[:idx]
+        separate.append(cut)
+        message = message[idx+1:]
+
+    return separate
+
 def format_reddit_table(labels, dicts, repl_map={}, left_list=[]):
     """
     Generates a reddit formatted table from a list of keys and a list of dicts for the data

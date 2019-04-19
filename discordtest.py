@@ -8,6 +8,7 @@ import re, json, os
 import asyncio
 from urllib.request import urlopen, Request
 import urllib.parse
+import utils
 
 import mymlbgame, cfbgame, nflgame, xmlreader, nhlscores, cbbgame, stocks, olympics, gifs, gfycat
 import weather as weathermodule
@@ -104,9 +105,9 @@ async def gfy(*name : str):
 
 @bot.command(pass_context=True)
 async def gfyall(ctx, *name : str):
-    """returns up to 20 gifs from efitz111 on gfycat"""
+    """returns up to 30 gifs from efitz111 on gfycat"""
     if 'bot' in str(ctx.message.channel):
-        await bot.say(gfycat.search_gfys(' '.join(name), num=20))
+        await bot.say(gfycat.search_gfys(' '.join(name), num=30))
     else:
         await bot.say("this command is only allowed in the bot channel")
 
@@ -147,11 +148,13 @@ async def gifall(ctx, *name:str):
             m=m.strip()
             cpos = m.rfind(',') + 1
             output = output + m[:cpos] + "<" + m[cpos:] + ">\n"
-            if len(output) > 1850:
-                output = output + "... more gifs not displayed due to char limit"
-                break
-        print(output)
-        await bot.say(output.strip())
+
+            # if len(output) > 1850:
+            #     output = output + "... more gifs not displayed due to char limit"
+            #     break
+        for m in utils.split_long_message(output):
+            await bot.say(m)
+        # await bot.say(output.strip())
         
     return
 
