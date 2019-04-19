@@ -45,14 +45,17 @@ class Baseball():
         return direction + str(delta.days)
 
     def split_long_message(self, message):
+        MAX_LEN = 2000
+        if len(message) < MAX_LEN:
+            return [message]
+
         separate = []
         while len(message) > 0:
-            cut = message[:2000]
+            cut = message[:MAX_LEN]
             idx = cut.rfind('\n')
             cut = message[:idx]
             separate.append(cut)
             message = message[idx+1:]
-            print(len(message))
 
         return separate
 

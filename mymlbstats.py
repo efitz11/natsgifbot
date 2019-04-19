@@ -1766,6 +1766,8 @@ def get_all_game_highlights(gamepk):
         items = data['live']['items']
 
     output = ""
+    if len(items) == 0:
+        return "No highlights found."
     for item in items:
         url = ""
         for pb in item['playbacks']:
