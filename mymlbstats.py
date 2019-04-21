@@ -2040,6 +2040,8 @@ def print_dongs(type, delta=None, reddit=False):
                     search = "homers"
                     if 'grand slam' in number:
                         search = "grand slam"
+                    elif 'home run' in number:
+                        search = "home run"
                     h['num'] = int(re.search('\(([^)]+)', number[number.index(search):]).group(1))
                     h['dist'] = 0
                     h['ev'] = 0
