@@ -63,7 +63,7 @@ def find_defense():
 def get_recaps():
     now = datetime.now() - timedelta(days=1)
     date = str(now.year) + "-" + str(now.month).zfill(2) + "-" + str(now.day).zfill(2)
-    url = "https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=" + date + "&hydrate=team"
+    url = "https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=" + date + "&hydrate=team,linescore"
     print(url)
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     s = json.loads(urlopen(req).read().decode("utf-8"))
@@ -76,13 +76,16 @@ def get_recaps():
         content = "https://statsapi.mlb.com" + game['content']['link']
         req = Request(content, headers={'User-Agent' : "ubuntu"})
         c = json.loads(urlopen(req).read().decode("utf-8"))
-        if game['status']['detailedState'] == "Final":
-            deftitle = "[](/%s)%s %d, [](/%s)%s %d" % (game['teams']['away']['team']['abbreviation'],
+        if game['status']['codedGameState'] == "F":
+            final = ""
+            if game['linescore']['currentInning'] != 9:
+                final = ", F/%d" % game['linescore']['currentInning']
+            deftitle = "[](/%s)%s %d, [](/%s)%s %d%s" % (game['teams']['away']['team']['abbreviation'],
                                                        game['teams']['away']['team']['abbreviation'],
                                                 game['teams']['away']['score'],
                                                 game['teams']['home']['team']['abbreviation'],
                                                 game['teams']['home']['team']['abbreviation'],
-                                                game['teams']['home']['score'])
+                                                game['teams']['home']['score'], final)
         else:
             output = output +  "%s, %s - %s\n\n" % (game['teams']['away']['team']['abbreviation'],
                                         game['teams']['home']['team']['abbreviation'],
