@@ -62,7 +62,7 @@ def find_defense():
 
             # output = output + "[%s](%s) - %s\n\n" % (vid['blurb'], info['url'], vid['duration'][3:])
     if len(vids) > 0:
-        output = "A selection of defensive highlights:\n\n"
+        output = "A random selection of defensive highlights:\n\n"
         shuffle(vids)
         vids = vids[:10]
         for v in vids:
@@ -615,7 +615,7 @@ def get_all_outputs(defense=False):
         x = find_defense()
         if x is not None:
             output = output + "\n****\n"
-            output = output + find_defense()
+            output = output + x
     return output
 
 if __name__ == "__main__":
