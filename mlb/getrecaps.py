@@ -568,9 +568,9 @@ def post_self_submission(selftext, cron=False):
     yest = datetime.now() - timedelta(days=1)
     title = "%d/%d Highlight Roundup: FastCast, top plays, recaps/condensed games and longest dongs of the day" % (yest.month, yest.day)
     defense_vids = find_defense()
-    if defense_vids is not None:
-        selftext = selftext + "\n****\n" + defense_vids
     post = reddit.subreddit('baseball').submit(title, selftext=selftext)
+    if defense_vids is not None:
+        post.reply(defense_vids)
 
     # check every 30 minutes for new videos
     if cron:
@@ -578,8 +578,6 @@ def post_self_submission(selftext, cron=False):
         while numchecks <= 8:
             time.sleep(30*60)
             newout = get_all_outputs()
-            if defense_vids is not None:
-                newout = newout + "\n****\n" + defense_vids
             if newout != selftext:
                 post.edit(newout)
                 selftext = newout
