@@ -567,6 +567,9 @@ def post_self_submission(selftext, cron=False):
                          username=f['user'],password=f['password'])
     yest = datetime.now() - timedelta(days=1)
     title = "%d/%d Highlight Roundup: FastCast, top plays, recaps/condensed games and longest dongs of the day" % (yest.month, yest.day)
+    defense_vids = find_defense()
+    if defense_vids is not None:
+        selftext = selftext + "\n****\n" + defense_vids
     post = reddit.subreddit('baseball').submit(title, selftext=selftext)
 
     # check every 30 minutes for new videos
@@ -575,6 +578,8 @@ def post_self_submission(selftext, cron=False):
         while numchecks <= 8:
             time.sleep(30*60)
             newout = get_all_outputs()
+            if defense_vids is not None:
+                newout = newout + "\n****\n" + defense_vids
             if newout != selftext:
                 post.edit(newout)
                 selftext = newout
@@ -590,7 +595,7 @@ def pm_user(subject, body, user="efitz11"):
                          username=f['user'],password=f['password'])
     reddit.redditor(user).message(subject, body)
 
-def get_all_outputs():
+def get_all_outputs(defense=False):
     output = find_fastcast(return_str=True)
     # output = output + find_quick_pitch(return_str=True)
     # output = output + find_youtube_homeruns(return_str=True)
@@ -606,10 +611,11 @@ def get_all_outputs():
     output = output + get_recaps()
     output = output + "\n****\n"
     output = output + "Longest dongs of the day:\n\n" + mymlbstats.print_dongs("long", delta="-1", reddit=True)
-    x = find_defense()
-    if x is not None:
-        output = output + "\n****\n"
-        output = output + find_defense()
+    if defense:
+        x = find_defense()
+        if x is not None:
+            output = output + "\n****\n"
+            output = output + find_defense()
     return output
 
 if __name__ == "__main__":
