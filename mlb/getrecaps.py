@@ -639,5 +639,5 @@ if __name__ == "__main__":
         pm_user('sound smart!', out[0], user='HeSawTheLight')
         pm_user('list of articles:', out[1], user='HeSawTheLight')
     else:
-        print(get_all_outputs())
+        print(get_all_outputs(defense=True))
         # get_sound_smarts()
