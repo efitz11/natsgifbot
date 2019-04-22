@@ -627,7 +627,7 @@ if __name__ == "__main__":
         if len(sys.argv) > 2 and sys.argv[2] == "cron":
             post_self_submission(get_all_outputs(), cron=True)
         else:
-            post_self_submission(get_all_outputs())
+            post_self_submission(get_all_outputs(defense=True))
 
         # if len(sys.argv) > 2 and sys.argv[2] == "cron":
         #     post_on_reddit(cron=True)
