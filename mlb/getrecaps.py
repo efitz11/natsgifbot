@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from xml.etree import ElementTree
 import time
 import sys, os
+from random import shuffle
 
 def search_video(query):
     query = query.replace(' ', "%2B")
@@ -40,12 +41,15 @@ def search_mlbn():
 def find_defense():
     yest = datetime.now() - timedelta(days=1)
     yest_ymd = str(yest.year) + "/" + str(yest.month).zfill(2) + "/" + str(yest.day).zfill(2)
-    url = "https://www.mlb.com/data-service/en/search?tags.slug=defense&page=1"
-    print(url)
-    req = Request(url, headers={'User-Agent' : "ubuntu"})
-    s = json.loads(urlopen(req).read().decode("utf-8"))['docs']
+    docs = []
+    for i in range(1,4):
+        url = "https://www.mlb.com/data-service/en/search?tags.slug=defense&page=" + str(i)
+        print(url)
+        req = Request(url, headers={'User-Agent' : "ubuntu"})
+        docs = docs + json.loads(urlopen(req).read().decode("utf-8"))['docs']
     output = ""
-    for vid in s:
+    vids = []
+    for vid in docs:
         match = False
         for k in vid['keywordsDisplay']:
             if yest_ymd in k['displayName']:
@@ -53,9 +57,16 @@ def find_defense():
                 break
         if match:
             info = get_vid_info(vid['id'])
-            output = output + "[%s](%s) - %s\n\n" % (vid['blurb'], info['url'], vid['duration'][3:])
-    if len(output) > 0:
-        output = "Some defensive highlights:\n\n" + output
+            v = (vid['blurb'], info['url'], vid['duration'][3:])
+            vids.append((v))
+
+            # output = output + "[%s](%s) - %s\n\n" % (vid['blurb'], info['url'], vid['duration'][3:])
+    if len(vids) > 0:
+        output = "A selection of defensive highlights:\n\n"
+        shuffle(vids)
+        vids = vids[:10]
+        for v in vids:
+            output = output + "[%s](%s) - %s\n\n" % (v[0],v[1],v[2])
         return output
     else:
         return None
@@ -595,6 +606,10 @@ def get_all_outputs():
     output = output + get_recaps()
     output = output + "\n****\n"
     output = output + "Longest dongs of the day:\n\n" + mymlbstats.print_dongs("long", delta="-1", reddit=True)
+    x = find_defense()
+    if x is not None:
+        output = output + "\n****\n"
+        output = output + find_defense()
     return output
 
 if __name__ == "__main__":
