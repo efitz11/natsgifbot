@@ -36,8 +36,10 @@ def get_quote(symbol):
     if change != "n/a" and change > 0:
         ch = "+" + ch
         chper = "+" + chper
-    output = "%s - %s:```python\n Last price: %s (%s, %s%%, %s%% YTD" % (symbol.upper(),quote['companyName'],quote['latestPrice'],ch,chper,chytd)+")"
-    output = output + " %s mkt cap" % cap
+    output = "%s - %s:```python\n Last price: %s (%s, %s%%, %s%% YTD" % \
+             (symbol.upper(),quote['companyName'],quote['latestPrice'],ch,chper,chytd)+")"
+    output = output + " %s mkt cap\n" % cap
+    output = output + " 52w high: %.02f\t52w low:%.02f" % (quote['week52High'], quote['week52Low'])
     output = output + "```"
     return output
 
@@ -64,6 +66,8 @@ def get_stocks():
         stock['%'] = chper
         stock['% YTD'] = chytd
         stock['description'] = quote['companyName']
+        stock['high52w'] = quote['week52High']
+        stock['low52w'] = quote['week52Low']
         stocks.append(stock)
         # output = output + "%s - %s (%s, %s%%, %s%% YTD) - %s\n" % (symbol.upper(),quote['latestPrice'],ch,chper,chytd,quote['companyName'])
 #    output = "%s - %s:```python\n Last price: %s (%s, %s%%, %s%% YTD" % (symbol.upper(),quote['companyName'],quote['latestPrice'],ch,chper,chytd)+")"
@@ -96,5 +100,5 @@ def get_indexes():
     return "```%s```" % utils.format_table(labels,rows, left_list=left)
 
 if __name__ == "__main__":
-    # print(get_quote("msft"))
-    print(get_indexes())
+    print(get_quote("msft"))
+    # print(get_indexes())
