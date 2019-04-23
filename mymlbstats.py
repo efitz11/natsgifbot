@@ -1987,7 +1987,7 @@ def print_broadcasts(team, delta=None):
 
 def print_dongs(type, delta=None, reddit=False):
     """
-    :param type: ['long', 'recent']
+    :param type: ['long', 'short', 'recent']
     :param delta:
     :param reddit:
     :return:
@@ -2079,6 +2079,8 @@ def print_dongs(type, delta=None, reddit=False):
     out = ""
     if type == "long":
         sorteddongs = sorted(dongs, key=lambda k: k['dist'], reverse=True)[:10]
+    elif type == "short":
+        sorteddongs = sorted(dongs, key=lambda k: k['dist'])[:10]
     elif type == "recent":
         sorteddongs = sorted(dongs, key=lambda k: k['time'], reverse=True)[:10]
         out = "Most recent home runs (most recent on top):\n\n"
