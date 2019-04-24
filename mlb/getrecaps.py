@@ -34,6 +34,8 @@ def search_mlbn():
     output = ""
     for v in s:
         if yest_md in v['blurb'] or yest_monthday in v['blurb'] or date in v['id']:
+            if 'seats-for-service' in v['id']:
+                continue
             t = get_vid_info(v['id'])
             output = output + "[%s](%s) - %s\n\n" % (t['blurb'], t['url'], t['duration'][3:])
     return output
