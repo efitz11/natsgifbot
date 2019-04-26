@@ -1,0 +1,64 @@
+[ {
+  "code" : "F",
+  "description" : "Close play at 1st"
+}, {
+  "code" : "A",
+  "description" : "Tag play"
+}, {
+  "code" : "U",
+  "description" : "Tag-up play"
+}, {
+  "code" : "M",
+  "description" : "Timing Play"
+}, {
+  "code" : "C",
+  "description" : "Force play"
+}, {
+  "code" : "P",
+  "description" : "Home-plate collision"
+}, {
+  "code" : "E",
+  "description" : "Slide interference"
+}, {
+  "code" : "H",
+  "description" : "Home run"
+}, {
+  "code" : "O",
+  "description" : "Fair/foul in outfield"
+}, {
+  "code" : "D",
+  "description" : "Catch/drop in outfield"
+}, {
+  "code" : "T",
+  "description" : "Trap play in outfield"
+}, {
+  "code" : "I",
+  "description" : "Hit by pitch"
+}, {
+  "code" : "B",
+  "description" : "Touching a base"
+}, {
+  "code" : "R",
+  "description" : "Passing runners"
+}, {
+  "code" : "N",
+  "description" : "Fan interference"
+}, {
+  "code" : "S",
+  "description" : "Stadium boundary call"
+}, {
+  "code" : "G",
+  "description" : "Grounds rule"
+}, {
+  "code" : "Q",
+  "description" : "Rules check"
+}, {
+  "code" : "K",
+  "description" : "Record keeping"
+}, {
+  "code" : "L",
+  "description" : "Multiple issues"
+}, {
+  "code" : "X",
+  "description" : "Other"
+} ]

@@ -1,0 +1,85 @@
+[ {
+  "code" : "B",
+  "description" : "Ball - Called"
+}, {
+  "code" : "I",
+  "description" : "Ball - Intentional"
+}, {
+  "code" : "P",
+  "description" : "Ball - Pitchout"
+}, {
+  "code" : "H",
+  "description" : "Ball - Hit by Pitch"
+}, {
+  "code" : "V",
+  "description" : "Ball - Automatic"
+}, {
+  "code" : "C",
+  "description" : "Strike - Called"
+}, {
+  "code" : "S",
+  "description" : "Strike - Swinging"
+}, {
+  "code" : "W",
+  "description" : "Strike - Swinging Blocked"
+}, {
+  "code" : "F",
+  "description" : "Strike - Foul"
+}, {
+  "code" : "T",
+  "description" : "Strike - Foul Tip"
+}, {
+  "code" : "L",
+  "description" : "Strike - Foul Bunt"
+}, {
+  "code" : "M",
+  "description" : "Strike - Missed Bunt"
+}, {
+  "code" : "O",
+  "description" : "Strike - Bunt Foul Tip"
+}, {
+  "code" : "R",
+  "description" : "Strike - Foul on Pitchout"
+}, {
+  "code" : "Q",
+  "description" : "Strike - Swinging on Pitchout"
+}, {
+  "code" : "X",
+  "description" : "Hit Into Play - Out(s)"
+}, {
+  "code" : "D",
+  "description" : "Hit Into Play - No Out(s)"
+}, {
+  "code" : "E",
+  "description" : "Hit Into Play - Run(s)"
+}, {
+  "code" : "Y",
+  "description" : "Pitchout Hit Into Play - Out(s)"
+}, {
+  "code" : "J",
+  "description" : "Pitchout Hit Into Play - No Out(s)"
+}, {
+  "code" : "Z",
+  "description" : "Pitchout Hit Into Play - Run(s)"
+}, {
+  "code" : "A",
+  "description" : "Strike - Automatic"
+}, {
+  "code" : "K",
+  "description" : "Strike - Unknown"
+}, {
+  "code" : "N",
+  "description" : "No Pitch"
+}, {
+  "code" : ".",
+  "description" : "Non Pitch"
+}, {
+  "code" : "1",
+  "description" : "Pickoff Throw 1st - Pitcher"
+}, {
+  "code" : "2",
+  "description" : "Pickoff Throw 2nd - Pitcher"
+}, {
+  "code" : "3",
+  "description" : "Pickoff Throw 3rd - Pitcher"
+} ]

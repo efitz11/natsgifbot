@@ -1,0 +1,252 @@
+[ {
+  "name" : "atBats",
+  "lookupParam" : "ab",
+  "isCounting" : true,
+  "statGroups" : [ {
+    "displayName" : "hitting"
+  } ],
+  "orgTypes" : [ "PLAYER", "TEAM" ]
+}, {
+  "name" : "totalPlateAppearances",
+  "lookupParam" : "tpa",
+  "isCounting" : true,
+  "statGroups" : [ {
+    "displayName" : "hitting"
+  } ],
+  "orgTypes" : [ "PLAYER", "TEAM" ]
+}, {
+  "name" : "runs",
+  "lookupParam" : "r",
+  "isCounting" : true,
+  "statGroups" : [ {
+    "displayName" : "hitting"
+  } ],
+  "orgTypes" : [ "PLAYER", "TEAM" ]
+}, {
+  "name" : "hits",
+  "lookupParam" : "h",
+  "isCounting" : true,
+  "statGroups" : [ {
+    "displayName" : "hitting"
+  } ],
+  "orgTypes" : [ "PLAYER", "TEAM" ]
+}, {
+  "name" : "totalBases",
+  "lookupParam" : "tb",
+  "isCounting" : true,
+  "label" : "TB",
+  "statGroups" : [ {
+    "displayName" : "hitting"
+  } ],
+  "orgTypes" : [ "PLAYER", "TEAM" ]
+}, {
+  "name" : "doubles",
+  "lookupParam" : "2b",
+  "isCounting" : true,
+  "label" : "2B",
+  "statGroups" : [ {
+    "displayName" : "hitting"
+  } ],
+  "orgTypes" : [ "PLAYER", "TEAM" ]
+}, {
+  "name" : "triples",
+  "lookupParam" : "3b",
+  "isCounting" : true,
+  "label" : "3B",
+  "statGroups" : [ {
+    "displayName" : "hitting"
+  } ],
+  "orgTypes" : [ "PLAYER", "TEAM" ]
+}, {
+  "name" : "homeRuns",
+  "lookupParam" : "hr",
+  "isCounting" : true,
+  "label" : "HR",
+  "statGroups" : [ {
+    "displayName" : "hitting"
+  }, {
+    "displayName" : "pitching"
+  } ],
+  "orgTypes" : [ "PLAYER", "TEAM" ]
+}, {
+  "name" : "extraBaseHits",
+  "lookupParam" : "xbh",
+  "isCounting" : true,
+  "statGroups" : [ {
+    "displayName" : "hitting"
+  } ],
+  "orgTypes" : [ "PLAYER", "TEAM" ]
+}, {
+  "name" : "walks",
+  "lookupParam" : "bb",
+  "isCounting" : true,
+  "statGroups" : [ {
+    "displayName" : "hitting"
+  } ],
+  "orgTypes" : [ "PLAYER", "TEAM" ]
+}, {
+  "name" : "strikeouts",
+  "lookupParam" : "so",
+  "isCounting" : true,
+  "statGroups" : [ {
+    "displayName" : "hitting"
+  }, {
+    "displayName" : "pitching"
+  } ],
+  "orgTypes" : [ "PLAYER", "TEAM" ]
+}, {
+  "name" : "stolenBases",
+  "lookupParam" : "sb",
+  "isCounting" : true,
+  "label" : "SB",
+  "statGroups" : [ {
+    "displayName" : "hitting"
+  } ],
+  "orgTypes" : [ "PLAYER", "TEAM" ]
+}, {
+  "name" : "sacrificeFlies",
+  "lookupParam" : "sf",
+  "isCounting" : true,
+  "label" : "SF",
+  "statGroups" : [ {
+    "displayName" : "hitting"
+  } ],
+  "orgTypes" : [ "PLAYER", "TEAM" ]
+}, {
+  "name" : "sacrificeBunts",
+  "lookupParam" : "sac",
+  "isCounting" : true,
+  "label" : "SAC",
+  "statGroups" : [ {
+    "displayName" : "hitting"
+  } ],
+  "orgTypes" : [ "PLAYER", "TEAM" ]
+}, {
+  "name" : "hitByPitches",
+  "lookupParam" : "hbp",
+  "isCounting" : true,
+  "label" : "HBP",
+  "statGroups" : [ {
+    "displayName" : "hitting"
+  } ],
+  "orgTypes" : [ "PLAYER", "TEAM" ]
+}, {
+  "name" : "left_on_base",
+  "lookupParam" : "lob",
+  "label" : "Left on base",
+  "statGroups" : [ {
+    "displayName" : "hitting"
+  } ],
+  "orgTypes" : [ "PLAYER", "TEAM" ]
+}, {
+  "name" : "runs_per_inn",
+  "lookupParam" : "r_inn",
+  "label" : "Runs per inn",
+  "statGroups" : [ {
+    "displayName" : "hitting"
+  } ],
+  "orgTypes" : [ "PLAYER", "TEAM" ]
+}, {
+  "name" : "inningsPitched",
+  "lookupParam" : "ip",
+  "isCounting" : true,
+  "label" : "Innings Pitched",
+  "statGroups" : [ {
+    "displayName" : "pitching"
+  } ],
+  "orgTypes" : [ "PLAYER" ]
+}, {
+  "name" : "errors",
+  "lookupParam" : "e",
+  "isCounting" : true,
+  "label" : "E",
+  "statGroups" : [ {
+    "displayName" : "fielding"
+  } ],
+  "orgTypes" : [ "TEAM" ]
+}, {
+  "name" : "chances",
+  "lookupParam" : "tc",
+  "isCounting" : true,
+  "label" : "Chances",
+  "statGroups" : [ {
+    "displayName" : "fielding"
+  } ],
+  "orgTypes" : [ "TEAM" ]
+}, {
+  "name" : "putOuts",
+  "lookupParam" : "po",
+  "isCounting" : true,
+  "label" : "Put Outs",
+  "statGroups" : [ {
+    "displayName" : "fielding"
+  } ],
+  "orgTypes" : [ "TEAM" ]
+}, {
+  "name" : "assists",
+  "lookupParam" : "a",
+  "isCounting" : true,
+  "label" : "Assist",
+  "statGroups" : [ {
+    "displayName" : "fielding"
+  } ],
+  "orgTypes" : [ "TEAM" ]
+}, {
+  "name" : "doublePlays",
+  "lookupParam" : "dp",
+  "isCounting" : true,
+  "label" : "DP",
+  "statGroups" : [ {
+    "displayName" : "fielding"
+  } ],
+  "orgTypes" : [ "TEAM" ]
+}, {
+  "name" : "attendance",
+  "lookupParam" : "attendance",
+  "isCounting" : true,
+  "statGroups" : [ {
+    "displayName" : "game"
+  } ],
+  "orgTypes" : [ "TEAM" ]
+}, {
+  "name" : "duration",
+  "lookupParam" : "longest",
+  "isCounting" : false,
+  "statGroups" : [ {
+    "displayName" : "game"
+  } ],
+  "orgTypes" : [ "TEAM" ]
+}, {
+  "name" : "duration",
+  "lookupParam" : "shortest",
+  "isCounting" : false,
+  "statGroups" : [ {
+    "displayName" : "game"
+  } ],
+  "orgTypes" : [ "TEAM" ]
+}, {
+  "name" : "innings",
+  "lookupParam" : "inning",
+  "isCounting" : true,
+  "label" : "Innings",
+  "statGroups" : [ {
+    "displayName" : "game"
+  } ],
+  "orgTypes" : [ "TEAM" ]
+}, {
+  "name" : "winStreak",
+  "lookupParam" : "w_streak",
+  "isCounting" : true,
+  "statGroups" : [ {
+    "displayName" : "streak"
+  } ],
+  "orgTypes" : [ "TEAM" ]
+}, {
+  "name" : "lossStreak",
+  "lookupParam" : "l_streak",
+  "isCounting" : true,
+  "statGroups" : [ {
+    "displayName" : "streak"
+  } ],
+  "orgTypes" : [ "TEAM" ]
+} ]

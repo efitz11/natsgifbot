@@ -1,0 +1,322 @@
+[ {
+  "code" : "game_start",
+  "description" : "Game Start"
+}, {
+  "code" : "game_finished",
+  "description" : "Game Finished"
+}, {
+  "code" : "ball",
+  "description" : "Ball"
+}, {
+  "code" : "intent_ball",
+  "description" : "Intent Ball"
+}, {
+  "code" : "pitchout",
+  "description" : "Pitchout"
+}, {
+  "code" : "blocked_ball",
+  "description" : "Blocked Ball"
+}, {
+  "code" : "automatic_ball",
+  "description" : "Automatic Ball"
+}, {
+  "code" : "called_strike",
+  "description" : "Called Strike"
+}, {
+  "code" : "swinging_strike",
+  "description" : "Swinging Strike"
+}, {
+  "code" : "foul",
+  "description" : "Foul"
+}, {
+  "code" : "foul_tip",
+  "description" : "Foul Tip"
+}, {
+  "code" : "foul_bunt",
+  "description" : "Foul Bunt"
+}, {
+  "code" : "bunt_foul_tip",
+  "description" : "Bunt Foul Tip"
+}, {
+  "code" : "missed_bunt",
+  "description" : "Missed Bunt"
+}, {
+  "code" : "swinging_pitchout",
+  "description" : "Swinging Pitchout"
+}, {
+  "code" : "foul_pitchout",
+  "description" : "Foul Pitchout"
+}, {
+  "code" : "swinging_strike_blocked",
+  "description" : "Swinging Strike Blocked"
+}, {
+  "code" : "unknown_strike",
+  "description" : "Strike"
+}, {
+  "code" : "automatic_strike",
+  "description" : "Automatic Strike"
+}, {
+  "code" : "hit_into_play",
+  "description" : "Hit Into Play"
+}, {
+  "code" : "hit_into_play_no_out",
+  "description" : "Hit Into Play No Out"
+}, {
+  "code" : "hit_into_play_score",
+  "description" : "Hit Into Play Score"
+}, {
+  "code" : "pitchout_hit_into_play",
+  "description" : "Pitchout Hit Into Play"
+}, {
+  "code" : "pitchout_hit_into_play_no_out",
+  "description" : "Pitchout Hit Into Play No Out"
+}, {
+  "code" : "pitchout_hit_into_play_score",
+  "description" : "Pitchout Hit Into Play Score"
+}, {
+  "code" : "pickoff_attempt_1b",
+  "description" : "Pickoff Attempt 1B"
+}, {
+  "code" : "pickoff_attempt_2b",
+  "description" : "Pickoff Attempt 2B"
+}, {
+  "code" : "pickoff_attempt_3b",
+  "description" : "Pickoff Attempt 3B"
+}, {
+  "code" : "pickoff_1b",
+  "description" : "Pickoff 1B"
+}, {
+  "code" : "pickoff_2b",
+  "description" : "Pickoff 2B"
+}, {
+  "code" : "pickoff_3b",
+  "description" : "Pickoff 3B"
+}, {
+  "code" : "pickoff_error_1b",
+  "description" : "Pickoff Error 1B"
+}, {
+  "code" : "pickoff_error_2b",
+  "description" : "Pickoff Error 2B"
+}, {
+  "code" : "pickoff_error_3b",
+  "description" : "Pickoff Error 3B"
+}, {
+  "code" : "single",
+  "description" : "Single"
+}, {
+  "code" : "double",
+  "description" : "Double"
+}, {
+  "code" : "triple",
+  "description" : "Triple"
+}, {
+  "code" : "home_run",
+  "description" : "Home Run"
+}, {
+  "code" : "double_play",
+  "description" : "Double Play"
+}, {
+  "code" : "field_error",
+  "description" : "Field Error"
+}, {
+  "code" : "error",
+  "description" : "Error"
+}, {
+  "code" : "field_out",
+  "description" : "Field Out"
+}, {
+  "code" : "fielders_choice",
+  "description" : "Fielders Choice"
+}, {
+  "code" : "fielders_choice_out",
+  "description" : "Fielders Choice Out"
+}, {
+  "code" : "force_out",
+  "description" : "Forceout"
+}, {
+  "code" : "grounded_into_double_play",
+  "description" : "Grounded Into DP"
+}, {
+  "code" : "grounded_into_triple_play",
+  "description" : "Grounded Into TP"
+}, {
+  "code" : "strikeout",
+  "description" : "Strikeout"
+}, {
+  "code" : "strike_out",
+  "description" : "Strike Out"
+}, {
+  "code" : "strikeout_double_play",
+  "description" : "Strikeout Double Play"
+}, {
+  "code" : "strikeout_triple_play",
+  "description" : "Strikeout Triple Play"
+}, {
+  "code" : "triple_play",
+  "description" : "Triple Play"
+}, {
+  "code" : "sac_fly",
+  "description" : "Sac Fly"
+}, {
+  "code" : "catcher_interf",
+  "description" : "Catcher Interference"
+}, {
+  "code" : "batter_interference",
+  "description" : "Batter Interference"
+}, {
+  "code" : "fielder_interference",
+  "description" : "Fielder Interference"
+}, {
+  "code" : "runner_interference",
+  "description" : "Runner Interference"
+}, {
+  "code" : "fan_interference",
+  "description" : "Fan Interference"
+}, {
+  "code" : "run",
+  "description" : "Run"
+}, {
+  "code" : "batter_turn",
+  "description" : "Batter Turn"
+}, {
+  "code" : "ejection",
+  "description" : "Ejection"
+}, {
+  "code" : "cs_double_play",
+  "description" : "Cs Double Play"
+}, {
+  "code" : "defensive_indiff",
+  "description" : "Defensive Indiff"
+}, {
+  "code" : "sac_fly_double_play",
+  "description" : "Sac Fly Double Play"
+}, {
+  "code" : "sac_bunt",
+  "description" : "Sac Bunt"
+}, {
+  "code" : "sac_bunt_double_play",
+  "description" : "Sac Bunt Double Play"
+}, {
+  "code" : "walk",
+  "description" : "Walk"
+}, {
+  "code" : "intent_walk",
+  "description" : "Intent Walk"
+}, {
+  "code" : "hit_by_pitch",
+  "description" : "Hit By Pitch"
+}, {
+  "code" : "play_by_play",
+  "description" : "Play By Play"
+}, {
+  "code" : "play_by_play_extra",
+  "description" : "Play By Play Extra"
+}, {
+  "code" : "injury",
+  "description" : "Injury"
+}, {
+  "code" : "between_innings",
+  "description" : "Between Innings"
+}, {
+  "code" : "plate_appearance",
+  "description" : "Plate Appearance"
+}, {
+  "code" : "os_ruling_pending_prior",
+  "description" : "Official Scorer Ruling Pending"
+}, {
+  "code" : "os_ruling_pending_primary",
+  "description" : "Official Scorer Ruling Pending"
+}, {
+  "code" : "at_bat_start",
+  "description" : "At Bat Start"
+}, {
+  "code" : "runner_movement",
+  "description" : "Runner Movement"
+}, {
+  "code" : "passed_ball",
+  "description" : "Passed Ball"
+}, {
+  "code" : "other_advance",
+  "description" : "Other Advance"
+}, {
+  "code" : "runner_double_play",
+  "description" : "Runner Double Play"
+}, {
+  "code" : "runner_placed",
+  "description" : "Runner Placed On Base"
+}, {
+  "code" : "left_on_base",
+  "description" : "Left On Base"
+}, {
+  "code" : "pitching_substitution",
+  "description" : "Pitching Substitution"
+}, {
+  "code" : "relief_no_out",
+  "description" : "Relief No Out"
+}, {
+  "code" : "offensive_substitution",
+  "description" : "Offensive Substitution"
+}, {
+  "code" : "defensive_switch",
+  "description" : "Defensive Switch"
+}, {
+  "code" : "umpire_substitution",
+  "description" : "Umpire Substitution"
+}, {
+  "code" : "pitcher_switch",
+  "description" : "Pitcher Switch"
+}, {
+  "code" : "replay_manager",
+  "description" : "Replay Manager"
+}, {
+  "code" : "replay_umpire",
+  "description" : "Replay Umpire"
+}, {
+  "code" : "pitch_challenge",
+  "description" : "Pitch Challenge"
+}, {
+  "code" : "game_advisory",
+  "description" : "Game Advisory"
+}, {
+  "code" : "stolen_base_2b",
+  "description" : "Stolen Base 2B"
+}, {
+  "code" : "stolen_base_3b",
+  "description" : "Stolen Base 3B"
+}, {
+  "code" : "stolen_base_home",
+  "description" : "Stolen Base Home"
+}, {
+  "code" : "caught_stealing_2b",
+  "description" : "Caught Stealing 2B"
+}, {
+  "code" : "caught_stealing_3b",
+  "description" : "Caught Stealing 3B"
+}, {
+  "code" : "caught_stealing_home",
+  "description" : "Caught Stealing Home"
+}, {
+  "code" : "defensive_substitution",
+  "description" : "Defensive Sub"
+}, {
+  "code" : "pickoff_caught_stealing_2b",
+  "description" : "Pickoff Caught Stealing 2B"
+}, {
+  "code" : "pickoff_caught_stealing_3b",
+  "description" : "Pickoff Caught Stealing 3B"
+}, {
+  "code" : "pickoff_caught_stealing_home",
+  "description" : "Pickoff Caught Stealing Home"
+}, {
+  "code" : "balk",
+  "description" : "Balk"
+}, {
+  "code" : "wild_pitch",
+  "description" : "Wild Pitch"
+}, {
+  "code" : "other_out",
+  "description" : "Runner Out"
+}, {
+  "code" : "",
+  "description" : ""
+} ]
