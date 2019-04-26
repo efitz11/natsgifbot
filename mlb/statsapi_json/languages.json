@@ -1,0 +1,17 @@
+[ {
+  "name" : "English",
+  "languageCode" : "en",
+  "locale" : "en_US"
+}, {
+  "name" : "Spanish",
+  "languageCode" : "es",
+  "locale" : "es_ES"
+}, {
+  "name" : "Korean",
+  "languageCode" : "ko",
+  "locale" : "ko_KO"
+}, {
+  "name" : "English",
+  "languageCode" : "xc",
+  "locale" : "en_US"
+} ]

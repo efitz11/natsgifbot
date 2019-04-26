@@ -1,0 +1,22 @@
+[ {
+  "code" : "ground_ball",
+  "description" : "Ground Ball"
+}, {
+  "code" : "popup",
+  "description" : "Popup"
+}, {
+  "code" : "fly_ball",
+  "description" : "Fly Ball"
+}, {
+  "code" : "line_drive",
+  "description" : "Line Drive"
+}, {
+  "code" : "bunt_grounder",
+  "description" : "Bunt - Ground Ball"
+}, {
+  "code" : "bunt_popup",
+  "description" : "Bunt - Popup"
+}, {
+  "code" : "bunt_line_drive",
+  "description" : "Bunt - Line Drive"
+} ]

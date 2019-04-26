@@ -1,0 +1,31 @@
+[ {
+  "code" : "Clear",
+  "description" : "Clear"
+}, {
+  "code" : "Sunny",
+  "description" : "Sunny"
+}, {
+  "code" : "Partly Cloudy",
+  "description" : "Partly Cloudy"
+}, {
+  "code" : "Cloudy",
+  "description" : "Cloudy"
+}, {
+  "code" : "Overcast",
+  "description" : "Overcast"
+}, {
+  "code" : "Rain",
+  "description" : "Rain"
+}, {
+  "code" : "Drizzle",
+  "description" : "Drizzle"
+}, {
+  "code" : "Snow",
+  "description" : "Snow"
+}, {
+  "code" : "Dome",
+  "description" : "Dome"
+}, {
+  "code" : "Roof Closed",
+  "description" : "Roof Closed"
+} ]
