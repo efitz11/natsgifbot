@@ -1950,8 +1950,8 @@ def print_roster(team,hitters=True):
         if 'inningsPitched' in pitchers[0]:
             pitchers = sorted(pitchers, key=lambda x: float(x['inningsPitched']) if 'inningsPitched' in x else 0, reverse=True)
         output = "List of pitchers:\n\n"
-        items = ['name','throws','gamesPlayed','inningsPitched','era','whip']
-        output = output + utils.format_table(items,pitchers,repl_map={'gamesPlayed':'G','inningsPitched':'ip', 'throws':'t'}, left_list=['name'])
+        items = ['name','throws','gamesPlayed','inningsPitched','wins','losses','saves','era','whip']
+        output = output + utils.format_table(items,pitchers,repl_map={'gamesPlayed':'G','inningsPitched':'ip', 'throws':'t', 'wins':'w','losses':'l','saves':'sv'}, left_list=['name'])
     return output
 
 def print_broadcasts(team, delta=None):
