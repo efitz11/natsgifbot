@@ -31,12 +31,17 @@ class Baseball():
     @commands.command()
     async def savant(self, *query:str):
         """get a link to a player's baseball savant page"""
-        url = "https://baseballsavant.mlb.com/player/search-all?search=" + urllib.parse.quote_plus(' '.join(query))
-        res = utils.get_json(url)
-        if len(res) > 0:
-            name = res[0]['name'].replace(' ','-')
-            id = res[0]['id']
+        player = mymlbstats._get_player_search(' '.join(query))
+        if player is not None:
+            name = player['name_display_first_last'].replace(' ', '-')
+            id = player['player_id']
             await self.bot.say("https://baseballsavant.mlb.com/savant-player/%s-%s" % (name, id))
+        # url = "https://baseballsavant.mlb.com/player/search-all?search=" + urllib.parse.quote_plus(' '.join(query))
+        # res = utils.get_json(url)
+        # if len(res) > 0:
+        #     name = res[0]['name'].replace(' ','-')
+        #     id = res[0]['id']
+        #     await self.bot.say("https://baseballsavant.mlb.com/savant-player/%s-%s" % (name, id))
 
     def convert_date_to_delta(self, args):
         now = datetime.now().date()
