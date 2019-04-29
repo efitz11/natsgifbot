@@ -28,6 +28,16 @@ class Baseball():
         res = urlopen(req)
         await self.bot.say("<"+res.url+">")#disable embed because it's shit
 
+    @commands.command()
+    async def savant(self, *query:str):
+        """get a link to a player's baseball savant page"""
+        url = "https://baseballsavant.mlb.com/player/search-all?search=" + urllib.parse.quote_plus(' '.join(query))
+        res = utils.get_json(url)
+        if len(res) > 0:
+            name = res[0]['name'].replace(' ','-')
+            id = res[0]['id']
+            await self.bot.say("https://baseballsavant.mlb.com/savant-player/%s-%s" % (name, id))
+
     def convert_date_to_delta(self, args):
         now = datetime.now().date()
         datelist = args[-1].split('/')
