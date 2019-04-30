@@ -1356,9 +1356,10 @@ def get_milb_season_stats(name, type="hitting",year=None):
     if s['totalSize'] == "1":
         leagues.append(s['row'])
     else:
-        for i in s['row']:
-            if i['season'] == str(season) and i['sport'] != "MLB":
-                leagues.append(i)
+        if 'row' in s:
+            for i in s['row']:
+                if i['season'] == str(season) and i['sport'] != "MLB":
+                    leagues.append(i)
     output = "%s Season stats for %s (%s-%s, %s):\n" % (season, name, teamabv, level, parent)
     teamid = player['team_id']
     url = "http://lookup-service-prod.bamgrid.com/lookup/json/named.roster_all.bam?team_id=" + teamid
