@@ -1338,6 +1338,16 @@ def get_milb_season_stats(name, type="hitting",year=None):
     print(url)
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     s = json.loads(urlopen(req).read().decode("utf-8"))['sport_'+type+'_composed']['sport_'+type+'_tm']['queryResults']
+
+    statsapi_url = "https://statsapi.mlb.com/api/v1/people/" + id + "?hydrate=draft"
+    pres = utils.get_json(statsapi_url)
+    if len(pres['people']) > 0 and 'draftYear' in pres['people'][0]:
+        draftyear = pres['people'][0]['draftYear']
+        draftinfo = pres['people'][0]['drafts'][-1]
+    else:
+        draftyear = None
+        draftinfo = None
+
     leagues = []
     now = datetime.now()
     season = str(now.year)
@@ -1361,6 +1371,9 @@ def get_milb_season_stats(name, type="hitting",year=None):
                 output = output + " | Age: " + str(_calc_age(player['player_birth_date'])) + "\n"
             else:
                 output = output + " | Age: " + str(_calc_age(player['player_birth_date'],year=season)) + "\n"
+    if draftinfo is not None:
+        output = output + "  Draft: %d | Round: %s | Pick: %d | School: %s\n" % \
+                 (draftyear, str(draftinfo['pickRound']), draftinfo['pickNumber'], draftinfo['school']['name'])
     if type == "hitting":
         stats = ['sport','ab','h','d','t','hr','r','rbi','bb','so','sb','cs','avg','obp','slg','ops']
     elif type == "pitching":
