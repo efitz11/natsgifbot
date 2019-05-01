@@ -32,9 +32,12 @@ def search_mlbn():
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     s = s + json.loads(urlopen(req).read().decode("utf-8"))['docs']
     output = ""
+
+    ignorelist = ['seats-for-service','capital-one']
+
     for v in s:
         if yest_md in v['blurb'] or yest_monthday in v['blurb'] or date in v['id']:
-            if 'seats-for-service' in v['id']:
+            if any(x in v['id'] for x in ignorelist):
                 continue
             t = get_vid_info(v['id'])
             output = output + "[%s](%s) - %s\n\n" % (t['blurb'], t['url'], t['duration'][3:])
