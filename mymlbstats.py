@@ -1374,7 +1374,7 @@ def get_milb_season_stats(name, type="hitting",year=None):
                 output = output + " | Age: " + str(_calc_age(player['player_birth_date'],year=season)) + "\n"
     if draftinfo is not None:
         output = output + "  Draft: %d | Round: %s | Pick: %d | School: %s\n" % \
-                 (draftyear, str(draftinfo['pickRound']), draftinfo['pickNumber'], draftinfo['school']['name'])
+                 (draftyear, str(draftinfo['pickRound']), draftinfo['roundPickNumber'], draftinfo['school']['name'])
     if type == "hitting":
         stats = ['sport','ab','h','d','t','hr','r','rbi','bb','so','sb','cs','avg','obp','slg','ops']
     elif type == "pitching":
