@@ -592,11 +592,11 @@ def get_single_game(team,delta=None,print_statcast=True):
                         output = output + "Last Play: With " + pitch + " pitching, " + desc + "\n\n"
                     if 'pitchData' in lastplay['playEvents'][-1]:
                         data = lastplay['playEvents'][-1]
-                        output = output + "Pitch: %s, %d mph\n" % (data['details']['type']['description'],
+                        output = output + "Pitch: %s, %.02f mph\n" % (data['details']['type']['description'],
                                                                    data['pitchData']['startSpeed'])
                     if 'hitData' in lastplay['playEvents'][-1]:
                         data = lastplay['playEvents'][-1]['hitData']
-                        output = output + "Statcast: %d ft, %d mph, %d degrees\n\n" % (data['totalDistance'],
+                        output = output + "Statcast: %.02f ft, %.02f mph, %.02f degrees\n\n" % (data['totalDistance'],
                                                                        data['launchSpeed'],
                                                                        data['launchAngle'])
                 except Exception as e:
