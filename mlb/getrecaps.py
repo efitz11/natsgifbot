@@ -76,7 +76,9 @@ def find_defense():
     else:
         return None
 
-def get_recaps():
+def get_recaps(return_both=False):
+    """    :boolean return_both: returns tuple (scores shown, scores hidden)
+    """
     now = datetime.now() - timedelta(days=1)
     date = str(now.year) + "-" + str(now.month).zfill(2) + "-" + str(now.day).zfill(2)
     url = "https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=" + date + "&hydrate=team,linescore"
@@ -88,6 +90,8 @@ def get_recaps():
     statout = ""
     mustcout = ""
     game_vids = []
+    spoil_vids = []
+    import copy
     for game in games:
         content = "https://statsapi.mlb.com" + game['content']['link']
         req = Request(content, headers={'User-Agent' : "ubuntu"})
@@ -102,6 +106,12 @@ def get_recaps():
                                                 game['teams']['home']['team']['abbreviation'],
                                                 game['teams']['home']['team']['abbreviation'],
                                                 game['teams']['home']['score'], final)
+            spoiltitle = "[](/%s)[](/%s) >!%s %d, %s %d%s!<" % (game['teams']['away']['team']['abbreviation'],
+                                                         game['teams']['home']['team']['abbreviation'],
+                                                         game['teams']['away']['team']['abbreviation'],
+                                                         game['teams']['away']['score'],
+                                                         game['teams']['home']['team']['abbreviation'],
+                                                         game['teams']['home']['score'], final)
         else:
             output = output +  "%s, %s - %s\n\n" % (game['teams']['away']['team']['abbreviation'],
                                         game['teams']['home']['team']['abbreviation'],
@@ -143,12 +153,20 @@ def get_recaps():
         if cgstr == "":
             vids["cg"] = "no condensed game"
         game_vids.append(vids)
+        svids = copy.deepcopy(vids)
+        svids["title"] = spoiltitle
+        spoil_vids.append(svids)
     if len(mustcout) > 0:
         output = mustcout + "****\n" + output
     if len(statout) > 0:
         output = statout + "****\n" + output
     labs = ['title', 'recap', 'cg']
-    return output + utils.format_reddit_table(labs, game_vids, repl_map={'title':'game'}, left_list=labs)
+    if return_both:
+        return (output + "##SPOILERS FOLLOW, to get the same table with scores hidden, go to the comments.\n\n" +
+                utils.format_reddit_table(labs, game_vids, repl_map={'title':'game'}, left_list=labs),
+                utils.format_reddit_table(labs, spoil_vids, repl_map={'title':'game'}, left_list=labs))
+    else:
+        return output + utils.format_reddit_table(labs, game_vids, repl_map={'title':'game'}, left_list=labs)
 
 def get_sound_smarts():
     now = datetime.now() - timedelta(days=1)
@@ -573,7 +591,12 @@ def post_self_submission(selftext, cron=False):
     yest = datetime.now() - timedelta(days=1)
     title = "%d/%d Highlight Roundup: FastCast, top plays, recaps/condensed games and longest dongs of the day" % (yest.month, yest.day)
     defense_vids = find_defense()
-    post = reddit.subreddit('baseball').submit(title, selftext=selftext)
+    spoilers = isinstance(selftext, tuple)
+    if spoilers:
+        post = reddit.subreddit('computerdudetest').submit(title, selftext=selftext[0])
+        comment = post.reply("Spoiler tagged table:\n\n" + selftext[1])
+    else:
+        post = reddit.subreddit('computerdudetest').submit(title, selftext=selftext)
     if defense_vids is not None:
         post.reply(defense_vids)
 
@@ -582,10 +605,16 @@ def post_self_submission(selftext, cron=False):
         numchecks = 0
         while numchecks <= 8:
             time.sleep(30*60)
-            newout = get_all_outputs()
-            if newout != selftext:
-                post.edit(newout)
-                selftext = newout
+            if spoilers:
+                newout = get_all_outputs(spoilcomment=True)
+                if newout[0] != selftext[0]:
+                    post.edit(newout[0])
+                    comment.edit(newout[1])
+            else:
+                newout = get_all_outputs()
+                if newout != selftext:
+                    post.edit(newout)
+                    selftext = newout
             numchecks += 1
 
 def pm_user(subject, body, user="efitz11"):
@@ -598,7 +627,7 @@ def pm_user(subject, body, user="efitz11"):
                          username=f['user'],password=f['password'])
     reddit.redditor(user).message(subject, body)
 
-def get_all_outputs(defense=False):
+def get_all_outputs(defense=False, spoilcomment=False):
     output = find_fastcast(return_str=True)
     # output = output + find_quick_pitch(return_str=True)
     # output = output + find_youtube_homeruns(return_str=True)
@@ -608,10 +637,16 @@ def get_all_outputs(defense=False):
     # output = output + find_must_cs(return_str=True)
     # output = output + "****\n"
     # output = output + find_statcasts(return_str=True)
+
     output = output + find_realfast()
     output = output + search_mlbn()
     output = output + "****\n"
-    output = output + get_recaps()
+    if spoilcomment:
+        caps = get_recaps(return_both=True)
+        output = output + caps[0]
+    else:
+        caps = get_recaps()
+        output = output + caps
     output = output + "\n****\n"
     output = output + "Longest dongs of the day:\n\n" + mymlbstats.print_dongs("long", delta="-1", reddit=True)
     if defense:
@@ -619,7 +654,10 @@ def get_all_outputs(defense=False):
         if x is not None:
             output = output + "\n****\n"
             output = output + x
-    return output
+    if spoilcomment:
+        return (output, caps[1])
+    else:
+        return output
 
 if __name__ == "__main__":
     sys.path.insert(1, os.path.join(sys.path[0],'..'))
@@ -628,9 +666,9 @@ if __name__ == "__main__":
 
     if len(sys.argv) > 1 and sys.argv[1] == "post":
         if len(sys.argv) > 2 and sys.argv[2] == "cron":
-            post_self_submission(get_all_outputs(), cron=True)
+            post_self_submission(get_all_outputs(spoilcomment=True), cron=True)
         else:
-            post_self_submission(get_all_outputs(defense=True))
+            post_self_submission(get_all_outputs(defense=True, spoilcomment=True))
 
         # if len(sys.argv) > 2 and sys.argv[2] == "cron":
         #     post_on_reddit(cron=True)
