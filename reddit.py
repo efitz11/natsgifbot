@@ -4,7 +4,7 @@ import praw, prawcore.exceptions
 
 from urllib.request import urlopen, Request
 import urllib.parse
-from datetime import datetime, timedelta, time
+from datetime import datetime, timedelta
 import random
 import re
 import utils
@@ -86,7 +86,10 @@ class Reddit():
             for i in submission.author_flair_richtext:
                 if 'e' in i and i['e'] == 'text':
                     userflair = " [*%s*] " % i['t'].strip()
-        time = utils.prettydate(int(submission.created))
+        import time
+        now = time.time()
+        diff = datetime.fromtimestamp(now) - datetime.utcfromtimestamp(now)
+        time = utils.prettydate(int(submission.created_utc) + int(diff.total_seconds()))
         if submission.is_self:
             ret.append("[%s] **%s** %s - posted by /u/%s%s to /r/%s, %s" % (self.getsubmissionscore(submission), submission.title, flair, submission.author, userflair, submission.subreddit, time))
             if len(submission.selftext) > 0:
