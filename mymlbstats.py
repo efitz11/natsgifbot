@@ -2119,8 +2119,11 @@ def print_at_bats(name, delta=None):
                 half = play['about']['halfInning']
                 if half == "bottom":
                     half = "bot"
-                output = output + "%s %d: %s " % (half, play['about']['inning'], play['result']['description'])
-                output = output + _get_single_line_statcast(play['playEvents'][-1]) + "\n\n"
+                if play['about']['isComplete']:
+                    output = output + "%s %d: %s " % (half, play['about']['inning'], play['result']['description'])
+                    output = output + _get_single_line_statcast(play['playEvents'][-1]) + "\n\n"
+                else:
+                    output = output + "%s %d: %s " % (half, play['about']['inning'], "Currently at bat.")
     return output
 
 def _get_single_line_statcast(play):
