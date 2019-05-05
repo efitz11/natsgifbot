@@ -594,10 +594,12 @@ def post_self_submission(selftext, cron=False):
     spoilers = isinstance(selftext, tuple)
     if spoilers:
         post = reddit.subreddit('baseball').submit(title, selftext=selftext[0])
+        time.sleep(10)
         comment = post.reply("Spoiler tagged table:\n\n" + selftext[1])
     else:
         post = reddit.subreddit('baseball').submit(title, selftext=selftext)
     if defense_vids is not None:
+        time.sleep(10)
         post.reply(defense_vids)
 
     # check every 30 minutes for new videos
