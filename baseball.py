@@ -351,7 +351,7 @@ class Baseball():
             team = ' '.join(team[1:]).lower()
             out = mymlbstats.print_broadcasts(team, delta=delta)
             await self.bot.say("```%s```" % out)
-        elif team[0] in ["longdongs", "shortdongs", "highdongs", "lowdongs", "fastdongs", "slowdongs"]:
+        elif team[0] in ["longdongs", "shortdongs", "highdongs", "lowdongs", "fastdongs", "slowdongs", "mostdongs"]:
             out = mymlbstats.print_dongs(team[0][:team[0].index('d')], delta=delta, reddit=reddit)
             await self.bot.say("```%s```" % out)
         elif team[0] in ["dongs", "newdongs"]:
