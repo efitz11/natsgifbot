@@ -132,7 +132,10 @@ class Baseball():
             if len(team) == 1:
                 liveonly = True
             output = mymlbstats.get_all_game_info(delta=delta, liveonly=liveonly)
-            await self.bot.say("```python\n" + output + "```")
+            if len(output) > 0:
+                await self.bot.say("```python\n" + output + "```")
+            else:
+                await self.bot.say("```No live games at the moment.```")
             return
 
         if team[0] == 'help':
