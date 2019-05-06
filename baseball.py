@@ -357,6 +357,9 @@ class Baseball():
         elif team[0] in ["dongs", "newdongs"]:
             out = mymlbstats.print_dongs("recent", delta=delta, reddit=reddit)
             await self.bot.say("```%s```" % out)
+        elif team[0] == "captivating":
+            out = mymlbstats.print_most_captivating_sp(delta=delta)
+            await self.bot.say("```%s```" % out)
         elif team[0] == "abs":
             team = ' '.join(team[1:]).lower()
             await self.bot.say("```%s```" % mymlbstats.print_at_bats(team, delta=delta))

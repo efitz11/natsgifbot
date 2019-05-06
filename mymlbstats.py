@@ -2000,6 +2000,36 @@ def print_broadcasts(team, delta=None):
         out = out + "\n"
     return out
 
+def print_most_captivating_sp(delta=None):
+    """Prints 10 most captivating scoring plays by MLB's captivating index"""
+    hydrates="&hydrate=scoringplays,team"
+    games = get_day_schedule(delta=delta, scoringplays=True,hydrates=hydrates)['dates'][0]['games']
+    plays = []
+    for game in games:
+        gamepk = game['gamePk']
+        awayteam = game['teams']['away']['team']['abbreviation']
+        hometeam = game['teams']['home']['team']['abbreviation']
+        if 'scoringPlays' in game:
+            sp = game['scoringPlays']
+            for p in sp:
+                h = dict()
+                h['index'] = p['about']['captivatingIndex']
+                h['description'] = p['result']['description'] + "\n"
+                h['inning'] = p['about']['halfInning']
+                if h['inning'] == 'bottom':
+                    h['inning'] = 'bot'
+                    h['team'] = hometeam
+                else:
+                    h['team'] = awayteam
+                plays.append(h)
+    out = ""
+    plays = sorted(plays, key=lambda  k: k['index'], reverse=True)[:10]
+    print(plays)
+    labs = ['index','team','description']
+    leftlist = ['team','description']
+    repl = {'index':'ci'}
+    return out + utils.format_table(labs,plays, repl_map=repl, left_list=leftlist)
+
 def print_dongs(type, delta=None, reddit=False):
     """
     :param type: ['long', 'short', 'high', 'low', 'fast', 'slow', 'recent']
