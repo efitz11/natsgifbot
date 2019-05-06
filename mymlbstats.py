@@ -2124,6 +2124,8 @@ def print_at_bats(name, delta=None):
                     output = output + _get_single_line_statcast(play['playEvents'][-1]) + "\n\n"
                 else:
                     output = output + "%s %d: %s " % (half, play['about']['inning'], "Currently at bat.")
+    if len(output) == 0:
+        return "No at-bats found for %s" % (player['name_display_first_last'])
     return output
 
 def _get_single_line_statcast(play):
