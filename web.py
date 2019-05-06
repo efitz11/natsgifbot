@@ -57,7 +57,7 @@ def get_latest_ig_post(username):
     s = s[s.find(srchstr)+len(srchstr):]
     s = s[:s.find("};")+1]
     s = json.loads(s)
-    print(s)
+    # print(s)
     #print("%s" % s['entry_data']['ProfilePage'][0]['user']['media']['nodes'][0]['code'])
     post = s['entry_data']['ProfilePage'][0]['graphql']['user']['edge_owner_to_timeline_media']['edges'][0]['node']
     caption = post['edge_media_to_caption']['edges'][0]['node']['text']
