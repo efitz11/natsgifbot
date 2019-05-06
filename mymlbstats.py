@@ -54,6 +54,30 @@ def get_mlb_teams():
         abbrevmap[s['abbreviation'].lower()] = (s['id'], s)
     return (abbrevmap, teammap)
 
+def get_milb_teams():
+    teams = []
+    for i in range(11,17):
+        url = "http://statsapi.mlb.com/api/v1/teams?sportId=" + str(i)
+        resp = utils.get_json(url)
+        teams = teams + resp['teams']
+    return teams
+
+def get_milb_teamid(search, extradata=False):
+    teams = get_milb_teams()
+    upper = search.upper()
+    lower = search.lower()
+    for t in teams:
+        match = False
+        if upper == t['abbreviation']:
+            match = True
+        elif lower in t['name'].lower():
+            match = True
+        if match:
+            if extradata:
+                return t['id'], t
+            else:
+                return t['id']
+
 def get_teamid(search, extradata=False):
     search = search.replace('barves','braves')
     print(search)
@@ -1936,8 +1960,9 @@ def get_inning_plays(team, inning, delta=None):
         output = output + "\n"
     return output
 
-def print_roster(team,hitters=True):
-    teamid = get_teamid(team)
+def print_roster(team,hitters=True, teamid=None):
+    if teamid is None:
+        teamid = get_teamid(team)
     if teamid == None:
         return "Team not found"
     roster = get_team_info(teamid)['roster']
