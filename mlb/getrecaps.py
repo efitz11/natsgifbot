@@ -106,11 +106,11 @@ def get_recaps(return_both=False):
                                                 game['teams']['home']['team']['abbreviation'],
                                                 game['teams']['home']['team']['abbreviation'],
                                                 game['teams']['home']['score'], final)
-            spoiltitle = "[](/%s)[](/%s) >!%s %d, %s %d%s!<" % (game['teams']['away']['team']['abbreviation'],
+            spoiltitle = "[](/%s)[](/%s) %s/%s >%d-%d!<" % (game['teams']['away']['team']['abbreviation'],
                                                          game['teams']['home']['team']['abbreviation'],
                                                          game['teams']['away']['team']['abbreviation'],
-                                                         game['teams']['away']['score'],
                                                          game['teams']['home']['team']['abbreviation'],
+                                                         game['teams']['away']['score'],
                                                          game['teams']['home']['score'], final)
         else:
             output = output +  "%s, %s - %s\n\n" % (game['teams']['away']['team']['abbreviation'],
