@@ -472,8 +472,10 @@ class Baseball():
         """print pitchers on staff of minor league team
         !milb pitchers <team>"""
         team = ' '.join(query)
-        teamid = mymlbstats.get_milb_teamid(team)
-        await self.bot.say("```%s```" % mymlbstats.print_roster(teamid, hitters=False, teamid=teamid))
+        teamid, data = mymlbstats.get_milb_teamid(team,extradata=True)
+        sportid = data['sport']['id']
+        hydrates = "person(stats(type=season,sportId=%d))" % sportid
+        await self.bot.say("```%s```" % mymlbstats.print_roster(teamid, hitters=False, teamid=teamid, hydrates=hydrates))
 
 def setup(bot):
     bot.add_cog(Baseball(bot))

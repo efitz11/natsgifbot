@@ -340,8 +340,11 @@ def get_game_feed(gamepk):
     s = json.loads(urlopen(req).read().decode("utf-8"))
     return s
 
-def get_team_info(teamid):
-    url = "http://statsapi.mlb.com/api/v1/teams/%d/roster?hydrate=person(stats(splits=statsSingleSeason))" % teamid
+def get_team_info(teamid, hydrates=None):
+    if hydrates is None:
+        url = "http://statsapi.mlb.com/api/v1/teams/%d/roster?hydrate=person(stats(splits=statsSingleSeason))" % teamid
+    else:
+        url = "http://statsapi.mlb.com/api/v1/teams/%d/roster?hydrate=" % (teamid) + hydrates
     print(url)
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     s = json.loads(urlopen(req).read().decode("utf-8"))
@@ -1960,12 +1963,12 @@ def get_inning_plays(team, inning, delta=None):
         output = output + "\n"
     return output
 
-def print_roster(team,hitters=True, teamid=None):
+def print_roster(team,hitters=True, teamid=None, hydrates=None):
     if teamid is None:
         teamid = get_teamid(team)
     if teamid == None:
         return "Team not found"
-    roster = get_team_info(teamid)['roster']
+    roster = get_team_info(teamid,hydrates=hydrates)['roster']
     pitchers = []
     batters = []
     for player in roster:
