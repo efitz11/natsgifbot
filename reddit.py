@@ -93,8 +93,7 @@ class Reddit():
         time = utils.prettydate(int(submission.created_utc))
         if submission.is_self:
             ret.append("[%s] **%s** %s - posted by /u/%s%s to /r/%s, %s" % (self.getsubmissionscore(submission), submission.title, flair, submission.author, userflair, submission.subreddit, time))
-            if len(submission.selftext) > 0:
-                ret.append("```%s```" % submission.selftext)
+            ret.append("%s" % submission.selftext)
             ret.append("<%s>" % submission.shortlink[:1995])
         else:
             ret.append("[%s] **%s** - posted by /u/%s%s to /r/%s, %s" % (self.getsubmissionscore(submission), submission.title, submission.author, userflair, submission.subreddit, time))
@@ -185,8 +184,17 @@ class Reddit():
                 if matched:
                     # output = self.getsubmissiontext(submission)
                     # await self.bot.say(output)
+                    count = 0
                     for string in self.get_submission_string(submission, hide=hidden):
-                        await self.bot.say(string)
+                        if len(string) < 2000:
+                            if count == 1:
+                                string = "```%s```" % string
+                            await self.bot.say(string)
+                        else:
+                            strs = utils.split_long_message(string)
+                            for s in strs:
+                                await self.bot.say("```%s```" % s)
+                        count = count + 1
                     return
 
     @commands.command()
