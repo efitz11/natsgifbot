@@ -2002,7 +2002,7 @@ def print_broadcasts(team, delta=None):
 
 def print_dongs(type, delta=None, reddit=False):
     """
-    :param type: ['long', 'short', 'recent']
+    :param type: ['long', 'short', 'high', 'low', 'recent']
     :param delta:
     :param reddit:
     :return:
@@ -2095,7 +2095,18 @@ def print_dongs(type, delta=None, reddit=False):
     if type == "long":
         sorteddongs = sorted(dongs, key=lambda k: k['dist'], reverse=True)[:10]
     elif type == "short":
-        sorteddongs = sorted(dongs, key=lambda k: k['dist'])[:10]
+        sorteddongs = sorted(dongs, key=lambda k: k['dist'])
+        sorteddongs = list(filter(lambda k: k['dist'] > 0, sorteddongs))[:10]
+    elif type == "high":
+        sorteddongs = sorted(dongs, key=lambda k: k['angle'], reverse=True)[:10]
+    elif type == "low":
+        sorteddongs = sorted(dongs, key=lambda k: k['angle'])
+        sorteddongs = list(filter(lambda k: k['angle'] > 0, sorteddongs))[:10]
+    elif type == "fast":
+        sorteddongs = sorted(dongs, key=lambda k: k['ev'], reverse=True)[:10]
+    elif type == "slow":
+        sorteddongs = sorted(dongs, key=lambda k: k['ev'])
+        sorteddongs = list(filter(lambda k: k['ev'] > 0, sorteddongs))[:10]
     elif type == "recent":
         sorteddongs = sorted(dongs, key=lambda k: k['time'], reverse=True)[:10]
         out = "Most recent home runs (most recent on top):\n\n"
