@@ -25,12 +25,11 @@ def search_mlbn():
     yest_md = str(yest.month) + "/" + str(yest.day)
     yest_monthday = yest.strftime("%B") + " " + str(yest.day)
     date = str(yest.month) + "-" + str(yest.day)
-    url = "https://www.mlb.com/data-service/en/search?tags.slug=mlb-network&page=1"
-    req = Request(url, headers={'User-Agent' : "ubuntu"})
-    s = json.loads(urlopen(req).read().decode("utf-8"))['docs']
-    url = "https://www.mlb.com/data-service/en/search?tags.slug=mlb-network&page=2"
-    req = Request(url, headers={'User-Agent' : "ubuntu"})
-    s = s + json.loads(urlopen(req).read().decode("utf-8"))['docs']
+    s = []
+    for i in range(1,4):
+        url = "https://www.mlb.com/data-service/en/search?tags.slug=mlb-network&page=" + str(i)
+        req = Request(url, headers={'User-Agent' : "ubuntu"})
+        s = s + json.loads(urlopen(req).read().decode("utf-8"))['docs']
     output = ""
 
     ignorelist = ['seats-for-service','capital-one']
