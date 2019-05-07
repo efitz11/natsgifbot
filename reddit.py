@@ -123,7 +123,8 @@ class Reddit():
                 count += 1
                 if count == num:
                     for string in self.get_submission_string(submission):
-                        await self.bot.say(string)
+                        if len(string) > 0:
+                            await self.bot.say(string)
         else:
             output = "10 hottest posts from r/%s\n" % text
             for submission in self.reddit.subreddit(subreddit).hot(limit=10):
@@ -144,7 +145,8 @@ class Reddit():
                 count += 1
                 if count == num:
                     for string in self.get_submission_string(submission):
-                        await self.bot.say(string)
+                        if len(string) > 0:
+                            await self.bot.say(string)
         else:
             output = "10 newest posts from r/%s\n" % text
             for submission in self.reddit.subreddit(subreddit).new(limit=10):
