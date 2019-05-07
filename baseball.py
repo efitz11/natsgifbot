@@ -327,6 +327,13 @@ class Baseball():
             if out is not None:
                 await self.bot.say("```%s```" % out)
             return
+        elif team[0] in ['umps', 'umpires']:
+            team = ' '.join(team[1:]).lower()
+            umps = mymlbstats.print_umpires(team, delta=delta)
+            if umps is not None:
+                await self.bot.say("```%s```" % umps)
+            else:
+                await self.bot.say("```Umps not found.```")
         elif team[0] == "linescore":
             team = ' '.join(team[1:]).lower()
             out = mymlbstats.print_linescore(team, delta=delta)
