@@ -97,6 +97,7 @@ class Reddit():
             ret.append("<%s>" % submission.shortlink[:1995])
         else:
             ret.append("[%s] **%s** - posted by /u/%s%s to /r/%s, %s" % (self.getsubmissionscore(submission), submission.title, submission.author, userflair, submission.subreddit, time))
+            ret.append("")
             if submission.over_18:
                 ret.append("**post is NSFW; embed hidden**\n<%s>\t\t<%s>" % (submission.url, submission.shortlink))
             else:
@@ -186,7 +187,10 @@ class Reddit():
                     # await self.bot.say(output)
                     count = 0
                     for string in self.get_submission_string(submission, hide=hidden):
-                        if len(string) < 2000:
+                        if len(string) == 0:
+                            count += 1
+                            continue
+                        elif len(string) < 2000:
                             if count == 1:
                                 string = "```%s```" % string
                             await self.bot.say(string)
