@@ -428,6 +428,14 @@ def get_pbp(gamepk):
     s = json.loads(urlopen(req).read().decode("utf-8"))
     return s
 
+def print_umpires(team, delta=None):
+    s = print_box(team, "info", delta=delta)
+    if s is not None:
+        s = s.split('\n')
+        for line in s:
+            if 'Umpires' in line:
+                return line
+
 def print_box(team,part, delta=None):
     teamid = get_teamid(team)
     s = get_day_schedule(delta=delta, teamid=teamid)
