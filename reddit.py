@@ -49,7 +49,8 @@ class Reddit():
         """<subreddit> get a random link post from a subreddit"""
         text = ''.join(text)
         for string in self.sub(text):
-            await self.bot.say(string)
+            if len(string)>0:
+                await self.bot.say(string)
         # await self.bot.say(self.sub(text))
         
     def getsubmissiontext(self, submission):
