@@ -369,7 +369,11 @@ class Baseball():
             await self.bot.say("```%s```" % out)
         elif team[0] == "captivating":
             out = mymlbstats.print_most_captivating_sp(delta=delta)
-            await self.bot.say("```%s```" % out)
+            out = utils.split_long_message(out)
+            for o in out:
+                o = o.rstrip()
+                if len(o) > 0:
+                    await self.bot.say("```%s```" % o)
         elif team[0] == "abs":
             team = ' '.join(team[1:]).lower()
             await self.bot.say("```%s```" % mymlbstats.print_at_bats(team, delta=delta))
