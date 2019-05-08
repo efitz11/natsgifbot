@@ -2059,12 +2059,12 @@ def print_most_captivating_sp(delta=None):
                     h['team'] = awayteam
                 plays.append(h)
     out = ""
-    plays = sorted(plays, key=lambda  k: k['index'], reverse=True)[:10]
-    print(plays)
+    plays = sorted(plays, key=lambda k: k['index'], reverse=True)[:10]
+    # print(plays)
     labs = ['index','team','description']
     leftlist = ['team','description']
     repl = {'index':'ci'}
-    return out + utils.format_table(labs,plays, repl_map=repl, left_list=leftlist)
+    return out + utils.format_table(labs, plays, repl_map=repl, left_list=leftlist)
 
 def print_dongs(type, delta=None, reddit=False):
     """
