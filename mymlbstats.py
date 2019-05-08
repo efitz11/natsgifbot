@@ -2050,7 +2050,7 @@ def print_most_captivating_sp(delta=None):
             for p in sp:
                 h = dict()
                 h['index'] = p['about']['captivatingIndex']
-                h['description'] = p['result']['description'] + "\n"
+                h['description'] = p['result']['description']
                 h['inning'] = p['about']['halfInning']
                 if h['inning'] == 'bottom':
                     h['inning'] = 'bot'
@@ -2064,7 +2064,7 @@ def print_most_captivating_sp(delta=None):
     labs = ['index','team','description']
     leftlist = ['team','description']
     repl = {'index':'ci'}
-    return out + utils.format_table(labs, plays, repl_map=repl, left_list=leftlist)
+    return out + utils.format_table(labs, plays, repl_map=repl, left_list=leftlist,linebreaknum=1)
 
 def print_dongs(type, delta=None, reddit=False):
     """
