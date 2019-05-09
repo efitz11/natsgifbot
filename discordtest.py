@@ -271,7 +271,7 @@ def get_youtube(query):
     req = Request(url)
     req.headers["User-Agent"] = "windows 10 bot"
     resource = urlopen(req)
-    content = resource.read().decode(resource.headers.get_content_charset())
+    content = resource.read().decode('utf-8')
 
     findstr = "<li><div class=\"yt-lockup yt-lockup-tile yt-lockup-video vve-check clearfix\" data-context-item-id=\""
     contents = content[content.find(findstr)+len(findstr):]
