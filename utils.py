@@ -23,11 +23,12 @@ def get_keys(name):
 
 def split_long_message(message, delim='\n'):
     MAX_LEN = 2000
-    if len(message) < MAX_LEN:
-        return [message]
-
     separate = []
+
     while len(message) > 0:
+        if len(message) < MAX_LEN:
+            separate.append(message)
+            break
         cut = message[:MAX_LEN]
         idx = cut.rfind(delim)
         cut = message[:idx]
