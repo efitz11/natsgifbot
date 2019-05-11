@@ -2189,10 +2189,15 @@ def print_at_bats(name, delta=None):
     teamid = player['team_id']
     playerid = int(player['player_id'])
     games = get_day_schedule(teamid=teamid, delta=delta)['dates'][0]['games']
+    date = _get_date_from_delta(delta)
     output = ""
     for game in games:
         gamepk = game['gamePk']
         pbp = get_pbp(gamepk)['allPlays']
+        if date.year >= 2019:
+            content = get_game_highlights_plays(gamepk, new=True)
+        else:
+            content = get_game_highlights_plays(gamepk)
         for play in pbp:
             if play['matchup']['batter']['id'] == playerid:
                 half = play['about']['halfInning']
@@ -2200,7 +2205,22 @@ def print_at_bats(name, delta=None):
                     half = "bot"
                 if play['about']['isComplete']:
                     output = output + "%s %d: %s " % (half, play['about']['inning'], play['result']['description'])
-                    output = output + _get_single_line_statcast(play['playEvents'][-1]) + "\n\n"
+                    playevent = play['playEvents'][-1]
+                    output = output + _get_single_line_statcast(playevent) + "\n\n"
+                    if 'playId' in playevent:
+                        if playevent['playId'] in content:
+                            blurb = content[playevent['playId']]['blurb']
+                            if date.year >= 2019:
+                                for playback in content[playevent['playId']]['playbacks']:
+                                    if playback['name'] == 'mp4Avc':
+                                        url = playback['url']
+                                        break
+                                output = output + " -- %s: <" % blurb + url + ">\n\n"
+                            else:
+                                for playback in content[playevent['playId']]['playbacks']:
+                                    if playback['name'] == "FLASH_2500K_1280X720":
+                                        url = playback['url']
+                                output = output + " -- %s: <" % blurb + url + ">\n\n"
                 else:
                     output = output + "%s %d: %s " % (half, play['about']['inning'], "Currently at bat.")
     if len(output) == 0:

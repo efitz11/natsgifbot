@@ -376,7 +376,7 @@ class Baseball():
                     await self.bot.say("```%s```" % o)
         elif team[0] == "abs":
             team = ' '.join(team[1:]).lower()
-            await self.bot.say("```%s```" % mymlbstats.print_at_bats(team, delta=delta))
+            await self.bot.say("%s" % mymlbstats.print_at_bats(team, delta=delta))
         else:
             teamname = ' '.join(team).lower()
             output = mymlbstats.get_single_game(teamname,delta=delta)
