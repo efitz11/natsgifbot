@@ -926,14 +926,18 @@ def _get_player_search(name, active='Y'):
     else:
         return None
 
-def get_player_line(name, delta=None):
-    player = _get_player_search(name)
+def get_player_line(name, delta=None, player=None, schedule=None):
+    if player is None:
+        player = _get_player_search(name)
     if player is None:
         return "No matching player found"
     teamid = int(player['team_id'])
     pid = player['player_id']
     disp_name = player['name_display_first_last']
-    s = get_day_schedule(delta,teamid=teamid)
+    if schedule is None:
+        s = get_day_schedule(delta,teamid=teamid)
+    else:
+        s = schedule
     try:
         game = s['dates'][0]['games'][0]
     except IndexError:
@@ -2188,9 +2192,10 @@ def print_at_bats(name, delta=None):
         return "No matching player found"
     teamid = player['team_id']
     playerid = int(player['player_id'])
-    games = get_day_schedule(teamid=teamid, delta=delta)['dates'][0]['games']
+    schedule = get_day_schedule(teamid=teamid, delta=delta)
+    games = schedule['dates'][0]['games']
     date = _get_date_from_delta(delta)
-    output = ""
+    output = "```%s```\n" % get_player_line(name, delta=delta, player=player, schedule=schedule)
     for game in games:
         gamepk = game['gamePk']
         pbp = get_pbp(gamepk)['allPlays']
