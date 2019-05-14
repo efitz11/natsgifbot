@@ -2253,7 +2253,7 @@ def _get_single_line_statcast(play):
             dist = str(hitdata['totalDistance'])
         try:
             if 'launchSpeed' in hitdata:
-                speed = "%.1f mph" % hitdata['launchSpeed']
+                speed = "%.1f" % hitdata['launchSpeed']
                 hasany = True
             else:
                 speed = "n/a"
