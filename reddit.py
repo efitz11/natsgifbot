@@ -69,6 +69,17 @@ class Reddit():
             await self.bot.say(self.printcomment(c))
             return
 
+    @commands.command()
+    async def us(self, user:str, *search:str):
+        """<user> search user comments for text"""
+        search = ' '.join(search).lower()
+        u = self.reddit.redditor(user)
+        comments = u.comments.new(limit=25)
+        for c in comments:
+            if search in c.body.lower():
+                await self.bot.say(self.printcomment(c))
+                return
+
     def printcomment(self, comment):
         subreddit = comment.subreddit
         author = comment.author
