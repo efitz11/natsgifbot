@@ -127,7 +127,7 @@ class Reddit():
         else:
             flair = ""
         userflair = ""
-        if submission.author_flair_type == 'text' and submission.author_flair_text is not None:
+        if hasattr(submission, 'author_flair_type') and submission.author_flair_type == 'text' and submission.author_flair_text is not None:
             userflair = " [*%s*] " % submission.author_flair_text
         if submission.author_flair_type == 'richtext':
             for i in submission.author_flair_richtext:
