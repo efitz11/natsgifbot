@@ -43,7 +43,42 @@ class Reddit():
             return self.get_submission_string(list[num])
         except prawcore.exceptions.Redirect:
             return ["Error: subreddit not found"]
-        
+
+    @commands.command()
+    async def u(self, *text:str):
+        """<user> get a random comment from a user"""
+        text = ''.join(text)
+        user = self.reddit.redditor(text)
+        comments = user.comments.new(limit=10)
+        idx = random.randint(0, 9)
+        i = 0
+        for comment in comments:
+            if i == idx:
+                text = self.printcomment(comment)
+                await self.bot.say(text)
+                return
+            else:
+                i += 1
+    @commands.command()
+    async def un(self, *text:str):
+        """<user> get newest comment from a user"""
+        text = ''.join(text)
+        user = self.reddit.redditor(text)
+        comments = user.comments.new(limit=1)
+        for c in comments:
+            await self.bot.say(self.printcomment(c))
+            return
+
+    def printcomment(self, comment):
+        subreddit = comment.subreddit
+        author = comment.author
+        submission = comment.submission
+        title = submission.title
+        score = comment.score
+        link = "https://reddit.com" + comment.permalink + "?context=10"
+        t = utils.prettydate(int(comment.created_utc))
+        return "[%s] comment by **/u/%s** on \"**%s**\" in /r/%s, %s:\n```%s```<%s>" % (str(score), author, title, subreddit, t, comment.body, link)
+
     @commands.command()
     async def r(self,*text:str):
         """<subreddit> get a random link post from a subreddit"""
