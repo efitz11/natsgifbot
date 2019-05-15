@@ -127,12 +127,13 @@ class Reddit():
         else:
             flair = ""
         userflair = ""
-        if hasattr(submission, 'author_flair_type') and submission.author_flair_type == 'text' and submission.author_flair_text is not None:
-            userflair = " [*%s*] " % submission.author_flair_text
-        if submission.author_flair_type == 'richtext':
-            for i in submission.author_flair_richtext:
-                if 'e' in i and i['e'] == 'text':
-                    userflair = " [*%s*] " % i['t'].strip()
+        if hasattr(submission, 'author_flair_type'):
+            if submission.author_flair_type == 'text' and submission.author_flair_text is not None:
+                userflair = " [*%s*] " % submission.author_flair_text
+            if submission.author_flair_type == 'richtext':
+                for i in submission.author_flair_richtext:
+                    if 'e' in i and i['e'] == 'text':
+                        userflair = " [*%s*] " % i['t'].strip()
         # import time
         # now = time.time()
         # diff = datetime.fromtimestamp(now) - datetime.utcfromtimestamp(now)
