@@ -1122,8 +1122,8 @@ def pitcher_vs_team(name, team, player=None, reddit=False):
         batters.append(stats)
 
     batters = sorted(batters, key=lambda k: k['plateAppearances'] if 'plateAppearances' in k else 0, reverse=True)
-    labs = ['name','side','plateAppearances','hits','doubles','triples','homeRuns','baseOnBalls','strikeOuts','stolenBases','avg','ops']
-    repl = {'side':'b','plateAppearances':'pa','hits':'h','doubles':'2B','triples':'3b','homeRuns':'hr','baseOnBalls':'bb','strikeOuts':'so', 'stolenBases':'sb'}
+    labs = ['name','side','atBats','hits','doubles','triples','homeRuns','baseOnBalls','strikeOuts','stolenBases','avg','ops']
+    repl = {'side':'b','plateAppearances':'pa','atBats':'ab','hits':'h','doubles':'2B','triples':'3b','homeRuns':'hr','baseOnBalls':'bb','strikeOuts':'so', 'stolenBases':'sb'}
     leftlist = ['name','side']
     output = "%s's stats vs %s batters, last 5 years:\n\n" % (player['name_display_first_last'], teamdata['teamName'])
     output = output + utils.format_table(labs, batters, repl_map=repl, left_list=leftlist, reddit=reddit)
