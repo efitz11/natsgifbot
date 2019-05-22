@@ -202,7 +202,6 @@ async def memeify(*text:str):
         output = output + " " + s
     await bot.say(output.strip().upper())
 
-
 @bot.command()
 async def fire():
     await bot.say("DAVEY MARTINEZ")

@@ -31,6 +31,7 @@ No Category:
   mockify   MocKiFy aNy sTrIng of tExT
   mock      mOcKiFy tHe pReViOuS MeSsaGe
   memeify   M E M E I F Y   A N Y   S T R I N G   O F   T E X T
+  fire
   fuck      
   pajokie   GO HOKIES!
   roll      roll an n-sided die (6 default)
