@@ -202,6 +202,10 @@ async def memeify(*text:str):
         output = output + " " + s
     await bot.say(output.strip().upper())
 
+@bot.command()
+async def fire():
+    await bot.say("DAVEY MARTINEZ")
+
 @bot.command(pass_context=True)
 async def fuck(ctx,*addlist):
     with open(miscfile, 'r') as f:
@@ -239,7 +243,7 @@ async def fuck(ctx,*addlist):
     l = s['fucklist']
     num = random.randint(0,len(l)-1)
     await bot.say((l[num]).upper())
-    
+
 @bot.command()
 async def pajokie():
     """GO HOKIES!"""
