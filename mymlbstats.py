@@ -2146,13 +2146,14 @@ def print_dongs(type, delta=None, reddit=False):
                             h['angle'] = event['hitData']['launchAngle']
                     h['video'] = ""
                     if find_videos:
-                        playid = event['playId']
-                        for item in content:
-                            if 'guid' in item:
-                                if item['guid'] == playid:
-                                    for pb in item['playbacks']:
-                                        if pb['name'] == 'mp4Avc':
-                                            h['video'] = '[video](%s)' % pb['url']
+                        if 'playId' in event:
+                            playid = event['playId']
+                            for item in content:
+                                if 'guid' in item:
+                                    if item['guid'] == playid:
+                                        for pb in item['playbacks']:
+                                            if pb['name'] == 'mp4Avc':
+                                                h['video'] = '[video](%s)' % pb['url']
                     dongs.append(h)
     repl_map = {'inning':'inn'}
     labs = ['num', 'batter', 'pitcher', 'dist', 'ev', 'angle']
