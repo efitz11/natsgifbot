@@ -63,7 +63,7 @@ def get_latest_ig_post(username):
     caption = post['edge_media_to_caption']['edges'][0]['node']['text']
     timestamp = utils.prettydate(post['taken_at_timestamp'])
     location = ""
-    if 'location' in post:
+    if 'location' in post and post['location'] is not None:
         location = " *(%s)* " % post['location']['name']
     url = "https://www.instagram.com/p/" + post['shortcode']
     return "%s**%s**: %s (%s)\n\n%s" % (location, username, caption, timestamp, url)
