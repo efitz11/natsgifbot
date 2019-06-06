@@ -458,7 +458,7 @@ class Baseball():
         """
         delta, query = self._find_delta(query)
         team = ' '.join(query)
-        await self.bot.say("```%s```" % mymlbstats.get_milb_box(team))
+        await self.bot.say("```%s```" % mymlbstats.get_milb_box(team, delta=delta))
 
     @milb.command()
     async def pitching(self, *query:str):
@@ -467,7 +467,7 @@ class Baseball():
         """
         delta, query = self._find_delta(query)
         team = ' '.join(query)
-        await self.bot.say("```%s```" % mymlbstats.get_milb_box(team,part='pitching'))
+        await self.bot.say("```%s```" % mymlbstats.get_milb_box(team,part='pitching',delta=delta))
 
     @milb.command()
     async def notes(self, *query:str):
@@ -476,7 +476,7 @@ class Baseball():
         """
         delta, query = self._find_delta(query)
         team = ' '.join(query)
-        await self.bot.say("```%s```" % mymlbstats.get_milb_box(team,part='notes'))
+        await self.bot.say("```%s```" % mymlbstats.get_milb_box(team,part='notes', delta=delta))
 
     @milb.command()
     async def pitchers(self, *query:str):
