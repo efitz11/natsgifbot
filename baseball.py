@@ -320,7 +320,10 @@ class Baseball():
             else:
                 await self.bot.say("No stats found")
             return
-        elif team[0] in ['batting','pitching','notes','info','bench','bullpen']:
+        elif team[0] in ['batting','pitching','notes','info','bench','bullpen','box']:
+            if team[0] == 'box':
+                await self.bot.say("```The box score is divided into parts: use one of: batting, pitching, notes, info, bench, bullpen.```")
+                return
             part = team[0]
             team = ' '.join(team[1:]).lower()
             out = mymlbstats.print_box(team, part=part, delta=delta)
