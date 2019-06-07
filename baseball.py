@@ -322,7 +322,8 @@ class Baseball():
             return
         elif team[0] in ['batting','pitching','notes','info','bench','bullpen','box']:
             if team[0] == 'box':
-                await self.bot.say("```The box score is divided into parts: use one of: batting, pitching, notes, info, bench, bullpen.```")
+                await self.bot.say("The box score is divided into parts: use one of: ```batting, pitching, notes, info, bench, bullpen```"
+                                   "If you want the linescore, use: ```linescore```")
                 return
             part = team[0]
             team = ' '.join(team[1:]).lower()
