@@ -64,7 +64,7 @@ class BoxScore:
                     output = output + " " + s
                 output = output + "\n"
         elif part == "pitching":
-            output = "%s %s %s %s %s %s %s %s %s %s %s\n" % ("".ljust(15)," IP"," H"," R","ER","BB","SO","HR", "  ERA","  P", " S")
+            output = "%s %s %s %s %s %s %s %s %s %s %s %s\n" % ("".ljust(15)," IP"," H"," R","ER","BB","SO","HR", "  ERA","  P", " S","DEC")
             for pitcher in self.box['teams'][side]['pitchers']:
                 player = self.players[pitcher]
                 if playerid is not None:
@@ -85,7 +85,10 @@ class BoxScore:
                 era = player['seasonStats']['pitching']['era'].rjust(5)
                 pitches = str(pstats['pitchesThrown']).rjust(3)
                 strikes = str(pstats['strikes']).rjust(2)
-                outlist = [ip, hits, runs, er, bb, so, hr, era, pitches, strikes]
+                dec = ""
+                if 'note' in pstats:
+                    dec = str(pstats['note'])
+                outlist = [ip, hits, runs, er, bb, so, hr, era, pitches, strikes, dec]
                 for s in outlist:
                     output = output + " " + s
 
