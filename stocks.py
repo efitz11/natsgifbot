@@ -4,7 +4,10 @@ import utils
 from bs4 import BeautifulSoup
 
 def get_quote(symbol):
-    url = "https://api.iextrading.com/1.0/stock/"+symbol+"/quote?displayPercent=true"
+    # url = "https://api.iextrading.com/1.0/stock/"+symbol+"/quote?displayPercent=true"
+    token = utils.get_keys("iex")['public']
+    url = "https://cloud.iexapis.com/stable/stock/%s/quote?displayPercent=true&token=%s" % (symbol, token)
+    print(url)
     req = Request(url)
     req.headers["User-Agent"] = "windows 10 bot"
     # Load data
@@ -46,8 +49,10 @@ def get_quote(symbol):
 def get_stocks():
     output = "Latest quotes:\n```python\n"
     stocks = []
+    token = utils.get_keys("iex")['public']
     for symbol in ["DIA","VOO","VTI","ONEQ","VXUS"]:
-        url = "https://api.iextrading.com/1.0/stock/"+symbol+"/quote?displayPercent=true"
+        url = "https://cloud.iexapis.com/stable/stock/%s/quote?displayPercent=true&token=%s" % (symbol, token)
+        # url = "https://api.iextrading.com/1.0/stock/"+symbol+"/quote?displayPercent=true"
         req = Request(url)
         req.headers["User-Agent"] = "windows 10 bot"
         # Load data
@@ -101,4 +106,4 @@ def get_indexes():
 
 if __name__ == "__main__":
     print(get_quote("msft"))
-    # print(get_indexes())
+    print(get_indexes())
