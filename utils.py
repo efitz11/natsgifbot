@@ -1,7 +1,7 @@
 from urllib.request import urlopen, Request
 import json
 import os
-import datetime
+import datetime,time
 
 
 def get_json(url, encoding="utf-8"):
@@ -158,6 +158,13 @@ def write_to_file(contents, filename, subdir, prependtimestamp=False):
     with open(filename, 'w') as f:
         f.write(contents)
     return filename
+
+def get_ET_from_timestamp(timestamp):
+    utc = datetime.datetime.strptime(timestamp,"%Y-%m-%dT%H:%M:00Z") #"2018-03-31T20:05:00Z",
+    nowtime = time.time()
+    diff = datetime.datetime.fromtimestamp(nowtime) - datetime.datetime.utcfromtimestamp(nowtime)
+    utc = utc + diff
+    return datetime.datetime.strftime(utc, "%I:%M %p ET")
 
 def prettydate(d):
     """get an instagram-style relative date
