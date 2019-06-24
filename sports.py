@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 import cfbgame, nflgame, nhlscores, cbbgame, softball
+import worldcup
 
 class Sports():
     def __init__(self,bot):
@@ -76,23 +77,28 @@ class Sports():
         """display score(s) of nhl game"""
         t = ' '.join(team)
         await self.bot.say(nhlscores.get_scores(t))
-        
-    @commands.group(pass_context=True)
-    async def fas(self,ctx):
-        """get FAS scores or standings to try and inflate our egos by putting FAS on the same level as major sports"""
-        if ctx.invoked_subcommand is None:
-            args = ctx.message.system_content[5:].split(' ')
-            if len(args) == 1 and args[0] == '':
-                await self.bot.say(softball.fas_schedule())
-            elif len(args) == 1 and args[-1].isdigit():
-                await self.bot.say(softball.fas_schedule(args[0]))
-            else:
-                await self.bot.say("Invalid subcommand passed.")
 
-    @fas.command()
-    async def standings(self):
-        """Get current FAS standings"""
-        await self.bot.say(softball.fas_standings())
+    # @commands.group(pass_context=True)
+    # async def fas(self,ctx):
+    #     """get FAS scores or standings to try and inflate our egos by putting FAS on the same level as major sports"""
+    #     if ctx.invoked_subcommand is None:
+    #         args = ctx.message.system_content[5:].split(' ')
+    #         if len(args) == 1 and args[0] == '':
+    #             await self.bot.say(softball.fas_schedule())
+    #         elif len(args) == 1 and args[-1].isdigit():
+    #             await self.bot.say(softball.fas_schedule(args[0]))
+    #         else:
+    #             await self.bot.say("Invalid subcommand passed.")
+    #
+    # @fas.command()
+    # async def standings(self):
+    #     """Get current FAS standings"""
+    #     await self.bot.say(softball.fas_standings())
+
+    @commands.command()
+    async def worldcup(self, *team:str):
+        """display world cup scores"""
+        await self.bot.say(worldcup.get_todays_scores())
 
 def setup(bot):
     bot.add_cog(Sports(bot))
