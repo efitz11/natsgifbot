@@ -98,7 +98,11 @@ class Sports():
     @commands.command()
     async def worldcup(self, *team:str):
         """display world cup scores"""
-        await self.bot.say("```%s```" % worldcup.get_todays_scores())
+        t = ' '.join(team)
+        if len(t) == 0:
+            await self.bot.say("```%s```" % worldcup.get_todays_scores())
+        else:
+            await self.bot.say("```%s```" % worldcup.get_todays_scores(team=t))
 
 def setup(bot):
     bot.add_cog(Sports(bot))
