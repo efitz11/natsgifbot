@@ -648,6 +648,11 @@ async def fitz(*message):
     """fitz"""
     await bot.say("<:fitz:535186966451322930> %s <:fitz:535186966451322930>" % ' '.join(message).upper())
 
+@bot.command()
+async def define(*query):
+    """define a word"""
+    await bot.say(web.get_definition(' '.join(query)))
+
 @bot.event
 async def on_message(message):
     #stuff
