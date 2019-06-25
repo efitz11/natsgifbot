@@ -212,6 +212,23 @@ def kym(query):
     body = body + "\n\nMore info at <%s>" % (url)
     return(body)
 
+def get_definition(word):
+    url = "https://googledictionaryapi.eu-gb.mybluemix.net/?define=%s&lang=en" % (urllib.parse.quote_plus(word))
+    resp = utils.get_json(url)
+    output = ""
+    for word in resp:
+        output = output + "**%s**: `%s`\n" % (word['word'], word['phonetic'])
+        for key in word['meaning'].keys():
+            count = 1
+            output = output + "*%s*:\n" % key
+            for definition in word['meaning'][key]:
+                example = ""
+                if 'example' in definition:
+                    example = '(*%s*)' % definition['example']
+                output = output + "\t%d: %s %s\n\n" % (count, definition['definition'], example)
+                count += 1
+    return output
+
 if __name__ == "__main__":
     # print(search_untappd("heineken"))
     # print(get_latest_tweet("nationalsump"))
