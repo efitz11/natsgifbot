@@ -12,7 +12,7 @@ import utils
 
 import mymlbgame, cfbgame, nflgame, xmlreader, nhlscores, cbbgame, stocks, olympics, gifs, gfycat
 import weather as weathermodule
-import frinkiac, web
+import frinkiac, web, tacobell
 import hq as hqmod
 
 bot = commands.Bot(command_prefix='!')
@@ -652,6 +652,11 @@ async def fitz(*message):
 async def define(*query):
     """define a word"""
     await bot.say(web.get_definition(' '.join(query)))
+
+@bot.command()
+async def tb(num:int=3):
+    """get a random taco bell order"""
+    await bot.say(tacobell.random_items(num))
 
 @bot.event
 async def on_message(message):
