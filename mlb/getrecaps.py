@@ -45,6 +45,7 @@ def search_mlbn():
 def find_defense():
     yest = datetime.now() - timedelta(days=1)
     yest_ymd = str(yest.year) + "/" + str(yest.month).zfill(2) + "/" + str(yest.day).zfill(2)
+    yest_mdy = str(yest.month) + "/" + str(yest.day).zfill(2) + "/" + str(yest.year).zfill(2)
     docs = []
     for i in range(1,4):
         url = "https://www.mlb.com/data-service/en/search?tags.slug=defense&page=" + str(i)
@@ -56,7 +57,7 @@ def find_defense():
     for vid in docs:
         match = False
         for k in vid['keywordsDisplay']:
-            if yest_ymd in k['displayName']:
+            if yest_ymd in k['displayName'] or yest_mdy in k['displayName']:
                 match = True
                 break
         if match:
