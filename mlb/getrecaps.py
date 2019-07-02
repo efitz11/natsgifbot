@@ -6,6 +6,8 @@ import time
 import sys, os
 from random import shuffle
 
+gamepks = []
+
 def search_video(query):
     query = query.replace(' ', "%2B")
     url = "https://search-api.mlb.com/svc/search/v2/mlb_global_sitesearch_en/sitesearch?hl=true&facet=type&expand=partner.media&q=" + query + "&page=1&sort=new&type=video"
@@ -43,10 +45,11 @@ def search_mlbn():
     return output
 
 def find_defense():
-    yest = datetime.now() - timedelta(days=1)
-    yest_ymd = str(yest.year) + "/" + str(yest.month).zfill(2) + "/" + str(yest.day).zfill(2)
-    yest_mdy = str(yest.month) + "/" + str(yest.day).zfill(2) + "/" + str(yest.year).zfill(2)
-    yest_mdy2 = str(yest.month) + "/" + str(yest.day) + "/" + str(yest.year)
+    # today = datetime.now()
+    # yest = datetime.now() - timedelta(days=1)
+    # yest_ymd = str(yest.year) + "/" + str(yest.month).zfill(2) + "/" + str(yest.day).zfill(2)
+    # yest_mdy = str(yest.month) + "/" + str(yest.day).zfill(2) + "/" + str(yest.year).zfill(2)
+    # yest_mdy2 = str(yest.month) + "/" + str(yest.day) + "/" + str(yest.year)
     docs = []
     for i in range(1,4):
         url = "https://www.mlb.com/data-service/en/search?tags.slug=defense&page=" + str(i)
@@ -58,8 +61,9 @@ def find_defense():
     for vid in docs:
         match = False
         for k in vid['keywordsDisplay']:
-            if yest_ymd in k['displayName'] or yest_mdy in k['displayName']\
-                    or yest_mdy2 in k['displayName']:
+            # if yest_ymd in k['displayName'] or yest_mdy in k['displayName']\
+            #         or yest_mdy2 in k['displayName']:
+            if k['value'] in gamepks:
                 match = True
                 break
         if match:
@@ -70,8 +74,11 @@ def find_defense():
             # output = output + "[%s](%s) - %s\n\n" % (vid['blurb'], info['url'], vid['duration'][3:])
     if len(vids) > 0:
         output = "A random selection of defensive highlights:\n\n"
+        print(vids)
         shuffle(vids)
-        vids = sorted(vids[:10])
+        print(vids)
+        vids = vids[:10]
+        vids = sorted(vids)
         for v in vids:
             output = output + "[%s](%s) - %s\n\n" % (v[0],v[1],v[2])
         return output
@@ -95,6 +102,7 @@ def get_recaps(return_both=False):
     spoil_vids = []
     import copy
     for game in games:
+        gamepks.append(str(game['gamePk']))
         content = "https://statsapi.mlb.com" + game['content']['link']
         req = Request(content, headers={'User-Agent' : "ubuntu"})
         c = json.loads(urlopen(req).read().decode("utf-8"))
