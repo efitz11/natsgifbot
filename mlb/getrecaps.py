@@ -71,7 +71,7 @@ def find_defense():
     if len(vids) > 0:
         output = "A random selection of defensive highlights:\n\n"
         shuffle(vids)
-        vids = vids[:10]
+        vids = sorted(vids[:10])
         for v in vids:
             output = output + "[%s](%s) - %s\n\n" % (v[0],v[1],v[2])
         return output
