@@ -14,13 +14,20 @@ def get_todays_scores(team=None):
                     return format_single_game(game)
             else:
                 continue
+        else:
+            if game['status'] != 'future' and len(games) == 1:
+                return format_single_game(game)
 
         home = dict()
         away = dict()
         home['team'] = game['home_team']['code']
         away['team'] = game['away_team']['code']
-        home['score'] = game['home_team']['goals']
-        away['score'] = game['away_team']['goals']
+        if game['status'] == 'future':
+            home['score'] = ""
+            away['score'] = ""
+        else:
+            home['score'] = game['home_team']['goals']
+            away['score'] = game['away_team']['goals']
         if game['status'] == 'completed' or game['time'] == 'full-time':
             away['time'] = 'Final'
         elif game['time'] is not None:
