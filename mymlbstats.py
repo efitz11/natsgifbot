@@ -580,6 +580,10 @@ def get_single_game(team,delta=None,print_statcast=True):
         now = _get_date_from_delta(delta)
         import calendar
         output = "For %s, %d/%d/%d:\n\n" % (calendar.day_name[now.weekday()],now.month,now.day,now.year)
+    lgs = {'alwc':103,'nlwc':104}
+    standings = None
+    if team in lgs:
+        standings = get_lg_standings(lgs[team],wc=True)['records'][0]['teamRecords']
     checkdivs = False
     divs = {'nle':204,'nlc':205,'nlw':203,'ale':201,'alc':202,'alw':200}
     if team in divs:
@@ -597,6 +601,11 @@ def get_single_game(team,delta=None,print_statcast=True):
             homediv = game['teams']['home']['team']['division']['id']
             if divid == awaydiv or divid == homediv:
                 match = True
+        elif standings is not None:
+            for i in range(5):
+                if game['teams']['away']['team']['id'] == standings[i]['team']['id'] or \
+                    game['teams']['home']['team']['id'] == standings[i]['team']['id']:
+                    match = True
         else:
             if teamid is not None:
                 awayid = game['teams']['away']['team']['id']
@@ -2323,13 +2332,13 @@ if __name__ == "__main__":
     # get_mlb_teams()
     # print(get_single_game("chc"))
     # print(print_linescore("chc"))
-    # print(get_single_game("nle"))
+    print(get_single_game("nlwc"))
     # print(get_single_game("nationals",delta="+1"))
     # print(get_all_game_info(delta='-1'))
     # print(get_all_game_info(liveonly=True))
     # print(get_all_game_info())
     #get_ET_from_timestamp("2018-03-31T20:05:00Z")
-    # print(get_div_standings("nle"))
+    # print(get_div_standings("nlwc"))
     #bs = BoxScore.BoxScore(get_boxscore('529456'))
     #bs.print_box()
     # print(get_stat_leader('sb'))
@@ -2370,4 +2379,4 @@ if __name__ == "__main__":
     # print(batter_or_pitcher_vs("strasburg","nym"))
     # print(print_at_bats("Chris Davis", delta="-1"))
     # print(get_all_game_highlights("565905"))
-    print(find_game_highlights('wsh', delta="-1"))
+    # print(find_game_highlights('wsh', delta="-1"))
