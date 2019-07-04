@@ -584,6 +584,9 @@ def get_single_game(team,delta=None,print_statcast=True):
     standings = None
     if team in lgs:
         standings = get_lg_standings(lgs[team],wc=True)['records'][0]['teamRecords']
+        wcteams = []
+        for i in range(5):
+            wcteams.append(standings[i]['team']['id'])
     checkdivs = False
     divs = {'nle':204,'nlc':205,'nlw':203,'ale':201,'alc':202,'alw':200}
     if team in divs:
@@ -602,10 +605,9 @@ def get_single_game(team,delta=None,print_statcast=True):
             if divid == awaydiv or divid == homediv:
                 match = True
         elif standings is not None:
-            for i in range(5):
-                if game['teams']['away']['team']['id'] == standings[i]['team']['id'] or \
-                    game['teams']['home']['team']['id'] == standings[i]['team']['id']:
-                    match = True
+            if game['teams']['away']['team']['id'] in wcteams or \
+                game['teams']['home']['team']['id'] in wcteams:
+                match = True
         else:
             if teamid is not None:
                 awayid = game['teams']['away']['team']['id']
