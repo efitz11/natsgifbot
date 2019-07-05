@@ -585,6 +585,7 @@ def get_single_game(team,delta=None,print_statcast=True):
     if team in lgs:
         standings = get_lg_standings(lgs[team],wc=True)['records'][0]['teamRecords']
         wcteams = []
+        print_statcast = False
         for i in range(5):
             wcteams.append(standings[i]['team']['id'])
     checkdivs = False
