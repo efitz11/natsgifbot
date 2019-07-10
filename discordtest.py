@@ -658,6 +658,10 @@ async def tb(num:int=3):
     """get a random taco bell order"""
     await bot.say(tacobell.random_items(num))
 
+@bot.command()
+async def say(*message):
+    await bot.say(' '.join(message))
+
 @bot.event
 async def on_message(message):
     #stuff
