@@ -18,6 +18,10 @@ def gif(query):
         file = 'giflists/' + name[0] + '.csv'
         name = name[1:]
 
+    include_bryce = False
+    if "bryce" in query.lower() or "harper" in query.lower():
+        include_bryce = True
+
     for s in name:
         patterns.append(re.compile(s,re.IGNORECASE))
 
@@ -30,19 +34,25 @@ def gif(query):
                 matched = False
                 break
         if matched:
+            if "harper" in line.lower() and not include_bryce:
+                continue
             matches.append(line)
+
     f.close()
-    
+
+
     if len(matches) == 0:
-        return fuzzygif(query, file)
+        return fuzzygif(query, file, include_bryce=include_bryce)
     num = random.randint(0,len(matches)-1)
     return matches[num].strip()
 
-def fuzzygif(query, file):
+def fuzzygif(query, file, include_bryce=False):
     highest,score = "",0
     matches = []
     f = open(file,'r')
     for line in f:
+        if "harper" in line.lower() and not include_bryce:
+            continue
         search = ','.join(line.split(',')[:-1])
         sc = fuzz.partial_token_sort_ratio(query,search)
         if sc < 70:
