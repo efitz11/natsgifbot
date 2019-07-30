@@ -697,13 +697,12 @@ async def on_message(message):
             await bot.send_message(message.channel,"FUCK JOSE TABATA")
         if patternbenoit.search(message.content):
             await bot.send_message(message.channel,"balls.")
+        if patternshitbot.search(message.content):
+            await bot.send_message(message.channel, "Fuck off! I'm doing my best.")
         match = patternalexaplay.search(message.content)
         if match:
             query = message.content[match.end():]
             await bot.send_message(message.channel,get_youtube(query.strip()))
-        match = patternshitbot.search(message.content)
-        if match:
-            await_bot.send_message(message.channel, "Fuck off! I'm doing my best.")
 
         # if patterneaton.search(message.content):
         #     await bot.send_message(message.channel,"Miami University Great Adam Eaton*")
