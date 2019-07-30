@@ -27,6 +27,7 @@ patternpoop = re.compile('mets|phillies|braves',re.IGNORECASE)
 patternperf = re.compile('perfect game',re.IGNORECASE)
 patternbenoit = re.compile('benoit$',re.IGNORECASE)
 patternalexaplay = re.compile('alexa play', re.IGNORECASE)
+patternshitbot = re.compile('shit bot', re.IGNORECASE)
 # patterneaton = re.compile('(?<!(Miami University Great ))(Adam Eaton)', re.IGNORECASE)
 
 pidfile = 'discordbotpid.txt'
@@ -700,6 +701,9 @@ async def on_message(message):
         if match:
             query = message.content[match.end():]
             await bot.send_message(message.channel,get_youtube(query.strip()))
+        match = patternshitbot.search(message.content)
+        if match:
+            await_bot.send_message(message.channel, "Fuck off! I'm doing my best.")
 
         # if patterneaton.search(message.content):
         #     await bot.send_message(message.channel,"Miami University Great Adam Eaton*")
