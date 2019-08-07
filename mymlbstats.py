@@ -2258,7 +2258,7 @@ def _get_single_line_statcast(play):
         hasany = False
         try:
             if 'totalDistance' in hitdata:
-                dist = str(int(hitdata['totalDistance']))
+                dist = str(hitdata['totalDistance'])
                 hasany = True
             else:
                 dist = "n/a"
