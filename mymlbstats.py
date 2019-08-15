@@ -1673,7 +1673,10 @@ def compare_player_stats(playerlist,career=False,year=None, reddit=False):
         stats.append(s)
     # output = output + _print_table(statlist, stats) + "\n\n" + errors
     left = ['name']
-    output = output + utils.format_table(statlist, stats, reddit=reddit, left_list=left, repl_map=REPL_MAP)
+    reverse = ['cs','l','bb','hr','era','whip']
+    if type == 'hitting':
+        reverse.append('so')
+    output = output + utils.format_table(statlist, stats, reddit=reddit, left_list=left, repl_map=REPL_MAP, bold=True, low_stats=reverse)
     return output
 
 def get_player_spring_stats(playerid, year=None, type="hitting"):
