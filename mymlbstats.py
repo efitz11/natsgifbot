@@ -1673,9 +1673,10 @@ def compare_player_stats(playerlist,career=False,year=None, reddit=False):
         stats.append(s)
     # output = output + _print_table(statlist, stats) + "\n\n" + errors
     left = ['name']
-    reverse = ['cs','l','bb','hr','era','whip']
     if type == 'hitting':
-        reverse.append('so')
+        reverse = ['cs','so']
+    else:
+        reverse = ['l','bb','era','whip']
     output = output + utils.format_table(statlist, stats, reddit=reddit, left_list=left, repl_map=REPL_MAP, bold=True, low_stats=reverse)
     return output
 
