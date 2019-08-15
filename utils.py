@@ -39,13 +39,22 @@ def split_long_message(message, delim='\n'):
 
     return separate
 
-def format_reddit_table(labels, dicts, repl_map={}, left_list=[]):
+def is_number(s):
+    try:
+        float(s)
+        return True
+    except ValueError:
+        return False
+
+def format_reddit_table(labels, dicts, repl_map={}, left_list=[], bold=False, low_stats=[]):
     """
     Generates a reddit formatted table from a list of keys and a list of dicts for the data
     :param labels: list of dictionary keys that function as column labels
     :param dicts: list of python dictionaries containing the table data
     :param repl_map: a dict containing label mappings (dict key : column name)
     :param left_list: a list containing `dicts` keys to left justify (right is default)
+    :param bold: bolden highest (or lowest) values in a column
+    :param low_stats: list of stats where lower is better (for bolding)
     :return: string containing formatted table
     """
     # create a bunch of empty lines to start
@@ -62,17 +71,44 @@ def format_reddit_table(labels, dicts, repl_map={}, left_list=[]):
             lines[1] = "%s|:--" % (lines[1])
         else:
             lines[1] = "%s|--:" % (lines[1])
+
+        # find values to bold
+        boldlist = []
+        if is_number(dicts[0][label]):
+            if bold:
+                boldnum = -1
+                for i in range(len(dicts)):
+                    if i == 0:
+                        boldnum = float(dicts[i][label])
+                        boldlist.append(i)
+                    else:
+                        num = float(dicts[i][label])
+                        if label in low_stats:
+                            if num < boldnum:
+                                boldnum = num
+                                boldlist = [i]
+                            elif num == boldnum:
+                                boldlist.append(i)
+                        else:
+                            if num > boldnum:
+                                boldnum = num
+                                boldlist = [i]
+                            elif num == boldnum:
+                                boldlist.append(i)
+
         # construct the column
         for i in range(len(dicts)):
             if label in dicts[i]:
                 r = str(dicts[i][label])
+                if i in boldlist:
+                    r = "**%s**" % r
             else:
                 r = ""  # empty cell
             lines[i + 2] = "%s|%s" % (lines[i + 2], r)
 
     return '\n'.join(lines)
 
-def format_table(labels, dicts, repl_map={}, showlabels=True, linebreaknum=0, linebreak='', left_list=[], reddit=False, def_repl=True):
+def format_table(labels, dicts, repl_map={}, showlabels=True, linebreaknum=0, linebreak='', left_list=[], reddit=False, def_repl=True, bold=False, low_stats=[]):
     """
     Generates a formatted table if printed in monospace text
     :param labels: A list of column labels
@@ -83,13 +119,15 @@ def format_table(labels, dicts, repl_map={}, showlabels=True, linebreaknum=0, li
     :param linebreak: The string to print as a line break
     :param justmap: A list of keys from `dicts` to left justify instead of right
     :param reddit: True if you want to return a table formatted for reddit
+    :param bold: passes to format_reddit_table
+    :param low_stats: passes to format_reddit_table
     :return: A string containing the formatted table
     """
     if def_repl:
         repl_map = {'d':'2B', 't':'3B', **repl_map}
 
     if reddit:
-        return format_reddit_table(labels, dicts, repl_map=repl_map, left_list=left_list)
+        return format_reddit_table(labels, dicts, repl_map=repl_map, left_list=left_list, bold=bold, low_stats=low_stats)
 
     # create a bunch of empty lines to start
     lines = ['' for i in range(len(dicts) + 1)]
