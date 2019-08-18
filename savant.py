@@ -46,7 +46,7 @@ def get_last_five(game_json):
     cols = ['batter_name', 'result','hit_speed','hit_distance','hit_angle','xba']
     repl = {'batter_name':'batter','hit_speed':'EV','hit_distance':'dist','hit_angle':'LA'}
     left = ['batter_name', 'result']
-    output = "```%s```" % utils.format_table(cols,events,repl_map=repl,left_list=left)
+    output = "```python\n%s```" % utils.format_table(cols,events,repl_map=repl,left_list=left)
     return output
 
 def print_last_five_batters(team, delta=None):
