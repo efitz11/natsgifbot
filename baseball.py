@@ -7,6 +7,7 @@ from datetime import datetime, timedelta, time, date
 import mymlbstats
 from bs4 import BeautifulSoup
 import utils
+import savant
 
 class Baseball():
     def __init__(self,bot):
@@ -381,6 +382,9 @@ class Baseball():
         elif team[0] == "abs":
             team = ' '.join(team[1:]).lower()
             await self.bot.say("%s" % mymlbstats.print_at_bats(team, delta=delta))
+        elif team[0] == "savant":
+            team = ' '.join(team[1:]).lower()
+            await self.bot.say(savant.print_last_five_batters(team, delta=delta))
         else:
             teamname = ' '.join(team).lower()
             output = mymlbstats.get_single_game(teamname,delta=delta)
