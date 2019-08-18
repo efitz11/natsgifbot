@@ -39,7 +39,7 @@ def get_game(gamepk):
 def get_last_five(game_json):
     ev = game_json['exit_velocity']
     events = []
-    for i in range(5):
+    for i in range(1,6):
         idx = -i
         events.append(ev[idx])
 
