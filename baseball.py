@@ -119,8 +119,9 @@ class Baseball():
             delta = team[-1]
             team = team[:-1]
         elif len(team) > 0 and len(team[-1].split('/')) in [2,3]:
-            delta = self.convert_date_to_delta(team)
-            team = team[:-1]
+            if team[-1].split('/')[0].isdigit():
+                delta = self.convert_date_to_delta(team)
+                team = team[:-1]
         elif len(team) > 0 and team[-1].lower() in ['yesterday', 'tomorrow']:
             if team[-1] == 'yesterday':
                 delta = "-1"
