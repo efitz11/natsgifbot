@@ -1285,10 +1285,18 @@ def get_player_season_splits(name, split, type=None, year=None, active='Y', redd
         return output
 
 def get_player_trailing_splits(name, days=None, forcebatting=False, reddit=False):
-    player = _get_player_search(name)
-    if player is None:
-        return "No matching player found"
-    pitching = player['position'] == 'P'
+    names = [name]
+    if days is not None:
+        if '/' in name:
+            names = name.split('/')
+
+    players = []
+    for n in names:
+        players.append(_get_player_search(n))
+
+    output = ""
+    splits = []
+    pitching = players[0]['position'] == 'P'
     if forcebatting:
         pitching = False
 
@@ -1296,49 +1304,65 @@ def get_player_trailing_splits(name, days=None, forcebatting=False, reddit=False
         dayslist = [7,15,30,45,60]
     else:
         dayslist = [days]
-    urllist = []
 
-    now = datetime.now()
-    year = str(now.year)
+    for player in players:
+        if player is None:
+            output = output + "No matching player found\n"
 
-    for days in dayslist:
-        if pitching:
-            urllist.append("http://mlb.mlb.com/pubajax/wf/flow/stats.splayer?season=" + year +"&sort_order=%27asc%27&sort_column=%27era%27&stat_type=pitching&page_type=SortablePlayer" \
-              "&team_id=" + player['team_id'] + "&game_type=%27R%27&last_x_days="+str(days)+"&player_pool=ALL&season_type=ANY&sport_code=%27mlb%27&results=1000&position=%271%27&recSP=1&recPP=50")
-        else:
-            urllist.append("http://mlb.mlb.com/pubajax/wf/flow/stats.splayer?season=" + year +"&sort_order=%27desc%27&sort_column=%27avg%27&stat_type=hitting&page_type=SortablePlayer" \
-                  "&team_id=" + player['team_id'] + "&game_type=%27R%27&last_x_days="+str(days)+"&player_pool=ALL&season_type=ANY&sport_code=%27mlb%27&results=1000&recSP=1&recPP=50")
-    count = 0
-    splits = []
-    for url in urllist:
-        daynum = dayslist[count]
-        count += 1
-        print(url)
-        req = Request(url, headers={'User-Agent' : "ubuntu"})
-        s = json.loads(urlopen(req).read().decode("utf-8"))
-        s = s['stats_sortable_player']['queryResults']
-        if int(s['totalSize']) == 0:
-            return "No matching team found for player " + player['name_display_first_last']
-        for p in s['row']:
-            if p['player_id'] == player['player_id']:
-                p['days'] = daynum
-                splits.append(p)
+        urllist = []
 
-    if len(splits) == 0:
-        return "%s not found on team %s" % (player['name_display_first_last'],player['team_abbrev'])
+        now = datetime.now()
+        year = str(now.year)
+
+        for days in dayslist:
+            if pitching:
+                urllist.append("http://mlb.mlb.com/pubajax/wf/flow/stats.splayer?season=" + year +"&sort_order=%27asc%27&sort_column=%27era%27&stat_type=pitching&page_type=SortablePlayer" \
+                  "&team_id=" + player['team_id'] + "&game_type=%27R%27&last_x_days="+str(days)+"&player_pool=ALL&season_type=ANY&sport_code=%27mlb%27&results=1000&position=%271%27&recSP=1&recPP=50")
+            else:
+                urllist.append("http://mlb.mlb.com/pubajax/wf/flow/stats.splayer?season=" + year +"&sort_order=%27desc%27&sort_column=%27avg%27&stat_type=hitting&page_type=SortablePlayer" \
+                      "&team_id=" + player['team_id'] + "&game_type=%27R%27&last_x_days="+str(days)+"&player_pool=ALL&season_type=ANY&sport_code=%27mlb%27&results=1000&recSP=1&recPP=50")
+        count = 0
+        for url in urllist:
+            daynum = dayslist[count]
+            count += 1
+            print(url)
+            req = Request(url, headers={'User-Agent' : "ubuntu"})
+            s = json.loads(urlopen(req).read().decode("utf-8"))
+            s = s['stats_sortable_player']['queryResults']
+            if int(s['totalSize']) == 0:
+                return "No matching team found for player " + player['name_display_first_last']
+            for p in s['row']:
+                if p['player_id'] == player['player_id']:
+                    p['days'] = daynum
+                    if len(players) > 1:
+                        p['name'] = player['name_last']
+                        p['team'] = player['team_abbrev']
+                    splits.append(p)
+
+    # if len(splits) == 0:
+    #     return "%s not found on team %s" % (player['name_display_first_last'],player['team_abbrev'])
 
     if not pitching:
         stats = ['days','g','ab','h','d','t','hr','r','rbi','bb','so','sb','cs','avg','obp','slg','ops']
+        reverse = ['cs','so']
     else:
         stats = ['days','w','l','g','svo','sv','ip','so','bb','hr','era','whip']
+        reverse = ['l','bb','era','whip']
+    bold = False
     if len(dayslist) == 1:
-        output = "Last %d days for %s (%s):\n\n" % (dayslist[0], player['name_display_first_last'], player['team_abbrev'])
         stats.pop(0)
+        if len(players) > 1:
+            output = output + "Last %d days:\n\n" % (dayslist[0])
+            stats.insert(0,'team')
+            stats.insert(0,'name')
+            bold=True
+        else:
+            output = output + "Last %d days for %s (%s):\n\n" % (dayslist[0], player['name_display_first_last'], player['team_abbrev'])
     else:
         output = "Trailing splits for %s (%s):\n\n" % (player['name_display_first_last'], player['team_abbrev'])
     repl_map = {'d':'2B','t':'3B'}
-    # output = output + _print_table(stats,splits,repl_map=repl_map)
-    output = output + utils.format_table(stats, splits, repl_map=repl_map, reddit=reddit)
+    left = ['name','team']
+    output = output + utils.format_table(stats, splits, repl_map=repl_map, reddit=reddit, left_list=left, bold=bold, low_stats=reverse)
     return output
 
 def milb_player_search(name,parent=None):
