@@ -2273,6 +2273,51 @@ def print_at_bats(name, delta=None):
         return "No at-bats found for %s" % (player['name_display_first_last'])
     return output
 
+def print_pitches_by_inning(team, delta=None):
+    teamid = get_teamid(team)
+    if teamid is None:
+        return "No matching team found"
+    schedule = get_day_schedule(teamid=teamid, delta=delta)
+
+    output = ""
+
+    games = schedule['dates'][0]['games']
+    for game in games:
+        gamepk = game['gamePk']
+        pbp = get_pbp(gamepk)['allPlays']
+        away = game['teams']['away']['team']['id'] == teamid
+        half = "top" if not away else "bottom"
+        pitchers = []
+        columns = ['pitcher']
+        curpitcher = None
+        for play in pbp:
+            if play['about']['halfInning'] == half:
+                pitcher = play['matchup']['pitcher']['fullName']
+                inning = play['about']['inning']
+                inningstr = str(inning)
+                if curpitcher is None:
+                    curpitcher = pitcher
+                    p = dict()
+                    p['pitcher'] = pitcher
+                    p['1'] = len(play['pitchIndex'])
+                    columns.append(str(inning))
+                elif pitcher != curpitcher:
+                    curpitcher = pitcher
+                    pitchers.append(p)
+                    p = dict()
+                    p['pitcher'] = pitcher
+                    p[inningstr] = len(play['pitchIndex'])
+                    if inningstr not in columns:
+                        columns.append(str(inning))
+                else:
+                    if inningstr in p:
+                        p[inningstr] += len(play['pitchIndex'])
+                    else:
+                        p[inningstr] = len(play['pitchIndex'])
+                        columns.append(str(inning))
+        output = output + "```python\n%s```" % (utils.format_table(columns, pitchers))
+    return output
+
 def _get_single_line_statcast(play):
     curplayevent = play
     if 'type' in curplayevent['details']:
@@ -2363,7 +2408,7 @@ if __name__ == "__main__":
     # get_mlb_teams()
     # print(get_single_game("chc"))
     # print(print_linescore("chc"))
-    print(get_single_game("nlwc"))
+    # print(get_single_game("nlwc"))
     # print(get_single_game("nationals",delta="+1"))
     # print(get_all_game_info(delta='-1'))
     # print(get_all_game_info(liveonly=True))
@@ -2411,3 +2456,4 @@ if __name__ == "__main__":
     # print(print_at_bats("Chris Davis", delta="-1"))
     # print(get_all_game_highlights("565905"))
     # print(find_game_highlights('wsh', delta="-1"))
+    print(print_pitches_by_inning('wsh'))
