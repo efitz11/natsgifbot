@@ -2290,6 +2290,7 @@ def print_pitches_by_inning(team, delta=None):
         pitchers = []
         columns = ['pitcher']
         curpitcher = None
+        curtotal = 0
         for play in pbp:
             if play['about']['halfInning'] == half:
                 pitcher = play['matchup']['pitcher']['fullName']
@@ -2300,21 +2301,29 @@ def print_pitches_by_inning(team, delta=None):
                     p = dict()
                     p['pitcher'] = pitcher
                     p['1'] = len(play['pitchIndex'])
+                    curtotal += len(play['pitchIndex'])
                     columns.append(str(inning))
                 elif pitcher != curpitcher:
                     curpitcher = pitcher
                     pitchers.append(p)
+                    p['total'] = curtotal
                     p = dict()
                     p['pitcher'] = pitcher
                     p[inningstr] = len(play['pitchIndex'])
+                    curtotal = len(play['pitchIndex'])
                     if inningstr not in columns:
                         columns.append(str(inning))
                 else:
+                    curtotal += len(play['pitchIndex'])
                     if inningstr in p:
                         p[inningstr] += len(play['pitchIndex'])
                     else:
                         p[inningstr] = len(play['pitchIndex'])
                         columns.append(str(inning))
+        p['total'] = curtotal
+        pitchers.append(p)
+        columns.append('total')
+
         output = output + "```python\n%s```" % (utils.format_table(columns, pitchers))
     return output
 
