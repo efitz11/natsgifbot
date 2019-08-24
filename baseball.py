@@ -385,7 +385,7 @@ class Baseball():
             await self.bot.say("%s" % mymlbstats.print_at_bats(team, delta=delta))
         elif team[0] == "savant":
             team = ' '.join(team[1:]).lower()
-            await self.bot.say(savant.print_last_five_batters(team, delta=delta))
+            await self.bot.say(savant.print_player_or_team(team, delta=delta))
         elif team[0] == "pitches" or team[0] == "pbi":
             team = ' '.join(team[1:]).lower()
             await self.bot.say(mymlbstats.print_pitches_by_inning(team, delta=delta))
