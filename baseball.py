@@ -258,8 +258,8 @@ class Baseball():
             team = ' '.join(team[1:])
             await self.bot.say("```%s```" % mymlbstats.get_team_dl(team))
             return
-        elif team[0] in ['batters','pitchers']:
-            h = (team[0] == 'batters')
+        elif team[0] in ['batters', 'hitters', 'pitchers']:
+            h = (team[0] == 'batters' or team[0] == 'hitters')
             team = ' '.join(team[1:])
             await self.bot.say("```%s```" % mymlbstats.print_roster(team, hitters=h))
         elif team[0] in ['past', 'next']:
@@ -322,11 +322,13 @@ class Baseball():
             else:
                 await self.bot.say("No stats found")
             return
-        elif team[0] in ['batting','pitching','notes','info','bench','bullpen','box']:
+        elif team[0] in ['batting','hitting','pitching','notes','info','bench','bullpen','box']:
             if team[0] == 'box':
                 await self.bot.say("The box score is divided into parts: use one of: ```batting, pitching, notes, info, bench, bullpen```"
                                    "If you want the linescore, use: ```linescore```")
                 return
+            elif team[0] == 'hitting':
+                team[0] = 'batting'
             part = team[0]
             team = ' '.join(team[1:]).lower()
             out = mymlbstats.print_box(team, part=part, delta=delta)
