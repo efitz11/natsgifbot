@@ -1381,6 +1381,9 @@ def get_player_trailing_splits(name, days=None, forcebatting=False, reddit=False
         output = "Trailing splits for %s (%s):\n\n" % (player['name_display_first_last'], player['team_abbrev'])
     repl_map = {'d':'2B','t':'3B'}
     left = ['name','team']
+
+    if teamid is not None and len(players) > 1:
+        splits = sorted(splits, key=lambda x: int(x['ab']) if 'ab' in x else 0, reverse=True)
     output = output + utils.format_table(stats, splits, repl_map=repl_map, reddit=reddit, left_list=left, bold=bold, low_stats=reverse)
     return output
 
