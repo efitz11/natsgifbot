@@ -48,12 +48,12 @@ def get_player(game_json, playerid):
 def print_last_five_batters(team, delta=None):
     return get_last_five(get_game(find_gamepks(team, delta=delta)[0]))
 
-def print_player_abs(player):
+def print_player_abs(player, delta=None):
     p = mymlbstats._get_player_search(player)
     if p is None:
         return "No matching player found"
     teamid = int(p['team_id'])
-    return get_player(get_game(find_gamepks(None,teamid=teamid)[0]), int(p['player_id']))
+    return get_player(get_game(find_gamepks(None,teamid=teamid, delta=delta)[0]), int(p['player_id']))
 
 if __name__ == "__main__":
     # print(find_gamepks('wsh'))
