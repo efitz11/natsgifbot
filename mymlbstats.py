@@ -2296,12 +2296,16 @@ def print_pitches_by_inning(team, delta=None):
                 pitcher = play['matchup']['pitcher']['fullName']
                 inning = play['about']['inning']
                 inningstr = str(inning)
+                pitches = len(play['pitchIndex'])
+                for event in play['playEvents']:
+                    if event['type'] == "pickoff":
+                        pitches -= 1
                 if curpitcher is None:
                     curpitcher = pitcher
                     p = dict()
                     p['pitcher'] = pitcher
-                    p['1'] = len(play['pitchIndex'])
-                    curtotal += len(play['pitchIndex'])
+                    p['1'] = pitches
+                    curtotal += pitches
                     columns.append(str(inning))
                 elif pitcher != curpitcher:
                     curpitcher = pitcher
@@ -2309,16 +2313,16 @@ def print_pitches_by_inning(team, delta=None):
                     p['total'] = curtotal
                     p = dict()
                     p['pitcher'] = pitcher
-                    p[inningstr] = len(play['pitchIndex'])
-                    curtotal = len(play['pitchIndex'])
+                    p[inningstr] = pitches
+                    curtotal = pitches
                     if inningstr not in columns:
                         columns.append(str(inning))
                 else:
-                    curtotal += len(play['pitchIndex'])
+                    curtotal += pitches
                     if inningstr in p:
-                        p[inningstr] += len(play['pitchIndex'])
+                        p[inningstr] += pitches
                     else:
-                        p[inningstr] = len(play['pitchIndex'])
+                        p[inningstr] = pitches
                         columns.append(str(inning))
         p['total'] = curtotal
         pitchers.append(p)
