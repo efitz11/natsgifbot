@@ -28,15 +28,17 @@ def get_info_str(game_json):
     home['h'] = game_json['scoreboard']['linescore']['teams']['home']['hits']
     home['e'] = game_json['scoreboard']['linescore']['teams']['home']['errors']
     home['lob'] = game_json['scoreboard']['linescore']['teams']['home']['leftOnBase']
+    home['xba'] = game_json['scoreboard']['stats']['exitVelocity']['xbaTeam']['home']['xba']
     away['r'] = game_json['scoreboard']['linescore']['teams']['away']['runs']
     away['h'] = game_json['scoreboard']['linescore']['teams']['away']['hits']
     away['e'] = game_json['scoreboard']['linescore']['teams']['away']['errors']
     away['lob'] = game_json['scoreboard']['linescore']['teams']['away']['leftOnBase']
+    away['xba'] = game_json['scoreboard']['stats']['exitVelocity']['xbaTeam']['away']['xba']
     if len(game_json['scoreboard']['stats']['wpa']['gameWpa']) > 0:
         home['wp'] = round(game_json['scoreboard']['stats']['wpa']['gameWpa'][-1]['homeTeamWinProbability'], 2)
         away['wp'] = round(game_json['scoreboard']['stats']['wpa']['gameWpa'][-1]['awayTeamWinProbability'], 2)
 
-    cols = ['team','r','h','e','lob','wp']
+    cols = ['team','r','h','e','lob','xba','wp']
     left = ['team']
     dicts = [away, home]
 
@@ -53,7 +55,6 @@ def get_info_str(game_json):
     repl_map = {'name':'Last 3 WPA', 'wpa':'', 'top_name':'WPA Leaders','topwpa':'','space':''}
 
     return (utils.format_table(cols,dicts,left_list=left),
-            # utils.format_table(labs, topwpa, left_list=['name'], repl_map={'name':'WPA Leaders:'}),
             utils.format_table(labs, lastplays, left_list=['name','top_name'], repl_map=repl_map))
 
 def get_last_five(game_json):
