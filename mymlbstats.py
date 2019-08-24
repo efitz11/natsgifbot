@@ -1945,6 +1945,9 @@ def get_inning_plays(team, inning, delta=None):
                 balls -= 1
             if curplayevent['details']['isStrike']:
                 strikes -= 1
+            for event in play['playEvents']:
+                if 'eventType' in event['details'] and 'stolen_base' in event['details']['eventType']:
+                    output = output + "(%d out, %d-%d) %s\n\n" % (outs, balls, strikes, event['details']['description'])
         except:
             continue
         count = "(%d out, %d-%d)" % (outs, balls, strikes)
