@@ -55,7 +55,20 @@ def print_player_abs(player, delta=None):
     teamid = int(p['team_id'])
     return get_player(get_game(find_gamepks(None,teamid=teamid, delta=delta)[0]), int(p['player_id']))
 
+def print_player_or_team(query, delta=None):
+    teamid = mymlbstats.get_teamid(query)
+    if teamid is None:
+        p = mymlbstats._get_player_search(query)
+        if p is None:
+            return "Query did not match team or player"
+        teamid = int(p['team_id'])
+        return get_player(get_game(find_gamepks(None,teamid=teamid, delta=delta)[0]), int(p['player_id']))
+    else:
+        return get_last_five(get_game(find_gamepks(None, teamid=teamid, delta=delta)[0]))
+
+
 if __name__ == "__main__":
     # print(find_gamepks('wsh'))
-    print(print_player_abs("soto"))
+    # print(print_player_abs("soto"))
     # print(get_last_five(get_game(find_gamepks('wsh')[0])))
+    print(print_player_or_team("washin"))
