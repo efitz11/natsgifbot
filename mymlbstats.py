@@ -1290,9 +1290,22 @@ def get_player_trailing_splits(name, days=None, forcebatting=False, reddit=False
         if '/' in name:
             names = name.split('/')
 
+    teamid = None
     players = []
-    for n in names:
-        players.append(_get_player_search(n))
+    if len(names) == 1 and days is not None:
+        # see if it's a team
+        teamid = get_teamid(names[0])
+    if teamid is None:
+        for n in names:
+            players.append(_get_player_search(n))
+    else:
+        roster = get_team_info(teamid)['roster']
+        for player in roster:
+            if player['position']['code'] != "1":
+                player['team_id'] = str(player['parentTeamId'])
+                player['name'] = player['person']['lastName']
+                player['player_id'] = str(player['person']['id'])
+                players.append(player)
 
     output = ""
     splits = []
@@ -1334,9 +1347,11 @@ def get_player_trailing_splits(name, days=None, forcebatting=False, reddit=False
             for p in s['row']:
                 if p['player_id'] == player['player_id']:
                     p['days'] = daynum
-                    if len(players) > 1:
+                    if len(players) > 1 and teamid is None:
                         p['name'] = player['name_last']
                         p['team'] = player['team_abbrev']
+                    elif len(players) > 1 and teamid is not None:
+                        p['name'] = player['name']
                     splits.append(p)
 
     # if len(splits) == 0:
@@ -1353,7 +1368,8 @@ def get_player_trailing_splits(name, days=None, forcebatting=False, reddit=False
         stats.pop(0)
         if len(players) > 1:
             output = output + "Last %d days:\n\n" % (dayslist[0])
-            stats.insert(0,'team')
+            if teamid is None:
+                stats.insert(0,'team')
             stats.insert(0,'name')
             bold=True
         else:
@@ -2444,7 +2460,7 @@ if __name__ == "__main__":
     # print(get_player_line("cole"))
     # print(get_player_line("ryan zimmerman", delta="-4382"))
     # print(print_box('nationals','batting'))
-    # print(get_player_trailing_splits("Bryce Harper", days=7))
+    print(get_player_trailing_splits("mets", days=7))
     # print(get_player_gamelogs("Max Scherzer"))
     # print(get_team_schedule("wsh",3,backward=False))
     # print(get_team_dl('wsh'))
@@ -2472,4 +2488,4 @@ if __name__ == "__main__":
     # print(print_at_bats("Chris Davis", delta="-1"))
     # print(get_all_game_highlights("565905"))
     # print(find_game_highlights('wsh', delta="-1"))
-    print(print_pitches_by_inning('wsh'))
+    # print(print_pitches_by_inning('wsh'))
