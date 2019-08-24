@@ -3,33 +3,16 @@ import urllib
 import json
 import utils, mymlbstats
 
-def find_gamepks(team, delta=None):
-    teamid = mymlbstats.get_teamid(team)
+def find_gamepks(team, delta=None, teamid=None):
+    if teamid is None:
+        teamid = mymlbstats.get_teamid(team)
     s = mymlbstats.get_day_schedule(delta=delta, teamid=teamid)
 
     gamepks = []
 
     games = s['dates'][0]['games']
-    useabv = False
     for game in games:
-        if team == game['teams']['away']['team']['abbreviation'].lower() or \
-                team == game['teams']['home']['team']['abbreviation'].lower():
-            useabv = True
-    out = ""
-    for game in games:
-        awayname = game['teams']['away']['team']['name'].lower()
-        homename = game['teams']['home']['team']['name'].lower()
-        awayabv = game['teams']['away']['team']['abbreviation'].lower()
-        homeabv = game['teams']['home']['team']['abbreviation'].lower()
-        match = False
-        if useabv:
-            if team == awayabv or team == homeabv:
-                match = True
-        else:
-            if team in awayname or team in homename:
-                match = True
-        if match:
-            gamepks.append(game['gamePk'])
+        gamepks.append(game['gamePk'])
     return gamepks
 
 def get_game(gamepk):
@@ -49,9 +32,30 @@ def get_last_five(game_json):
     output = "```python\n%s```" % utils.format_table(cols,events,repl_map=repl,left_list=left)
     return output
 
+def get_player(game_json, playerid):
+    ev = game_json['exit_velocity']
+    events = []
+    for e in ev:
+        if e['batter'] == playerid:
+            events.append(e)
+
+    cols = ['batter_name', 'result','hit_speed','hit_distance','hit_angle','xba']
+    repl = {'batter_name':'batter','hit_speed':'EV','hit_distance':'dist','hit_angle':'LA'}
+    left = ['batter_name', 'result']
+    output = "```python\n%s```" % utils.format_table(cols,events,repl_map=repl,left_list=left)
+    return output
+
 def print_last_five_batters(team, delta=None):
     return get_last_five(get_game(find_gamepks(team, delta=delta)[0]))
 
+def print_player_abs(player):
+    p = mymlbstats._get_player_search(player)
+    if p is None:
+        return "No matching player found"
+    teamid = int(p['team_id'])
+    return get_player(get_game(find_gamepks(None,teamid=teamid)[0]), int(p['player_id']))
+
 if __name__ == "__main__":
     # print(find_gamepks('wsh'))
-    print(get_last_five(get_game(find_gamepks('wsh')[0])))
+    print(print_player_abs("soto"))
+    # print(get_last_five(get_game(find_gamepks('wsh')[0])))
