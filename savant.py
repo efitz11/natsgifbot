@@ -33,14 +33,25 @@ def get_info_str(game_json):
     away['e'] = game_json['scoreboard']['linescore']['teams']['away']['errors']
     away['lob'] = game_json['scoreboard']['linescore']['teams']['away']['leftOnBase']
     if len(game_json['scoreboard']['stats']['wpa']['gameWpa']) > 0:
-        home['wpa'] = game_json['scoreboard']['stats']['wpa']['gameWpa'][-1]['homeTeamWinProbability']
-        away['wpa'] = game_json['scoreboard']['stats']['wpa']['gameWpa'][-1]['awayTeamWinProbability']
+        home['wp'] = round(game_json['scoreboard']['stats']['wpa']['gameWpa'][-1]['homeTeamWinProbability'], 2)
+        away['wp'] = round(game_json['scoreboard']['stats']['wpa']['gameWpa'][-1]['awayTeamWinProbability'], 2)
 
-    cols = ['team','r','h','e','lob','wpa']
+    cols = ['team','r','h','e','lob','wp']
     left = ['team']
     dicts = [away, home]
 
-    return utils.format_table(cols,dicts,left_list=left)
+    # WPA leaders
+    lastplays = game_json['scoreboard']['stats']['wpa']['lastPlays']
+    for p in lastplays:
+        p['wpa'] = round(p['wpa'], 2)
+    labs = ['name', 'wpa']
+    topwpa = game_json['scoreboard']['stats']['wpa']['topWpaPlayers']
+    for p in topwpa:
+        p['wpa'] = round(p['wpa'], 2)
+
+    return (utils.format_table(cols,dicts,left_list=left),
+            utils.format_table(labs, topwpa, left_list=['name'], repl_map={'name':'WPA Leaders:'}),
+            utils.format_table(labs, lastplays, left_list=['name'], repl_map={'name':'Last 3 WPA:'}))
 
 def get_last_five(game_json):
     ev = game_json['exit_velocity']
@@ -50,10 +61,13 @@ def get_last_five(game_json):
     events.reverse()
 
     cols = ['batter_name', 'result','hit_speed','hit_distance','hit_angle','xba']
-    repl = {'batter_name':'batter','hit_speed':'EV','hit_distance':'dist','hit_angle':'LA'}
+    repl = {'batter_name':'last bb','hit_speed':'EV','hit_distance':'dist','hit_angle':'LA'}
     left = ['batter_name', 'result']
-    output = "```python\n%s```\n```python\n%s```" % (get_info_str(game_json),
-                                                     utils.format_table(cols,events,repl_map=repl,left_list=left))
+    info = get_info_str(game_json)
+    output = "```python\n%s```" % info[0]
+    output = output + "```python\n%s```" % info[1]
+    output = output + "```python\n%s```" % info[2]
+    output = output + "```python\n%s```" % utils.format_table(cols,events,repl_map=repl,left_list=left)
     return output
 
 def get_player(game_json, playerid):
