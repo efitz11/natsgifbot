@@ -44,14 +44,17 @@ def get_info_str(game_json):
     lastplays = game_json['scoreboard']['stats']['wpa']['lastPlays']
     for p in lastplays:
         p['wpa'] = round(p['wpa'], 2)
-    labs = ['name', 'wpa']
     topwpa = game_json['scoreboard']['stats']['wpa']['topWpaPlayers']
-    for p in topwpa:
-        p['wpa'] = round(p['wpa'], 2)
+    for i in range(len(topwpa)):
+        lastplays[i]['top_name'] = topwpa[i]['name']
+        lastplays[i]['topwpa'] = round(topwpa[i]['wpa'], 2)
+        lastplays[i]['space'] = ' | '
+    labs = ['name', 'wpa', 'space', 'top_name', 'topwpa']
+    repl_map = {'name':'Last 3 WPA', 'wpa':'', 'top_name':'WPA Leaders','topwpa':'','space':''}
 
     return (utils.format_table(cols,dicts,left_list=left),
-            utils.format_table(labs, topwpa, left_list=['name'], repl_map={'name':'WPA Leaders:'}),
-            utils.format_table(labs, lastplays, left_list=['name'], repl_map={'name':'Last 3 WPA:'}))
+            # utils.format_table(labs, topwpa, left_list=['name'], repl_map={'name':'WPA Leaders:'}),
+            utils.format_table(labs, lastplays, left_list=['name','top_name'], repl_map=repl_map))
 
 def get_last_five(game_json):
     ev = game_json['exit_velocity']
@@ -66,7 +69,6 @@ def get_last_five(game_json):
     info = get_info_str(game_json)
     output = "```python\n%s```" % info[0]
     output = output + "```python\n%s```" % info[1]
-    output = output + "```python\n%s```" % info[2]
     output = output + "```python\n%s```" % utils.format_table(cols,events,repl_map=repl,left_list=left)
     return output
 
