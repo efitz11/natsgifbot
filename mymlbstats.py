@@ -1290,6 +1290,7 @@ def get_player_trailing_splits(name, days=None, forcebatting=False, reddit=False
         if '/' in name:
             names = name.split('/')
 
+    output = ""
     teamid = None
     players = []
     if len(names) == 1 and days is not None:
@@ -1297,7 +1298,11 @@ def get_player_trailing_splits(name, days=None, forcebatting=False, reddit=False
         teamid = get_teamid(names[0])
     if teamid is None:
         for n in names:
-            players.append(_get_player_search(n))
+            player = _get_player_search(n)
+            if player is None:
+                output = output + "No matching player '%s' found\n" % n
+            else:
+                players.append(_get_player_search(n))
     else:
         roster = get_team_info(teamid)['roster']
         for player in roster:
@@ -1307,7 +1312,8 @@ def get_player_trailing_splits(name, days=None, forcebatting=False, reddit=False
                 player['player_id'] = str(player['person']['id'])
                 players.append(player)
 
-    output = ""
+    if len(players) == 0:
+        return output
     splits = []
     pitching = players[0]['position'] == 'P'
     if forcebatting:
@@ -1319,9 +1325,6 @@ def get_player_trailing_splits(name, days=None, forcebatting=False, reddit=False
         dayslist = [days]
 
     for player in players:
-        if player is None:
-            output = output + "No matching player found\n"
-
         urllist = []
 
         now = datetime.now()
@@ -2460,7 +2463,7 @@ if __name__ == "__main__":
     # print(get_player_line("cole"))
     # print(get_player_line("ryan zimmerman", delta="-4382"))
     # print(print_box('nationals','batting'))
-    print(get_player_trailing_splits("mets", days=7))
+    print(get_player_trailing_splits("wsh", days=7))
     # print(get_player_gamelogs("Max Scherzer"))
     # print(get_team_schedule("wsh",3,backward=False))
     # print(get_team_dl('wsh'))
