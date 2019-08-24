@@ -22,9 +22,9 @@ def get_game(gamepk):
 def get_last_five(game_json):
     ev = game_json['exit_velocity']
     events = []
-    for i in range(1, min(len(ev), 6)):
-        idx = -i
-        events.append(ev[idx])
+    for event in ev[-5:]:
+        events.append(event)
+    events.reverse()
 
     cols = ['batter_name', 'result','hit_speed','hit_distance','hit_angle','xba']
     repl = {'batter_name':'batter','hit_speed':'EV','hit_distance':'dist','hit_angle':'LA'}
