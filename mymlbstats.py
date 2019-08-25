@@ -1327,7 +1327,7 @@ def get_player_trailing_splits(name, days=None, forcebatting=False, reddit=False
     output = ""
     teamid = None
     players = []
-    if len(names) == 1 and days is not None:
+    if len(names) == 1:
         # see if it's a team
         teamid = get_teamid(names[0])
     if teamid is None:
@@ -1338,6 +1338,8 @@ def get_player_trailing_splits(name, days=None, forcebatting=False, reddit=False
             else:
                 players.append(_get_player_search(n))
     else:
+        if days is None:
+            days = 7
         roster = get_team_info(teamid)['roster']
         for player in roster:
             if player['position']['code'] != "1":
