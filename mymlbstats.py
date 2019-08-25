@@ -1010,9 +1010,41 @@ def get_player_line(name, delta=None, player=None, schedule=None):
                 s['strikeOuts'],
                 s['stolenBases'],
                 s['caughtStealing'])
-            print(output)
         if not hasstats:
             output = output + "No stats for %s on %d/%d vs %s\n" % (disp_name, d.month, d.day, opp.upper())
+        if pitcher:
+            savantdata = utils.get_json("https://baseballsavant.mlb.com/gf?game_pk=%d" % gamepk)
+            if side == "home":
+                key = 'home_pitchers'
+            else:
+                key = 'away_pitchers'
+            pitcher_data = None
+            if str(pid) in savantdata[key]:
+                pitcher_data = savantdata[key][str(pid)]
+            if pitcher_data is not None:
+                pitches = []
+                pitchtypes = pitcher_data[0]['pitch_types']
+                pitch_data = pitcher_data[0]['avg_pitch_speed']
+                for p in pitch_data:
+                    if 'B' in p['results']:
+                        p['b'] = p['results']['B']
+                    if 'S' in p['results']:
+                        p['s'] = p['results']['S']
+                    if 'X' in p['results']:
+                        p['x'] = p['results']['X']
+                    pitches.append(p)
+                cols = ['pitch_type', 'count', 'swinging_strikes', 'called_strikes', 'fouls',
+                        'balls_in_play', 'avg_pitch_speed', 'min_pitch_speed', 'max_pitch_speed']
+                replace = {'pitch_type':'pitch',
+                           'swinging_strikes':'swstr',
+                           'called_strikes':'called',
+                           'balls_in_play':'bip',
+                           'avg_pitch_speed':'avg',
+                           'min_pitch_speed':'min',
+                           'max_pitch_speed':'max'}
+                output = output + "\n%s" % (utils.format_table(cols, pitches, repl_map=replace))
+
+
     return output
 
 def get_ohtani_line(delta=None):
@@ -2464,9 +2496,9 @@ if __name__ == "__main__":
     # print(get_player_season_stats("shohei ohtani", type="pitching"))
     # print(get_player_season_stats("jose guillen"))
     # print(get_player_line("cole"))
-    # print(get_player_line("ryan zimmerman", delta="-4382"))
+    print(get_player_line("quintana", delta="-1"))
     # print(print_box('nationals','batting'))
-    print(get_player_trailing_splits("wsh", days=7))
+    # print(get_player_trailing_splits("wsh", days=7))
     # print(get_player_gamelogs("Max Scherzer"))
     # print(get_team_schedule("wsh",3,backward=False))
     # print(get_team_dl('wsh'))
