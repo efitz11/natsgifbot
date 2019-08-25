@@ -1036,8 +1036,10 @@ def get_player_line(name, delta=None, player=None, schedule=None):
                 cols = ['pitch_type', 'count', 'swinging_strikes', 'called_strikes', 'fouls',
                         'balls_in_play', 'avg_pitch_speed', 'min_pitch_speed', 'max_pitch_speed']
                 replace = {'pitch_type':'pitch',
+                           'count':'#',
                            'swinging_strikes':'swstr',
                            'called_strikes':'called',
+                           'fouls':'foul',
                            'balls_in_play':'bip',
                            'avg_pitch_speed':'avg',
                            'min_pitch_speed':'min',
@@ -2496,7 +2498,7 @@ if __name__ == "__main__":
     # print(get_player_season_stats("shohei ohtani", type="pitching"))
     # print(get_player_season_stats("jose guillen"))
     # print(get_player_line("cole"))
-    print(get_player_line("quintana", delta="-1"))
+    print(get_player_line("ross", delta="-1"))
     # print(print_box('nationals','batting'))
     # print(get_player_trailing_splits("wsh", days=7))
     # print(get_player_gamelogs("Max Scherzer"))
