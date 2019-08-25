@@ -28,7 +28,8 @@ def get_info_str(game_json):
     home['h'] = game_json['scoreboard']['linescore']['teams']['home']['hits']
     home['e'] = game_json['scoreboard']['linescore']['teams']['home']['errors']
     home['lob'] = game_json['scoreboard']['linescore']['teams']['home']['leftOnBase']
-    home['xba'] = game_json['scoreboard']['stats']['exitVelocity']['xbaTeam']['home']['xba']
+    if 'home' in game_json['scoreboard']['stats']['exitVelocity']['xbaTeam']:
+        home['xba'] = game_json['scoreboard']['stats']['exitVelocity']['xbaTeam']['home']['xba']
     away['r'] = game_json['scoreboard']['linescore']['teams']['away']['runs']
     away['h'] = game_json['scoreboard']['linescore']['teams']['away']['hits']
     away['e'] = game_json['scoreboard']['linescore']['teams']['away']['errors']
