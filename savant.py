@@ -1,7 +1,5 @@
-from urllib.request import urlopen, Request
-import urllib
-import json
 import utils, mymlbstats
+from datetime import datetime, timedelta
 
 def find_gamepks(team, delta=None, teamid=None):
     if teamid is None:
@@ -108,9 +106,20 @@ def print_player_or_team(query, delta=None):
     else:
         return get_last_five(get_game(find_gamepks(None, teamid=teamid, delta=delta)[0]))
 
+def get_oaa_leaders(year=None):
+    now = datetime.now()
+    if year is None:
+        year = now.year
+    url = "https://baseballsavant.mlb.com/outs_above_average?type=player&year=%s&min=q&csv=true" % (str(year))
+    players = utils.csv_to_dicts(url)[:10]
+    cols = ['last_name', 'name_abbrev','oaa']
+    replace = {'last_name':'player', 'name_abbrev':'team'}
+    left = ['last_name','name_abbrev']
+    return "```python\n%s```" % utils.format_table(cols, players,repl_map=replace, left_list=left)
 
 if __name__ == "__main__":
     # print(find_gamepks('wsh'))
     # print(print_player_abs("soto"))
     # print(get_last_five(get_game(find_gamepks('wsh')[0])))
-    print(print_player_or_team("washin"))
+    # print(print_player_or_team("washin"))
+    print(get_oaa_leaders())

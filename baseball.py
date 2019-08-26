@@ -12,6 +12,7 @@ import savant
 class Baseball():
     def __init__(self,bot):
         self.bot = bot
+        self.savant_stats = ['oaa']
         
     @commands.command()
     async def br(self, *query:str):
@@ -297,6 +298,14 @@ class Baseball():
             return
         elif team[0].endswith("leaders") or team[0].endswith("losers"):
             stat = team[1]
+
+            if stat in self.savant_stats:
+                year = None
+                if team[-1].isdigit():
+                    year = team[-1]
+                await self.bot.say(savant.get_oaa_leaders(year=year))
+                return
+
             opts = []
             for i in range(2,len(team)):
                 opts.append(team[i])
