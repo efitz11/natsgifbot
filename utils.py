@@ -2,12 +2,18 @@ from urllib.request import urlopen, Request
 import json
 import os
 import datetime,time
-
+import csv
+import requests
 
 def get_json(url, encoding="utf-8"):
     print(url)
     req = Request(url, headers={'User-Agent': "ubuntu"})
     return json.loads(urlopen(req).read().decode(encoding))
+
+def get_page(url, encoding="utf-8"):
+    print(url)
+    req = Request(url, headers={'User-Agent': "ubuntu"})
+    return urlopen(req).read().decode(encoding)
 
 def get_keys(name):
     """
@@ -229,3 +235,8 @@ def prettydate(d):
         return '1 hour ago'
     else:
         return '{:.0f} hours ago'.format(s/3600)
+
+def csv_to_dicts(url):
+    r = requests.get(url)
+    text = r.iter_lines(decode_unicode=True)
+    return [{k: v for k, v in row.items()} for row in csv.DictReader(text)]
