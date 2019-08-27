@@ -10,3 +10,4 @@ channelids.txt
 .idea/*
 keys.json
 errors/
+/venv/
