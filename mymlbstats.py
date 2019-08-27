@@ -1330,9 +1330,14 @@ def get_player_season_splits(name, split, type='hitting', year=None, active='Y',
             print(url)
             try:
                 json = _get_json(url)['sport_'+type+'_sits_composed']['sport_'+type+'_sits_total']['queryResults']['row']
-                json['name'] = player['name_display_first_last']
+                if 'name_display_first_last' in player:
+                    json['name'] = player['name_display_first_last']
+                else:
+                    json['name'] = player['person']['fullName']
                 results.append(json)
-            except KeyError:
+            except KeyError as e:
+                print(e)
+                print(player)
                 continue
 
         if len(players) == 1 and len(results) > 0:
@@ -1344,7 +1349,7 @@ def get_player_season_splits(name, split, type='hitting', year=None, active='Y',
 
     if len(players) > 1:
         stats.insert(0, 'name')
-    output = output + utils.format_table(stats,results,repl_map={'situation':'split'}, reddit=reddit)
+    output = output + utils.format_table(stats,results,repl_map={'situation':'split'}, left_list=['name'], reddit=reddit)
     return output
 
 def get_player_trailing_splits(name, days=None, forcebatting=False, reddit=False):
