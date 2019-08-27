@@ -66,10 +66,28 @@ def get_last_five(game_json):
     cols = ['batter_name', 'result','hit_speed','hit_distance','hit_angle','xba']
     repl = {'batter_name':'last bb','hit_speed':'EV','hit_distance':'dist','hit_angle':'LA'}
     left = ['batter_name', 'result']
+    return "```python\n%s```" % utils.format_table(cols,events,repl_map=repl,left_list=left)
+
+def get_top_five(game_json):
+    ev = game_json['exit_velocity']
+    ev = sorted(ev, key=lambda k: float(k['hit_speed']), reverse=True)[:5]
+    # for event in ev:
+    #     events.append(event)
+    # events.reverse()
+
+    cols = ['batter_name', 'result','hit_speed','hit_distance','hit_angle','xba']
+    repl = {'batter_name':'Top EV','hit_speed':'EV','hit_distance':'dist','hit_angle':'LA'}
+    left = ['batter_name', 'result']
+    return "```python\n%s```" % utils.format_table(cols,ev,repl_map=repl,left_list=left)
+
+def get_five(game_json):
     info = get_info_str(game_json)
     output = "```python\n%s```" % info[0]
     output = output + "```python\n%s```" % info[1]
-    output = output + "```python\n%s```" % utils.format_table(cols,events,repl_map=repl,left_list=left)
+    if game_json['scoreboard']['status']['statusCode'] == 'F':
+        output = output + get_top_five(game_json)
+    else:
+        output = output + get_last_five(game_json)
     return output
 
 def get_player(game_json, playerid):
@@ -104,7 +122,7 @@ def print_player_or_team(query, delta=None):
         teamid = int(p['team_id'])
         return get_player(get_game(find_gamepks(None,teamid=teamid, delta=delta)[0]), int(p['player_id']))
     else:
-        return get_last_five(get_game(find_gamepks(None, teamid=teamid, delta=delta)[0]))
+        return get_five(get_game(find_gamepks(None, teamid=teamid, delta=delta)[0]))
 
 def get_oaa_leaders(year=None):
     now = datetime.now()
@@ -121,5 +139,5 @@ if __name__ == "__main__":
     # print(find_gamepks('wsh'))
     # print(print_player_abs("soto"))
     # print(get_last_five(get_game(find_gamepks('wsh')[0])))
-    # print(print_player_or_team("washin"))
-    print(get_oaa_leaders())
+    print(print_player_or_team("col"))
+    # print(get_oaa_leaders())
