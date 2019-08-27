@@ -1349,7 +1349,7 @@ def get_player_season_splits(name, split, type='hitting', year=None, active='Y',
 
     if len(players) > 1:
         stats.insert(0, 'name')
-    output = output + utils.format_table(stats,results,repl_map={'situation':'split'}, left_list=['name'], reddit=reddit)
+    output = output + utils.format_table(stats,results,repl_map={'situation':'split'}, left_list=['name'], reddit=reddit, bold=True)
     return output
 
 def get_player_trailing_splits(name, days=None, forcebatting=False, reddit=False):
