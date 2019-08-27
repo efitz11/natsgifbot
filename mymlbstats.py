@@ -35,6 +35,34 @@ def _is_spring():
             return True
     return False
 
+def _parse_players(input, pitchers=False):
+    """
+    Reads the input and returns a list of players
+    The list is either the input split by slashes or the roster of the input team
+    Roster list will only be hitters unless pitchers is True
+    """
+    players = []
+    teamid = get_teamid(input)
+    if teamid is None:
+        names = [input]
+        if '/' in input:
+            names = input.split('/')
+        for n in names:
+            player = _get_player_search(n)
+            if player is not None:
+                players.append(player)
+    else:
+        roster = get_team_info(teamid)['roster']
+        for player in roster:
+            player['team_id'] = str(player['parentTeamId'])
+            player['name'] = player['person']['lastName']
+            player['player_id'] = str(player['person']['id'])
+            if not pitchers and player['position']['code'] != "1":
+                players.append(player)
+            elif pitchers and player['position']['code'] == "1":
+                players.append(player)
+    return players
+
 def get_ET_from_timestamp(timestamp):
     utc = datetime.strptime(timestamp,"%Y-%m-%dT%H:%M:00Z") #"2018-03-31T20:05:00Z",
     nowtime = time.time()
@@ -1254,7 +1282,7 @@ def player_vs_team(name, team, year=None, reddit=False):
     output = output + utils.format_table(stats, totals, repl_map=repl_map, reddit=reddit)
     return output
 
-def get_player_season_splits(name, split, type=None, year=None, active='Y', reddit=False):
+def get_player_season_splits(name, split, type='hitting', year=None, active='Y', reddit=False):
     split = split.lower()
     splitsmap = {'vsl':'vl','vsr':'vr','home':'h','away':'a','grass':'g','turf':'t','day':'d','night':'n',
                  'march':'3','april':'4','may':'5','june':'6','july':'7','august':'8','september':'9','october':'10',
@@ -1270,53 +1298,54 @@ def get_player_season_splits(name, split, type=None, year=None, active='Y', redd
     if '/' in split:
         splits = split.split('/')
     else:
-        splits = []
+        splits = [split]
 
-    player = _get_player_search(name, active=active)
-    if player is None:
-        return "No matching player found"
-    if year == None and active == 'N':
-        career = True
     if year is None:
         now = datetime.now()
         year = str(now.year)
-    pos = player['position']
-    type="hitting"
-    if pos == 'P':
-        type="pitching"
 
-    if len(splits) == 0 and split == "months":
-        splits = ['march','april','may','june','july','august','september','october']
-    elif len(splits) == 0:
-        splits = [split]
-
-    results = []
-    for split in splits:
-        if split != 'months' and split not in splitsmap:
-            return "split %s not found" % split
-        url = "http://lookup-service-prod.mlb.com/json/named.sport_" + type + "_sits_composed.bam?league_list_id=%27mlb_hist%27&game_type=%27R%27" \
-              "&season=" + year + "&player_id=" + player['player_id'] + "&sit_code=%27" + splitsmap[split] + "%27"
-        print(url)
-        try:
-            json = _get_json(url)['sport_'+type+'_sits_composed']['sport_'+type+'_sits_total']['queryResults']['row']
-            results.append(json)
-        except KeyError:
-            continue
+    output = ""
+    players = _parse_players(name)
+    if len(players) > 1:
+        splits = [splits[0]]
+    else:
+        if len(splits) == 0 and split == "months":
+            splits = ['march','april','may','june','july','august','september','october']
+        elif len(splits) == 0:
+            splits = [split]
 
     if type == "hitting":
-        stats = ['situation','ab','h','d','t','hr','r','rbi','bb','so','sb','cs','avg','obp','slg','ops']
+        stats = ['situation', 'ab', 'h', 'd', 't', 'hr', 'r', 'rbi', 'bb', 'so', 'sb', 'cs', 'avg', 'obp', 'slg', 'ops']
     else:
-        stats = ['situation','w','l','g','svo','sv','ip','h','r','so','bb','hr','era','whip']
+        stats = ['situation', 'w', 'l', 'g', 'svo', 'sv', 'ip', 'h', 'r', 'so', 'bb', 'hr', 'era', 'whip']
 
-    if len(results) > 0:
-        if len(splits) == 1:
-            output = "%s's %s splits (%s):\n\n" % (player['name_display_first_last'], results[0]['situation'], results[0]['season'])
-            stats.pop(0)
-        else:
-            output = "%s's splits (%s):\n\n" % (player['name_display_first_last'], results[0]['season'])
-        # output = output + _print_table(stats,results,repl_map={'situation':'split'})
-        output = output + utils.format_table(stats,results,repl_map={'situation':'split'}, reddit=reddit)
-        return output
+    results = []
+    for player in players:
+        # pos = player['position']
+        for split in splits:
+            if split != 'months' and split not in splitsmap:
+                return "split %s not found" % split
+            url = "http://lookup-service-prod.mlb.com/json/named.sport_" + type + "_sits_composed.bam?league_list_id=%27mlb_hist%27&game_type=%27R%27" \
+                  "&season=" + year + "&player_id=" + player['player_id'] + "&sit_code=%27" + splitsmap[split] + "%27"
+            print(url)
+            try:
+                json = _get_json(url)['sport_'+type+'_sits_composed']['sport_'+type+'_sits_total']['queryResults']['row']
+                json['name'] = player['name_display_first_last']
+                results.append(json)
+            except KeyError:
+                continue
+
+        if len(players) == 1 and len(results) > 0:
+            if len(splits) == 1:
+                output = output + "%s's %s splits (%s):\n\n" % (player['name_display_first_last'], results[0]['situation'], results[0]['season'])
+                stats.pop(0)
+            else:
+                output = output + "%s's splits (%s):\n\n" % (player['name_display_first_last'], results[0]['season'])
+
+    if len(players) > 1:
+        stats.insert(0, 'name')
+    output = output + utils.format_table(stats,results,repl_map={'situation':'split'}, reddit=reddit)
+    return output
 
 def get_player_trailing_splits(name, days=None, forcebatting=False, reddit=False):
     names = [name]
@@ -1336,7 +1365,7 @@ def get_player_trailing_splits(name, days=None, forcebatting=False, reddit=False
             if player is None:
                 output = output + "No matching player '%s' found\n" % n
             else:
-                players.append(_get_player_search(n))
+                players.append(player)
     else:
         if days is None:
             days = 7
@@ -2500,7 +2529,7 @@ if __name__ == "__main__":
     # print(get_player_season_stats("shohei ohtani", type="pitching"))
     # print(get_player_season_stats("jose guillen"))
     # print(get_player_line("cole"))
-    print(get_player_line("ross", delta="-1"))
+    # print(get_player_line("ross", delta="-1"))
     # print(print_box('nationals','batting'))
     # print(get_player_trailing_splits("wsh", days=7))
     # print(get_player_gamelogs("Max Scherzer"))
@@ -2510,7 +2539,7 @@ if __name__ == "__main__":
     # print(get_milb_season_stats("alejandro de aza"))
     # print(get_milb_season_stats("carter kieboom",year="2017"))
     # print(search_highlights("Murphy"))
-    # print(get_player_season_splits("Bryce Harper","months"))
+    print(get_player_season_splits("wsh","august"))
     # print(player_vs_team("chris archer","wsh"))
     # print(pitcher_vs_team("corbin", "sf"))
     # print(player_vs_pitcher("kendrick", "samardzija"))
@@ -2531,3 +2560,4 @@ if __name__ == "__main__":
     # print(get_all_game_highlights("565905"))
     # print(find_game_highlights('wsh', delta="-1"))
     # print(print_pitches_by_inning('wsh'))
+    # print(_parse_players("harper/eaton"))

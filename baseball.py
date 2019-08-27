@@ -228,15 +228,16 @@ class Baseball():
                 await self.bot.say("```%s```" % mymlbstats.compare_player_stats(playerlist, reddit=reddit))
             else:
                 await self.bot.say("```%s```" % mymlbstats.compare_player_stats(playerlist, year=year, reddit=reddit))
-        elif team[0] == 'splits':
+        elif team[0] in ['splits', 'psplits']:
+            t = 'pitching' if team[0] == 'psplits' else 'hitting'
             split = team[1]
             if team[-1].isdigit():
                 year = team[-1]
                 player = ' '.join(team[2:-1])
-                await self.bot.say("```%s```" % mymlbstats.get_player_season_splits(player,split,year=year, reddit=reddit))
+                await self.bot.say("```%s```" % mymlbstats.get_player_season_splits(player,split,year=year, type=t, reddit=reddit))
             else:
                 player = ' '.join(team[2:])
-                await self.bot.say("```%s```" % mymlbstats.get_player_season_splits(player,split, reddit=reddit))
+                await self.bot.say("```%s```" % mymlbstats.get_player_season_splits(player,split, type=t, reddit=reddit))
             return
         elif team[0] == 'vs':
             opp = team[1]
