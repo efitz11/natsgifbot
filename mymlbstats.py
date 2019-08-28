@@ -1510,7 +1510,10 @@ def get_milb_season_stats(name, type="hitting",year=None):
     pres = utils.get_json(statsapi_url)
     if len(pres['people']) > 0 and 'draftYear' in pres['people'][0]:
         draftyear = pres['people'][0]['draftYear']
-        draftinfo = pres['people'][0]['drafts'][-1]
+        drafts = pres['people'][0]['drafts']
+        for d in drafts:
+            if d['year'] == str(draftyear):
+                draftinfo = d
     else:
         draftyear = None
         draftinfo = None
