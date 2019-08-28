@@ -1,9 +1,7 @@
 import discord
 from discord.ext import commands
 import random
-import mlbgame
 from datetime import datetime, timedelta, time
-import praw, prawcore.exceptions
 import re, json, os
 import asyncio
 from urllib.request import urlopen, Request
@@ -712,20 +710,20 @@ updater = mymlbgame.Updater()
 async def my_bg_task():
     await bot.wait_until_ready()
     channel = discord.Object(id = main_chid)
-    while not bot.is_closed:
+    # while not bot.is_closed:
         #print("update")
-        teamname = "Astros"
-        now = datetime.now() - timedelta(hours=3)
-        day = mlbgame.day(now.year, now.month, now.day, home=teamname, away=teamname)
+        # teamname = "Astros"
+        # now = datetime.now() - timedelta(hours=3)
+        # day = mlbgame.day(now.year, now.month, now.day, home=teamname, away=teamname)
         
-        if len(day) > 0 :
-            game = day[0]
-            id = game.game_id
-            output = updater.update(id)
-            if output != "" and output != None:
-                output = "```python\n" + output + "```"
-                await bot.send_message(channel,output)
-        await asyncio.sleep(15)
+        # if len(day) > 0 :
+        #     game = day[0]
+        #     id = game.game_id
+        #     output = updater.update(id)
+        #     if output != "" and output != None:
+        #         output = "```python\n" + output + "```"
+        #         await bot.send_message(channel,output)
+        # await asyncio.sleep(15)
         
 async def update_mlbtr():
     await bot.wait_until_ready()
