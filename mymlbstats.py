@@ -2407,38 +2407,39 @@ def print_pitches_by_inning(team, delta=None):
 
         output = output + "```python\n%s```" % (utils.format_table(columns, pitchers))
 
-        savantdata = utils.get_json("https://baseballsavant.mlb.com/gf?game_pk=%d" % gamepk)
-        if not away:
-            key = 'home_pitchers'
-        else:
-            key = 'away_pitchers'
-        pitcher_data = None
-        if str(playerid) in savantdata[key]:
-            pitcher_data = savantdata[key][str(playerid)]
-        if pitcher_data is not None:
-            pitches = []
-            pitchtypes = pitcher_data[0]['pitch_types']
-            pitch_data = pitcher_data[0]['avg_pitch_speed']
-            for p in pitch_data:
-                if 'B' in p['results']:
-                    p['b'] = p['results']['B']
-                if 'S' in p['results']:
-                    p['s'] = p['results']['S']
-                if 'X' in p['results']:
-                    p['x'] = p['results']['X']
-                pitches.append(p)
-            cols = ['pitch_type', 'count', 'swinging_strikes', 'called_strikes', 'fouls',
-                    'balls_in_play', 'avg_pitch_speed', 'min_pitch_speed', 'max_pitch_speed']
-            replace = {'pitch_type':'pitch',
-                       'count':'#',
-                       'swinging_strikes':'swstr',
-                       'called_strikes':'called',
-                       'fouls':'foul',
-                       'balls_in_play':'bip',
-                       'avg_pitch_speed':'avg',
-                       'min_pitch_speed':'min',
-                       'max_pitch_speed':'max'}
-            output = output + "```\n%s```" % (utils.format_table(cols, pitches, repl_map=replace))
+        if not useteam:
+            savantdata = utils.get_json("https://baseballsavant.mlb.com/gf?game_pk=%d" % gamepk)
+            if not away:
+                key = 'home_pitchers'
+            else:
+                key = 'away_pitchers'
+            pitcher_data = None
+            if str(playerid) in savantdata[key]:
+                pitcher_data = savantdata[key][str(playerid)]
+            if pitcher_data is not None:
+                pitches = []
+                pitchtypes = pitcher_data[0]['pitch_types']
+                pitch_data = pitcher_data[0]['avg_pitch_speed']
+                for p in pitch_data:
+                    if 'B' in p['results']:
+                        p['b'] = p['results']['B']
+                    if 'S' in p['results']:
+                        p['s'] = p['results']['S']
+                    if 'X' in p['results']:
+                        p['x'] = p['results']['X']
+                    pitches.append(p)
+                cols = ['pitch_type', 'count', 'swinging_strikes', 'called_strikes', 'fouls',
+                        'balls_in_play', 'avg_pitch_speed', 'min_pitch_speed', 'max_pitch_speed']
+                replace = {'pitch_type':'pitch',
+                           'count':'#',
+                           'swinging_strikes':'swstr',
+                           'called_strikes':'called',
+                           'fouls':'foul',
+                           'balls_in_play':'bip',
+                           'avg_pitch_speed':'avg',
+                           'min_pitch_speed':'min',
+                           'max_pitch_speed':'max'}
+                output = output + "```\n%s```" % (utils.format_table(cols, pitches, repl_map=replace))
     return output
 
 def _get_single_line_statcast(play):
@@ -2579,5 +2580,5 @@ if __name__ == "__main__":
     # print(print_at_bats("Chris Davis", delta="-1"))
     # print(get_all_game_highlights("565905"))
     # print(find_game_highlights('wsh', delta="-1"))
-    print(print_pitches_by_inning('strickland', delta="-2"))
+    print(print_pitches_by_inning('wsh'))
     # print(_parse_players("harper/eaton"))
