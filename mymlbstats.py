@@ -2438,7 +2438,7 @@ def print_pitches_by_inning(team, delta=None):
                        'avg_pitch_speed':'avg',
                        'min_pitch_speed':'min',
                        'max_pitch_speed':'max'}
-            output = output + "\n\n```python\n%s```" % (utils.format_table(cols, pitches, repl_map=replace))
+            output = output + "```\n%s```" % (utils.format_table(cols, pitches, repl_map=replace))
     return output
 
 def _get_single_line_statcast(play):
