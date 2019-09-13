@@ -632,7 +632,7 @@ async def log(ctx, numlines=5):
     if str(ctx.message.author) in auth_users:
         from collections import deque
         out = ""
-        d = deque(open("bot.log"), numlines)
+        d = deque(open("bot.log"), numlines+1)
         d.pop()
         for s in d:
             out = out + s
