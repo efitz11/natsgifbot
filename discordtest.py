@@ -626,16 +626,20 @@ async def cocktail(*query):
     """get info about a cocktail"""
     await bot.say(web.cocktail(' '.join(query)))
 
-@bot.command()
-async def log(numlines=5):
+@bot.command(pass_context=True)
+async def log(ctx, numlines=5):
     """print the last few lines of the bot log to see errors"""
-    from collections import deque
-    out = ""
-    d = deque(open("bot.log"), numlines)
-    for s in d:
-        out = out + s
-    out = "```%s```" % out
-    await bot.say(out)
+    if str(ctx.message.author) in auth_users:
+        from collections import deque
+        out = ""
+        d = deque(open("bot.log"), numlines)
+        d.pop()
+        for s in d:
+            out = out + s
+        out = "```%s```" % out
+        await bot.say(out)
+    else:
+        await bot.say("```%s```" % "hey, you're not fitz!")
 
 @bot.command()
 async def meme(*query):
