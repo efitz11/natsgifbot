@@ -1318,7 +1318,7 @@ def get_player_season_splits(name, split, type='hitting', year=None, active='Y',
     output = output + utils.format_table(stats,results,repl_map={'situation':'split'}, left_list=['name'], reddit=reddit, bold=True)
     return output
 
-def get_player_trailing_splits(name, days=None, forcebatting=False, reddit=False):
+def get_player_trailing_splits(name, days=None, forcebatting=False, forcepitching=False, reddit=False):
     names = [name]
     if days is not None:
         if '/' in name:
@@ -1342,7 +1342,12 @@ def get_player_trailing_splits(name, days=None, forcebatting=False, reddit=False
             days = 7
         roster = get_team_info(teamid)['roster']
         for player in roster:
-            if player['position']['code'] != "1":
+            match = False
+            if not forcepitching and player['position']['code'] != "1":
+                match = True
+            if forcepitching and player['position']['code'] == "1":
+                match = True
+            if match:
                 player['team_id'] = str(player['parentTeamId'])
                 player['name'] = player['person']['lastName']
                 player['player_id'] = str(player['person']['id'])
@@ -1354,6 +1359,8 @@ def get_player_trailing_splits(name, days=None, forcebatting=False, reddit=False
     pitching = players[0]['position'] == 'P'
     if forcebatting:
         pitching = False
+    if forcepitching:
+        pitching = True
 
     if days is None:
         dayslist = [7,15,30,45,60]

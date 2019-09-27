@@ -274,18 +274,22 @@ class Baseball():
                 team = ' '.join(team[1:])
             await self.bot.say("```%s```" % mymlbstats.get_team_schedule(team,num,backward=backwards))
             return
-        elif team[0].startswith("last") or team[0].startswith("blast"):
+        elif team[0].startswith("last") or team[0].startswith("blast") or team[0].startswith("plast"):
             forcebatting = False
+            forcepitching = False
             if team[0].startswith('blast'):
                 team[0] = team[0][1:]
                 forcebatting = True
+            elif team[0].startswith('plast'):
+                team[0] = team[0][1:]
+                forcepitching = True
             if team[1].isdigit():
                 days = int(team[1])
                 team = team[2:]
             else:
                 team = team[1:]
                 days = None
-            await self.bot.say("```%s```" % mymlbstats.get_player_trailing_splits('+'.join(team), days, forcebatting=forcebatting, reddit=reddit))
+            await self.bot.say("```%s```" % mymlbstats.get_player_trailing_splits('+'.join(team), days, forcebatting=forcebatting, forcepitching=forcepitching, reddit=reddit))
             return
         elif team[0].endswith("log"):
             forcebatting = team[0].startswith("b")
