@@ -207,7 +207,7 @@ class Baseball():
             #     year2 = year
             #     year = team[-1]
             #     team = team[0:-1]
-            player = '+'.join(team[1:])
+            player = ' '.join(team[1:])
             t = None
             if team[0] in ['bstats']:
                 t = "hitting"
