@@ -25,14 +25,13 @@ def get_player_season_stats(name, type=None, year=None, career=None, reddit=None
     player = _new_player_search(name)
     if player is None:
         return "No matching player found"
-    teamid = player['currentTeam']['id']
+    # teamid = player['currentTeam']['id']
     teamabv = player['currentTeam']['abbreviation']
-    pid = player['id']
+    # pid = player['id']
     disp_name = player['fullName']
     pos = player['primaryPosition']['abbreviation']
     infoline = _get_player_info_line(player)
     now = datetime.now()
-    # birthdate = player['birth_date']
     birthdate = player['birthDate']
     birthdate = birthdate[:birthdate.find('T')]
     birth = birthdate.split('-')
@@ -67,6 +66,7 @@ def get_player_season_stats(name, type=None, year=None, career=None, reddit=None
         stattype = "career"
 
     seasons = []
+    teams = []
     for stat in player['stats']:
         if stat['type']['displayName'] == stattype and 'displayName' in stat['group'] and stat['group']['displayName'] == type:
             if career:
@@ -82,6 +82,7 @@ def get_player_season_stats(name, type=None, year=None, career=None, reddit=None
                     season['season'] = split['season']
                 if 'team' in split:
                     season['team'] = split['team']['abbreviation']
+                    teams.append(season['team'])
                 else:
                     season['team'] = split['sport']['abbreviation']
                 seasons.append(split['stat'])
@@ -95,6 +96,7 @@ def get_player_season_stats(name, type=None, year=None, career=None, reddit=None
             'wins':'w', 'losses':'l', 'gamesPlayed':'g', 'gamesStarted':'gs', 'saveOpportunities':'svo', 'saves':'sv', 'inningsPitched':'ip'}
 
     if year == year2:
+        teamabv = '/'.join(teams)
         output = "%s season stats for %s (%s):" % (year, disp_name, teamabv)
     else:
         output = "%s-%s seasons stats for %s:" % (year, year2, disp_name)
@@ -107,4 +109,4 @@ def get_player_season_stats(name, type=None, year=None, career=None, reddit=None
 if __name__ == "__main__":
     # print(get_player_season_stats("rendon", year="2016-2019"))
     # print(get_player_season_stats("rendon", career=True))
-    print(get_player_season_stats('max scherzer'))
+    print(get_player_season_stats('daniel hudson'))
