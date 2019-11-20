@@ -200,7 +200,7 @@ class Baseball():
                 career = True
             year = None
             year2 = None
-            if team[-1].isdigit():
+            if team[-1].isdigit() or (team[-1].split('-')[0].isdigit() and team[-1].split('-')[1].isdigit()):
                 year = team[-1]
                 team = team[0:-1]
             # if team[-1].isdigit():
