@@ -4,7 +4,7 @@ from urllib.request import urlopen, Request
 import urllib.parse
 from datetime import datetime, timedelta, time, date
 
-import mymlbstats
+import mymlbstats, newmlbstats
 from bs4 import BeautifulSoup
 import utils
 import savant
@@ -203,17 +203,18 @@ class Baseball():
             if team[-1].isdigit():
                 year = team[-1]
                 team = team[0:-1]
-            if team[-1].isdigit():
-                year2 = year
-                year = team[-1]
-                team = team[0:-1]
+            # if team[-1].isdigit():
+            #     year2 = year
+            #     year = team[-1]
+            #     team = team[0:-1]
             player = '+'.join(team[1:])
             t = None
             if team[0] in ['bstats']:
                 t = "hitting"
             elif team[0] == 'pstats':
                 t = "pitching"
-            await self.bot.say("```%s```" % mymlbstats.get_player_season_stats(player,type=t,year=year,year2=year2,active=active, career=career, reddit=reddit))
+            # await self.bot.say("```%s```" % mymlbstats.get_player_season_stats(player,type=t,year=year,year2=year2,active=active, career=career, reddit=reddit))
+            await self.bot.say("```%s```" % newmlbstats.get_player_season_stats(player,type=t,year=year, career=career, reddit=reddit))
             return
         elif team[0] == 'compare':
             year = None
