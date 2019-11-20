@@ -89,7 +89,7 @@ def get_player_season_stats(name, type=None, year=None, career=None, reddit=None
         stats = ['atBats', 'hits', 'doubles', 'triples', 'homeRuns', 'runs', 'rbi', 'baseOnBalls', 'strikeOuts', 'stolenBases', 'caughtStealing', 'avg', 'obp', 'slg' ,'ops']
     elif type == "pitching":
         stats = ['wins', 'losses', 'gamesPlayed', 'gamesStarted', 'saveOpportunities', 'saves', 'inningsPitched', 'strikeOuts', 'baseOnBalls', 'homeRuns', 'era', 'whip']
-    if year != year2:
+    if len(seasons) > 1:
         stats = ['season', 'team'] + stats
     repl = {'atBats':'ab', 'plateAppearances':'pa','hits':'h','doubles':'2B','triples':'3b','homeRuns':'hr','baseOnBalls':'bb','strikeOuts':'so', 'stolenBases':'sb', 'caughtStealing':'cs',
             'wins':'w', 'losses':'l', 'gamesPlayed':'g', 'gamesStarted':'gs', 'saveOpportunities':'svo', 'saves':'sv', 'inningsPitched':'ip'}
@@ -107,4 +107,4 @@ def get_player_season_stats(name, type=None, year=None, career=None, reddit=None
 if __name__ == "__main__":
     # print(get_player_season_stats("rendon", year="2016-2019"))
     # print(get_player_season_stats("rendon", career=True))
-    print(get_player_season_stats('scherzer'))
+    print(get_player_season_stats('max scherzer'))
