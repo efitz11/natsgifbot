@@ -406,6 +406,9 @@ class Baseball():
         elif team[0] == "pitches" or team[0] == "pbi":
             team = ' '.join(team[1:]).lower()
             await self.bot.say(mymlbstats.print_pitches_by_inning(team, delta=delta))
+        elif team[0] == "contract":
+            name = ' '.join(team[1:])
+            await self.bot.say(newmlbstats.print_contract_info(name))
         else:
             teamname = ' '.join(team).lower()
             output = mymlbstats.get_single_game(teamname,delta=delta)
