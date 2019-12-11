@@ -172,6 +172,7 @@ def get_player_contract_table(url):
     labs = ['Year', 'Age', 'Base Salary','Luxury Tax Salary','Payroll  Salary']
     repl = {"Base Salary":"Base", "Luxury Tax Salary":"Luxury Tax", "Payroll  Salary":"Payroll"}
     output = output + "\n```python\n%s```" % utils.format_table(labs, salary_table, repl_map=repl)
+    output = output + "\n%s" % url
     return output
 
 if __name__ == "__main__":
