@@ -115,9 +115,29 @@ def print_contract_info(name, year=None):
     # print(team)
     # url = "https://www.spotrac.com/mlb/%s/payroll/" % (team)
     url = "https://www.spotrac.com/search/results/%s/" % (pname)
+    # html = utils.get_page(url)
+    # bs = BeautifulSoup(html, 'html.parser')
+    # # table = bs.find(lambda tag: tag.name == 'table' and tag.has_attr('class') and tag['class'] == 'datatable')
+    # blurb = bs.find("p", {"class":"currentinfo"})
+    # output = ""
+    # if blurb is not None:
+    #     output = blurb.get_text() + "\n\n"
+    # table = bs.find("table", {"class":"salaryTable salaryInfo current visible-xs"})
+    # rows = table.find_all("tr")
+    # contract_table = []
+    # for row in rows:
+    #     cells = row.find_all('td')
+    #     r = {'0':cells[0].get_text(), '1':cells[1].get_text()}
+    #     contract_table.append(r)
+    # output = output + "```python\n%s```" % utils.format_table(['0','1'], contract_table, showlabels=False)
+    # return output
+    return get_player_contract_table(url)
+
+def get_player_contract_table(url):
     html = utils.get_page(url)
+    # with open('spotrac.txt', 'r') as w:
+    #     html = w.read()
     bs = BeautifulSoup(html, 'html.parser')
-    # table = bs.find(lambda tag: tag.name == 'table' and tag.has_attr('class') and tag['class'] == 'datatable')
     blurb = bs.find("p", {"class":"currentinfo"})
     output = ""
     if blurb is not None:
@@ -130,6 +150,28 @@ def print_contract_info(name, year=None):
         r = {'0':cells[0].get_text(), '1':cells[1].get_text()}
         contract_table.append(r)
     output = output + "```python\n%s```" % utils.format_table(['0','1'], contract_table, showlabels=False)
+
+    table = bs.find("table", {"class":"salaryTable current"})
+    rows = table.find_all("tr")
+    salary_table = []
+    salary_th = []
+    for header in rows[0].find_all('th'):
+        salary_th.append(header.get_text())
+    for row in rows[1:]:
+        year_row = {}
+        cells = row.find_all('td')
+        # print(cells)
+        for i in range(len(salary_th)):
+            try:
+                if 'noborder' not in cells[i]['class'] or 'fayear' in cells[i]['class']:
+                    year_row[salary_th[i]] = cells[i].get_text().lstrip()
+            except:
+                pass
+        if len(year_row.keys()) > 0:
+            salary_table.append(year_row)
+    labs = ['Year', 'Age', 'Base Salary','Luxury Tax Salary','Payroll  Salary']
+    repl = {"Base Salary":"Base", "Luxury Tax Salary":"Luxury Tax", "Payroll  Salary":"Payroll"}
+    output = output + "\n```python\n%s```" % utils.format_table(labs, salary_table, repl_map=repl)
     return output
 
 if __name__ == "__main__":
@@ -137,3 +179,4 @@ if __name__ == "__main__":
     # print(get_player_season_stats("rendon", career=True))
     # print(get_player_season_stats('daniel hudson'))
     print(print_contract_info("trea turner"))
+    # print(get_player_contract_table(""))
