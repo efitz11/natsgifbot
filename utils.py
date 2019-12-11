@@ -10,10 +10,16 @@ def get_json(url, encoding="utf-8"):
     req = Request(url, headers={'User-Agent': "ubuntu"})
     return json.loads(urlopen(req).read().decode(encoding))
 
-def get_page(url, encoding="utf-8"):
+def get_page(url, encoding="utf-8", return_url=False):
     print(url)
     req = Request(url, headers={'User-Agent': "ubuntu"})
-    return urlopen(req).read().decode(encoding)
+    if not return_url:
+        return urlopen(req).read().decode(encoding)
+    else:
+        u = urlopen(req)
+        ret = u.read().decode(encoding)
+        final_url = u.geturl()
+        return (ret, final_url)
 
 def get_keys(name):
     """

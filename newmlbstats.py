@@ -115,7 +115,9 @@ def print_contract_info(name, year=None):
     # print(team)
     # url = "https://www.spotrac.com/mlb/%s/payroll/" % (team)
     url = "https://www.spotrac.com/search/results/%s/" % (pname)
-    # html = utils.get_page(url)
+    html, returl = utils.get_page(url, return_url=True)
+    print(returl)
+
     # bs = BeautifulSoup(html, 'html.parser')
     # # table = bs.find(lambda tag: tag.name == 'table' and tag.has_attr('class') and tag['class'] == 'datatable')
     # blurb = bs.find("p", {"class":"currentinfo"})
@@ -131,10 +133,13 @@ def print_contract_info(name, year=None):
     #     contract_table.append(r)
     # output = output + "```python\n%s```" % utils.format_table(['0','1'], contract_table, showlabels=False)
     # return output
-    return get_player_contract_table(url)
+    if returl != url:
+        return get_player_contract_table(html, url)
+    else:
+        return "Multiple results found, work in progress"
 
-def get_player_contract_table(url):
-    html = utils.get_page(url)
+def get_player_contract_table(html, url):
+    # html = utils.get_page(url)
     # with open('spotrac.txt', 'r') as w:
     #     html = w.read()
     bs = BeautifulSoup(html, 'html.parser')
@@ -179,5 +184,5 @@ if __name__ == "__main__":
     # print(get_player_season_stats("rendon", year="2016-2019"))
     # print(get_player_season_stats("rendon", career=True))
     # print(get_player_season_stats('daniel hudson'))
-    print(print_contract_info("trea turner"))
+    print(print_contract_info("yan gomes"))
     # print(get_player_contract_table(""))
