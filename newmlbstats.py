@@ -119,7 +119,9 @@ def print_contract_info(name, year=None):
     bs = BeautifulSoup(html, 'html.parser')
     # table = bs.find(lambda tag: tag.name == 'table' and tag.has_attr('class') and tag['class'] == 'datatable')
     blurb = bs.find("p", {"class":"currentinfo"})
-    output = blurb.get_text() + "\n\n"
+    output = ""
+    if blurb is not None:
+        output = blurb.get_text() + "\n\n"
     table = bs.find("table", {"class":"salaryTable salaryInfo current visible-xs"})
     rows = table.find_all("tr")
     contract_table = []
@@ -134,4 +136,4 @@ if __name__ == "__main__":
     # print(get_player_season_stats("rendon", year="2016-2019"))
     # print(get_player_season_stats("rendon", career=True))
     # print(get_player_season_stats('daniel hudson'))
-    print(print_contract_info("max scherzer"))
+    print(print_contract_info("trea turner"))
