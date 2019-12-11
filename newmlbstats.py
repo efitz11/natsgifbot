@@ -111,32 +111,19 @@ def print_contract_info(name, year=None):
     # find player
     player = _new_player_search(name)
     pname = player['fullName'].lower().replace(' ', '-')
-    # team = player['currentTeam']['name'].lower().replace(' ', '-')
-    # print(team)
-    # url = "https://www.spotrac.com/mlb/%s/payroll/" % (team)
+
     url = "https://www.spotrac.com/search/results/%s/" % (pname)
     html, returl = utils.get_page(url, return_url=True)
-    print(returl)
 
-    # bs = BeautifulSoup(html, 'html.parser')
-    # # table = bs.find(lambda tag: tag.name == 'table' and tag.has_attr('class') and tag['class'] == 'datatable')
-    # blurb = bs.find("p", {"class":"currentinfo"})
-    # output = ""
-    # if blurb is not None:
-    #     output = blurb.get_text() + "\n\n"
-    # table = bs.find("table", {"class":"salaryTable salaryInfo current visible-xs"})
-    # rows = table.find_all("tr")
-    # contract_table = []
-    # for row in rows:
-    #     cells = row.find_all('td')
-    #     r = {'0':cells[0].get_text(), '1':cells[1].get_text()}
-    #     contract_table.append(r)
-    # output = output + "```python\n%s```" % utils.format_table(['0','1'], contract_table, showlabels=False)
-    # return output
     if returl != url:
         return get_player_contract_table(html, url)
     else:
-        return "Multiple results found, work in progress"
+        ret = _parse_contract_search(html)
+        if ret is not None:
+            html, returl = utils.get_page(ret, return_url=True)
+            return get_player_contract_table(html, returl)
+        else:
+            return "Could not find player"
 
 def get_player_contract_table(html, url):
     # html = utils.get_page(url)
@@ -179,6 +166,20 @@ def get_player_contract_table(html, url):
     output = output + "\n```python\n%s```" % utils.format_table(labs, salary_table, repl_map=repl)
     output = output + "\n%s" % url
     return output
+
+def _parse_contract_search(html):
+    bs = BeautifulSoup(html, 'html.parser')
+    div = bs.find_all("div", {"class":"teamlist"})
+    # print(div)
+    positions = ["Starting Pitcher", "Relief Pitcher", "1st Base", "2nd Base", "3rd Base", "Catcher",
+                 "Outfielder", "Outfielders", "Shortstop", "Right Field", "Center Field", "Left Field",
+                 "Pitcher", "Pitchers"]
+    items = div[0].find_all("div", {"class":"teamitem"})
+    for item in items:
+        pos = item.find_all("div", {"class":"teamoptions"})[0]
+        print(pos.get_text())
+        if pos.get_text() in positions:
+            return item.find_all("a")[0]['href']
 
 if __name__ == "__main__":
     # print(get_player_season_stats("rendon", year="2016-2019"))
