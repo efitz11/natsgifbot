@@ -156,7 +156,10 @@ def get_player_contract_table(html, url):
         for i in range(len(salary_th)):
             try:
                 if 'noborder' not in cells[i]['class'] or 'fayear' in cells[i]['class']:
-                    year_row[salary_th[i]] = cells[i].get_text().lstrip()
+                    data = cells[i].get_text().lstrip()
+                    if data.startswith('$'):
+                        data = utils.human_format(data)
+                    year_row[salary_th[i]] = data
             except:
                 pass
         if len(year_row.keys()) > 0:
@@ -185,5 +188,5 @@ if __name__ == "__main__":
     # print(get_player_season_stats("rendon", year="2016-2019"))
     # print(get_player_season_stats("rendon", career=True))
     # print(get_player_season_stats('daniel hudson'))
-    print(print_contract_info("yan gomes"))
+    print(print_contract_info("max scherzer"))
     # print(get_player_contract_table(""))
