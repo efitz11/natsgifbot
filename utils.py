@@ -4,6 +4,7 @@ import os
 import datetime,time
 import csv
 import requests
+import math
 
 def get_json(url, encoding="utf-8"):
     print(url)
@@ -246,3 +247,39 @@ def csv_to_dicts(url):
     r = requests.get(url)
     text = r.iter_lines(decode_unicode=True)
     return [{k: v for k, v in row.items()} for row in csv.DictReader(text)]
+
+def human_format(n):
+    """adapted from stack overflow"""
+    n = n.replace(',','')
+    dollars = False
+    if n.startswith('$'):
+        dollars = True
+        n = n[1:]
+
+    millnames = ['', 'k', 'M']
+    magnitude = 0
+    n = float(n)
+    n = float('{:.3g}'.format(n))
+    while abs(n) >= 1000:
+        magnitude += 1
+        n /= 1000.0
+    if dollars:
+        return '${}{}'.format('{:f}'.format(n).rstrip('0').rstrip('.'), millnames[magnitude])
+    else:
+        return '{}{}'.format('{:f}'.format(n).rstrip('0').rstrip('.'), millnames[magnitude])
+
+def millify(n):
+    """adapted from stack overflow"""
+    millnames = ['', 'k', 'M']
+    n = n.replace(',','')
+    dollars = False
+    if n.startswith('$'):
+        dollars = True
+        n = n[1:]
+    n = float(n)
+    millidx = max(0, min(len(millnames)-1,
+                     int(math.floor(0 if n==0 else math.log10(abs(n))/3))))
+    if dollars:
+        return '${:.0f}{}'.format(n/10**(3*millidx), millnames[millidx])
+    else:
+        return '{:.0f}{}'.format(n / 10 ** (3 * millidx), millnames[millidx])
