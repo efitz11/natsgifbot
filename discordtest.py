@@ -315,6 +315,12 @@ async def radar(*query):
                       + randstr)
 
 @bot.command()
+async def snow():
+    """show NWS snow probability image"""
+    randstr = "?%d" % random.randint(0,9999)
+    await bot.say("https://www.weather.gov/images/lwx/winter/StormTotalSnowWeb1.png" + randstr)
+
+@bot.command()
 async def metar(airport_code:str):
     """get airport metar"""
     await bot.say(weathermodule.get_current_metar(airport_code))
