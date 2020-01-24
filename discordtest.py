@@ -201,6 +201,46 @@ async def memeify(*text:str):
         output = output + " " + s
     await bot.say(output.strip().upper())
 
+def last_replace(s, old, new):
+    li = s.rsplit(old, 1)
+    return new.join(li)
+
+def uwuify_text(text):
+    # borrowed from github.com/zenrac, thanks
+    vowels = ['a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U']
+    smileys = [';;w;;', '^w^', '>w<', 'UwU', '(・`ω\´・)', '(´・ω・\`)']
+
+    text = text.replace('L', 'W').replace('l', 'w')
+    text = text.replace('R', 'W').replace('r', 'w')
+
+    text = last_replace(text, '!', '! {}'.format(random.choice(smileys)))
+    text = last_replace(text, '?', '? owo')
+    text = last_replace(text, '.', '. {}'.format(random.choice(smileys)))
+
+    for v in vowels:
+        if 'n{}'.format(v) in text:
+            text = text.replace('n{}'.format(v), 'ny{}'.format(v))
+        if 'N{}'.format(v) in text:
+            text = text.replace('N{}'.format(v), 'N{}{}'.format('Y' if v.isupper() else 'y', v))
+
+    return text
+
+@bot.command()
+async def uwuify(*text:str):
+    """uwu what's this?"""
+    text = (' ').join(text)
+    await bot.say(uwuify_text(text))
+
+@bot.command(pass_context=True)
+async def uwu(ctx, *search:str):
+    """uwuify the pwevious command"""
+    srch = ' '.join(search)
+    async for m in bot.logs_from(ctx.message.channel,limit=10):
+        if not m.clean_content.startswith(bot.command_prefix):
+            if srch.lower() in m.clean_content.lower():
+                await bot.say(uwuify_text(m.clean_content.lower()))
+                return
+
 @bot.command()
 async def fire():
     await bot.say("DAVEY MARTINEZ")
