@@ -1,6 +1,7 @@
 from urllib.request import urlopen, Request
 import time, json,html
 from datetime import datetime
+import odds
 
 #Constants
 MODE_ACTIVE = 0
@@ -28,6 +29,9 @@ def get_game(team, sport):
         link = "http://espn.go.com/"+sport+"/scoreboard/_/year/" + str(datetime.now().year) + "/seasontype/2/week/" + str(w)
     else:
         link = "http://espn.go.com/"+sport+"/scoreboard"
+
+    if sport == "nba" and team == "odds":
+        return "```python\n%s```" % odds.get_nba_odds_pp().strip()
 
     link = link + "/?t=" + str(time.time())
     print(link)
