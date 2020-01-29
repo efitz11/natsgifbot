@@ -31,7 +31,7 @@ def get_game(team, sport):
         link = "http://espn.go.com/"+sport+"/scoreboard"
 
     if sport == "nba" and team == "odds":
-        return "```python\n%s```" % odds.get_nba_odds_pp().strip()
+        return "```python\n%s```" % odds.get_nba_odds_pp().rstrip()
 
     link = link + "/?t=" + str(time.time())
     print(link)
