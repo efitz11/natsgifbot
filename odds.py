@@ -22,7 +22,7 @@ def get_nba_odds_games():
             for market in group['markets']:
                 if market['period']['description'] == "Live Match":
                     away['status'] = "Live"
-                elif not event['live']:
+                elif not market['period']['live']:
                     starttime = event['startTime']/1000
                     date = time.strftime("%m/%d/%y", time.localtime(starttime))
                     local = time.strftime("%I:%M %p", time.localtime(starttime))
