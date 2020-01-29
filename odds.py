@@ -45,9 +45,9 @@ def get_nba_odds_pp():
                 elif market['description'] == "Total":
                     for outcome in market['outcomes']:
                         if outcome['type'] == "O":
-                            home['total'] = "O%s (%s)" % (outcome['price']['handicap'], outcome['price']['american'])
+                            home['total'] = "U%s (%s)" % (outcome['price']['handicap'], outcome['price']['american'])
                         else:
-                            away['total'] = "U%s (%s)" % (outcome['price']['handicap'], outcome['price']['american'])
+                            away['total'] = "O%s (%s)" % (outcome['price']['handicap'], outcome['price']['american'])
         games.append(away)
         games.append(home)
         games.append(dict())
