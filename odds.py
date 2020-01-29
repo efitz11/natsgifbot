@@ -1,4 +1,5 @@
 import utils
+import time
 
 def get_nba_odds():
     url = "https://www.bovada.lv/services/sports/event/coupon/events/A/description/basketball/nba?marketFilterId=def&lang=en"
@@ -21,6 +22,12 @@ def get_nba_odds_pp():
             for market in group['markets']:
                 if market['period']['description'] == "Live Match":
                     away['status'] = "Live"
+                elif not event['live']:
+                    starttime = event['startTime']/1000
+                    date = time.strftime("%m/%d/%y", time.localtime(starttime))
+                    local = time.strftime("%I:%M %p", time.localtime(starttime))
+                    away['status'] = date
+                    home['status'] = local
                 else:
                     away['status'] = market['period']['abbreviation']
                 if market['description'] == "Point Spread":
@@ -40,7 +47,7 @@ def get_nba_odds_pp():
                         if outcome['type'] == "O":
                             home['total'] = "O%s (%s)" % (outcome['price']['handicap'], outcome['price']['american'])
                         else:
-                            away['total'] = "O%s (%s)" % (outcome['price']['handicap'], outcome['price']['american'])
+                            away['total'] = "U%s (%s)" % (outcome['price']['handicap'], outcome['price']['american'])
         games.append(away)
         games.append(home)
         games.append(dict())
