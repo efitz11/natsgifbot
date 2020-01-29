@@ -5,7 +5,7 @@ def get_nba_odds():
     url = "https://www.bovada.lv/services/sports/event/coupon/events/A/description/basketball/nba?marketFilterId=def&lang=en"
     return utils.get_json(url)
 
-def get_nba_odds_pp():
+def get_nba_odds_games():
     odds = get_nba_odds()[0]['events']
     games = []
     for event in odds:
@@ -51,11 +51,29 @@ def get_nba_odds_pp():
         games.append(away)
         games.append(home)
         games.append(dict())
+    return games
+
+def get_nba_odds_pp(team=None):
+    games = get_nba_odds_games()
     labels = ["status", "name", "spread", "ml", "total"]
     left = ["status", "name"]
-    ret = utils.format_table(labels, games, left_list=left)
+
+    if team is not None:
+        team = team.lower()
+        newgames = list()
+        for i in range(len(games)):
+            if i%3 == 0:
+                if team in games[i]['name'].lower() or \
+                        team in games[i+1]['name'].lower():
+                    newgames.append(games[i])
+                    newgames.append(games[i+1])
+                    break
+        ret = utils.format_table(labels, newgames, left_list=left)
+    else:
+        ret = utils.format_table(labels, games, left_list=left)
     return ret
 
 if __name__ == "__main__":
     # print(get_nba_odds())
-    print(get_nba_odds_pp())
+    # print(get_nba_odds_pp())
+    print(get_nba_odds_pp(team="wiz"))
