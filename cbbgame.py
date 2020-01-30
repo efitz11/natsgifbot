@@ -90,7 +90,11 @@ def get_game(team,delta=None,runagain=True,type=TYPE,liveonly=False):
         team = team[4:].strip()
         if len(team) == 0:
             return "cbb team is required"
-        return "```%s```" % odds.get_odds_pp("cbb", team=team)
+        ret = odds.get_odds_pp("cbb", team=team)
+        if '#' in ret:
+            return "```%s```" % ret
+        else:
+            return "```python\n%s```" % ret
 
     req = Request(url)
     req.headers["User-Agent"] = "windows 10 bot"
