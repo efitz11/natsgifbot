@@ -14,6 +14,14 @@ def get_nhl_odds():
     odds = utils.get_json(url)[0]['events']
     return get_odds_games(odds)
 
+def get_nfl_odds(superbowl=False):
+    if superbowl:
+        url = _build_url("football", "super-bowl")
+    else:
+        url = _build_url("football", "nfl")
+    odds = utils.get_json(url)[0]['events']
+    return get_odds_games(odds)
+
 def get_cbb_odds():
     url = _build_url("basketball", "college-basketball")
     odds = utils.get_json(url)[0]['events']
@@ -72,6 +80,12 @@ def get_odds_pp(league, team=None):
         games = get_nba_odds()
     elif league == "nhl":
         games = get_nhl_odds()
+    elif league == "nfl":
+        if team == "super bowl":
+            games = get_nfl_odds(superbowl=True)
+            team = None
+        else:
+            games = get_nfl_odds()
     elif league == "cbb":
         if team is None:
             return "cbb team is required"
