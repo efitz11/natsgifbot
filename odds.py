@@ -27,6 +27,21 @@ def get_cbb_odds():
     odds = utils.get_json(url)[0]['events']
     return get_odds_games(odds)
 
+def get_game_score(id):
+    url = "https://services.bovada.lv/services/sports/results/api/v1/scores/%s" % id
+    data = utils.get_json(url)
+    score = dict()
+    score['away'] = data['latestScore']['visitor']
+    score['home'] = data['latestScore']['home']
+    score['period'] = data['clock']['period']
+    score['time'] = data['clock']['gameTime']
+    for team in data['competitors']:
+        if team['homeOrVisitor'] == "home":
+            score['hometeam'] = team['abbreviation']
+        else:
+            score['awayteam'] = team['abbreviation']
+    return score
+
 def get_odds_games(odds):
     games = []
     for event in odds:
@@ -37,6 +52,9 @@ def get_odds_games(odds):
                 home['name'] = team['name']
             else:
                 away['name'] = team['name']
+
+        away['eventid'] = event['id']
+        home['eventid'] = event['id']
 
         groups = event['displayGroups']
         for group in groups:
@@ -104,6 +122,14 @@ def get_odds_pp(league, team=None):
                     newgames.append(games[i])
                     newgames.append(games[i+1])
                     break
+        score = get_game_score(newgames[0]['eventid'])
+        newgames[0]['score'] = score['away']
+        newgames[1]['score'] = score['home']
+        newgames[0]['status'] = score['period']
+        newgames[1]['status'] = score['time']
+        newgames[0]['name'] = score['awayteam']
+        newgames[1]['name'] = score['hometeam']
+        labels.insert(1, "score")
         ret = utils.format_table(labels, newgames, left_list=left).rstrip()
     else:
         ret = utils.format_table(labels, games, left_list=left).rstrip()
@@ -111,4 +137,5 @@ def get_odds_pp(league, team=None):
 
 if __name__ == "__main__":
     # print(get_odds_pp(sport="nba", team="wiz"))
-    print(get_odds_pp(sport="nhl"))
+    # print(get_odds_pp("nhl", team="capitals"))
+    print(get_odds_pp("nba", team="grizz"))
