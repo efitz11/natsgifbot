@@ -1,12 +1,20 @@
 import utils
 import time
 
+def _build_url(sport, league):
+    return "https://www.bovada.lv/services/sports/event/coupon/events/A/description/%s/%s?marketFilterId=def&lang=en" % (sport, league)
+
 def get_nba_odds():
     url = "https://www.bovada.lv/services/sports/event/coupon/events/A/description/basketball/nba?marketFilterId=def&lang=en"
-    return utils.get_json(url)
+    odds = utils.get_json(url)[0]['events']
+    return get_odds_games(odds)
 
-def get_nba_odds_games():
-    odds = get_nba_odds()[0]['events']
+def get_nhl_odds():
+    url = _build_url("hockey", "nhl")
+    odds = utils.get_json(url)[0]['events']
+    return get_odds_games(odds)
+
+def get_odds_games(odds):
     games = []
     for event in odds:
         home = dict()
@@ -53,8 +61,12 @@ def get_nba_odds_games():
         games.append(dict())
     return games
 
-def get_nba_odds_pp(team=None):
-    games = get_nba_odds_games()
+def get_odds_pp(league, team=None):
+    if league == "nba":
+        games = get_nba_odds()
+    elif league == "nhl":
+        games = get_nhl_odds()
+
     labels = ["status", "name", "spread", "ml", "total"]
     left = ["status", "name"]
 
@@ -68,12 +80,11 @@ def get_nba_odds_pp(team=None):
                     newgames.append(games[i])
                     newgames.append(games[i+1])
                     break
-        ret = utils.format_table(labels, newgames, left_list=left)
+        ret = utils.format_table(labels, newgames, left_list=left).rstrip()
     else:
-        ret = utils.format_table(labels, games, left_list=left)
+        ret = utils.format_table(labels, games, left_list=left).rstrip()
     return ret
 
 if __name__ == "__main__":
-    # print(get_nba_odds())
-    # print(get_nba_odds_pp())
-    print(get_nba_odds_pp(team="wiz"))
+    # print(get_odds_pp(sport="nba", team="wiz"))
+    print(get_odds_pp(sport="nhl"))
