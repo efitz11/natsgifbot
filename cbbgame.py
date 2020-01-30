@@ -1,6 +1,7 @@
 from urllib.request import urlopen, Request
 import time, json,html
 from datetime import datetime, timedelta
+import odds
 '''
 borrowed some code from /r/cfb's IRC bot, thank you
 https://github.com/diagonalfish/FootballBotX2
@@ -77,13 +78,20 @@ def get_game(team,delta=None,runagain=True,type=TYPE,liveonly=False):
             all = True 
     else:        
         url = "http://espn.go.com/mens-college-basketball/scoreboard/_/group/" + type + "/year/"+str(now.year)+"/seasontype/2/?t=" + str(time.time())
-        if team == None or team == "" or team.lower == "none":
+        if team == None or team == "" or team.lower() == "none":
             url = "http://www.espn.com/mens-college-basketball/scoreboard/_/year/" + str(now.year)+"/seasontype/2"
             all = True
         elif team.lower() in groupmap:
             url = "http://www.espn.com/mens-college-basketball/scoreboard/_/group/" + groupmap[team.lower()] + "/year/"+str(now.year)+"/seasontype/2/"
             all = True
-    
+
+    # for printing a team's odds
+    if not all and team.startswith("odds"):
+        team = team[4:].strip()
+        if len(team) == 0:
+            return "cbb team is required"
+        return "```%s```" % odds.get_odds_pp("cbb", team=team)
+
     req = Request(url)
     req.headers["User-Agent"] = "windows 10 bot"
     # Load data

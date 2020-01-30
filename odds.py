@@ -14,6 +14,11 @@ def get_nhl_odds():
     odds = utils.get_json(url)[0]['events']
     return get_odds_games(odds)
 
+def get_cbb_odds():
+    url = _build_url("basketball", "college-basketball")
+    odds = utils.get_json(url)[0]['events']
+    return get_odds_games(odds)
+
 def get_odds_games(odds):
     games = []
     for event in odds:
@@ -62,10 +67,15 @@ def get_odds_games(odds):
     return games
 
 def get_odds_pp(league, team=None):
+    print(team)
     if league == "nba":
         games = get_nba_odds()
     elif league == "nhl":
         games = get_nhl_odds()
+    elif league == "cbb":
+        if team is None:
+            return "cbb team is required"
+        games = get_cbb_odds()
 
     labels = ["status", "name", "spread", "ml", "total"]
     left = ["status", "name"]
