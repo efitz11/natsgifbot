@@ -1,9 +1,19 @@
 import json, html
 from urllib.request import urlopen, Request
 import mymlbstats
+import odds
 
 
 def get_scores(team):
+    if team.startswith("odds"):
+        team = team[4:].strip().lower()
+        if len(team) == 0:
+            team = None
+        else:
+            if team == 'caps':
+                team = "capitals"
+        return "```python\n%s```" % odds.get_odds_pp("nhl", team=team)
+
     req = Request("https://statsapi.web.nhl.com/api/v1/schedule?expand=schedule.teams,schedule.linescore")
     req.headers["User-Agent"] = "windows 10 bot"
     # Load data
