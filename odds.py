@@ -71,10 +71,13 @@ def get_odds_games(odds):
                     away['status'] = market['period']['abbreviation']
                 if market['description'] == "Point Spread":
                     for outcome in market['outcomes']:
+                        spread = outcome['price']['handicap']
+                        if float(spread) > 0:
+                            spread = "+" + spread
                         if outcome['type'] == "A":
-                            away['spread'] = "%s (%s)" % (outcome['price']['handicap'], outcome['price']['american'])
+                            away['spread'] = "%s (%s)" % (spread, outcome['price']['american'])
                         else:
-                            home['spread'] = "%s (%s)" % (outcome['price']['handicap'], outcome['price']['american'])
+                            home['spread'] = "%s (%s)" % (spread, outcome['price']['american'])
                 elif market['description'] == "Moneyline":
                     for outcome in market['outcomes']:
                         if outcome['type'] == "A":
