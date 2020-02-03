@@ -684,8 +684,6 @@ async def log(ctx, numlines=5):
             out = out + s
         out = "```%s```" % out
         await bot.say(out)
-    else:
-        await bot.say("```%s```" % "hey, you're not fitz!")
 
 @bot.command()
 async def meme(*query):
