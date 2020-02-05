@@ -5,6 +5,8 @@ import urllib.parse
 from bs4 import BeautifulSoup
 import tweepy
 import utils
+import re
+from os import path
 
 def get_keys(name):
     with open("keys.json",'r') as f:
@@ -125,6 +127,43 @@ def get_latest_tweet(user):
         prefix = "Retweeted"
     return "%s %s: https://twitter.com/%s/status/%s" % (prefix, local, user, tid)
 
+def check_tweet_verified(url):
+    with open("keys.json",'r') as f:
+        s = f.read()
+    keys = json.loads(s)['keys']
+    for key in keys:
+        if key['name'] == "twitter":
+            api_key = key['api_key']
+            secret = key['api_secret']
+            token = key['token']
+            token_secret = key['token_secret']
+    account_json = "twitter_accounts.json"
+    if not path.exists(account_json):
+        f = open(account_json, 'w')
+        f.write("{}")
+        f.close()
+    with open(account_json,'r') as f:
+        s = f.read()
+    account = re.search('https://.*twitter.com/([^/?]+)*', url).group(1)
+    # print("Twitter account: %s" % account)
+    if len(account) > 0:
+        accounts = json.loads(s)
+        if account in accounts:
+            return accounts[account]['verified']
+        else:
+            auth = tweepy.OAuthHandler(api_key, secret)
+            auth.set_access_token(token, token_secret)
+            api = tweepy.API(auth)
+            user = api.get_user(account)
+
+            # add account to cache
+            accounts[account] = dict()
+            accounts[account]['verified'] = user.verified
+            with open(account_json,'w') as f:
+                f.write(json.dumps(accounts))
+            print("added account %s to cache (verified:%s)" % (account, user.verified))
+            return user.verified
+
 def search_imdb(query):
     url = "http://www.imdb.com/find?ref_=nv_sr_fn&q=" + urllib.parse.quote_plus(query) + "&s=all"
     req = Request(url, headers={'User-Agent' : "ubuntu"})
@@ -236,5 +275,6 @@ if __name__ == "__main__":
     # print(ud_def("word"))
     # search_imdb("ryan reynolds")
     # print(cocktail("margarita"))
-    print(kym("wednesday my dudes"))
+    # print(kym("wednesday my dudes"))
     # print(kym("iphone"))
+    print(check_tweet_verified("https://twitter.com/JeffFletcherOCR/status/1224883361388195840?s=19"))
