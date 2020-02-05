@@ -127,7 +127,7 @@ def get_latest_tweet(user):
         prefix = "Retweeted"
     return "%s %s: https://twitter.com/%s/status/%s" % (prefix, local, user, tid)
 
-def check_tweet_verified(url):
+def check_tweet_verified(account):
     with open("keys.json",'r') as f:
         s = f.read()
     keys = json.loads(s)['keys']
@@ -144,7 +144,7 @@ def check_tweet_verified(url):
         f.close()
     with open(account_json,'r') as f:
         s = f.read()
-    account = re.search('https://.*twitter.com/([^/?]+)*', url).group(1)
+    # account = re.search('https://.*twitter.com/([^/?]+)*', url).group(1)
     # print("Twitter account: %s" % account)
     if len(account) > 0:
         accounts = json.loads(s)
