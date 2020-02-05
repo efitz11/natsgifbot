@@ -9,5 +9,6 @@ channelids.txt
 *.log
 .idea/*
 keys.json
+twitter_accounts.json
 errors/
 /venv/
