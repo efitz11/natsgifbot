@@ -128,7 +128,7 @@ def get_latest_tweet(user):
     return "%s %s: https://twitter.com/%s/status/%s" % (prefix, local, user, tid)
 
 def check_tweet_verified(account):
-    with open("keys.json",'r') as f:
+    with open("keys.json", 'r') as f:
         s = f.read()
     keys = json.loads(s)['keys']
     for key in keys:
@@ -142,27 +142,31 @@ def check_tweet_verified(account):
         f = open(account_json, 'w')
         f.write("{}")
         f.close()
-    with open(account_json,'r') as f:
+    with open(account_json, 'r') as f:
         s = f.read()
-    # account = re.search('https://.*twitter.com/([^/?]+)*', url).group(1)
-    # print("Twitter account: %s" % account)
     if len(account) > 0:
         accounts = json.loads(s)
         if account in accounts:
-            return accounts[account]['verified']
-        else:
-            auth = tweepy.OAuthHandler(api_key, secret)
-            auth.set_access_token(token, token_secret)
-            api = tweepy.API(auth)
-            user = api.get_user(account)
+            # check how long ago we last checked
+            if 'updated' in accounts[account]:
+                updated = datetime.strptime(accounts[account]['updated'], '%Y-%m-%d %H:%M:%S.%f')
+                diff = datetime.now() - updated
+                if diff.days < 3:  # let's check every 3 days
+                    return accounts[account]['verified']
+        # check verified status
+        auth = tweepy.OAuthHandler(api_key, secret)
+        auth.set_access_token(token, token_secret)
+        api = tweepy.API(auth)
+        user = api.get_user(account)
 
-            # add account to cache
-            accounts[account] = dict()
-            accounts[account]['verified'] = user.verified
-            with open(account_json,'w') as f:
-                f.write(json.dumps(accounts))
-            print("added account %s to cache (verified:%s)" % (account, user.verified))
-            return user.verified
+        # add account to cache
+        accounts[account] = dict()
+        accounts[account]['verified'] = user.verified
+        accounts[account]['updated'] = str(datetime.now())
+        with open(account_json,'w') as f:
+            f.write(json.dumps(accounts))
+        print("added account %s to cache (verified:%s)" % (account, user.verified))
+        return user.verified
 
 def search_imdb(query):
     url = "http://www.imdb.com/find?ref_=nv_sr_fn&q=" + urllib.parse.quote_plus(query) + "&s=all"
