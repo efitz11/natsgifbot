@@ -27,6 +27,7 @@ patternbenoit = re.compile('benoit$',re.IGNORECASE)
 patternalexaplay = re.compile('alexa play', re.IGNORECASE)
 patternshitbot = re.compile('shit bot', re.IGNORECASE)
 # patterneaton = re.compile('(?<!(Miami University Great ))(Adam Eaton)', re.IGNORECASE)
+patterntwitter = re.compile('https://.*twitter.com/([^/?]+)*')
 
 pidfile = 'discordbotpid.txt'
 miscfile = 'misc.json'
@@ -750,6 +751,12 @@ async def on_message(message):
             query = message.content[match.end():]
             await bot.send_message(message.channel,get_youtube(query.strip()))
 
+        if patterntwitter.search(message.content):
+            verified = web.check_tweet_verified(re.search(patterntwitter, message.content).group(1))
+            if verified:
+                await bot.add_reaction(message, u"\u2611")
+            else:
+                await bot.add_reaction(message, u"\u274C")
         # if patterneaton.search(message.content):
         #     await bot.send_message(message.channel,"Miami University Great Adam Eaton*")
 
