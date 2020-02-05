@@ -715,6 +715,12 @@ async def on_message(message):
     #stuff
     # print(bot.commands)
     if message.author == bot.user:
+        if patterntwitter.search(message.content):
+            verified = web.check_tweet_verified(re.search(patterntwitter, message.content).group(1))
+            if verified:
+                await bot.add_reaction(message, u"\u2611")
+            else:
+                await bot.add_reaction(message, u"\u274C")
         return
     if message.content.startswith(bot.command_prefix):
         print("%s input command: %s" % (message.author, message.content))
