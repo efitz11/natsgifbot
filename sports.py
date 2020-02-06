@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-import cfbgame, nflgame, nhlscores, cbbgame, softball
+import cfbgame, nflgame, nhlscores, cbbgame, softball, odds
 import worldcup
 
 class Sports():
@@ -77,6 +77,15 @@ class Sports():
         """display score(s) of nhl game"""
         t = ' '.join(team)
         await self.bot.say(nhlscores.get_scores(t))
+    
+    @commands.command()
+    async def xfl(self, *team:str):
+        """so far it's only xfl odds lol"""
+        if team[0] == "odds":
+            t = ' '.join(team[1:])
+            if len(t) == 0:
+                t = None
+            await self.bot.say("```python\n%s```" % odds.get_odds_pp("xfl", team=t))
 
     # @commands.group(pass_context=True)
     # async def fas(self,ctx):
