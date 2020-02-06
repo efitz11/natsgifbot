@@ -27,6 +27,11 @@ def get_cbb_odds():
     odds = utils.get_json(url)[0]['events']
     return get_odds_games(odds)
 
+def get_xfl_odds():
+    url = _build_url("football", "xfl")
+    odds = utils.get_json(url)[0]['events']
+    return get_odds_games(odds)
+
 def get_game_score(id):
     url = "https://services.bovada.lv/services/sports/results/api/v1/scores/%s" % id
     data = utils.get_json(url)
@@ -101,6 +106,8 @@ def get_odds_pp(league, team=None):
         games = get_nba_odds()
     elif league == "nhl":
         games = get_nhl_odds()
+    elif league == "xfl":
+        games = get_xfl_odds()
     elif league == "nfl":
         if team == "super bowl":
             games = get_nfl_odds(superbowl=True)
@@ -142,4 +149,4 @@ def get_odds_pp(league, team=None):
 if __name__ == "__main__":
     # print(get_odds_pp(sport="nba", team="wiz"))
     # print(get_odds_pp("nhl", team="capitals"))
-    print(get_odds_pp("nba", team="wiz"))
+    print(get_odds_pp("xfl"))
