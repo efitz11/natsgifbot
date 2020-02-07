@@ -17,7 +17,7 @@ emojimap = {'Sunny':':sunny:',
 
 def _convert_ctof(temp):
     '''convert celsius to fahrenheit'''
-    return 9.0/5.0 * temp + 32
+    return 9.0/5.0 * float(temp) + 32
 
 def _get_ET_from_timestamp(timestamp):
     # utc = datetime.strptime(timestamp,"%Y-%m-%dT%H:%M:00Z") #"2018-03-31T20:05:00Z",
@@ -49,7 +49,7 @@ def get_current_weather(text):
 
     humidity = data['relativeHumidity']['value']
     updated = _get_ET_from_timestamp(data['timestamp'])
-    retval = "At %s:\n%d F, %s\nHumidity: %d%%\n" % (station_name, temp, text, humidity)
+    retval = "At %s:\n%d F, %s\nHumidity: %.0f%%\n" % (station_name, temp, text, float(humidity))
     if wind_chill is not None:
         retval = "%sWind Chill: %d F\n" % (retval, wind_chill)
     retval = "%sUpdated: %s" % (retval, updated)
