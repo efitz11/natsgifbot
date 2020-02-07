@@ -1,13 +1,19 @@
 import utils
 import time
 
-def _build_url(sport, league):
-    return "https://www.bovada.lv/services/sports/event/coupon/events/A/description/%s/%s?marketFilterId=def&lang=en" % (sport, league)
+def _build_url(sport, league, live=False):
+    if live:
+        l = "liveOnly=true"
+    else:
+        l = "preMatchOnly=true"
+    return "https://www.bovada.lv/services/sports/event/coupon/events/A/description/%s/%s?marketFilterId=def&%s&lang=en" % (sport, league, l)
 
 def get_nba_odds():
-    url = "https://www.bovada.lv/services/sports/event/coupon/events/A/description/basketball/nba?marketFilterId=def&lang=en"
-    odds = utils.get_json(url)[0]['events']
-    return get_odds_games(odds)
+    urlpre = _build_url("basketball", "nba")
+    urllive = _build_url("basketball", "nba", live=True)
+    odds = utils.get_json(urlpre)[0]['events']
+    odds2 = utils.get_json(urllive)[0]['events']
+    return get_odds_games(odds2) + get_odds_games(odds)
 
 def get_nhl_odds():
     url = _build_url("hockey", "nhl")
@@ -64,8 +70,11 @@ def get_odds_games(odds):
         groups = event['displayGroups']
         for group in groups:
             for market in group['markets']:
-                if market['period']['description'] == "Live Match":
-                    away['status'] = "Live"
+                if event['live']:
+                    if market['period']['live']:
+                        away['status'] = "Live"
+                    else:
+                        away['status'] = market['period']['abbreviation']
                 elif not market['period']['live']:
                     starttime = event['startTime']/1000
                     date = time.strftime("%m/%d/%y", time.localtime(starttime))
@@ -129,18 +138,17 @@ def get_odds_pp(league, team=None):
             if i%3 == 0:
                 if team in games[i]['name'].lower() or \
                         team in games[i+1]['name'].lower():
+                    if games[i]['status'] == "Live":
+                        score = get_game_score(games[i]['eventid'])
+                        games[i]['score'] = score['away']
+                        games[i+1]['score'] = score['home']
+                        games[i]['status'] = score['period']
+                        games[i+1]['status'] = score['time']
+                        games[i]['name'] = score['awayteam']
+                        games[i+1]['name'] = score['hometeam']
                     newgames.append(games[i])
                     newgames.append(games[i+1])
-                    break
-        if newgames[0]['status'] == "Live":
-            score = get_game_score(newgames[0]['eventid'])
-            newgames[0]['score'] = score['away']
-            newgames[1]['score'] = score['home']
-            newgames[0]['status'] = score['period']
-            newgames[1]['status'] = score['time']
-            newgames[0]['name'] = score['awayteam']
-            newgames[1]['name'] = score['hometeam']
-            labels.insert(1, "score")
+        labels.insert(1, "score")
         ret = utils.format_table(labels, newgames, left_list=left).rstrip()
     else:
         ret = utils.format_table(labels, games, left_list=left).rstrip()
@@ -149,4 +157,5 @@ def get_odds_pp(league, team=None):
 if __name__ == "__main__":
     # print(get_odds_pp(sport="nba", team="wiz"))
     # print(get_odds_pp("nhl", team="capitals"))
-    print(get_odds_pp("xfl"))
+    print(get_odds_pp("nba"))
+    # print(get_odds_pp("nba", team="new"))
