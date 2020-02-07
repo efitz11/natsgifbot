@@ -110,7 +110,6 @@ def get_odds_games(odds):
     return games
 
 def get_odds_pp(league, team=None):
-    print(team)
     if league == "nba":
         games = get_nba_odds()
     elif league == "nhl":
@@ -148,6 +147,7 @@ def get_odds_pp(league, team=None):
                         games[i+1]['name'] = score['hometeam']
                     newgames.append(games[i])
                     newgames.append(games[i+1])
+                    newgames.append({})
         labels.insert(1, "score")
         ret = utils.format_table(labels, newgames, left_list=left).rstrip()
     else:
@@ -157,5 +157,5 @@ def get_odds_pp(league, team=None):
 if __name__ == "__main__":
     # print(get_odds_pp(sport="nba", team="wiz"))
     # print(get_odds_pp("nhl", team="capitals"))
-    print(get_odds_pp("nba"))
-    # print(get_odds_pp("nba", team="new"))
+    # print(get_odds_pp("nba"))
+    print(get_odds_pp("nba", team="new"))
