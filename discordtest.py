@@ -718,7 +718,7 @@ async def odds(*query):
         await bot.say('```Supported leagues: %s```' % leagues)
     else:
         league = query[0]
-        team = query[1:]
+        team = ' '.join(query[1:])
         if len(team) == 0:
             team = None
         await bot.say("```python\n%s```" % oddsmod.get_league_odds_table(league, team=team))
