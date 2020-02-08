@@ -9,6 +9,7 @@ import urllib.parse
 import utils
 
 import mymlbgame, cfbgame, nflgame, xmlreader, nhlscores, cbbgame, stocks, olympics, gifs, gfycat
+import odds as oddsmod
 import weather as weathermodule
 import frinkiac, web, tacobell
 import hq as hqmod
@@ -709,6 +710,18 @@ async def tb(num:int=3):
 @bot.command()
 async def say(*message):
     await bot.say(' '.join(message))
+
+@bot.command()
+async def odds(*query):
+    leagues = ["ufc"]
+    if len(query) == 0 or query[0] not in leagues:
+        await bot.say('```Supported leagues: %s```' % leagues)
+    else:
+        league = query[0]
+        team = query[1:]
+        if len(team) == 0:
+            team = None
+        await bot.say("```python\n%s```" % oddsmod.get_league_odds_table(league, team=team))
 
 @bot.event
 async def on_message(message):

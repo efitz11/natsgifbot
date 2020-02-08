@@ -1,16 +1,61 @@
 import utils
 import time
 
-def _build_url(sport, league, live=False):
+def _build_url(sport, league):
+    if league is not None:
+        return "https://www.bovada.lv/services/sports/event/coupon/events/A/description/%s/%s?marketFilterId=def&lang=en" % (sport, league)
+    else:
+        return "https://www.bovada.lv/services/sports/event/coupon/events/A/description/%s?marketFilterId=def&lang=en" % (sport)
+
+def _build_url_live(sport, league, live=False):
     if live:
         l = "liveOnly=true"
     else:
         l = "preMatchOnly=true"
     return "https://www.bovada.lv/services/sports/event/coupon/events/A/description/%s/%s?marketFilterId=def&%s&lang=en" % (sport, league, l)
 
+def get_league_odds(league, sport=None):
+    if league == "ufc":
+        sport = "ufc-mma"
+        league = None
+    url = _build_url(sport, league=league)
+    odds = utils.get_json(url)[0]['events']
+    return get_odds_games(odds)
+
+def get_league_odds_table(league, sport=None, team=None):
+    games = get_league_odds(league, sport=sport)
+
+    labels = ["status", "name", "spread", "ml", "total"]
+    left = ["status", "name"]
+
+    if team is not None:
+        team = team.lower()
+        newgames = list()
+        for i in range(len(games)):
+            if i%3 == 0:
+                if team in games[i]['name'].lower() or \
+                        team in games[i+1]['name'].lower():
+                    if games[i]['status'] == "Live":
+                        score = get_game_score(games[i]['eventid'])
+                        games[i]['score'] = score['away']
+                        games[i+1]['score'] = score['home']
+                        games[i]['status'] = score['period']
+                        games[i+1]['status'] = score['time']
+                        games[i]['name'] = score['awayteam']
+                        games[i+1]['name'] = score['hometeam']
+                    newgames.append(games[i])
+                    newgames.append(games[i+1])
+                    newgames.append({})
+        labels.insert(1, "score")
+        ret = utils.format_table(labels, newgames, left_list=left).rstrip()
+    else:
+        ret = utils.format_table(labels, games, left_list=left).rstrip()
+    return ret
+
+
 def get_nba_odds():
-    urlpre = _build_url("basketball", "nba")
-    urllive = _build_url("basketball", "nba", live=True)
+    urlpre = _build_url_live("basketball", "nba")
+    urllive = _build_url_live("basketball", "nba", live=True)
     odds = utils.get_json(urlpre)[0]['events']
     odds2 = utils.get_json(urllive)[0]['events']
     return get_odds_games(odds2) + get_odds_games(odds)
@@ -92,7 +137,7 @@ def get_odds_games(odds):
                             away['spread'] = "%s (%s)" % (spread, outcome['price']['american'])
                         else:
                             home['spread'] = "%s (%s)" % (spread, outcome['price']['american'])
-                elif market['description'] == "Moneyline":
+                elif market['description'] in ["Moneyline", "Fight Winner"]:
                     for outcome in market['outcomes']:
                         if outcome['type'] == "A":
                             away['ml'] = outcome['price']['american']
@@ -158,4 +203,5 @@ if __name__ == "__main__":
     # print(get_odds_pp(sport="nba", team="wiz"))
     # print(get_odds_pp("nhl", team="capitals"))
     # print(get_odds_pp("nba"))
-    print(get_odds_pp("nba", team="new"))
+    # print(get_odds_pp("nba", team="new"))
+    print(get_league_odds_table('ufc'))
