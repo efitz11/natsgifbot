@@ -18,6 +18,7 @@ def get_league_odds(league, sport=None):
     if league == "ufc":
         sport = "ufc-mma"
         league = None
+
     url = _build_url(sport, league=league)
     odds = utils.get_json(url)[0]['events']
     return get_odds_games(odds)
@@ -56,8 +57,14 @@ def get_league_odds_table(league, sport=None, team=None):
 def get_nba_odds():
     urlpre = _build_url_live("basketball", "nba")
     urllive = _build_url_live("basketball", "nba", live=True)
-    odds = utils.get_json(urlpre)[0]['events']
-    odds2 = utils.get_json(urllive)[0]['events']
+    try:
+        odds = utils.get_json(urlpre)[0]['events']
+    except IndexError:
+        odds = []
+    try:
+        odds2 = utils.get_json(urllive)[0]['events']
+    except IndexError:
+        odds2 = []
     return get_odds_games(odds2) + get_odds_games(odds)
 
 def get_nhl_odds():
@@ -203,5 +210,5 @@ if __name__ == "__main__":
     # print(get_odds_pp(sport="nba", team="wiz"))
     # print(get_odds_pp("nhl", team="capitals"))
     # print(get_odds_pp("nba"))
-    # print(get_odds_pp("nba", team="new"))
-    print(get_league_odds_table('ufc'))
+    print(get_odds_pp("nba", team="new"))
+    # print(get_league_odds_table('xfl'))
