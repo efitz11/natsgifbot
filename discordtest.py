@@ -458,7 +458,7 @@ async def countdown(ctx, *addlist):
 async def stock(*symbol:str):
     """Get a stock quote. Only works for stocks and ETFs"""
     if len(symbol) == 0:
-        await bot.say(stocks.get_indexes())
+        #await bot.say(stocks.get_indexes())
         return
     out = stocks.get_quote(symbol[0])
     await bot.say(out)
