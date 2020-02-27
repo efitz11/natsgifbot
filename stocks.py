@@ -86,24 +86,34 @@ def get_indexes():
     indexes = {'Dow','S&P 500','Nasdaq'}
     labels = ['Index','Last','Change','%']
     left = [labels[0]]
-    url = "https://www.marketwatch.com/investing/index/spx"
+    url = "https://money.cnn.com/data/markets"
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     data = urlopen(req).read().decode('utf-8')
     soup = BeautifulSoup(data, 'html.parser')
-    table = soup.find("div", class_="markets__table").find("table")
-    table_data = [[cell.text.strip() for cell in row("td")]
-                             for row in table("tr")]
-    rows = []
-    for row in table_data:
-        if row[1] in indexes:
-            idx = {}
-            idx[labels[0]] = row[1]
-            idx[labels[1]] = row[2]
-            idx[labels[2]] = row[3]
-            idx[labels[3]] = row[4]
-            rows.append(idx)
+    l = soup.find("ul", class_="three-equal-columns wsod")
+    # print(l)
+    items = l.findAll('li')
+    rows = list()
+    for item in items:
+        ticker = dict()
+        ticker['Index'] = item.find("span", class_="ticker-name").get_text()
+        ticker['Last'] = item.find("span", class_="ticker-points").get_text()
+        ticker['%'] = item.find("span", class_="ticker-name-change").get_text()
+        ticker['Change'] = item.find("span", class_="ticker-points-change").get_text()
+        rows.append(ticker)
+    # table_data = [[cell.text.strip() for cell in row("td")]
+    #                          for row in table("tr")]
+    # rows = []
+    # for row in table_data:
+    #     if row[1] in indexes:
+    #         idx = {}
+    #         idx[labels[0]] = row[1]
+    #         idx[labels[1]] = row[2]
+    #         idx[labels[2]] = row[3]
+    #         idx[labels[3]] = row[4]
+    #         rows.append(idx)
     return "```%s```" % utils.format_table(labels,rows, left_list=left)
 
 if __name__ == "__main__":
-    print(get_quote("msft"))
+    # print(get_quote("msft"))
     print(get_indexes())
