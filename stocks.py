@@ -101,6 +101,9 @@ def get_indexes():
         ticker['%'] = item.find("span", class_="ticker-name-change").get_text()
         ticker['Change'] = item.find("span", class_="ticker-points-change").get_text()
         rows.append(ticker)
+
+    u = soup.find("div", class_="disclaimer")
+    t = u.find("span").get_text()
     # table_data = [[cell.text.strip() for cell in row("td")]
     #                          for row in table("tr")]
     # rows = []
@@ -112,7 +115,7 @@ def get_indexes():
     #         idx[labels[2]] = row[3]
     #         idx[labels[3]] = row[4]
     #         rows.append(idx)
-    return "```%s```" % utils.format_table(labels,rows, left_list=left)
+    return "```%s\n  Updated: %s```" % (utils.format_table(labels,rows, left_list=left), t)
 
 if __name__ == "__main__":
     # print(get_quote("msft"))
