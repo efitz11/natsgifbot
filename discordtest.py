@@ -15,6 +15,7 @@ import frinkiac, web, tacobell
 import hq as hqmod
 
 bot = commands.Bot(command_prefix='!')
+prefixes = ['!', '?', 'bot ', 'Bot']
 
 extensions = ["baseball","sports","reddit"]
 
@@ -189,7 +190,12 @@ async def mock(ctx, *search:str):
     """mOcKiFy tHe pReViOuS MeSsaGe"""
     srch = ' '.join(search)
     async for m in bot.logs_from(ctx.message.channel,limit=10):
-        if not m.clean_content.startswith(bot.command_prefix):
+        skip = False
+        for prefix in prefixes:
+            if m.clean_content.startswith(prefix):
+                skip = True
+                break
+        if not skip:
             if srch.lower() in m.clean_content.lower():
                 await bot.say(mockify_text(m.clean_content.lower()))
                 return
@@ -238,7 +244,12 @@ async def uwu(ctx, *search:str):
     """uwuify the pwevious command"""
     srch = ' '.join(search)
     async for m in bot.logs_from(ctx.message.channel,limit=10):
-        if not m.clean_content.startswith(bot.command_prefix):
+        skip = False
+        for prefix in prefixes:
+            if m.clean_content.startswith(prefix):
+                skip = True
+                break
+        if not skip:
             if srch.lower() in m.clean_content.lower():
                 await bot.say(uwuify_text(m.clean_content.lower()))
                 return
@@ -735,6 +746,8 @@ async def on_message(message):
             else:
                 await bot.add_reaction(message, u"\u274C")
         return
+    if message.content.startswith('bot ') or message.content.startswith('Bot '):
+        message.content = '!' + message.content[4:]
     if message.content.startswith(bot.command_prefix):
         print("%s input command: %s" % (message.author, message.content))
         await bot.process_commands(message)
