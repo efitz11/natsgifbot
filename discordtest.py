@@ -747,8 +747,11 @@ async def on_message(message):
             else:
                 await bot.add_reaction(message, u"\u274C")
         return
-    if message.content.startswith('bot ') or message.content.startswith('Bot '):
-        message.content = '!' + message.content[4:]
+    if message.content.lower().startswith('bot ') or message.content.lower().startswith("hey alexa "):
+        if message.content.lower().startswith('bot'):
+            message.content = '!' + message.content[4:]
+        else:
+            message.content = '!' + message.content[10:]
     if message.content.startswith(bot.command_prefix):
         print("%s input command: %s" % (message.author, message.content))
         await bot.process_commands(message)
