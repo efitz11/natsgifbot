@@ -13,11 +13,12 @@ import odds as oddsmod
 import weather as weathermodule
 import frinkiac, web, tacobell
 import hq as hqmod
+import temporary
 
 bot = commands.Bot(command_prefix='!')
 prefixes = ['!', '?', 'bot ', 'Bot']
 
-extensions = ["baseball","sports","reddit"]
+extensions = ["baseball","sports","reddit","temporary"]
 
 auth_users = ['fitz#6390']
 
