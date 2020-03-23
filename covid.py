@@ -15,7 +15,7 @@ def get_us(delta=None):
         l.append({'name':'total', 'total':data['total']})
         labels = ['name', 'total']
         repl_map = {'name':''}
-        return "``python\n%s```" % utils.format_table(labels, l, repl_map=repl_map, left_list=['name'])
+        return "```python\n%s\n\n%s```" % ("US current totals:", utils.format_table(labels, l, repl_map=repl_map, left_list=['name']))
 
 if __name__ == "__main__":
     print(get_us())
