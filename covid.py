@@ -17,7 +17,23 @@ def get_us(delta=None):
         data = utils.get_json(url)[0]
         l = format_data(data)
         l.insert(2, {'name':'pos+neg', 'total':data['posNeg']})
-        labels = ['name', 'total']
+
+        yesterday_url = URL + "us/daily"
+        yesterday = utils.get_json(yesterday_url)[0]
+        l[0]['yesterday'] = yesterday['positive']
+        l[0]['delta'] = l[0]['total'] - yesterday['positive']
+        l[1]['yesterday'] = yesterday['negative']
+        l[1]['delta'] = l[1]['total'] - yesterday['negative']
+        l[2]['yesterday'] = yesterday['posNeg']
+        l[2]['delta'] = l[2]['total'] - yesterday['posNeg']
+        l[3]['yesterday'] = yesterday['hospitalized']
+        l[3]['delta'] = l[3]['total'] - yesterday['hospitalized']
+        l[4]['yesterday'] = yesterday['death']
+        l[4]['delta'] = l[4]['total'] - yesterday['death']
+        l[5]['yesterday'] = yesterday['total']
+        l[5]['delta'] = l[5]['total'] - yesterday['total']
+
+        labels = ['name', 'total', 'yesterday', 'delta']
         repl_map = {'name':''}
         return "```python\n%s\n\n%s```" % ("US current totals:", utils.format_table(labels, l, repl_map=repl_map, left_list=['name']))
 
