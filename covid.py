@@ -11,21 +11,33 @@ def format_data(data):
     l.append({'name':'total', 'total':data['total']})
     return l
 
+def format_number(number):
+    if int(number) > 999:
+        return str(int(number/100)/10.0) + 'k'
+    else:
+        return str(number)
+
 def add_day_columns(data_list, day, c1_name, c2_name, subtract_key):
     l = data_list
     yesterday = day
     l[0][c1_name] = yesterday['positive']
-    l[0][c2_name] = l[0][subtract_key] - yesterday['positive']
+    l[0][c1_name + "_str"] = format_number(yesterday['positive'])
+    l[0][c2_name] = format_number(l[0][subtract_key] - yesterday['positive'])
     l[1][c1_name] = yesterday['negative']
-    l[1][c2_name] = l[1][subtract_key] - yesterday['negative']
+    l[1][c1_name + "_str"] = format_number(yesterday['negative'])
+    l[1][c2_name] = format_number(l[1][subtract_key] - yesterday['negative'])
     l[2][c1_name] = yesterday['posNeg']
-    l[2][c2_name] = l[2][subtract_key] - yesterday['posNeg']
+    l[2][c1_name + "_str"] = format_number(yesterday['posNeg'])
+    l[2][c2_name] = format_number(l[2][subtract_key] - yesterday['posNeg'])
     l[3][c1_name] = yesterday['hospitalized']
-    l[3][c2_name] = l[3][subtract_key] - yesterday['hospitalized']
+    l[3][c1_name + "_str"] = format_number(yesterday['hospitalized'])
+    l[3][c2_name] = format_number(l[3][subtract_key] - yesterday['hospitalized'])
     l[4][c1_name] = yesterday['death']
-    l[4][c2_name] = l[4][subtract_key] - yesterday['death']
+    l[4][c1_name + "_str"] = format_number(yesterday['death'])
+    l[4][c2_name] = format_number(l[4][subtract_key] - yesterday['death'])
     l[5][c1_name] = yesterday['total']
-    l[5][c2_name] = l[5][subtract_key] - yesterday['total']
+    l[5][c1_name + "_str"] = format_number(yesterday['total'])
+    l[5][c2_name] = format_number(l[5][subtract_key] - yesterday['total'])
     return l
 
 def convert_date(date_int):
@@ -47,8 +59,8 @@ def get_us(delta=None):
         yesterday_date = convert_date(days[0]['date'])
         two_days_date = convert_date(days[1]['date'])
 
-        labels = ['name', 'total', 'yesterday', 'delta', '2 days', 'delta2']
-        repl_map = {'name':'', 'yesterday':yesterday_date, '2 days':two_days_date}
+        labels = ['name', 'total', 'yesterday_str', 'delta', '2 days_str', 'delta2']
+        repl_map = {'name':'', 'yesterday_str':yesterday_date, '2 days_str':two_days_date}
         return "```python\n%s\n\n%s```" % ("US current totals:", utils.format_table(labels, l, repl_map=repl_map, left_list=['name']))
 
 def get_state(state, delta=None):
