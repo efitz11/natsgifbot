@@ -57,11 +57,14 @@ def get_us(delta=None):
 
         yesterday_url = URL + "us/daily"
         days = utils.get_json(yesterday_url)
-        l = add_day_columns(l, days[0], 'yesterday', 'delta', 'total')
-        l = add_day_columns(l, days[1], '2 days', 'delta2', 'yesterday')
+        days_index = 0
+        if days[0]['total'] == data['total']:
+            days_index += 1
+        l = add_day_columns(l, days[days_index], 'yesterday', 'delta', 'total')
+        l = add_day_columns(l, days[days_index + 1], '2 days', 'delta2', 'yesterday')
 
-        yesterday_date = convert_date(days[0]['date'])
-        two_days_date = convert_date(days[1]['date'])
+        yesterday_date = convert_date(days[days_index]['date'])
+        two_days_date = convert_date(days[days_index + 1]['date'])
 
         labels = ['name', 'total', 'yesterday_str', '2 days_str', 'delta', 'delta2']
         repl_map = {'name':'', 'yesterday_str':yesterday_date, '2 days_str':two_days_date}
