@@ -59,7 +59,7 @@ def get_us(delta=None):
         yesterday_date = convert_date(days[0]['date'])
         two_days_date = convert_date(days[1]['date'])
 
-        labels = ['name', 'total', 'yesterday_str', 'delta', '2 days_str', 'delta2']
+        labels = ['name', 'total', 'yesterday_str', '2 days_str', 'delta', 'delta2']
         repl_map = {'name':'', 'yesterday_str':yesterday_date, '2 days_str':two_days_date}
         return "```python\n%s\n\n%s```" % ("US current totals:", utils.format_table(labels, l, repl_map=repl_map, left_list=['name']))
 
