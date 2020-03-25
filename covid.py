@@ -11,6 +11,27 @@ def format_data(data):
     l.append({'name':'total', 'total':data['total']})
     return l
 
+def add_day_columns(data_list, day, c1_name, c2_name, subtract_key):
+    l = data_list
+    yesterday = day
+    l[0][c1_name] = yesterday['positive']
+    l[0][c2_name] = l[0][subtract_key] - yesterday['positive']
+    l[1][c1_name] = yesterday['negative']
+    l[1][c2_name] = l[1][subtract_key] - yesterday['negative']
+    l[2][c1_name] = yesterday['posNeg']
+    l[2][c2_name] = l[2][subtract_key] - yesterday['posNeg']
+    l[3][c1_name] = yesterday['hospitalized']
+    l[3][c2_name] = l[3][subtract_key] - yesterday['hospitalized']
+    l[4][c1_name] = yesterday['death']
+    l[4][c2_name] = l[4][subtract_key] - yesterday['death']
+    l[5][c1_name] = yesterday['total']
+    l[5][c2_name] = l[5][subtract_key] - yesterday['total']
+    return l
+
+def convert_date(date_int):
+    date_str_cat = str(date_int)[4:]
+    return date_str_cat[:2] + '/' + date_str_cat[2:]
+
 def get_us(delta=None):
     url = URL + "us"
     if delta is None:
@@ -19,22 +40,15 @@ def get_us(delta=None):
         l.insert(2, {'name':'pos+neg', 'total':data['posNeg']})
 
         yesterday_url = URL + "us/daily"
-        yesterday = utils.get_json(yesterday_url)[0]
-        l[0]['yesterday'] = yesterday['positive']
-        l[0]['delta'] = l[0]['total'] - yesterday['positive']
-        l[1]['yesterday'] = yesterday['negative']
-        l[1]['delta'] = l[1]['total'] - yesterday['negative']
-        l[2]['yesterday'] = yesterday['posNeg']
-        l[2]['delta'] = l[2]['total'] - yesterday['posNeg']
-        l[3]['yesterday'] = yesterday['hospitalized']
-        l[3]['delta'] = l[3]['total'] - yesterday['hospitalized']
-        l[4]['yesterday'] = yesterday['death']
-        l[4]['delta'] = l[4]['total'] - yesterday['death']
-        l[5]['yesterday'] = yesterday['total']
-        l[5]['delta'] = l[5]['total'] - yesterday['total']
+        days = utils.get_json(yesterday_url)
+        l = add_day_columns(l, days[0], 'yesterday', 'delta', 'total')
+        l = add_day_columns(l, days[1], '2 days', 'delta2', 'yesterday')
 
-        labels = ['name', 'total', 'yesterday', 'delta']
-        repl_map = {'name':''}
+        yesterday_date = convert_date(days[0]['date'])
+        two_days_date = convert_date(days[1]['date'])
+
+        labels = ['name', 'total', 'yesterday', 'delta', '2 days', 'delta2']
+        repl_map = {'name':'', 'yesterday':yesterday_date, '2 days':two_days_date}
         return "```python\n%s\n\n%s```" % ("US current totals:", utils.format_table(labels, l, repl_map=repl_map, left_list=['name']))
 
 def get_state(state, delta=None):
@@ -58,5 +72,5 @@ def get_state(state, delta=None):
 
 if __name__ == "__main__":
     print(get_us())
-    print(get_state("VA"))
+    # print(get_state("VA"))
 
