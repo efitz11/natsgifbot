@@ -12,7 +12,11 @@ def format_data(data):
     return l
 
 def format_number(number):
-    if int(number) > 999:
+    if int(number) > 1000000:
+        return str(int(number / 1000)) + 'M'
+    elif int(number) > 100000:
+        return str(int(number/1000)) + 'k'
+    elif int(number) > 999:
         return str(int(number/100)/10.0) + 'k'
     else:
         return str(number)
