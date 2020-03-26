@@ -8,7 +8,7 @@ def format_data(data):
     l.append({'name':'negative', 'total':data['negative']})
     l.append({'name':'hospitalized', 'total':data['hospitalized']})
     l.append({'name':'deaths', 'total':data['death']})
-    l.append({'name':'total', 'total':data['total']})
+    l.append({'name':'total', 'total':data['totalTestResults']})
     return l
 
 def format_number(number):
@@ -39,9 +39,9 @@ def add_day_columns(data_list, day, c1_name, c2_name, subtract_key):
     l[4][c1_name] = yesterday['death']
     l[4][c1_name + "_str"] = format_number(yesterday['death'])
     l[4][c2_name] = format_number(l[4][subtract_key] - yesterday['death'])
-    l[5][c1_name] = yesterday['total']
-    l[5][c1_name + "_str"] = format_number(yesterday['total'])
-    l[5][c2_name] = format_number(l[5][subtract_key] - yesterday['total'])
+    l[5][c1_name] = yesterday['totalTestResults']
+    l[5][c1_name + "_str"] = format_number(yesterday['totalTestResults'])
+    l[5][c2_name] = format_number(l[5][subtract_key] - yesterday['totalTestResults'])
     return l
 
 def convert_date(date_int):
@@ -91,5 +91,5 @@ def get_state(state, delta=None):
 
 if __name__ == "__main__":
     print(get_us())
-    # print(get_state("VA"))
+    print(get_state("VA"))
 
