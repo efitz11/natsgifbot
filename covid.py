@@ -58,7 +58,7 @@ def get_us(delta=None):
         yesterday_url = URL + "us/daily"
         days = utils.get_json(yesterday_url)
         days_index = 0
-        if days[0]['total'] == data['total']:
+        if days[0]['totalTestResults'] == data['totalTestResults']:
             days_index += 1
         l = add_day_columns(l, days[days_index], 'yesterday', 'delta', 'total')
         l = add_day_columns(l, days[days_index + 1], '2 days', 'delta2', 'yesterday')
