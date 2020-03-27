@@ -8,7 +8,7 @@ def format_data(data):
     l.append({'name':'negative', 'total':data['negative']})
     l.append({'name':'hospitalized', 'total':data['hospitalized']})
     l.append({'name':'deaths', 'total':data['death']})
-    l.append({'name':'total', 'total':data['totalTestResults']})
+    l.append({'name':'total tested', 'total':data['totalTestResults']})
     return l
 
 def format_number(number):
@@ -30,18 +30,15 @@ def add_day_columns(data_list, day, c1_name, c2_name, subtract_key):
     l[1][c1_name] = yesterday['negative']
     l[1][c1_name + "_str"] = format_number(yesterday['negative'])
     l[1][c2_name] = format_number(l[1][subtract_key] - yesterday['negative'])
-    l[2][c1_name] = yesterday['posNeg']
-    l[2][c1_name + "_str"] = format_number(yesterday['posNeg'])
-    l[2][c2_name] = format_number(l[2][subtract_key] - yesterday['posNeg'])
-    l[3][c1_name] = yesterday['hospitalized']
-    l[3][c1_name + "_str"] = format_number(yesterday['hospitalized'])
-    l[3][c2_name] = format_number(l[3][subtract_key] - yesterday['hospitalized'])
-    l[4][c1_name] = yesterday['death']
-    l[4][c1_name + "_str"] = format_number(yesterday['death'])
-    l[4][c2_name] = format_number(l[4][subtract_key] - yesterday['death'])
-    l[5][c1_name] = yesterday['totalTestResults']
-    l[5][c1_name + "_str"] = format_number(yesterday['totalTestResults'])
-    l[5][c2_name] = format_number(l[5][subtract_key] - yesterday['totalTestResults'])
+    l[2][c1_name] = yesterday['hospitalized']
+    l[2][c1_name + "_str"] = format_number(yesterday['hospitalized'])
+    l[2][c2_name] = format_number(l[2][subtract_key] - yesterday['hospitalized'])
+    l[3][c1_name] = yesterday['death']
+    l[3][c1_name + "_str"] = format_number(yesterday['death'])
+    l[3][c2_name] = format_number(l[3][subtract_key] - yesterday['death'])
+    l[4][c1_name] = yesterday['totalTestResults']
+    l[4][c1_name + "_str"] = format_number(yesterday['totalTestResults'])
+    l[4][c2_name] = format_number(l[4][subtract_key] - yesterday['totalTestResults'])
     return l
 
 def convert_date(date_int):
@@ -53,7 +50,6 @@ def get_us(delta=None):
     if delta is None:
         data = utils.get_json(url)[0]
         l = format_data(data)
-        l.insert(2, {'name':'pos+neg', 'total':data['posNeg']})
 
         yesterday_url = URL + "us/daily"
         days = utils.get_json(yesterday_url)
