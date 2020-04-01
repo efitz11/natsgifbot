@@ -13,7 +13,7 @@ def format_data(data):
 
 def format_number(number):
     if int(number) > 1000000:
-        return str(int(number / 1000)) + 'M'
+        return str(int(number / 10000)/100.0) + 'M'
     elif int(number) > 100000:
         return str(int(number/1000)) + 'k'
     elif int(number) > 999:
