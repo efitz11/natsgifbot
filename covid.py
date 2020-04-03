@@ -6,17 +6,19 @@ def format_data(data):
     l = list()
     l.append({'name':'positive', 'total':data['positive']})
     l.append({'name':'negative', 'total':data['negative']})
-    l.append({'name':'hospitalized', 'total':data['hospitalized']})
+    l.append({'name':'hosp. now', 'total':data['hospitalizedCurrently']})
+    l.append({'name':'hosp. total', 'total':data['hospitalizedCumulative']})
+    l.append({'name':'recovered', 'total':data['recovered']})
     l.append({'name':'deaths', 'total':data['death']})
     l.append({'name':'total tested', 'total':data['totalTestResults']})
     return l
 
 def format_number(number):
-    if int(number) > 1000000:
+    if abs(int(number)) > 1000000:
         return str(int(number / 10000)/100.0) + 'M'
-    elif int(number) > 100000:
+    elif abs(int(number)) > 100000:
         return str(int(number/1000)) + 'k'
-    elif int(number) > 999:
+    elif abs(int(number)) > 999:
         return str(int(number/100)/10.0) + 'k'
     else:
         return str(number)
@@ -30,15 +32,21 @@ def add_day_columns(data_list, day, c1_name, c2_name, subtract_key):
     l[1][c1_name] = yesterday['negative']
     l[1][c1_name + "_str"] = format_number(yesterday['negative'])
     l[1][c2_name] = format_number(l[1][subtract_key] - yesterday['negative'])
-    l[2][c1_name] = yesterday['hospitalized']
-    l[2][c1_name + "_str"] = format_number(yesterday['hospitalized'])
-    l[2][c2_name] = format_number(l[2][subtract_key] - yesterday['hospitalized'])
-    l[3][c1_name] = yesterday['death']
-    l[3][c1_name + "_str"] = format_number(yesterday['death'])
-    l[3][c2_name] = format_number(l[3][subtract_key] - yesterday['death'])
-    l[4][c1_name] = yesterday['totalTestResults']
-    l[4][c1_name + "_str"] = format_number(yesterday['totalTestResults'])
-    l[4][c2_name] = format_number(l[4][subtract_key] - yesterday['totalTestResults'])
+    l[2][c1_name] = yesterday['hospitalizedCurrently']
+    l[2][c1_name + "_str"] = format_number(yesterday['hospitalizedCurrently'])
+    l[2][c2_name] = format_number(l[2][subtract_key] - yesterday['hospitalizedCurrently'])
+    l[3][c1_name] = yesterday['hospitalizedCumulative']
+    l[3][c1_name + "_str"] = format_number(yesterday['hospitalizedCumulative'])
+    l[3][c2_name] = format_number(l[3][subtract_key] - yesterday['hospitalizedCumulative'])
+    l[4][c1_name] = yesterday['recovered']
+    l[4][c1_name + "_str"] = format_number(yesterday['recovered'])
+    l[4][c2_name] = format_number(l[4][subtract_key] - yesterday['recovered'])
+    l[5][c1_name] = yesterday['death']
+    l[5][c1_name + "_str"] = format_number(yesterday['death'])
+    l[5][c2_name] = format_number(l[5][subtract_key] - yesterday['death'])
+    l[6][c1_name] = yesterday['totalTestResults']
+    l[6][c1_name + "_str"] = format_number(yesterday['totalTestResults'])
+    l[6][c2_name] = format_number(l[6][subtract_key] - yesterday['totalTestResults'])
     return l
 
 def convert_date(date_int):
