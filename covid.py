@@ -23,6 +23,9 @@ def format_number(number):
     else:
         return str(number)
 
+def number_commas(number):
+    return "{:,}".format(number)
+
 def add_day_columns(data_list, day, c1_name, c2_name, subtract_key):
     l = data_list
     yesterday = day
@@ -70,6 +73,9 @@ def get_us(delta=None):
         yesterday_date = convert_date(days[days_index]['date'])
         two_days_date = convert_date(days[days_index + 1]['date'])
 
+        for idx in l:
+            idx['total'] = number_commas(idx['total'])
+
         labels = ['name', 'total', 'yesterday_str', '2 days_str', 'delta', 'delta2']
         repl_map = {'name':'', 'yesterday_str':yesterday_date, '2 days_str':two_days_date}
         return "```python\n%s\n\n%s```" % ("US current totals:", utils.format_table(labels, l, repl_map=repl_map, left_list=['name']))
@@ -95,5 +101,5 @@ def get_state(state, delta=None):
 
 if __name__ == "__main__":
     print(get_us())
-    print(get_state("VA"))
+    # print(get_state("VA"))
 
