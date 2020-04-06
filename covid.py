@@ -1,4 +1,5 @@
 import utils
+import json
 
 URL = "https://covidtracking.com/api/"
 
@@ -56,10 +57,13 @@ def convert_date(date_int):
     date_str_cat = str(date_int)[4:]
     return date_str_cat[:2] + '/' + date_str_cat[2:]
 
-def get_us(delta=None):
+def get_us(delta=None, jsondata=None):
     url = URL + "us"
     if delta is None:
-        data = utils.get_json(url)[0]
+        if jsondata is None:
+            data = utils.get_json(url)[0]
+        else:
+            data = jsondata
         l = format_data(data)
 
         yesterday_url = URL + "us/daily"
@@ -99,7 +103,28 @@ def get_state(state, delta=None):
         else:
             return "State not found."
 
+def check_for_updates():
+    miscfile = 'misc.json'
+    with open(miscfile, 'r') as f:
+        s = json.loads(f.read())
+    url = URL + "us"
+    data = utils.get_json(url)[0]
+    if 'covid' not in s:
+        s['covid'] = data['totalTestResults']
+        with open(miscfile, 'w') as f:
+            f.write(json.dumps(s, indent=4))
+        return get_us(jsondata=data)
+    else:
+        if s['covid'] != data['totalTestResults']:
+            s['covid'] = data['totalTestResults']
+            with open(miscfile, 'w') as f:
+                f.write(json.dumps(s, indent=4))
+            return get_us(jsondata=data)
+        else:
+            return None
+
 if __name__ == "__main__":
     print(get_us())
     # print(get_state("VA"))
+    # print(check_for_updates())
 
