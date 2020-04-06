@@ -14,6 +14,7 @@ import weather as weathermodule
 import frinkiac, web, tacobell
 import hq as hqmod
 import temporary
+import covid
 
 bot = commands.Bot(command_prefix='!')
 prefixes = ['!', '?', 'bot ', 'Bot']
@@ -818,7 +819,7 @@ async def my_bg_task():
         
 async def update_mlbtr():
     await bot.wait_until_ready()
-    channel = bot.get_channel(id = main_chid)
+    channel = bot.get_channel(id=main_chid)
     # triviach = discord.utils.find(lambda m: m.name == 'trivia', channel.server.channels)
     while not bot.is_closed:
         # if hqmod.check_hq():
@@ -830,12 +831,23 @@ async def update_mlbtr():
         if out != None:
             await bot.send_message(channel,out)
         await asyncio.sleep(60*3)
-        
+
+async def check_covid_numbers():
+    await bot.wait_until_ready()
+    channel = bot.get_channel(id=main_chid)
+    corona_channel = discord.utils.find(lambda m: m.name.contains('coronavirus'), channel.server.channels)
+    while not bot.is_closed:
+        ret = covid.check_for_updates()
+        if ret is not None:
+            await bot.send_message(corona_channel, ret)
+        await asyncio.sleep(60*15)
+
 mlbtr = xmlreader.XmlReader()
 
 #print(reddit.read_only)
 #bot.loop.create_task(my_bg_task())
 bot.loop.create_task(update_mlbtr())
+bot.loop.create_task(check_covid_numbers())
 for ext in extensions:
     bot.load_extension(ext)
 bot.run(discord_token)
