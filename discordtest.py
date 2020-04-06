@@ -835,7 +835,7 @@ async def update_mlbtr():
 async def check_covid_numbers():
     await bot.wait_until_ready()
     channel = bot.get_channel(id=main_chid)
-    corona_channel = discord.utils.find(lambda m: m.name.contains('coronavirus'), channel.server.channels)
+    corona_channel = discord.utils.find(lambda m: 'coronavirus' in m.name, channel.server.channels)
     while not bot.is_closed:
         ret = covid.check_for_updates()
         if ret is not None:
