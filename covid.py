@@ -115,7 +115,7 @@ def check_for_updates():
             f.write(json.dumps(s, indent=4))
         return get_us(jsondata=data)
     else:
-        if s['covid'] != data['totalTestResults']:
+        if s['covid'] < data['totalTestResults']:
             s['covid'] = data['totalTestResults']
             with open(miscfile, 'w') as f:
                 f.write(json.dumps(s, indent=4))
