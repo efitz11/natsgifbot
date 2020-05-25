@@ -5,12 +5,15 @@ from datetime import datetime
 from bs4 import BeautifulSoup
 
 def _new_player_search(name):
-    url = "https://suggest.mlb.com/svc/suggest/v1/min_all/%s/99999" % urllib.parse.quote(name)
-    players = utils.get_json(url)['suggestions']
+    #url = "https://suggest.mlb.com/svc/suggest/v1/min_all/%s/99999" % urllib.parse.quote(name)
+    url = "https://typeahead.mlb.com/api/v1/typeahead/suggestions/%s" % urllib.parse.quote(name)
+    #players = utils.get_json(url)['suggestions']
+    players = utils.get_json(url)['players']
     if len(players) > 0:
         for player in players:
-            data = player.split('|')
-            playerid = data[1]
+            #data = player.split('|')
+            #playerid = data[1]
+            playerid = player['playerId']
             url = "https://statsapi.mlb.com/api/v1/people/%s?hydrate=currentTeam,team,stats(type=[yearByYear,yearByYearAdvanced,careerRegularSeason,careerAdvanced,availableStats](team(league)),leagueListId=mlb_hist)" % playerid
             return utils.get_json(url)['people'][0]
 
