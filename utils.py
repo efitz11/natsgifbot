@@ -217,12 +217,15 @@ def get_ET_from_timestamp(timestamp):
     utc = utc + diff
     return datetime.datetime.strftime(utc, "%I:%M %p ET")
 
-def prettydate(d):
+def prettydate(d, utc=False):
     """get an instagram-style relative date
         can pass in epoch time or a datetime instance"""
     if isinstance(d, int):
         d = datetime.datetime.fromtimestamp(d)
-    diff = datetime.datetime.now() - d
+    if utc:
+        diff = datetime.datetime.utcnow() - d
+    else:
+        diff = datetime.datetime.now() - d
     s = diff.seconds
     if diff.days > 7 or diff.days < 0:
         return d.strftime('%d %b %y')
