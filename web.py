@@ -156,7 +156,7 @@ def check_tweet_verified(account):
                 updated = datetime.strptime(accounts[account]['updated'], '%Y-%m-%d %H:%M:%S.%f')
                 diff = datetime.now() - updated
                 if diff.days < 3:  # let's check every 3 days
-                    return accounts[account]['verified']
+                    return accounts[account]['verified'], None
         # check verified status
         auth = tweepy.OAuthHandler(api_key, secret)
         auth.set_access_token(token, token_secret)
@@ -170,18 +170,19 @@ def check_tweet_verified(account):
         with open(account_json,'w') as f:
             f.write(json.dumps(accounts, sort_keys=True, indent=2))
         print("added account %s to cache (verified:%s)" % (account, user.verified))
-        return user.verified
+        return user.verified, api
 
-def check_tweet_age(tweetid):
-    key = _read_twitter_keys()
-    api_key = key['api_key']
-    secret = key['api_secret']
-    token = key['token']
-    token_secret = key['token_secret']
+def check_tweet_age(tweetid, api=None):
+    if api is None:
+        key = _read_twitter_keys()
+        api_key = key['api_key']
+        secret = key['api_secret']
+        token = key['token']
+        token_secret = key['token_secret']
 
-    auth = tweepy.OAuthHandler(api_key, secret)
-    auth.set_access_token(token, token_secret)
-    api = tweepy.API(auth)
+        auth = tweepy.OAuthHandler(api_key, secret)
+        auth.set_access_token(token, token_secret)
+        api = tweepy.API(auth)
     tweet = api.get_status(tweetid)
     print(tweet.created_at)
     return "Tweet posted: %s" % utils.prettydate(tweet.created_at, utc=True)
