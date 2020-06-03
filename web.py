@@ -87,6 +87,14 @@ def get_cryptocurrency_data(text):
     output = utils.format_table(labels, data, repl_map=repl, left_list=left)
     return "```python\n" + output + "```"
 
+def _read_twitter_keys():
+    with open("keys.json",'r') as f:
+        s = f.read()
+    keys = json.loads(s)['keys']
+    for key in keys:
+        if key['name'] == "twitter":
+            return key
+
 def get_latest_tweet(user):
     with open("keys.json",'r') as f:
         s = f.read()
@@ -128,15 +136,11 @@ def get_latest_tweet(user):
     return "%s %s: https://twitter.com/%s/status/%s" % (prefix, local, user, tid)
 
 def check_tweet_verified(account):
-    with open("keys.json", 'r') as f:
-        s = f.read()
-    keys = json.loads(s)['keys']
-    for key in keys:
-        if key['name'] == "twitter":
-            api_key = key['api_key']
-            secret = key['api_secret']
-            token = key['token']
-            token_secret = key['token_secret']
+    key = _read_twitter_keys()
+    api_key = key['api_key']
+    secret = key['api_secret']
+    token = key['token']
+    token_secret = key['token_secret']
     account_json = "twitter_accounts.json"
     if not path.exists(account_json):
         f = open(account_json, 'w')
@@ -167,6 +171,20 @@ def check_tweet_verified(account):
             f.write(json.dumps(accounts, sort_keys=True, indent=2))
         print("added account %s to cache (verified:%s)" % (account, user.verified))
         return user.verified
+
+def check_tweet_age(tweetid):
+    key = _read_twitter_keys()
+    api_key = key['api_key']
+    secret = key['api_secret']
+    token = key['token']
+    token_secret = key['token_secret']
+
+    auth = tweepy.OAuthHandler(api_key, secret)
+    auth.set_access_token(token, token_secret)
+    api = tweepy.API(auth)
+    tweet = api.get_status(tweetid)
+    print(tweet.created_at)
+    return "Tweet posted: %s" % utils.prettydate(tweet.created_at, utc=True)
 
 def search_imdb(query):
     url = "http://www.imdb.com/find?ref_=nv_sr_fn&q=" + urllib.parse.quote_plus(query) + "&s=all"

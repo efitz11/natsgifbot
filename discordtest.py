@@ -32,6 +32,7 @@ patternalexaplay = re.compile('alexa play', re.IGNORECASE)
 patternshitbot = re.compile('shit bot', re.IGNORECASE)
 # patterneaton = re.compile('(?<!(Miami University Great ))(Adam Eaton)', re.IGNORECASE)
 patterntwitter = re.compile('https://.*twitter.com/([^/?]+)*')
+patterntwitterstatus = re.compile('https://.*twitter.com/([^/?]+)/status/([0-9]+)')
 
 pidfile = 'discordbotpid.txt'
 miscfile = 'misc.json'
@@ -794,6 +795,9 @@ async def on_message(message):
                 await bot.add_reaction(message, u"\u2611")
             else:
                 await bot.add_reaction(message, u"\u274C")
+            # check age of tweet
+            age = web.check_tweet_age(re.search(patterntwitterstatus, message.content).group(2))
+            await bot.send_message(message.channel, age)
         # if patterneaton.search(message.content):
         #     await bot.send_message(message.channel,"Miami University Great Adam Eaton*")
 
