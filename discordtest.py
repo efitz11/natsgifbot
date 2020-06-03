@@ -790,13 +790,13 @@ async def on_message(message):
             await bot.send_message(message.channel,get_youtube(query.strip()))
 
         if patterntwitter.search(message.content):
-            verified = web.check_tweet_verified(re.search(patterntwitter, message.content).group(1))
+            verified, api = web.check_tweet_verified(re.search(patterntwitter, message.content).group(1))
             if verified:
                 await bot.add_reaction(message, u"\u2611")
             else:
                 await bot.add_reaction(message, u"\u274C")
             # check age of tweet
-            age = web.check_tweet_age(re.search(patterntwitterstatus, message.content).group(2))
+            age = web.check_tweet_age(re.search(patterntwitterstatus, message.content).group(2), api=api)
             await bot.send_message(message.channel, age)
         # if patterneaton.search(message.content):
         #     await bot.send_message(message.channel,"Miami University Great Adam Eaton*")
