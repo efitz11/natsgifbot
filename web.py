@@ -164,7 +164,7 @@ def check_tweet_verified(account):
         accounts[account]['verified'] = user.verified
         accounts[account]['updated'] = str(datetime.now())
         with open(account_json,'w') as f:
-            f.write(json.dumps(accounts))
+            f.write(json.dumps(accounts, sort_keys=True, indent=2))
         print("added account %s to cache (verified:%s)" % (account, user.verified))
         return user.verified
 
