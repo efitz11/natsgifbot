@@ -651,10 +651,10 @@ async def daymedals(*delta:int):
         d = delta[0]
     await bot.say(olympics.get_days_medals(delta=d))
     
-@bot.command()
-async def ig(username:str):
-    """get the latest instagram post by the user"""
-    await bot.say(web.get_latest_ig_post(username))
+# @bot.command()
+# async def ig(username:str):
+#     """get the latest instagram post by the user"""
+#     await bot.say(web.get_latest_ig_post(username))
 
 @bot.command()
 async def tweet(username:str):
