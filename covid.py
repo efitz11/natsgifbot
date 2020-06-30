@@ -137,9 +137,9 @@ def get_usa():
     replmap = {'state':'', 'todayCases':'new cases', 'todayDeaths':'new deaths'}
 
     # get top 5 states
-    l.append({'state':'top 5 today:'})
+    l.append({'state':'  top 5 today:'})
     l.extend(get_state_data()[:5])
-    l.append({'state':'top 5 yest.:'})
+    l.append({'state':'  top 5 yest.:'})
     l.extend(get_state_data(yesterday=True)[:5])
 
 
