@@ -53,6 +53,9 @@ f = open(pidfile,'w')
 f.write(str(os.getpid()))
 f.close()
 
+# temp variable
+covid_sent_today = False
+
 emoji_letter_map = {'a':u"\U0001F1E6",
 					'b':u"\U0001F1E7",
 					'c':u"\U0001F1E8",
@@ -841,9 +844,17 @@ async def check_covid_numbers():
     channel = bot.get_channel(id=main_chid)
     corona_channel = discord.utils.find(lambda m: 'coronavirus' in m.name, channel.server.channels)
     while not bot.is_closed:
-        ret = covid.check_for_updates()
-        if ret is not None:
-            await bot.send_message(corona_channel, ret)
+        # ret = covid.check_for_updates()
+        # if ret is not None:
+        #     await bot.send_message(corona_channel, ret)
+
+        # send update right before midnight GMT
+        now_time = datetime.utcnow().time()
+        if now_time >= time(23,44) and now_time <= time(23,59) and not covid_sent_today:
+            await bot.send_message(corona_channel, covid.get_usa())
+            covid_sent_today = True
+        else:
+            covid_sent_today = False
         await asyncio.sleep(60*15)
 
 mlbtr = xmlreader.XmlReader()
