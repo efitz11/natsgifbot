@@ -128,9 +128,9 @@ def get_usa():
     urly = url + "?yesterday=true"
 
     todaydata = utils.get_json(url)
-    todaydata['state'] = "Today"
+    todaydata['state'] = "US Today"
     yestdata = utils.get_json(urly)
-    yestdata['state'] = "Yest."
+    yestdata['state'] = "US Yest."
     l = [todaydata, yestdata]
 
     labels = ['state','cases', 'todayCases', 'deaths', 'todayDeaths']
