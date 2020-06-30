@@ -146,7 +146,7 @@ def get_usa():
                 data[lab] = format_number(data[lab])
     tab = utils.format_table(labels, l, repl_map=replmap, left_list=['name'])
 
-    return "```python\n%s```" % tab
+    return "```python\n%s```More: <https://www.worldometers.info/coronavirus/country/us>" % tab
 
 def get_state_data():
     url = "https://disease.sh/v2/states"
