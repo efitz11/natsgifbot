@@ -137,8 +137,11 @@ def get_usa():
     replmap = {'state':'', 'todayCases':'new cases', 'todayDeaths':'new deaths'}
 
     # get top 5 states
-    l.append({'state':'top 5 states:'})
+    l.append({'state':'top 5 today:'})
     l.extend(get_state_data()[:5])
+    l.append({'state':'top 5 yest.:'})
+    l.extend(get_state_data(yesterday=True)[:5])
+
 
     for data in l:
         for lab in labels:
@@ -148,12 +151,16 @@ def get_usa():
 
     return "```python\n%s```More: <https://www.worldometers.info/coronavirus/country/us>" % tab
 
-def get_state_data():
+def get_state_data(yesterday=False):
     url = "https://disease.sh/v2/states"
+    if yesterday:
+        url += "?yesterday=true"
 
     statedata = utils.get_json(url)
+
     statedata = sorted(statedata, key = lambda i: i['todayCases'], reverse=True)
     return statedata
+
 
 if __name__ == "__main__":
     print(get_usa())
