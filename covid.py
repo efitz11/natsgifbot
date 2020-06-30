@@ -123,8 +123,40 @@ def check_for_updates():
         else:
             return None
 
+def get_usa():
+    url = "https://disease.sh/v2/countries/usa"
+    urly = url + "?yesterday=true"
+
+    todaydata = utils.get_json(url)
+    todaydata['state'] = "Today"
+    yestdata = utils.get_json(urly)
+    yestdata['state'] = "Yest."
+    l = [todaydata, yestdata]
+
+    labels = ['state','cases', 'todayCases', 'deaths', 'todayDeaths']
+    replmap = {'state':'', 'todayCases':'new cases', 'todayDeaths':'new deaths'}
+
+    # get top 5 states
+    l.append({'state':'top 5 states:'})
+    l.extend(get_state_data()[:5])
+
+    for data in l:
+        for lab in labels:
+            if lab in data and isinstance(data[lab], int):
+                data[lab] = format_number(data[lab])
+    tab = utils.format_table(labels, l, repl_map=replmap, left_list=['name'])
+
+    return "```python\n%s```" % tab
+
+def get_state_data():
+    url = "https://disease.sh/v2/states"
+
+    statedata = utils.get_json(url)
+    statedata = sorted(statedata, key = lambda i: i['todayCases'], reverse=True)
+    return statedata
+
 if __name__ == "__main__":
-    print(get_us())
+    print(get_usa())
     # print(get_state("VA"))
     # print(check_for_updates())
 
