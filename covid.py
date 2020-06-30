@@ -147,7 +147,7 @@ def get_usa():
         for lab in labels:
             if lab in data and isinstance(data[lab], int):
                 data[lab] = format_number(data[lab])
-    tab = utils.format_table(labels, l, repl_map=replmap, left_list=['name'])
+    tab = utils.format_table(labels, l, repl_map=replmap, left_list=['state'])
 
     return "```python\n%s```More: <https://www.worldometers.info/coronavirus/country/us>" % tab
 
