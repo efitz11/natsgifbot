@@ -814,7 +814,7 @@ async def my_bg_task():
         # teamname = "Astros"
         # now = datetime.now() - timedelta(hours=3)
         # day = mlbgame.day(now.year, now.month, now.day, home=teamname, away=teamname)
-        
+
         # if len(day) > 0 :
         #     game = day[0]
         #     id = game.game_id
@@ -823,7 +823,7 @@ async def my_bg_task():
         #         output = "```python\n" + output + "```"
         #         await bot.send_message(channel,output)
         # await asyncio.sleep(15)
-        
+
 async def update_mlbtr():
     await bot.wait_until_ready()
     channel = bot.get_channel(id=main_chid)
@@ -833,7 +833,7 @@ async def update_mlbtr():
             # await bot.send_message(channel,":rotating_light: HQ is starting soon :rotating_light: --- head to %s" % (triviach.mention))
             # await bot.send_message(triviach,":rotating_light: HQ is starting soon :rotating_light:")
             # await bot.send_message(triviach, hqmod.list_users(mention=True))
-            
+
         out = mlbtr.mlbtr()
         if out != None:
             await bot.send_message(channel,out)
@@ -848,14 +848,19 @@ async def check_covid_numbers():
         # if ret is not None:
         #     await bot.send_message(corona_channel, ret)
 
+        wait_time = 60*15
         # send update right before midnight GMT
         now_time = datetime.utcnow().time()
-        if now_time >= time(23,44) and now_time <= time(23,59) and not covid_sent_today:
-            await bot.send_message(corona_channel, covid.get_usa())
-            covid_sent_today = True
+        if now_time >= time(23,44) and now_time <= time(23,59,59) and not covid_sent_today:
+            if now_time >= time(23,58,30) and not covid_sent_today:
+                await bot.send_message(corona_channel, covid.get_usa())
+                covid_sent_today = True
+                await asyncio.sleep(wait_time)
+            else:
+                await asyncio.sleep(60)
         else:
             covid_sent_today = False
-        await asyncio.sleep(60*15)
+            await asyncio.sleep(wait_time)
 
 mlbtr = xmlreader.XmlReader()
 
