@@ -129,7 +129,7 @@ def find_state_in_list(state, states_list):
             return s
 
 def get_usa():
-    url = "https://disease.sh/v2/countries/usa"
+    url = "https://disease.sh/v3/covid-19/countries/usa"
     urly = url + "?yesterday=true"
 
     todaydata = utils.get_json(url)
@@ -168,7 +168,7 @@ def get_usa():
     return "```python\n%s```More: <https://www.worldometers.info/coronavirus/country/us>" % tab
 
 def get_state_data(yesterday=False):
-    url = "https://disease.sh/v2/states"
+    url = "https://disease.sh/v3/covid-19/states"
     if yesterday:
         url += "?yesterday=true"
 
