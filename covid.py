@@ -147,7 +147,6 @@ def get_usa():
 
     # add states of interest
     va = find_state_in_list("Virginia", states_today)
-    va['state'] = "VA Today"
     va_y = find_state_in_list("Virginia", states_yest)
     va_y['state'] = "VA Yest."
 
