@@ -5,6 +5,11 @@ import datetime,time
 import csv
 import requests
 import math
+# import pandas as pd
+# from pandas.plotting import table
+# import matplotlib.pyplot as plt
+# import numpy as np
+import plotly.graph_objects as go
 
 def get_json(url, encoding="utf-8"):
     print(url)
@@ -197,6 +202,52 @@ def format_table(labels, dicts, repl_map={}, showlabels=True, linebreaknum=0, li
         lines = newlines[:-1]
 
     return '\n'.join(lines)
+
+# def list_to_pandas(labels, dicts, repl_map={}):
+#     l = list()
+#     for dict in dicts:
+#         d = {}
+#         for label in labels:
+#             lab = label
+#             if label in repl_map:
+#                 lab = repl_map[label]
+#             if label in dict:
+#                 d[lab] = dict[label]
+#             else:
+#                 d[lab] = ""
+#         l.append(d)
+#     df = pd.DataFrame(l)
+#     return df
+
+def list_to_plotly(labels, dicts, repl_map={}, left_list=[]):
+    # get a list of columns
+    cols = list()
+    for label in labels:
+        col = list()
+        for d in dicts:
+            if label in d:
+                col.append(d[label])
+            else:
+                col.append("")
+        cols.append(col)
+
+    newlabs = [x if x not in repl_map else repl_map[x] for x in labels]
+    aligns = ["left" if x in left_list else "right" for x in labels]
+    fig = go.Figure(data=go.Table(header=dict(values=newlabs),
+                                  cells=dict(values=cols, align=aligns)))
+    height = 27 + 20*len(dicts)
+    fig.update_layout(margin=dict(l=0,r=0,t=0,b=0))
+    fig.write_image("table.png", height=height)
+
+# def create_pandas_image(df, filename):
+#     ax = plt.subplot(911, frame_on=False)
+#     # ax = df.plot()
+#     ax.xaxis.set_visible(False)
+#     ax.yaxis.set_visible(False)
+#     table(ax, df)
+#     # fig = ax.get_figure()
+#     # fig.canvas.draw()
+#     plt.savefig(filename)
 
 def write_to_file(contents, filename, subdir, prependtimestamp=False):
     if prependtimestamp:
