@@ -23,7 +23,18 @@ def _get_player_info_line(player):
     throws = player['pitchHand']['code']
     height = player['height']
     weight = player['weight']
-    return "%s | B/T: %s/%s | %s | %s" % (pos, bats, throws, height, weight)
+
+    bdate = player['birthDate'].split("-")
+    bdatetime = datetime.strptime(player['birthDate'], "%Y-%m-%d")
+    today = datetime.today()
+    age = today.year - bdatetime.year - ((today.month, today.day) < (bdatetime.month, bdatetime.day))
+
+    ret = "%s | B/T: %s/%s | %s | %s | %s" % (pos, bats, throws, height, weight, age)
+
+
+    if int(bdate[1]) == today.month and int(bdate[2]) == today.day:
+        ret += " | **HAPPY BIRTHDAY**"
+    return ret
 
 def get_player_season_stats(name, type=None, year=None, career=None, reddit=None):
     player = _new_player_search(name)
@@ -36,9 +47,9 @@ def get_player_season_stats(name, type=None, year=None, career=None, reddit=None
     pos = player['primaryPosition']['abbreviation']
     infoline = _get_player_info_line(player)
     now = datetime.now()
-    birthdate = player['birthDate']
-    birthdate = birthdate[:birthdate.find('T')]
-    birth = birthdate.split('-')
+    # birthdate = player['birthDate']
+    # birthdate = birthdate[:birthdate.find('T')]
+    # birth = birthdate.split('-')
 
     if year is None:
         year = str(now.year)
@@ -50,15 +61,15 @@ def get_player_season_stats(name, type=None, year=None, career=None, reddit=None
     else:
         year2 = year
 
-    d = None
-    if year == None:
-        d = now.year - int(birth[0]) - ((now.month, now.day) < (int(birth[1]), int(birth[2])))
-    elif year is not None:
-        d = int(year) - int(birth[0]) - ((7,1) < (int(birth[1]), int(birth[2])))
-    if d is not None:
-        infoline = "%s | Age: %d" % (infoline, d)
-    if now.month == int(birth[1]) and now.day == int(birth[2]):
-        infoline = infoline + "  **HAPPY BIRTHDAY**"
+    # d = None
+    # if year == None:
+    #     d = now.year - int(birth[0]) - ((now.month, now.day) < (int(birth[1]), int(birth[2])))
+    # elif year is not None:
+    #     d = int(year) - int(birth[0]) - ((7,1) < (int(birth[1]), int(birth[2])))
+    # if d is not None:
+    #     infoline = "%s | Age: %d" % (infoline, d)
+    # if now.month == int(birth[1]) and now.day == int(birth[2]):
+    #     infoline = infoline + "  **HAPPY BIRTHDAY**"
 
     if type is None and pos == 'P':
         type = "pitching"
