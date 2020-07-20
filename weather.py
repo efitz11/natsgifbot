@@ -35,6 +35,8 @@ def get_current_weatherbit(text):
     resp = utils.get_json(url)
     if len(resp['data']) > 0:
         data = resp['data'][0]
+        obstime = data['ob_time']
+        obsdatetime = datetime.strptime(obstime, '%Y-%m-%d %H:%M')
         ret = "```python\nCurrently in %s, %s, %s:\n" \
               "  %s\n" \
               "  Temp: %.1f\n" \
@@ -42,7 +44,7 @@ def get_current_weatherbit(text):
               "  Humidity: %d%%\n" \
               "  Observed: %s```" % (data['city_name'], data['state_code'], data['country_code'],
                                      data['weather']['description'], data['temp'], data['app_temp'], data['rh'],
-                                     data['ob_time'])
+                                     utils.prettydate(obsdatetime, utc=True))
         return ret
 
 def get_current_weather(text):
