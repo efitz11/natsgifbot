@@ -31,21 +31,21 @@ def _get_ET_from_timestamp(timestamp):
 def get_current_weatherbit(text):
     url = "https://api.weatherbit.io/v2.0/current"
     key = utils.get_keys("weatherbit")['key']
-    lat,lon = get_lat_lon(text)
+    lat,lon,loc = get_lat_lon(text)
     url = url + "?key=%s&units=I&lat=%f&lon=%f" % (key, lat, lon)
     resp = utils.get_json(url)
     if len(resp['data']) > 0:
         data = resp['data'][0]
         obstime = data['ob_time']
         obsdatetime = datetime.strptime(obstime, '%Y-%m-%d %H:%M')
-        ret = "```python\nCurrently in %s, %s, %s:\n" \
-              "  %s\n" \
-              "  Temp: %.1f\n" \
-              "  Feels like: %.1f\n" \
+        ret = "```python\n" \
+              "Location search result: %s\n" \
+              "%s in %s, %s, %s:\n" \
+              "  Temp: %.1f (Feels like: %.1f)\n" \
               "  Humidity: %d%%\n" \
-              "  Observed: %s```" % (data['city_name'], data['state_code'], data['country_code'],
-                                     data['weather']['description'], data['temp'], data['app_temp'], data['rh'],
-                                     utils.prettydate(obsdatetime, utc=True))
+              "  Observed: %s at station: %s```" % (loc, data['weather']['description'], data['city_name'], data['state_code'], data['country_code'],
+                                     data['temp'], data['app_temp'], data['rh'],
+                                     utils.prettydate(obsdatetime, utc=True), data['station'])
         return ret
 
 def get_current_weather(text):
@@ -100,6 +100,16 @@ def get_forecast(text):
             out = out + "%s: %d%s\n%s\n\n" % (period['name'], period['temperature'], period['temperatureUnit'], period['detailedForecast'])
     return "```python\n%s```" % out
 
+def get_readable_location(geocode_result):
+    loc_str = ""
+    for component in geocode_result['address_components']:
+        if len(loc_str) == 0:
+            loc_str += component['short_name']
+        else:
+            if component['types'][0] in ['locality', 'administrative_area_level_1', 'country']:
+                loc_str += ", %s" % component['short_name']
+    return loc_str
+
 def get_lat_lon(search):
     cache = "cache/locations.json"
     cachedir = "cache"
@@ -113,7 +123,7 @@ def get_lat_lon(search):
     queries = json.loads(s)
     if search in queries:  # if cached
         result = queries[search]['geometry']['location']
-        return (result['lat'], result['lng'])
+        return (result['lat'], result['lng'], get_readable_location(queries[search]))
     else:  # otherwise use API to find location
         query = search.replace(' ','+')
         url = "https://maps.googleapis.com/maps/api/geocode/json?address=" + query + "&key="
@@ -135,7 +145,7 @@ def get_lat_lon(search):
             with open(cache, 'w') as f:
                 f.write(json.dumps(queries))
 
-            return(lat,lon)
+            return(lat,lon, get_readable_location(s['results'][0]))
 
 def get_current_metar(airport_code):
     # url = "https://www.aviationweather.gov/adds/dataserver_current/httpparam?dataSource=metars&requestType=retrieve&format=xml&hoursBeforeNow=3&mostRecent=true&stationString=" + airport_code
@@ -158,7 +168,8 @@ def get_current_metar(airport_code):
 
 if __name__ == "__main__":
     #get_current_weather('%2C'.join(("fairfax,","va")))
-    print(get_current_weatherbit('22203'))
+    print(get_current_weatherbit('sterling, va'))
+    # print(get_lat_lon("potomac, md"))
     # print(get_current_metar('kiad'))
     # print(get_forecast("arlington,va"))
 
