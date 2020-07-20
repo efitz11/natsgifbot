@@ -4,6 +4,7 @@ import time
 from urllib.request import urlopen, Request
 import requests
 import utils
+import os
 
 emojimap = {'Sunny':':sunny:',
             'Mostly Cloudy':':white_sun_cloud:',
@@ -100,22 +101,41 @@ def get_forecast(text):
     return "```python\n%s```" % out
 
 def get_lat_lon(search):
-    #TODO: Cache locations using a dictionary
-    query = search.replace(' ','+')
-    url = "https://maps.googleapis.com/maps/api/geocode/json?address=" + query + "&key="
-    with open("keys.json",'r') as f:
-        f = json.loads(f.read())
-    for k in f['keys']:
-        if k['name'] == 'google':
-            key = k['key']
-    if key is not None:
-        url = url + key
-        req = Request(url, headers={'User-Agent' : "ubuntu"})
-        s = json.loads(urlopen(req).read().decode("utf-8"))
-        # print(s)
-        lat = s['results'][0]['geometry']['location']['lat']
-        lon = s['results'][0]['geometry']['location']['lng']
-        return(lat,lon)
+    cache = "cache/locations.json"
+    cachedir = "cache"
+    if not os.path.exists(cache):
+        if not os.path.exists(cachedir):
+            os.makedirs(cachedir)
+        with open(cache, 'w') as f:
+            f.write("{}")
+    with open(cache, 'r') as f:
+        s = f.read()
+    queries = json.loads(s)
+    if search in queries:  # if cached
+        result = queries[search]['geometry']['location']
+        return (result['lat'], result['lng'])
+    else:  # otherwise use API to find location
+        query = search.replace(' ','+')
+        url = "https://maps.googleapis.com/maps/api/geocode/json?address=" + query + "&key="
+        with open("keys.json",'r') as f:
+            f = json.loads(f.read())
+        for k in f['keys']:
+            if k['name'] == 'google':
+                key = k['key']
+        if key is not None:
+            url = url + key
+            req = Request(url, headers={'User-Agent' : "ubuntu"})
+            s = json.loads(urlopen(req).read().decode("utf-8"))
+            # print(s)
+            lat = s['results'][0]['geometry']['location']['lat']
+            lon = s['results'][0]['geometry']['location']['lng']
+
+            # cache result
+            queries[search] = s['results'][0]
+            with open(cache, 'w') as f:
+                f.write(json.dumps(queries))
+
+            return(lat,lon)
 
 def get_current_metar(airport_code):
     # url = "https://www.aviationweather.gov/adds/dataserver_current/httpparam?dataSource=metars&requestType=retrieve&format=xml&hoursBeforeNow=3&mostRecent=true&stationString=" + airport_code
