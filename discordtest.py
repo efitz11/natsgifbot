@@ -349,15 +349,15 @@ async def youtube(*query:str):
 @bot.command()
 async def weather(*location:str):
     """oh the weather outside is weather"""
-    output = weathermodule.get_current_weather('%2C'.join(location))
+    output = weathermodule.get_current_weatherbit('%2C'.join(location))
     await bot.say(output)
-@bot.command(pass_context=True)
-async def forecast(ctx, *location:str):
-    if 'bot' in str(ctx.message.channel):
-        output = weathermodule.get_forecast('%2C'.join(location))
-        await bot.say(output)
-    else:
-        await bot.say("this command is only allowed in the bot channel")
+# @bot.command(pass_context=True)
+# async def forecast(ctx, *location:str):
+#     if 'bot' in str(ctx.message.channel):
+#         output = weathermodule.get_forecast('%2C'.join(location))
+#         await bot.say(output)
+#     else:
+#         await bot.say("this command is only allowed in the bot channel")
 
 @bot.command()
 async def radar(*query):
