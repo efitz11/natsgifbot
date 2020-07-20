@@ -27,6 +27,22 @@ def _get_ET_from_timestamp(timestamp):
     utc = utc + diff
     return datetime.strftime(utc, "%I:%M ET")
 
+def get_current_weatherbit(text):
+    url = "https://api.weatherbit.io/v2.0/current"
+    key = utils.get_keys("weatherbit")['key']
+    lat,lon = get_lat_lon(text)
+    url = url + "?key=%s&units=I&lat=%f&lon=%f" % (key, lat, lon)
+    resp = utils.get_json(url)
+    if len(resp['data']) > 0:
+        data = resp['data'][0]
+        ret = "Currently in %s, %s, %s:\n" \
+              "  %s\n" \
+              "  Temp: %.1f\n" \
+              "  Feels like: %.1f\n" \
+              "  Humidity: %d%%" % (data['city_name'], data['state_code'], data['country_code'],
+                                     data['weather']['description'], data['temp'], data['app_temp'], data['rh'])
+        return ret
+
 def get_current_weather(text):
     '''get current weather conditions'''
     loc = get_lat_lon(text)
@@ -118,7 +134,7 @@ def get_current_metar(airport_code):
 
 if __name__ == "__main__":
     #get_current_weather('%2C'.join(("fairfax,","va")))
-    print(get_current_weather('22203'))
+    print(get_current_weatherbit('22203'))
     # print(get_current_metar('kiad'))
     # print(get_forecast("arlington,va"))
 
