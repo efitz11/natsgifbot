@@ -35,12 +35,14 @@ def get_current_weatherbit(text):
     resp = utils.get_json(url)
     if len(resp['data']) > 0:
         data = resp['data'][0]
-        ret = "Currently in %s, %s, %s:\n" \
+        ret = "```python\nCurrently in %s, %s, %s:\n" \
               "  %s\n" \
               "  Temp: %.1f\n" \
               "  Feels like: %.1f\n" \
-              "  Humidity: %d%%" % (data['city_name'], data['state_code'], data['country_code'],
-                                     data['weather']['description'], data['temp'], data['app_temp'], data['rh'])
+              "  Humidity: %d%%\n" \
+              "  Observed: %s```" % (data['city_name'], data['state_code'], data['country_code'],
+                                     data['weather']['description'], data['temp'], data['app_temp'], data['rh'],
+                                     data['ob_time'])
         return ret
 
 def get_current_weather(text):
