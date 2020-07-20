@@ -111,7 +111,10 @@ def get_player_season_stats(name, type=None, year=None, career=None, reddit=None
             'wins':'w', 'losses':'l', 'gamesPlayed':'g', 'gamesStarted':'gs', 'saveOpportunities':'svo', 'saves':'sv', 'inningsPitched':'ip'}
 
     if year == year2:
-        teamabv = '/'.join(teams)
+        if year == str(now.year) and len(teams) == 0 and 'currentTeam' in player:
+            teamabv = player['currentTeam']['abbreviation']
+        else:
+            teamabv = '/'.join(teams)
         output = "%s season stats for %s (%s):" % (year, disp_name, teamabv)
     else:
         output = "%s-%s seasons stats for %s:" % (year, year2, disp_name)
