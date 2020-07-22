@@ -413,7 +413,7 @@ class Baseball(commands.Cog):
             teamname = ' '.join(team).lower()
             output = mymlbstats.get_single_game(teamname,delta=delta)
             if len(output) > 0:
-                await ctx.say("```python\n" + output + "```")
+                await ctx.send("```python\n" + output + "```")
             else:
                 await ctx.send("no games found")
 
