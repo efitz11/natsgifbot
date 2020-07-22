@@ -3,7 +3,7 @@ from discord.ext import commands
 import cfbgame, nflgame, nhlscores, cbbgame, softball, odds
 import worldcup
 
-class Sports():
+class Sports(commands.Cog):
     def __init__(self,bot):
         self.bot = bot
 

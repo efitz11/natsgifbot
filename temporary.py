@@ -1,7 +1,7 @@
 from discord.ext import commands
 import covid
 
-class Temp():
+class Temp(commands.Cog):
     def __init__(self,bot):
         self.bot = bot
 

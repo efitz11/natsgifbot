@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 import utils
 import savant
 
-class Baseball():
+class Baseball(commands.Cog):
     def __init__(self,bot):
         self.bot = bot
         self.savant_stats = ['oaa']

@@ -45,7 +45,7 @@ discord_token = f.readline().strip()
 f.close()
 
 f = open('channelids.txt')
-main_chid = f.readline().strip()
+main_chid = int(f.readline().strip())
 f.close()
 
 #write pid file
@@ -842,7 +842,7 @@ async def update_mlbtr():
 async def check_covid_numbers():
     await bot.wait_until_ready()
     channel = bot.get_channel(id=main_chid)
-    corona_channel = discord.utils.find(lambda m: 'coronavirus' in m.name, channel.server.channels)
+    corona_channel = discord.utils.find(lambda m: 'coronavirus' in m.name, channel.guild.channels)
     while not bot.is_closed:
         # ret = covid.check_for_updates()
         # if ret is not None:
