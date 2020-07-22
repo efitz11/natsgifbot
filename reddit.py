@@ -9,7 +9,7 @@ import random
 import re
 import utils
 
-class Reddit():
+class Reddit(commands.Cog):
     disabled_subs = ['coconutwater','trypophobia']
     disabled_str = "Sorry, retrieving posts from that sub is not allowed"
 
