@@ -101,34 +101,34 @@ async def on_ready():
     print('------')
     
 @bot.command()
-async def gif(*name : str):
+async def gif(ctx, *name : str):
     """returns a nationals gif matching the search query"""
-    # await bot.say(gifs.fuzzygif(' '.join(name)))
-    await bot.say(gifs.gif(' '.join(name)))
+    # await ctx.send(gifs.fuzzygif(' '.join(name)))
+    await ctx.send(gifs.gif(' '.join(name)))
 
 @bot.command()
-async def gfy(*name : str):
+async def gfy(ctx, *name : str):
     """returns a gif from efitz111 on gfycat"""
-    await bot.say(gfycat.search_gfys(' '.join(name)))
+    await ctx.send(gfycat.search_gfys(' '.join(name)))
 
-@bot.command(pass_context=True)
+@bot.command()
 async def gfyall(ctx, *name : str):
     """returns up to 30 gifs from efitz111 on gfycat"""
     if 'bot' in str(ctx.message.channel):
-        await bot.say(gfycat.search_gfys(' '.join(name), num=30))
+        await ctx.send(gfycat.search_gfys(' '.join(name), num=30))
     else:
-        await bot.say("this command is only allowed in the bot channel")
+        await ctx.send("this command is only allowed in the bot channel")
 
 @bot.command()
-async def mlbgif(*name : str):
+async def mlbgif(ctx, *name : str):
     """returns a nationals gif matching the search query"""
-    await bot.say(gifs.get_mlb_gif(' '.join(name)))    
+    await ctx.send(gifs.get_mlb_gif(' '.join(name)))
     
-@bot.command(pass_context=True)
+@bot.command()
 async def gifall(ctx, *name:str):
     """returns all gifs matching the search query"""
     if 'bot' not in str(ctx.message.channel):
-        await bot.say("this command is only allowed in the bot channel")
+        await ctx.send("this command is only allowed in the bot channel")
         return
     matches = []
     patterns = []
@@ -148,7 +148,7 @@ async def gifall(ctx, *name:str):
             matches.append(line)
     f.close()
     if len(matches) == 0:
-        await bot.say("No matches")
+        await ctx.send("No matches")
         return
     else:
         output = ""
@@ -161,8 +161,8 @@ async def gifall(ctx, *name:str):
             #     output = output + "... more gifs not displayed due to char limit"
             #     break
         for m in utils.split_long_message(output):
-            await bot.say(m)
-        # await bot.say(output.strip())
+            await ctx.send(m)
+        # await ctx.send(output.strip())
         
     return
 
@@ -186,16 +186,16 @@ def mockify_text(text):
     return output
         
 @bot.command()
-async def mockify(*text:str):
+async def mockify(ctx, *text:str):
     """MocKiFy aNy sTrIng of tExT"""
     input = ' '.join(text).lower()
-    await bot.say(mockify_text(input))
+    await ctx.send(mockify_text(input))
 
-@bot.command(pass_context=True)
+@bot.command()
 async def mock(ctx, *search:str):
     """mOcKiFy tHe pReViOuS MeSsaGe"""
     srch = ' '.join(search)
-    async for m in bot.logs_from(ctx.message.channel,limit=10):
+    async for m in ctx.history(limit=10):
         skip = False
         for prefix in prefixes:
             if m.clean_content.startswith(prefix):
@@ -203,17 +203,17 @@ async def mock(ctx, *search:str):
                 break
         if not skip:
             if srch.lower() in m.clean_content.lower():
-                await bot.say(mockify_text(m.clean_content.lower()))
+                await ctx.send(mockify_text(m.clean_content.lower()))
                 return
     
 @bot.command()
-async def memeify(*text:str):
+async def memeify(ctx, *text:str):
     """M E M E I F Y   A N Y   S T R I N G   O F   T E X T"""
     input = ''.join(text)
     output = ""
     for s in input:
         output = output + " " + s
-    await bot.say(output.strip().upper())
+    await ctx.send(output.strip().upper())
 
 def last_replace(s, old, new):
     li = s.rsplit(old, 1)
@@ -240,16 +240,16 @@ def uwuify_text(text):
     return text
 
 @bot.command()
-async def uwuify(*text:str):
+async def uwuify(ctx, *text:str):
     """uwu what's this?"""
     text = (' ').join(text)
-    await bot.say(uwuify_text(text))
+    await ctx.send(uwuify_text(text))
 
 @bot.command(pass_context=True)
 async def uwu(ctx, *search:str):
     """uwuify the pwevious command"""
     srch = ' '.join(search)
-    async for m in bot.logs_from(ctx.message.channel,limit=10):
+    async for m in ctx.history(limit=10):
         skip = False
         for prefix in prefixes:
             if m.clean_content.startswith(prefix):
@@ -257,12 +257,12 @@ async def uwu(ctx, *search:str):
                 break
         if not skip:
             if srch.lower() in m.clean_content.lower():
-                await bot.say(uwuify_text(m.clean_content.lower()))
+                await ctx.send(uwuify_text(m.clean_content.lower()))
                 return
 
 @bot.command()
-async def fire():
-    await bot.say("DAVEY MARTINEZ")
+async def fire(ctx):
+    await ctx.send("DAVEY MARTINEZ")
 
 @bot.command(pass_context=True)
 async def fuck(ctx,*addlist):
@@ -285,46 +285,46 @@ async def fuck(ctx,*addlist):
             for item in s['fucklist']:
                 output = "%s%s, " % (output, item)
             output = output[:-2]
-            await bot.say(output)
+            await ctx.send(output)
         else:
             search = ' '.join(addlist).lower()
             for l in s['fucklist']:
                 if search in l.lower():
-                    await bot.say("FUCK " + l.upper())
+                    await ctx.send("FUCK " + l.upper())
                     return
         if write:
             with open(miscfile, 'w') as f:
                 f.write(json.dumps(s, indent=4))
-            await bot.say("done.")
+            await ctx.send("done.")
         return
 
     l = s['fucklist']
     num = random.randint(0,len(l)-1)
-    await bot.say((l[num]).upper())
+    await ctx.send((l[num]).upper())
 
 @bot.command()
-async def pajokie():
+async def pajokie(ctx):
     """GO HOKIES!"""
-    await bot.say("https://cdn.discordapp.com/attachments/328677264566910977/343555639227842571/image.jpg")
+    await ctx.send("https://cdn.discordapp.com/attachments/328677264566910977/343555639227842571/image.jpg")
 
 @bot.command()
-async def roll(*num:int):
+async def roll(ctx, *num:int):
     """roll an n-sided die (6 default)"""
     nu = 6
     if len(num) != 0:
         nu = num[0]
     n = random.randint(1,nu)
-    await bot.say(n)
+    await ctx.send(n)
     
 @bot.command()
-async def flip():
+async def flip(ctx):
     """flip a coin"""
     res = "heads" if random.randint(0,1) == 0 else "tails"
-    await bot.say(res)
+    await ctx.send(res)
     
 @bot.command()
-async def giflist():
-    await bot.say("https://github.com/efitz11/natsgifbot/blob/master/postlist.csv")
+async def giflist(ctx):
+    await ctx.send("https://github.com/efitz11/natsgifbot/blob/master/postlist.csv")
 
 def get_youtube(query):
     query = query.replace(' ','+')
@@ -341,48 +341,48 @@ def get_youtube(query):
     return "https://youtube.com/watch?v="+vid
 
 @bot.command()
-async def youtube(*query:str):
+async def youtube(ctx, *query:str):
     """get the first youtube video for a query"""
     q = '+'.join(query)
-    await bot.say(get_youtube(q))
+    await ctx.send(get_youtube(q))
 
 @bot.command()
-async def weather(*location:str):
+async def weather(ctx, *location:str):
     """oh the weather outside is weather"""
     output = weathermodule.get_current_weatherbit('%2C'.join(location))
-    await bot.say(output)
+    await ctx.send(output)
 # @bot.command(pass_context=True)
 # async def forecast(ctx, *location:str):
 #     if 'bot' in str(ctx.message.channel):
 #         output = weathermodule.get_forecast('%2C'.join(location))
-#         await bot.say(output)
+#         await ctx.send(output)
 #     else:
-#         await bot.say("this command is only allowed in the bot channel")
+#         await ctx.send("this command is only allowed in the bot channel")
 
 @bot.command()
-async def radar(*query):
+async def radar(ctx, *query):
     """show pic of the current DC weather radar"""
     randstr = "?%d" % random.randint(0,9999)
     if len(query) == 0:
-        await bot.say("<https://weather.com/weather/radar/interactive/l/20003:4:US?layer=radar>")
-        await bot.say("https://api.weather.com/v2/maps/dynamic?geocode=38.85,-76.95&h=600&w=800&lod=8&product=twcRadarMosaic&map=light&format=jpg&language=en&apiKey=d522aa97197fd864d36b418f39ebb323&a=0"
+        await ctx.send("<https://weather.com/weather/radar/interactive/l/20003:4:US?layer=radar>")
+        await ctx.send("https://api.weather.com/v2/maps/dynamic?geocode=38.85,-76.95&h=600&w=800&lod=8&product=twcRadarMosaic&map=light&format=jpg&language=en&apiKey=d522aa97197fd864d36b418f39ebb323&a=0"
                       + randstr)
     else:
         lat,lon,loc = weathermodule.get_lat_lon('+'.join(query))
         lat,lon = (round(lat,1),round(lon,1))
-        await bot.say("https://api.weather.com/v2/maps/dynamic?geocode=%.2f,%.2f&h=600&w=800&lod=8&product=twcRadarMosaic&map=light&format=jpg&language=en&apiKey=d522aa97197fd864d36b418f39ebb323&a=0" % (lat,lon)
+        await ctx.send("https://api.weather.com/v2/maps/dynamic?geocode=%.2f,%.2f&h=600&w=800&lod=8&product=twcRadarMosaic&map=light&format=jpg&language=en&apiKey=d522aa97197fd864d36b418f39ebb323&a=0" % (lat,lon)
                       + randstr)
 
 @bot.command()
-async def snow():
+async def snow(ctx):
     """show NWS snow probability image"""
     randstr = "?%d" % random.randint(0,9999)
-    await bot.say("https://www.weather.gov/images/lwx/winter/StormTotalSnowWeb1.png" + randstr)
+    await ctx.send("https://www.weather.gov/images/lwx/winter/StormTotalSnowWeb1.png" + randstr)
 
 @bot.command()
-async def metar(airport_code:str):
+async def metar(ctx, airport_code:str):
     """get airport metar"""
-    await bot.say(weathermodule.get_current_metar(airport_code))
+    await ctx.send(weathermodule.get_current_metar(airport_code))
 
 def convert_number_to_emoji(num):
     snum = str(num)
@@ -403,28 +403,28 @@ async def link(ctx,*args):
         if str(ctx.message.author) in auth_users:
             linkname = args[1].lower()
             if linkname in links:
-                await bot.say('link name already in use')
+                await ctx.send('link name already in use')
             else:
                 if args[2].startswith('http'):
                     s[objname][linkname] = args[2]
                     with open(miscfile,'w') as f:
                         f.write(json.dumps(s, indent=4))
-                    await bot.say('link %s added.' % linkname)
+                    await ctx.send('link %s added.' % linkname)
                 else:
-                    await bot.say('link doesn\'t begin with `http`')
+                    await ctx.send('link doesn\'t begin with `http`')
         else:
-            await bot.say(links['dont'])
+            await ctx.send(links['dont'])
     else:
         name = args[0].lower()
         if name == 'list':
             output = ""
             for l in links:
                 output = output + l + ", "
-            await bot.say(output[:-2])
+            await ctx.send(output[:-2])
         elif name in links:
-            await bot.say(links[name])
+            await ctx.send(links[name])
         else:
-            await bot.say("could not find a link named %s" % name)
+            await ctx.send("could not find a link named %s" % name)
 
 @bot.command(pass_context=True)
 async def countdown(ctx, *addlist):
@@ -465,59 +465,59 @@ async def countdown(ctx, *addlist):
     sortedlist = []
     for d, value in dayslist:
         sortedlist.append(value)
-        await bot.say("%s %s until %s" % (convert_number_to_emoji(d+1), "day" if (d+1 == 1) else "days", value['name']))
+        await ctx.send("%s %s until %s" % (convert_number_to_emoji(d+1), "day" if (d+1 == 1) else "days", value['name']))
     s['countdown'] = sortedlist
 
     with open(miscfile,'w') as f:
         f.write(json.dumps(s, indent=4))
 
 @bot.command()
-async def stock(*symbol:str):
+async def stock(ctx, *symbol:str):
     """Get a stock quote. Only works for stocks and ETFs"""
     if len(symbol) == 0:
-        await bot.say(stocks.get_indexes())
+        await ctx.send(stocks.get_indexes())
         return
     out = stocks.get_quote(symbol[0])
-    await bot.say(out)
+    await ctx.send(out)
     
 @bot.command()
-async def crypto(*symbol:str):
+async def crypto(ctx, *symbol:str):
     """list the top 10 crypto prices, or a specific coin. from coinmarketcap"""
     sym = '-'.join(symbol)
-    await bot.say(web.get_cryptocurrency_data(sym))
+    await ctx.send(web.get_cryptocurrency_data(sym))
     
 @bot.command()
-async def frink(*query:str):
+async def frink(ctx, *query:str):
     """generate a gif from frinkiac"""
     if query[0] == 'gif':
         query = query[1:]
         query = ' '.join(query)
-        await bot.say(frinkiac.get_gif(query))
+        await ctx.send(frinkiac.get_gif(query))
     else:
         query = ' '.join(query)
-        await bot.say(frinkiac.get_meme(query))
+        await ctx.send(frinkiac.get_meme(query))
     
 @bot.command()
-async def nice():
-    """bot says 'nice''"""
-    await bot.say("nice")
+async def nice(ctx):
+    """ctx.sends 'nice''"""
+    await ctx.send("nice")
 
 @bot.command()
-async def zoop():
+async def zoop(ctx):
     """zoop"""
-    await bot.say(":point_right: :sunglasses: :point_right:")
+    await ctx.send(":point_right: :sunglasses: :point_right:")
 
 @bot.command()
-async def pooz():
+async def pooz(ctx):
     """pooz"""
-    await bot.say(":point_left: :sunglasses: :point_left:")
+    await ctx.send(":point_left: :sunglasses: :point_left:")
 
 @bot.command(pass_context=True)
 async def react(ctx, reactionstr:str, *search:str):
     """turn string into emoji and react to the most recent message that matches"""
     search = ' '.join(search)
     msg = reactionstr.lower()
-    async for m in bot.logs_from(ctx.message.channel,limit=10):
+    async for m in ctx.history(limit=20):
         if not m.clean_content.startswith('!') and search in m.clean_content.lower():
             for s in msg:
                 if s in emoji_letter_map:
@@ -525,17 +525,17 @@ async def react(ctx, reactionstr:str, *search:str):
             return
             
 @bot.command()
-async def wiki(*query:str):
+async def wiki(ctx, *query:str):
     """get a link to wikipedia's first search result for your query"""
-    await bot.say(web.get_wiki_page(' '.join(query)))
+    await ctx.send(web.get_wiki_page(' '.join(query)))
 
 @bot.command()
-async def beer(*beer_name):
+async def beer(ctx, *beer_name):
     """get untappd info on a beer"""
-    await bot.say(web.search_untappd(' '.join(beer_name)))
+    await ctx.send(web.search_untappd(' '.join(beer_name)))
     
 @bot.command()
-async def poll(question, *answers):
+async def poll(ctx, question, *answers):
     """Start a poll - the bot will post the question with the possible answers
        List the answers after the question, if any argument has spaces, remember
        to "quote the argument" to keep it as one entry
@@ -548,12 +548,12 @@ async def poll(question, *answers):
         
     if len(answers) == 0:
         output = output + "\tYes or No\n"
-        m = await bot.say(output + "```")
+        m = await ctx.send(output + "```")
         await bot.add_reaction(m,emoji_letter_map['y'])
         await bot.add_reaction(m,emoji_letter_map['n'])
         return
         
-    m = await bot.say(output + "```")
+    m = await ctx.send(output + "```")
     a = ord('a')
     
     for i in range(len(answers)):
@@ -562,7 +562,7 @@ async def poll(question, *answers):
 @bot.command(pass_context=True)
 async def terminate(ctx):
     """no"""
-    await bot.say("%s is not in the terminators file. This incident will be reported." % ctx.message.author.mention)
+    await ctx.send("%s is not in the terminators file. This incident will be reported." % ctx.message.author.mention)
 
 @bot.command(pass_context=True)
 async def slap(ctx, *text:str):
@@ -576,14 +576,14 @@ async def slap(ctx, *text:str):
 
     slapper = ctx.message.author
 
-    await bot.say('*%s slaps %s around a bit with a large trout*' % (slapper.mention, slappee))
+    await ctx.send('*%s slaps %s around a bit with a large trout*' % (slapper.mention, slappee))
     
 @bot.command()
-async def clap(*text:str):
-    await bot.say('👏'.join(text).upper() + '👏')
+async def clap(ctx, *text:str):
+    await ctx.send('👏'.join(text).upper() + '👏')
 
 @bot.command()
-async def big(text:str):
+async def big(ctx, text:str):
     """bot posts the requested image. use \"!big list\" to get the current list"""
     text = text.lower()
     basepath = '/home/ubuntu/images/'
@@ -593,7 +593,7 @@ async def big(text:str):
         output = ""
         for f in filelist:
             output = output + f[:f.find('.')] + ", "
-        await bot.say(output[:-2])
+        await ctx.send(output[:-2])
     else:
         for f in filelist:
             fname = f[:f.find('.')]
@@ -613,83 +613,83 @@ async def hq(ctx, *text:str):
        !hq <prize> <number of people> - get the payout for the number of people and the corresponding prize"""
     helpstring = "use '!help hq' to get help about this command"
     if len(text) == 0:
-        await bot.say(helpstring)
+        await ctx.send(helpstring)
     else:
         if len(text) == 2 and text[0].isdigit() and text[1].isdigit():
             money = round(int(text[0]) / int(text[1]),2)
-            await bot.say("$" + str(money))
+            await ctx.send("$" + str(money))
             return
         elif len(text) == 1 and text[0].isdigit():
             money = round(5000 / int(text[0]),2)
-            await bot.say("$" + str(money))
+            await ctx.send("$" + str(money))
             return
         t = ''.join(text)
         if t == "register":
-            await bot.say(hqmod.register_user(ctx.message.author))
+            await ctx.send(hqmod.register_user(ctx.message.author))
         elif t == "unregister":
-            await bot.say(hqmod.unregister_user(ctx.message.author))
+            await ctx.send(hqmod.unregister_user(ctx.message.author))
         elif t == "check":
             if hqmod.is_user_registered(ctx.message.author):
-                await bot.say(ctx.message.author.display_name + " is registered for hq pings.")
+                await ctx.send(ctx.message.author.display_name + " is registered for hq pings.")
             else:
-                await bot.say(ctx.message.author.display_name + " is **NOT** registered for hq pings.")
+                await ctx.send(ctx.message.author.display_name + " is **NOT** registered for hq pings.")
         elif t == "ping":
-            await bot.say(hqmod.list_users(mention=True))
+            await ctx.send(hqmod.list_users(mention=True))
         elif t == "list":
-            await bot.say(hqmod.list_users())
+            await ctx.send(hqmod.list_users())
         else:
-            await bot.say(helpstring)
+            await ctx.send(helpstring)
             
-@bot.command()
-async def medals():
-    """get the current 2018 medal count"""
-    await bot.say(olympics.get_medal_count())
+# @bot.command()
+# async def medals(ctx):
+#     """get the current 2018 medal count"""
+#     await ctx.send(olympics.get_medal_count())
 
-@bot.command()
-async def daymedals(*delta:int):
-    """detailed list of the medals handed out for the day"""
-    if len(delta)==0:
-        d = 0
-    else:
-        d = delta[0]
-    await bot.say(olympics.get_days_medals(delta=d))
+# @bot.command()
+# async def daymedals(ctx, *delta:int):
+#     """detailed list of the medals handed out for the day"""
+#     if len(delta)==0:
+#         d = 0
+#     else:
+#         d = delta[0]
+#     await ctx.send(olympics.get_days_medals(delta=d))
     
 # @bot.command()
 # async def ig(username:str):
 #     """get the latest instagram post by the user"""
-#     await bot.say(web.get_latest_ig_post(username))
+#     await ctx.send(web.get_latest_ig_post(username))
 
 @bot.command()
-async def tweet(username:str):
+async def tweet(ctx, username:str):
     """get the latest tweet by the user"""
-    await bot.say(web.get_latest_tweet(username))
+    await ctx.send(web.get_latest_tweet(username))
 
 @bot.command()
-async def imdb(*query):
+async def imdb(ctx, *query):
     """get the first IMDB result for your query"""
-    await bot.say(web.search_imdb(' '.join(query)))
+    await ctx.send(web.search_imdb(' '.join(query)))
 
 @bot.command()
-async def m8ball():
+async def m8ball(ctx):
     """ask the magic 8 ball a question"""
     responses = ["It is certain", "As I see it, yes","Reply hazy try again","Don't count on it",
                  "It is decidedly so","Most likely","Ask again later","My reply is no",
                  "Without a doubt","Outlook good","Better not tell you now","My sources say no",
                  "Yes definitely","Yes","Cannot predict now","Outlook not so good",
                  "You may rely on it","Signs point to yes","Concentrate and ask again","Very doubtful"]
-    await bot.say(responses[random.randint(0,len(responses)-1)])
+    await ctx.send(responses[random.randint(0,len(responses)-1)])
 
 @bot.command()
-async def ud(*query):
+async def ud(ctx, *query):
     """query UrbanDictionary"""
     list = web.ud_def(' '.join(query))
     for l in list:
-        await bot.say(l)
+        await ctx.send(l)
 
 @bot.command()
-async def cocktail(*query):
+async def cocktail(ctx, *query):
     """get info about a cocktail"""
-    await bot.say(web.cocktail(' '.join(query)))
+    await ctx.send(web.cocktail(' '.join(query)))
 
 @bot.command(pass_context=True)
 async def log(ctx, numlines=5):
@@ -702,43 +702,43 @@ async def log(ctx, numlines=5):
         for s in d:
             out = out + s
         out = "```%s```" % out
-        await bot.say(out)
+        await ctx.send(out)
 
 @bot.command()
-async def meme(*query):
+async def meme(ctx, *query):
     """Get information about a meme, provided by KnowYourMeme"""
-    await bot.say(web.kym(' '.join(query)))
+    await ctx.send(web.kym(' '.join(query)))
 
 @bot.command()
-async def fitz(*message):
+async def fitz(ctx, *message):
     """fitz"""
-    await bot.say("<:fitz:535186966451322930> %s <:fitz:535186966451322930>" % ' '.join(message).upper())
+    await ctx.send("<:fitz:535186966451322930> %s <:fitz:535186966451322930>" % ' '.join(message).upper())
 
 @bot.command()
-async def define(*query):
+async def define(ctx, *query):
     """define a word"""
-    await bot.say(web.get_definition(' '.join(query)))
+    await ctx.send(web.get_definition(' '.join(query)))
 
 @bot.command()
-async def tb(num:int=3):
+async def tb(ctx, num:int=3):
     """get a random taco bell order"""
-    await bot.say(tacobell.random_items(num))
+    await ctx.send(tacobell.random_items(num))
 
 @bot.command()
-async def say(*message):
-    await bot.say(' '.join(message))
+async def say(ctx, *message):
+    await ctx.send(' '.join(message))
 
 @bot.command()
-async def odds(*query):
+async def odds(ctx, *query):
     leagues = ["ufc"]
     if len(query) == 0 or query[0] not in leagues:
-        await bot.say('```Supported leagues: %s```' % leagues)
+        await ctx.send('```Supported leagues: %s```' % leagues)
     else:
         league = query[0]
         team = ' '.join(query[1:])
         if len(team) == 0:
             team = None
-        await bot.say("```python\n%s```" % oddsmod.get_league_odds_table(league, team=team))
+        await ctx.send("```python\n%s```" % oddsmod.get_league_odds_table(league, team=team))
 
 @bot.event
 async def on_message(message):
