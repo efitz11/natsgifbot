@@ -742,8 +742,7 @@ async def odds(ctx, *query):
 
 @bot.event
 async def on_message(message):
-    #stuff
-    # print(bot.commands)
+    channel = message.channel
     if message.author == bot.user:
         if patterntwitter.search(message.content):
             verified = web.check_tweet_verified(re.search(patterntwitter, message.content).group(1))
@@ -782,15 +781,15 @@ async def on_message(message):
             await message.add_reaction(emoji_letter_map['t'])
             await message.add_reaction(emoji_letter_map['s'])
         if patternperf.search(message.content):
-            await bot.send_message(message.channel,"FUCK JOSE TABATA")
+            await channel.send("FUCK JOSE TABATA")
         if patternbenoit.search(message.content):
-            await bot.send_message(message.channel,"balls.")
+            await channel.send("balls.")
         if patternshitbot.search(message.content):
-            await bot.send_message(message.channel, "Fuck off! I'm doing my best.")
+            await channel.send("Fuck off! I'm doing my best.")
         match = patternalexaplay.search(message.content)
         if match:
             query = message.content[match.end():]
-            await bot.send_message(message.channel,get_youtube(query.strip()))
+            await channel.send(get_youtube(query.strip()))
 
         if patterntwitter.search(message.content):
             verified, api = web.check_tweet_verified(re.search(patterntwitter, message.content).group(1))
@@ -800,7 +799,7 @@ async def on_message(message):
                 await message.add_reaction(u"\u274C")
             # check age of tweet
             age = web.check_tweet_age(re.search(patterntwitterstatus, message.content).group(2), api=api)
-            await bot.send_message(message.channel, age)
+            await channel.send(age)
         # if patterneaton.search(message.content):
         #     await bot.send_message(message.channel,"Miami University Great Adam Eaton*")
 
