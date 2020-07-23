@@ -598,8 +598,8 @@ async def big(ctx, text:str):
         for f in filelist:
             fname = f[:f.find('.')]
             if fname == text:
-                await ctx.upload(basepath+f)
-                
+                await ctx.send(file=discord.File(basepath+f))
+
 @bot.command(pass_context=True)
 async def hq(ctx, *text:str):
     """commands for getting notified about hq games
@@ -742,7 +742,8 @@ async def odds(ctx, *query):
 
 @bot.event
 async def on_message(message):
-    channel = message.channel
+    #stuff
+    # print(bot.commands)
     if message.author == bot.user:
         if patterntwitter.search(message.content):
             verified = web.check_tweet_verified(re.search(patterntwitter, message.content).group(1))
@@ -781,15 +782,15 @@ async def on_message(message):
             await message.add_reaction(emoji_letter_map['t'])
             await message.add_reaction(emoji_letter_map['s'])
         if patternperf.search(message.content):
-            await channel.send("FUCK JOSE TABATA")
+            await bot.send_message(message.channel,"FUCK JOSE TABATA")
         if patternbenoit.search(message.content):
-            await channel.send("balls.")
+            await bot.send_message(message.channel,"balls.")
         if patternshitbot.search(message.content):
-            await channel.send("Fuck off! I'm doing my best.")
+            await bot.send_message(message.channel, "Fuck off! I'm doing my best.")
         match = patternalexaplay.search(message.content)
         if match:
             query = message.content[match.end():]
-            await channel.send(get_youtube(query.strip()))
+            await bot.send_message(message.channel,get_youtube(query.strip()))
 
         if patterntwitter.search(message.content):
             verified, api = web.check_tweet_verified(re.search(patterntwitter, message.content).group(1))
@@ -799,7 +800,7 @@ async def on_message(message):
                 await message.add_reaction(u"\u274C")
             # check age of tweet
             age = web.check_tweet_age(re.search(patterntwitterstatus, message.content).group(2), api=api)
-            await channel.send(age)
+            await bot.send_message(message.channel, age)
         # if patterneaton.search(message.content):
         #     await bot.send_message(message.channel,"Miami University Great Adam Eaton*")
 
