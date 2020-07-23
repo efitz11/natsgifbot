@@ -599,7 +599,7 @@ async def big(ctx, text:str):
         for f in filelist:
             fname = f[:f.find('.')]
             if fname == text:
-                await bot.upload(basepath+f)
+                await ctx.send(file=discord.File(basepath+f))
                 
 @bot.command(pass_context=True)
 async def hq(ctx, *text:str):
