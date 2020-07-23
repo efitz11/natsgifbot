@@ -757,10 +757,10 @@ async def on_message(message):
     if message.content.startswith(bot.command_prefix):
         print("%s input command: %s" % (message.author, message.content))
         await bot.process_commands(message)
-    elif message.content.split(' ')[0][1:] in bot.commands and message.content.startswith('?'):
+    elif message.content.split(' ')[0][1:] in bot.all_commands and message.content.startswith('?'):
+        await message.delete()
         print("%s input command: %s" % (message.author, message.content))
         message.content = '!'+message.content[1:]
-        await bot.delete_message(message)
         await bot.process_commands(message)
     else:
         # if 'reddit.com' in message.content:
