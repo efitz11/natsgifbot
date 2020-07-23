@@ -518,10 +518,11 @@ async def react(ctx, reactionstr:str, *search:str):
     search = ' '.join(search)
     msg = reactionstr.lower()
     async for m in ctx.history(limit=20):
+        print(m.clean_content)
         if not m.clean_content.startswith('!') and search in m.clean_content.lower():
             for s in msg:
                 if s in emoji_letter_map:
-                    await bot.add_reaction(m, emoji_letter_map[s])
+                    await m.add_reaction(emoji_letter_map[s])
             return
             
 @bot.command()
@@ -748,9 +749,9 @@ async def on_message(message):
         if patterntwitter.search(message.content):
             verified = web.check_tweet_verified(re.search(patterntwitter, message.content).group(1))
             if verified:
-                await bot.add_reaction(message, u"\u2611")
+                await message.add_reaction(u"\u2611")
             else:
-                await bot.add_reaction(message, u"\u274C")
+                await message.add_reaction(u"\u274C")
         return
     if message.content.lower().startswith('bot ') or message.content.lower().startswith("hey alexa "):
         if message.content.lower().startswith('bot'):
@@ -772,15 +773,15 @@ async def on_message(message):
         #         print(url)
         #         await bot.send_message(message.channel, "```%s```" % bot.cogs['Reddit'].get_comment(url))
         if pattern69.search(message.content):
-            await bot.add_reaction(message, emoji_letter_map['n'])
-            await bot.add_reaction(message, emoji_letter_map['i'])
-            await bot.add_reaction(message, emoji_letter_map['c'])
-            await bot.add_reaction(message, emoji_letter_map['e'])
+            await message.add_reaction(emoji_letter_map['n'])
+            await message.add_reaction(emoji_letter_map['i'])
+            await message.add_reaction(emoji_letter_map['c'])
+            await message.add_reaction(emoji_letter_map['e'])
         if patterncheer.search(message.content):
-            await bot.add_reaction(message, emoji_letter_map['n'])
-            await bot.add_reaction(message, emoji_letter_map['a'])
-            await bot.add_reaction(message, emoji_letter_map['t'])
-            await bot.add_reaction(message, emoji_letter_map['s'])
+            await message.add_reaction(emoji_letter_map['n'])
+            await message.add_reaction(emoji_letter_map['a'])
+            await message.add_reaction(emoji_letter_map['t'])
+            await message.add_reaction(emoji_letter_map['s'])
         if patternperf.search(message.content):
             await bot.send_message(message.channel,"FUCK JOSE TABATA")
         if patternbenoit.search(message.content):
@@ -795,9 +796,9 @@ async def on_message(message):
         if patterntwitter.search(message.content):
             verified, api = web.check_tweet_verified(re.search(patterntwitter, message.content).group(1))
             if verified:
-                await bot.add_reaction(message, u"\u2611")
+                await message.add_reaction(u"\u2611")
             else:
-                await bot.add_reaction(message, u"\u274C")
+                await message.add_reaction(u"\u274C")
             # check age of tweet
             age = web.check_tweet_age(re.search(patterntwitterstatus, message.content).group(2), api=api)
             await bot.send_message(message.channel, age)
