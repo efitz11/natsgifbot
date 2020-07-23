@@ -10,12 +10,12 @@ def _new_player_search(name):
     #players = utils.get_json(url)['suggestions']
     players = utils.get_json(url)['players']
     if len(players) > 0:
+        p = players[0]['playerId']
         for player in players:
-            #data = player.split('|')
-            #playerid = data[1]
-            playerid = player['playerId']
-            url = "https://statsapi.mlb.com/api/v1/people/%s?hydrate=currentTeam,team,stats(type=[yearByYear,yearByYearAdvanced,careerRegularSeason,careerAdvanced,availableStats](team(league)),leagueListId=mlb_hist)" % playerid
-            return utils.get_json(url)['people'][0]
+            if player['teamId'] == 120:
+                p = player['playerId']
+        url = "https://statsapi.mlb.com/api/v1/people/%s?hydrate=currentTeam,team,stats(type=[yearByYear,yearByYearAdvanced,careerRegularSeason,careerAdvanced,availableStats](team(league)),leagueListId=mlb_hist)" % p
+        return utils.get_json(url)['people'][0]
 
 def _get_player_info_line(player):
     pos = player['primaryPosition']['abbreviation']

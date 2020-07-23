@@ -9,41 +9,41 @@ from bs4 import BeautifulSoup
 import utils
 import savant
 
-class Baseball():
+class Baseball(commands.Cog):
     def __init__(self,bot):
         self.bot = bot
         self.savant_stats = ['oaa']
         
     @commands.command()
-    async def br(self, *query:str):
+    async def br(self, ctx, *query:str):
         """get link to a player's Baseball-Reference page"""
         url = "http://www.baseball-reference.com/search/search.fcgi?search=%s&results=" % urllib.parse.quote_plus(' '.join(query))
         req = Request(url, headers={'User-Agent' : "ubuntu"})
         res = urlopen(req)
-        await self.bot.say(res.url)
+        await ctx.send(res.url)
         
     @commands.command()
-    async def fg(self, *query:str):
+    async def fg(self, ctx, *query:str):
         """get a link to a player's Fangraphs page"""
         url = "http://www.fangraphs.com/players.aspx?lastname=%s" % urllib.parse.quote_plus(' '.join(query))
         req = Request(url, headers={'User-Agent' : "ubuntu"})
         res = urlopen(req)
-        await self.bot.say("<"+res.url+">")#disable embed because it's shit
+        await ctx.send("<"+res.url+">")#disable embed because it's shit
 
     @commands.command()
-    async def savant(self, *query:str):
+    async def savant(self, ctx, *query:str):
         """get a link to a player's baseball savant page"""
         player = mymlbstats._get_player_search(' '.join(query))
         if player is not None:
             name = player['name_display_first_last'].replace(' ', '-')
             id = player['player_id']
-            await self.bot.say("https://baseballsavant.mlb.com/savant-player/%s-%s" % (name, id))
+            await ctx.send("https://baseballsavant.mlb.com/savant-player/%s-%s" % (name, id))
         # url = "https://baseballsavant.mlb.com/player/search-all?search=" + urllib.parse.quote_plus(' '.join(query))
         # res = utils.get_json(url)
         # if len(res) > 0:
         #     name = res[0]['name'].replace(' ','-')
         #     id = res[0]['id']
-        #     await self.bot.say("https://baseballsavant.mlb.com/savant-player/%s-%s" % (name, id))
+        #     await ctx.send("https://baseballsavant.mlb.com/savant-player/%s-%s" % (name, id))
 
     def convert_date_to_delta(self, args):
         now = datetime.now().date()
@@ -64,13 +64,13 @@ class Baseball():
 
 
     @commands.command()
-    async def newmlb(self, *query:str):
+    async def newmlb(self, ctx, *query:str):
         """New version of mlb command, with proper subcommands (in progress)"""
         delta = None
         team = ["wsh" if x.lower() == "nats" else x for x in query]
 
     @commands.command()
-    async def mlb(self,*team :str):
+    async def mlb(self, ctx, *team :str):
         """Get MLB info
 
         Help is now too long for a discord message. Check the github link for full help.
@@ -136,13 +136,13 @@ class Baseball():
                 liveonly = True
             output = mymlbstats.get_all_game_info(delta=delta, liveonly=liveonly)
             if len(output) > 0:
-                await self.bot.say("```python\n" + output + "```")
+                await ctx.send("```python\n" + output + "```")
             else:
-                await self.bot.say("```No live games at the moment.```")
+                await ctx.send("```No live games at the moment.```")
             return
 
         if team[0] == 'help':
-            await self.bot.say("https://github.com/efitz11/natsgifbot/blob/master/mlbhelp.txt")
+            await ctx.send("https://github.com/efitz11/natsgifbot/blob/master/mlbhelp.txt")
             return
 
         if team[0] in ["sp","lsp"]:
@@ -160,33 +160,33 @@ class Baseball():
                         if len(lastinning) != 0:
                             output = output + "```\n```"
                             if len(output) + len(play[0]) > 1600:
-                                await self.bot.say(output[:-3])
+                                await ctx.send(output[:-3])
                                 output = "```"
                         output = output + play[0] + "\n"
                         lastinning = play[0]
                     output = output + "\t" + play[1] + "\n"
                 output = output + "```"
-                await self.bot.say(output)
+                await ctx.send(output)
                 return
             else:
-                await self.bot.say("No scoring plays")
+                await ctx.send("No scoring plays")
                 return
         elif team[0] == 'homers':
             teamname = ' '.join(team[1:])
-            await self.bot.say("```python\n%s```" % mymlbstats.list_home_runs(teamname, delta=delta))
+            await ctx.send("```python\n%s```" % mymlbstats.list_home_runs(teamname, delta=delta))
             return
         elif team[0] == 'line':
             player = '+'.join(team[1:])
             if len(player) == 0:
                 out = get_daily_leaders(delta=delta)
-                await self.bot.say("ESPN's daily leaders:\n```%s```"% out)
+                await ctx.send("ESPN's daily leaders:\n```%s```"% out)
                 return
             else:
                 out = mymlbstats.get_player_line(player, delta)
             if len(out) == 0:
-                await self.bot.say("couldn't find stats")
+                await ctx.send("couldn't find stats")
             else:
-                await self.bot.say("```%s```" % out)
+                await ctx.send("```%s```" % out)
             return
         # elif team[0] in ['stats','bstats','pstats','hstats','hbstats','hpstats']:
         elif team[0].endswith('stats'):
@@ -213,8 +213,8 @@ class Baseball():
                 t = "hitting"
             elif team[0] == 'pstats':
                 t = "pitching"
-            # await self.bot.say("```%s```" % mymlbstats.get_player_season_stats(player,type=t,year=year,year2=year2,active=active, career=career, reddit=reddit))
-            await self.bot.say("```%s```" % newmlbstats.get_player_season_stats(player,type=t,year=year, career=career, reddit=reddit))
+            # await ctx.send("```%s```" % mymlbstats.get_player_season_stats(player,type=t,year=year,year2=year2,active=active, career=career, reddit=reddit))
+            await ctx.send("```%s```" % newmlbstats.get_player_season_stats(player,type=t,year=year, career=career, reddit=reddit))
             return
         elif team[0] == 'compare':
             year = None
@@ -226,19 +226,19 @@ class Baseball():
             for t in team:
                 playerlist.append(t)
             if year is None:
-                await self.bot.say("```%s```" % mymlbstats.compare_player_stats(playerlist, reddit=reddit))
+                await ctx.send("```%s```" % mymlbstats.compare_player_stats(playerlist, reddit=reddit))
             else:
-                await self.bot.say("```%s```" % mymlbstats.compare_player_stats(playerlist, year=year, reddit=reddit))
+                await ctx.send("```%s```" % mymlbstats.compare_player_stats(playerlist, year=year, reddit=reddit))
         elif team[0] in ['splits', 'psplits']:
             t = 'pitching' if team[0] == 'psplits' else 'hitting'
             split = team[1]
             if team[-1].isdigit():
                 year = team[-1]
                 player = ' '.join(team[2:-1])
-                await self.bot.say("```%s```" % mymlbstats.get_player_season_splits(player,split,year=year, type=t, reddit=reddit))
+                await ctx.send("```%s```" % mymlbstats.get_player_season_splits(player,split,year=year, type=t, reddit=reddit))
             else:
                 player = ' '.join(team[2:])
-                await self.bot.say("```%s```" % mymlbstats.get_player_season_splits(player,split, type=t, reddit=reddit))
+                await ctx.send("```%s```" % mymlbstats.get_player_season_splits(player,split, type=t, reddit=reddit))
             return
         elif team[0] == 'vs':
             opp = team[1]
@@ -247,24 +247,24 @@ class Baseball():
                 year = team[-1]
                 team = team[0:-1]
             #     player = ' '.join(team[2:-1])
-            #     await self.bot.say("```%s```" % mymlbstats.player_vs_team(player,opp,year=year))
+            #     await ctx.send("```%s```" % mymlbstats.player_vs_team(player,opp,year=year))
             # else:
             player = ' '.join(team[2:])
-            # await self.bot.say("```%s```" % mymlbstats.player_vs_team(player,opp))
-            await self.bot.say("```%s```" % mymlbstats.batter_or_pitcher_vs(player,opp,year=year,reddit=reddit))
+            # await ctx.send("```%s```" % mymlbstats.player_vs_team(player,opp))
+            await ctx.send("```%s```" % mymlbstats.batter_or_pitcher_vs(player,opp,year=year,reddit=reddit))
             return
         elif team[0] == 'bvp':
             p1 = team[1]
             p2 = team[2]
-            await self.bot.say("```%s```" % mymlbstats.player_vs_pitcher(p1, p2, reddit=reddit))
+            await ctx.send("```%s```" % mymlbstats.player_vs_pitcher(p1, p2, reddit=reddit))
         elif team[0].lower() in ["dl", "il"]:
             team = ' '.join(team[1:])
-            await self.bot.say("```%s```" % mymlbstats.get_team_dl(team))
+            await ctx.send("```%s```" % mymlbstats.get_team_dl(team))
             return
         elif team[0] in ['batters', 'hitters', 'pitchers']:
             h = (team[0] == 'batters' or team[0] == 'hitters')
             team = ' '.join(team[1:])
-            await self.bot.say("```%s```" % mymlbstats.print_roster(team, hitters=h))
+            await ctx.send("```%s```" % mymlbstats.print_roster(team, hitters=h))
         elif team[0] in ['past', 'next']:
             num = 2
             backwards = team[0] == 'past'
@@ -273,7 +273,7 @@ class Baseball():
                 team = ' '.join(team[2:])
             else:
                 team = ' '.join(team[1:])
-            await self.bot.say("```%s```" % mymlbstats.get_team_schedule(team,num,backward=backwards))
+            await ctx.send("```%s```" % mymlbstats.get_team_schedule(team,num,backward=backwards))
             return
         elif team[0].startswith("last") or team[0].startswith("blast") or team[0].startswith("plast"):
             forcebatting = False
@@ -290,7 +290,7 @@ class Baseball():
             else:
                 team = team[1:]
                 days = None
-            await self.bot.say("```%s```" % mymlbstats.get_player_trailing_splits('+'.join(team), days, forcebatting=forcebatting, forcepitching=forcepitching, reddit=reddit))
+            await ctx.send("```%s```" % mymlbstats.get_player_trailing_splits('+'.join(team), days, forcebatting=forcebatting, forcepitching=forcepitching, reddit=reddit))
             return
         elif team[0].endswith("log"):
             forcebatting = team[0].startswith("b")
@@ -300,7 +300,7 @@ class Baseball():
             else:
                 num=5
             player = '+'.join(team[1:])
-            await self.bot.say("```%s```" % mymlbstats.get_player_gamelogs(player,num,forcebatting=forcebatting))
+            await ctx.send("```%s```" % mymlbstats.get_player_gamelogs(player,num,forcebatting=forcebatting))
             return
         elif team[0].endswith("leaders") or team[0].endswith("losers"):
             stat = team[1]
@@ -309,7 +309,7 @@ class Baseball():
                 year = None
                 if team[-1].isdigit():
                     year = team[-1]
-                await self.bot.say(savant.get_oaa_leaders(year=year))
+                await ctx.send(savant.get_oaa_leaders(year=year))
                 return
 
             opts = []
@@ -328,18 +328,18 @@ class Baseball():
                 opts.append("reverse=yes")
             fg = FG(stat.lower(),options=opts)
             output = fg.get_stat_leaders_str(stattype=stattype)
-            await self.bot.say(output)
+            await ctx.send(output)
             return
         elif team[0] == 'ohtani':
             out = mymlbstats.get_ohtani_line(delta)
             if len(out) > 0:
-                await self.bot.say("```%s```" % out)
+                await ctx.send("```%s```" % out)
             else:
-                await self.bot.say("No stats found")
+                await ctx.send("No stats found")
             return
         elif team[0] in ['batting','hitting','pitching','notes','info','bench','bullpen','box']:
             if team[0] == 'box':
-                await self.bot.say("The box score is divided into parts: use one of: ```batting, pitching, notes, info, bench, bullpen```"
+                await ctx.send("The box score is divided into parts: use one of: ```batting, pitching, notes, info, bench, bullpen```"
                                    "If you want the linescore, use: ```linescore```")
                 return
             elif team[0] == 'hitting':
@@ -348,74 +348,74 @@ class Baseball():
             team = ' '.join(team[1:]).lower()
             out = mymlbstats.print_box(team, part=part, delta=delta)
             if out is not None:
-                await self.bot.say("```%s```" % out)
+                await ctx.send("```%s```" % out)
             return
         elif team[0] in ['umps', 'umpires']:
             team = ' '.join(team[1:]).lower()
             umps = mymlbstats.print_umpires(team, delta=delta)
             if umps is not None:
-                await self.bot.say("```%s```" % umps)
+                await ctx.send("```%s```" % umps)
             else:
-                await self.bot.say("```Umps not found.```")
+                await ctx.send("```Umps not found.```")
         elif team[0] == "linescore":
             team = ' '.join(team[1:]).lower()
             out = mymlbstats.print_linescore(team, delta=delta)
-            await self.bot.say("```%s```" % out)
+            await ctx.send("```%s```" % out)
             return
         elif team[0] == "highlight":
             query = ' '.join(team[1:])
-            await self.bot.say(mymlbstats.search_highlights(query))
+            await ctx.send(mymlbstats.search_highlights(query))
             return
         elif team[0] == "videos":
             team = ' '.join(team[1:]).lower()
             print(team)
-            # await self.bot.say(mymlbstats.find_game_highlights(team, delta=delta))
+            # await ctx.send(mymlbstats.find_game_highlights(team, delta=delta))
             msg = utils.split_long_message(mymlbstats.find_game_highlights(team, delta=delta))
             for m in msg:
-                await self.bot.say(m)
+                await ctx.send(m)
         elif team[0] == "plays":
             inning = int(team[-1])
             team = ' '.join(team[1:-1]).lower()
-            await self.bot.say(mymlbstats.get_inning_plays(team, inning, delta=delta))
+            await ctx.send(mymlbstats.get_inning_plays(team, inning, delta=delta))
         elif team[0] == "standings":
             div = team[1]
-            await self.bot.say(mymlbstats.get_div_standings(div))
+            await ctx.send(mymlbstats.get_div_standings(div))
         elif team[0] in ["broadcast","broadcasts"]:
             team = ' '.join(team[1:]).lower()
             out = mymlbstats.print_broadcasts(team, delta=delta)
-            await self.bot.say("```%s```" % out)
+            await ctx.send("```%s```" % out)
         elif team[0] in ["longdongs", "shortdongs", "highdongs", "lowdongs", "fastdongs", "slowdongs", "mostdongs"]:
             out = mymlbstats.print_dongs(team[0][:team[0].index('d')], delta=delta, reddit=reddit)
-            await self.bot.say("```%s```" % out)
+            await ctx.send("```%s```" % out)
         elif team[0] in ["dongs", "newdongs"]:
             out = mymlbstats.print_dongs("recent", delta=delta, reddit=reddit)
-            await self.bot.say("```%s```" % out)
+            await ctx.send("```%s```" % out)
         elif team[0] == "captivating":
             out = mymlbstats.print_most_captivating_sp(delta=delta)
             out = utils.split_long_message(out)
             for o in out:
                 o = o.rstrip()
                 if len(o) > 0:
-                    await self.bot.say("```%s```" % o)
+                    await ctx.send("```%s```" % o)
         elif team[0] == "abs":
             team = ' '.join(team[1:]).lower()
-            await self.bot.say("%s" % mymlbstats.print_at_bats(team, delta=delta))
+            await ctx.send("%s" % mymlbstats.print_at_bats(team, delta=delta))
         elif team[0] == "savant":
             team = ' '.join(team[1:]).lower()
-            await self.bot.say(savant.print_player_or_team(team, delta=delta))
+            await ctx.send(savant.print_player_or_team(team, delta=delta))
         elif team[0] == "pitches" or team[0] == "pbi":
             team = ' '.join(team[1:]).lower()
-            await self.bot.say(mymlbstats.print_pitches_by_inning(team, delta=delta))
+            await ctx.send(mymlbstats.print_pitches_by_inning(team, delta=delta))
         elif team[0] == "contract":
             name = ' '.join(team[1:])
-            await self.bot.say(newmlbstats.print_contract_info(name))
+            await ctx.send(newmlbstats.print_contract_info(name))
         else:
             teamname = ' '.join(team).lower()
             output = mymlbstats.get_single_game(teamname,delta=delta)
             if len(output) > 0:
-                await self.bot.say("```python\n" + output + "```")
+                await ctx.send("```python\n" + output + "```")
             else:
-                await self.bot.say("no games found")
+                await ctx.send("no games found")
 
     #######################################
     ##### BEGIN MINOR LEAGUE COMMANDS #####
@@ -443,92 +443,92 @@ class Baseball():
             delta, args = self._find_delta(args)
 
             if len(args) == 0 or args[0] == '':
-                await self.bot.say("```python\n%s```" % mymlbstats.get_milb_aff_scores(delta=delta))
+                await ctx.send("```python\n%s```" % mymlbstats.get_milb_aff_scores(delta=delta))
             else:
                 teamid = mymlbstats.get_teamid(' '.join(args))
                 if teamid is None:
-                    await self.bot.say('Invalid subcommand passed')
+                    await ctx.send('Invalid subcommand passed')
                 else:
-                    await self.bot.say("```python\n%s```" % mymlbstats.get_milb_aff_scores(teamid=teamid, delta=delta))
+                    await ctx.send("```python\n%s```" % mymlbstats.get_milb_aff_scores(teamid=teamid, delta=delta))
 
     @milb.command()
-    async def stats(self, *query:str):
+    async def stats(self, ctx, *query:str):
         """get a minor league player's stats
         !milb stats <player> [year] - year is optional, defaults to current"""
         if query[-1].isdigit():
             year = query[-1]
             player = ' '.join(query[:-1])
-            await self.bot.say("```%s```" % mymlbstats.get_milb_season_stats(player,year=year))
+            await ctx.send("```%s```" % mymlbstats.get_milb_season_stats(player,year=year))
         else:
             player = ' '.join(query)
-            await self.bot.say("```%s```" % mymlbstats.get_milb_season_stats(player))
+            await ctx.send("```%s```" % mymlbstats.get_milb_season_stats(player))
 
     @milb.command()
-    async def line(self, *query:str):
+    async def line(self, ctx, *query:str):
         """get a minor league player's game line
         !milb line <player> [delta]"""
         delta, query = self._find_delta(query)
         player = ' '.join(query)
-        await self.bot.say("```%s```" % mymlbstats.get_milb_line(player, delta=delta))
+        await ctx.send("```%s```" % mymlbstats.get_milb_line(player, delta=delta))
 
     @milb.command()
-    async def log(self, *query:str):
+    async def log(self, ctx, *query:str):
         """get a minor league player's game logs
         !milb log <player> [num] - num defaults to last 5 games, maximum of 15"""
         if query[-1].isdigit():
             num = query[-1]
             player = ' '.join(query[:-1])
-            await self.bot.say("```%s```" % mymlbstats.get_milb_log(player,number=num))
+            await ctx.send("```%s```" % mymlbstats.get_milb_log(player,number=num))
         else:
             player = ' '.join(query)
-            await self.bot.say("```%s```" % mymlbstats.get_milb_log(player))
+            await ctx.send("```%s```" % mymlbstats.get_milb_log(player))
 
     @milb.command()
-    async def batting(self, *query:str):
+    async def batting(self, ctx, *query:str):
         """print minor league team batting box score
         !milb batting <team> - prints the team's batting part of the box score
         """
         delta, query = self._find_delta(query)
         team = ' '.join(query)
-        await self.bot.say("```%s```" % mymlbstats.get_milb_box(team, delta=delta))
+        await ctx.send("```%s```" % mymlbstats.get_milb_box(team, delta=delta))
 
     @milb.command()
-    async def pitching(self, *query:str):
+    async def pitching(self, ctx, *query:str):
         """print minor league team pitching box score
         !milb pitching <team> - prints the team's pitching part of the box score
         """
         delta, query = self._find_delta(query)
         team = ' '.join(query)
-        await self.bot.say("```%s```" % mymlbstats.get_milb_box(team,part='pitching',delta=delta))
+        await ctx.send("```%s```" % mymlbstats.get_milb_box(team,part='pitching',delta=delta))
 
     @milb.command()
-    async def notes(self, *query:str):
+    async def notes(self, ctx, *query:str):
         """print minor league team batting notes
         !milb pitching <team> - prints the team's batting notes from the box score
         """
         delta, query = self._find_delta(query)
         team = ' '.join(query)
-        await self.bot.say("```%s```" % mymlbstats.get_milb_box(team,part='notes', delta=delta))
+        await ctx.send("```%s```" % mymlbstats.get_milb_box(team,part='notes', delta=delta))
 
     @milb.command()
-    async def pitchers(self, *query:str):
+    async def pitchers(self, ctx, *query:str):
         """print pitchers on staff of minor league team
         !milb pitchers <team>"""
         team = ' '.join(query)
         teamid, data = mymlbstats.get_milb_teamid(team,extradata=True)
         sportid = data['sport']['id']
         hydrates = "person(stats(type=season,sportId=%d))" % sportid
-        await self.bot.say("```%s```" % mymlbstats.print_roster(teamid, hitters=False, teamid=teamid, hydrates=hydrates))
+        await ctx.send("```%s```" % mymlbstats.print_roster(teamid, hitters=False, teamid=teamid, hydrates=hydrates))
 
     @milb.command()
-    async def batters(self, *query:str):
+    async def batters(self, ctx, *query:str):
         """print batters on staff of minor league team
         !milb batters <team>"""
         team = ' '.join(query)
         teamid, data = mymlbstats.get_milb_teamid(team,extradata=True)
         sportid = data['sport']['id']
         hydrates = "person(stats(type=season,sportId=%d))" % sportid
-        await self.bot.say("```%s```" % mymlbstats.print_roster(teamid, hitters=True, teamid=teamid, hydrates=hydrates))
+        await ctx.send("```%s```" % mymlbstats.print_roster(teamid, hitters=True, teamid=teamid, hydrates=hydrates))
 
 def setup(bot):
     bot.add_cog(Baseball(bot))
