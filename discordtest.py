@@ -518,7 +518,6 @@ async def react(ctx, reactionstr:str, *search:str):
     search = ' '.join(search)
     msg = reactionstr.lower()
     async for m in ctx.history(limit=20):
-        print(m.clean_content)
         if not m.clean_content.startswith('!') and search in m.clean_content.lower():
             for s in msg:
                 if s in emoji_letter_map:
