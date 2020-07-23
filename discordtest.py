@@ -53,8 +53,6 @@ f = open(pidfile,'w')
 f.write(str(os.getpid()))
 f.close()
 
-# temp variable
-covid_sent_today = False
 
 emoji_letter_map = {'a':u"\U0001F1E6",
 					'b':u"\U0001F1E7",
@@ -827,7 +825,7 @@ async def update_mlbtr():
     await bot.wait_until_ready()
     channel = bot.get_channel(id=main_chid)
     # triviach = discord.utils.find(lambda m: m.name == 'trivia', channel.server.channels)
-    while not bot.is_closed:
+    while not bot.is_closed():
         # if hqmod.check_hq():
             # await bot.send_message(channel,":rotating_light: HQ is starting soon :rotating_light: --- head to %s" % (triviach.mention))
             # await bot.send_message(triviach,":rotating_light: HQ is starting soon :rotating_light:")
@@ -835,28 +833,24 @@ async def update_mlbtr():
 
         out = mlbtr.mlbtr()
         if out != None:
-            await bot.send_message(channel,out)
+            await channel.send(out)
         await asyncio.sleep(60*3)
 
 async def check_covid_numbers():
     await bot.wait_until_ready()
     channel = bot.get_channel(id=main_chid)
     corona_channel = discord.utils.find(lambda m: 'coronavirus' in m.name, channel.guild.channels)
-    while not bot.is_closed:
-        # ret = covid.check_for_updates()
-        # if ret is not None:
-        #     await bot.send_message(corona_channel, ret)
+    while not bot.is_closed():
+        global covid_sent_today
 
         wait_time = 60*15
         # send update right before midnight GMT
         now_time = datetime.utcnow().time()
         if now_time >= time(0,44) and now_time <= time(0,59,59) and not covid_sent_today:
-            if now_time >= time(0,58,30) and not covid_sent_today:
-                await bot.send_message(corona_channel, covid.get_usa())
+            if not covid_sent_today:
+                await corona_channel.send(covid.get_usa())
                 covid_sent_today = True
                 await asyncio.sleep(wait_time)
-            else:
-                await asyncio.sleep(60)
         else:
             covid_sent_today = False
             await asyncio.sleep(wait_time)
@@ -866,6 +860,8 @@ mlbtr = xmlreader.XmlReader()
 #print(reddit.read_only)
 #bot.loop.create_task(my_bg_task())
 bot.loop.create_task(update_mlbtr())
+# temp variable
+covid_sent_today = False
 bot.loop.create_task(check_covid_numbers())
 for ext in extensions:
     bot.load_extension(ext)
