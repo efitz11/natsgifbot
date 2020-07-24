@@ -566,7 +566,7 @@ async def terminate(ctx):
 async def slap(ctx, *text:str):
     """Slap a user with a wet trout"""
     slappee = ' '.join(text)
-    server = ctx.message.server
+    server = ctx.message.guild
     for member in server.members:
         if slappee in member.name:
             slappee = member.mention
