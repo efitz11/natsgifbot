@@ -22,6 +22,10 @@ def get_vid_info(id):
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     return json.loads(urlopen(req).read().decode("utf-8"))
 
+def get_playback(playbacks):
+    for playback in playbacks:
+        if playback['name'] == 'mp4Avc':
+            return playback['url']
 
 def search_mlbn():
     yest = datetime.now() - timedelta(days=1)
@@ -360,17 +364,19 @@ def find_realfast():
     #     return ""
 
 def find_top_plays(return_str=False):
-    url = "https://www.mlb.com/data-service/en/videos/top-5-plays-of-the-day"
-    print(url)
-    req = Request(url, headers={'User-Agent' : "ubuntu"})
-    s = json.loads(urlopen(req).read().decode("utf-8"))
     now = datetime.now()# - timedelta(days=1)
     yesterday = now - timedelta(days=1)
     yest = "%d/%d/%s:" % (yesterday.month, yesterday.day, str(yesterday.year)[2:])
+    yestdate = "%d-%02d-%s" % (yesterday.month, yesterday.day, str(yesterday.year)[2:])
     date = "%d-%02d-%02d" % (now.year, now.month, now.day)
+    url = "https://www.mlb.com/data-service/en/videos/%s-top-5-plays-of-the-day" % yestdate
+    print(url)
+    req = Request(url, headers={'User-Agent' : "ubuntu"})
+    s = json.loads(urlopen(req).read().decode("utf-8"))
     if yest in s['blurb']:
         duration = s['duration'][3:]
-        s = "[%s](%s) - %s\n\n" % (s['blurb'],s['url'],duration)
+        playback = get_playback(s['playbacks'])
+        s = "[%s](%s) - %s\n\n" % (s['blurb'], playback, duration)
         if return_str:
             return s
         return (s['blurb'],s['url'],duration)
@@ -656,7 +662,7 @@ def get_all_outputs(defense=False, spoilcomment=False):
     output = find_fastcast(return_str=True)
     # output = output + find_quick_pitch(return_str=True)
     # output = output + find_youtube_homeruns(return_str=True)
-    # output = output + find_top_plays(return_str=True)
+    output = output + find_top_plays(return_str=True)
     output = output + find_daily_dash(return_str=True)
     # output = output + "****\n"
     # output = output + find_must_cs(return_str=True)
