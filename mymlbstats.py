@@ -2185,8 +2185,9 @@ def print_most_captivating_sp(delta=None):
     repl = {'index':'ci'}
     return out + utils.format_table(labs, plays, repl_map=repl, left_list=leftlist,linebreaknum=1)
 
-def print_dongs(type, delta=None, reddit=False):
+def old_print_dongs(type, delta=None, reddit=False):
     """
+    keeping the old version in case MLB decides to add scoring plays back to the schedule json ::fingers crossed::
     :param type: ['long', 'short', 'high', 'low', 'fast', 'slow', 'recent']
     :param delta:
     :param reddit:
@@ -2207,6 +2208,125 @@ def print_dongs(type, delta=None, reddit=False):
             hometeam = hometeam.ljust(4)
         if 'scoringPlays' in game:
             sp = game['scoringPlays']
+            if find_videos:
+                url = "https://statsapi.mlb.com/api/v1/game/" + str(gamepk) + "/content"
+                print(url)
+                content = _get_json(url)['highlights']['highlights']['items']
+            for p in sp:
+                if p['result']['eventType'] == "home_run":
+                    h = dict()
+                    h['batter'] = p['matchup']['batter']['fullName']
+                    h['pitcher'] = p['matchup']['pitcher']['fullName']
+
+                    h['inning'] = p['about']['halfInning']
+                    if h['inning'] == 'bottom':
+                        h['inning'] = 'bot'
+                        if reddit:
+                            h['batter'] = "[](/%s)" % hometeam + h['batter']
+                            h['pitcher'] = "[](/%s)" % awayteam + h['pitcher']
+                        else:
+                            h['batter'] = "%s" % hometeam + h['batter']
+                            h['pitcher'] = "%s" % awayteam + h['pitcher']
+                    else:
+                        if reddit:
+                            h['batter'] = "[](/%s)" % awayteam + h['batter']
+                            h['pitcher'] = "[](/%s)" % hometeam + h['pitcher']
+                        else:
+                            h['batter'] = "%s" % awayteam + h['batter']
+                            h['pitcher'] = "%s" % hometeam + h['pitcher']
+
+                    h['inning'] = "%s %s" % (h['inning'], p['about']['inning'])
+                    h['runs'] = p['result']['rbi']
+                    number = p['result']['description']
+                    search = "homers"
+                    if 'grand slam' in number:
+                        search = "grand slam"
+                    elif 'home run' in number:
+                        search = "home run"
+                    h['num'] = int(re.search('\(([^)]+)', number[number.index(search):]).group(1))
+                    h['dist'] = 0
+                    h['ev'] = 0
+                    h['angle'] = 0
+                    h['time'] = p['about']['endTime']
+                    event = None
+                    for e in p['playEvents']:
+                        if 'isInPlay' in e['details'] and e['details']['isInPlay']:
+                            event = e
+
+                    if 'hitData' in event:
+                        if 'totalDistance' in event['hitData']:
+                            h['dist'] = event['hitData']['totalDistance']
+                        if 'launchSpeed' in event['hitData']:
+                            h['ev'] = event['hitData']['launchSpeed']
+                        if 'launchAngle' in event['hitData']:
+                            h['angle'] = event['hitData']['launchAngle']
+                    h['video'] = ""
+                    if find_videos:
+                        if 'playId' in event:
+                            playid = event['playId']
+                            for item in content:
+                                if 'guid' in item:
+                                    if item['guid'] == playid:
+                                        for pb in item['playbacks']:
+                                            if pb['name'] == 'mp4Avc':
+                                                h['video'] = '[video](%s)' % pb['url']
+                    dongs.append(h)
+    repl_map = {'inning':'inn'}
+    labs = ['num', 'batter', 'pitcher', 'dist', 'ev', 'angle']
+    left = ['batter', 'pitcher', 'dist', 'ev', 'angle']
+    if reddit:
+        labs.append('video')
+        left.append('video')
+
+    out = ""
+    if type == "long":
+        sorteddongs = sorted(dongs, key=lambda k: k['dist'], reverse=True)[:10]
+    elif type == "short":
+        sorteddongs = sorted(dongs, key=lambda k: k['dist'])
+        sorteddongs = list(filter(lambda k: k['dist'] > 0, sorteddongs))[:10]
+    elif type == "high":
+        sorteddongs = sorted(dongs, key=lambda k: k['angle'], reverse=True)[:10]
+    elif type == "low":
+        sorteddongs = sorted(dongs, key=lambda k: k['angle'])
+        sorteddongs = list(filter(lambda k: k['angle'] > 0, sorteddongs))[:10]
+    elif type == "fast":
+        sorteddongs = sorted(dongs, key=lambda k: k['ev'], reverse=True)[:10]
+    elif type == "slow":
+        sorteddongs = sorted(dongs, key=lambda k: k['ev'])
+        sorteddongs = list(filter(lambda k: k['ev'] > 0, sorteddongs))[:10]
+    elif type == "most":
+        sorteddongs = sorted(dongs, key=lambda k: k['num'], reverse=True)[:10]
+    elif type == "recent":
+        sorteddongs = sorted(dongs, key=lambda k: k['time'], reverse=True)[:10]
+        out = "Most recent home runs (most recent on top):\n\n"
+
+
+    return out + utils.format_table(labs, sorteddongs, repl_map=repl_map, left_list=left, reddit=reddit)
+
+def print_dongs(type, delta=None, reddit=False):
+    """
+    :param type: ['long', 'short', 'high', 'low', 'fast', 'slow', 'recent']
+    :param delta:
+    :param reddit:
+    :return:
+    """
+    hydrates="&hydrate=scoringplays,team"
+    games = get_day_schedule(delta=delta, scoringplays=True,hydrates=hydrates)['dates'][0]['games']
+    dongs = []
+    find_videos = False
+    if reddit:
+        find_videos = True
+    for game in games:
+        gamepk = game['gamePk']
+        sp = newmlbstats.get_scoring_plays(gamepk)
+        awayteam = game['teams']['away']['team']['abbreviation']
+        hometeam = game['teams']['home']['team']['abbreviation']
+        if not reddit:
+            awayteam = awayteam.ljust(4)
+            hometeam = hometeam.ljust(4)
+        # if 'scoringPlays' in game:
+        #     sp = game['scoringPlays']
+        if True: # so i don't have to indent lol
             if find_videos:
                 url = "https://statsapi.mlb.com/api/v1/game/" + str(gamepk) + "/content"
                 print(url)
