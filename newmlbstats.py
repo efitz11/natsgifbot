@@ -124,6 +124,14 @@ def get_player_season_stats(name, type=None, year=None, career=None, reddit=None
     output = output + utils.format_table(stats, seasons, repl_map=repl, reddit=reddit)
     return output
 
+def get_scoring_plays(gamepk):
+    url = "https://statsapi.mlb.com/api/v1/game/%s/playByPlay" % str(gamepk)
+    data = utils.get_json(url)
+    playslist = list()
+    for play in data['scoringPlays']:
+        playslist.append(data['allPlays'][play])
+    return playslist
+
 def print_contract_info(name, year=None):
     # find player
     player = _new_player_search(name)
@@ -205,5 +213,6 @@ if __name__ == "__main__":
     # print(get_player_season_stats("rendon", year="2016-2019"))
     # print(get_player_season_stats("rendon", career=True))
     # print(get_player_season_stats('daniel hudson'))
-    print(print_contract_info("max scherzer"))
+    # print(print_contract_info("max scherzer"))
     # print(get_player_contract_table(""))
+    get_scoring_plays(630851)
