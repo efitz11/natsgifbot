@@ -7,6 +7,7 @@ import mlb.BoxScore as BoxScore
 import mlb.getrecaps as recap
 import utils
 import re
+import newmlbstats
 
 REPL_MAP = {'d':'2B','t':'3B'}
 
@@ -781,12 +782,15 @@ def list_scoring_plays(team,delta=None,lastonly=False):
     s = get_day_schedule(delta, teamid=teamid, scoringplays=True)
     games = s['dates'][0]['games']
     plays = []
+
     for game in games:
+        scoringplays = newmlbstats.get_scoring_plays(game['gamePk'])
+
         if game['teams']['away']['team']['id'] == teamid:
             part = 'top'
         else:
             part = 'bottom'
-        for i in game['scoringPlays']:
+        for i in scoringplays:
             if i['about']['halfInning'] == part:
                 inning = i['about']['halfInning'].upper() + " " + str(i['about']['inning'])
                 playevents = i['playEvents']
@@ -798,7 +802,7 @@ def list_scoring_plays(team,delta=None,lastonly=False):
                     if 'hitData' in playevent:
                         data = playevent['hitData']
                         if 'totalDistance' in data or 'launchSpeed' in data or 'launchAngle' in data:
-                            out = "Statcast: "
+                            out = "\nStatcast: "
                             if 'totalDistance' in data:
                                 out = out + "%d ft, " % data['totalDistance']
                             if 'launchSpeed' in data:
