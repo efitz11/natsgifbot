@@ -2318,6 +2318,8 @@ def print_dongs(type, delta=None, reddit=False):
         find_videos = True
     for game in games:
         gamepk = game['gamePk']
+        if game['status']['abstractGameCode'] == 'P':
+            continue
         sp = newmlbstats.get_scoring_plays(gamepk)
         awayteam = game['teams']['away']['team']['abbreviation']
         hometeam = game['teams']['home']['team']['abbreviation']
