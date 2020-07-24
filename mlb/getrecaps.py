@@ -678,8 +678,8 @@ def get_all_outputs(defense=False, spoilcomment=False):
     else:
         caps = get_recaps()
         output = output + caps
-    # output = output + "\n****\n"
-    # output = output + "Longest dongs of the day:\n\n" + mymlbstats.print_dongs("long", delta="-1", reddit=True)
+    output = output + "\n****\n"
+    output = output + "Longest dongs of the day:\n\n" + mymlbstats.print_dongs("long", delta="-1", reddit=True)
     # if defense:
     #     x = find_defense()
     #     if x is not None:
