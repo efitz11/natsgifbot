@@ -28,8 +28,15 @@ def _get_player_info_line(player, seasons=None):
     bdate = player['birthDate'].split("-")
     bdatetime = datetime.strptime(player['birthDate'], "%Y-%m-%d")
     today = datetime.today()
-    if seasons is None:
-        age = today.year - bdatetime.year - ((today.month, today.day) < (bdatetime.month, bdatetime.day))
+    if seasons is None or seasons == str(today.year):
+        t = datetime(today.year, 7, 1)
+        curage = today.year - bdatetime.year - ((today.month, today.day) < (bdatetime.month, bdatetime.day))
+        sznage = t.year - bdatetime.year - ((t.month, t.day) < (bdatetime.month, bdatetime.day))
+        if curage != sznage:
+            age = "%d (now %d)" % (sznage, curage)
+        else:
+            age = curage
+
     elif '-' not in seasons:
         t = datetime(int(seasons), 7, 1)
         age = t.year - bdatetime.year - ((t.month, t.day) < (bdatetime.month, bdatetime.day))
