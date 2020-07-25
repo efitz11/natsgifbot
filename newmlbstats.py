@@ -12,14 +12,13 @@ def _new_player_search(name):
     if len(players) > 0:
         p = players[0]['playerId']
         for player in players:
-            print(player['name'])
             if player['teamId'] == 120:
                 p = player['playerId']
                 break
         url = "https://statsapi.mlb.com/api/v1/people/%s?hydrate=currentTeam,team,stats(type=[yearByYear,yearByYearAdvanced,careerRegularSeason,careerAdvanced,availableStats](team(league)),leagueListId=mlb_hist)" % p
         return utils.get_json(url)['people'][0]
 
-def _get_player_info_line(player):
+def _get_player_info_line(player, seasons=None):
     pos = player['primaryPosition']['abbreviation']
     bats = player['batSide']['code']
     throws = player['pitchHand']['code']
@@ -29,7 +28,18 @@ def _get_player_info_line(player):
     bdate = player['birthDate'].split("-")
     bdatetime = datetime.strptime(player['birthDate'], "%Y-%m-%d")
     today = datetime.today()
-    age = today.year - bdatetime.year - ((today.month, today.day) < (bdatetime.month, bdatetime.day))
+    if seasons is None:
+        age = today.year - bdatetime.year - ((today.month, today.day) < (bdatetime.month, bdatetime.day))
+    elif '-' not in seasons:
+        t = datetime(int(seasons), 7, 1)
+        age = t.year - bdatetime.year - ((t.month, t.day) < (bdatetime.month, bdatetime.day))
+    else:
+        season1, season2 = seasons.split('-')
+        t1 = datetime(int(season1), 7, 1)
+        t2 = datetime(int(season2), 7, 1)
+        age1 = t1.year - bdatetime.year - ((t1.month, t1.day) < (bdatetime.month, bdatetime.day))
+        age2 = t2.year - bdatetime.year - ((t2.month, t2.day) < (bdatetime.month, bdatetime.day))
+        age = "%d-%d" % (age1, age2)
 
     ret = "%s | B/T: %s/%s | %s | %s lbs | Age: %s" % (pos, bats, throws, height, weight, age)
 
@@ -47,7 +57,7 @@ def get_player_season_stats(name, type=None, year=None, career=None, reddit=None
     # pid = player['id']
     disp_name = player['fullName']
     pos = player['primaryPosition']['abbreviation']
-    infoline = _get_player_info_line(player)
+    infoline = _get_player_info_line(player, seasons=year)
     now = datetime.now()
     # birthdate = player['birthDate']
     # birthdate = birthdate[:birthdate.find('T')]
