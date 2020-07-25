@@ -1049,7 +1049,8 @@ def get_player_line(name, delta=None, player=None, schedule=None):
     return output
 
 def get_ohtani_line(delta=None):
-    return get_player_line("shohei ohtani", delta=delta)
+    # return get_player_line("shohei ohtani", delta=delta)
+    return print_at_bats("shohei ohtani", delta=delta)
 
 def get_player_gamelogs(name, num=5, forcebatting=False):
     # cap at 15
