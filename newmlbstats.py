@@ -12,8 +12,10 @@ def _new_player_search(name):
     if len(players) > 0:
         p = players[0]['playerId']
         for player in players:
+            print(player['name'])
             if player['teamId'] == 120:
                 p = player['playerId']
+                break
         url = "https://statsapi.mlb.com/api/v1/people/%s?hydrate=currentTeam,team,stats(type=[yearByYear,yearByYearAdvanced,careerRegularSeason,careerAdvanced,availableStats](team(league)),leagueListId=mlb_hist)" % p
         return utils.get_json(url)['people'][0]
 
@@ -21,7 +23,7 @@ def _get_player_info_line(player):
     pos = player['primaryPosition']['abbreviation']
     bats = player['batSide']['code']
     throws = player['pitchHand']['code']
-    height = player['height']
+    height = player['height'].replace(' ','')
     weight = player['weight']
 
     bdate = player['birthDate'].split("-")
@@ -29,7 +31,7 @@ def _get_player_info_line(player):
     today = datetime.today()
     age = today.year - bdatetime.year - ((today.month, today.day) < (bdatetime.month, bdatetime.day))
 
-    ret = "%s | B/T: %s/%s | %s | %s | %s" % (pos, bats, throws, height, weight, age)
+    ret = "%s | B/T: %s/%s | %s | %s lbs | Age: %s" % (pos, bats, throws, height, weight, age)
 
 
     if int(bdate[1]) == today.month and int(bdate[2]) == today.day:
