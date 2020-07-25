@@ -1,5 +1,6 @@
 from urllib.request import urlopen, Request
 import urllib
+import urllib.parse
 from datetime import datetime, timedelta
 import time
 import json, os
@@ -743,7 +744,8 @@ def list_home_runs(team, delta=None):
     left = ['batter', 'pitcher', 'inning']
 
     for game in games:
-        sp = game['scoringPlays']
+        sp = newmlbstats.get_scoring_plays(game['gamePk'])
+        # sp = game['scoringPlays']
         homers = []
         for p in sp:
             if p['result']['eventType'] == "home_run":
@@ -1903,16 +1905,31 @@ def get_player_season_stats(name, type=None, year=None, year2=None, active='Y', 
     output = output + utils.format_table(stats, s, repl_map={'season':'year', **REPL_MAP}, reddit=reddit, left_list=['tm'])
     return output
 
-def search_highlights(query):
-    results = recap.search_video(query)
-    if len(results) == 0:
-        return "No highlights found"
-    first = results[0]
-    blurb = first['blurb']
-    length = first['duration'][3:]
-    date = first['display_timestamp'][:10]
-    url = recap.get_direct_video_url(first['url'])
-    return "(%s) %s - %s:\n%s" % (date, blurb, length, url)
+def search_highlights(player, delta=None):
+    url = "https://fastball-gateway.mlb.com/graphql?query=query%20Search(%24query%3A%20String!%2C%20%24page%3A%20Int%2C%20%24limit%3A%20Int%2C%20%24feedPreference%3A%20FeedPreference%2C%20%24" \
+          "languagePreference%3A%20LanguagePreference%2C%20%24contentPreference%3A%20ContentPreference)%20%7B%0A%20%20search(query%3A%20%24query%2C%20limit%3A%20%24limit%2C%20page%3A%20%24page" \
+          "%2C%20feedPreference%3A%20%24feedPreference%2C%20languagePreference%3A%20%24languagePreference%2C%20contentPreference%3A%20%24contentPreference)%20%7B%0A%20%20%20%20plays" \
+          "%20%7B%0A%20%20%20%20%20%20mediaPlayback%20%7B%0A%20%20%20%20%20%20%20%20slug%0A%20%20%20%20%20%20%20%20blurb%0A%20%20%20%20%20%20%20%20timestamp%0A%20%20%20%20%20%20%20%20description" \
+          "%0A%20%20%20%20%20%20%20%20title%0A%20%20%20%20%20%20%20%20feeds%20%7B%0A%20%20%20%20%20%20%20%20%20%20type%0A%20%20%20%20%20%20%20%20%20%20duration%0A%20%20%20%20%20%20%20%20%20%20image" \
+          "%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20altText%0A%20%20%20%20%20%20%20%20%20%20%20%20cuts%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20width%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20" \
+          "src%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20__typename%0A%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20__typename" \
+          "%0A%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%20%20__typename%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20__typename%0A%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20" \
+          "__typename%0A%20%20%20%20%7D%0A%20%20%20%20total%0A%20%20%20%20__typename%0A%20%20%7D%0A%7D%0A&operationName=Search&variables=%7B%22query%22%3A%22Player%20%3D%20%5B%5C%22" \
+          + urllib.parse.quote(player.title()) + "%5C%22%5D%20Order%20By%20Timestamp%22%2C%22limit%22%3A36%2C%22page%22%3A0%2C%22languagePreference%22%3A%22EN%22%2C%22contentPreference%22%3A%22CMS_FIRST%22%7D"
+    results = utils.get_json(url)
+    for result in results['data']['search']['plays']:
+        print(result['mediaPlayback'][0]['blurb'])
+    day = _get_date_from_delta(delta)
+
+    # results = recap.search_video(query)
+    # if len(results) == 0:
+    #     return "No highlights found"
+    # first = results[0]
+    # blurb = first['blurb']
+    # length = first['duration'][3:]
+    # date = first['display_timestamp'][:10]
+    # url = recap.get_direct_video_url(first['url'])
+    # return "(%s) %s - %s:\n%s" % (date, blurb, length, url)
 
 def find_game_highlights(team, delta=None):
     teamid = get_teamid(team)
