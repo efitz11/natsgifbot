@@ -362,10 +362,10 @@ class Baseball(commands.Cog):
             out = mymlbstats.print_linescore(team, delta=delta)
             await ctx.send("```%s```" % out)
             return
-        # elif team[0] in ["highlight", "highlights"]:
-        #     query = ' '.join(team[1:])
-        #     await ctx.send(mymlbstats.search_highlights(query, delta=delta))
-        #     return
+        elif team[0] in ["highlight", "highlights"]:
+            query = ' '.join(team[1:])
+            await ctx.send(mymlbstats.search_highlights(query, delta=delta))
+            return
         elif team[0] == "videos":
             team = ' '.join(team[1:]).lower()
             print(team)

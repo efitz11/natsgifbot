@@ -1921,9 +1921,23 @@ def search_highlights(player, delta=None):
           "__typename%0A%20%20%20%20%7D%0A%20%20%20%20total%0A%20%20%20%20__typename%0A%20%20%7D%0A%7D%0A&operationName=Search&variables=%7B%22query%22%3A%22Player%20%3D%20%5B%5C%22" \
           + urllib.parse.quote(player.title()) + "%5C%22%5D%20Order%20By%20Timestamp%22%2C%22limit%22%3A36%2C%22page%22%3A0%2C%22languagePreference%22%3A%22EN%22%2C%22contentPreference%22%3A%22CMS_FIRST%22%7D"
     results = utils.get_json(url)
+    output = ""
+    count = 0
     for result in results['data']['search']['plays']:
-        print(result['mediaPlayback'][0]['blurb'])
-    day = _get_date_from_delta(delta)
+        blurb = result['mediaPlayback'][0]['blurb']
+        slug = result['mediaPlayback'][0]['slug']
+        info = recap.get_vid_info(slug)
+        vidurl = recap.get_playback(info['playbacks'])
+        duration = info['duration'][3:]
+        output += "%s [%s]-\n<%s>\n\n" % (blurb, duration, vidurl)
+        count += 1
+        if count >= 5:
+            break
+    return output
+
+    # day = _get_date_from_delta(delta)
+
+
 
     # results = recap.search_video(query)
     # if len(results) == 0:
