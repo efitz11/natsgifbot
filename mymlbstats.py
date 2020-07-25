@@ -896,7 +896,8 @@ def get_div_standings(div, year=None):
             for split in team['records']['splitRecords']:
                 if split['type'] == "lastTen":
                     l['l10'] = "%s-%s" % (split['wins'],split['losses'])
-            l['stk'] = team['streak']['streakCode']
+            if 'streak' in team:
+                l['stk'] = team['streak']['streakCode']
             l['rd'] = str(team['runDifferential'])
             l['rs'] = str(team['runsScored'])
             l['ra'] = str(team['runsAllowed'])
