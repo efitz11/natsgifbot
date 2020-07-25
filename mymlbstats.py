@@ -2421,7 +2421,10 @@ def print_dongs(type, delta=None, reddit=False):
         sorteddongs = sorted(dongs, key=lambda k: k['num'], reverse=True)[:10]
     elif type == "recent":
         sorteddongs = sorted(dongs, key=lambda k: k['time'], reverse=True)[:10]
-        out = "Most recent home runs (most recent on top):\n\n"
+        t = datetime.strptime(sorteddongs[0]['time'], "%Y-%m-%dT%H:%M:%S.%fZ")
+
+
+        out = "Most recent home runs (most recent on top):\n\n(%s's dong: %s)\n" % (sorteddongs[0]['batter'], utils.prettydate(t,utc=True))
 
 
     return out + utils.format_table(labs, sorteddongs, repl_map=repl_map, left_list=left, reddit=reddit)
