@@ -733,18 +733,20 @@ def list_home_runs(team, delta=None):
         return "No matching team found"
     now = _get_date_from_delta(delta)
     date = str(now.year) + "-" + str(now.month).zfill(2) + "-" + str(now.day).zfill(2)
-    url = "https://statsapi.mlb.com/api/v1/schedule?sportId=1&teamId=%d&date=%s&hydrate=scoringplays" % (teamid, date)
+    url = "https://statsapi.mlb.com/api/v1/schedule?sportId=1&teamId=%d&date=%s&hydrate=team,scoringplays" % (teamid, date)
     print(url)
     games = _get_json(url)['dates'][0]['games']
     output = ""
     numgames = len(games)
     count = 0
     repl_map = {'inning':'inn'}
-    labs = ['batter', 'inning', 'runs', 'pitcher', 'dist']
-    left = ['batter', 'pitcher', 'inning']
+    labs = ['inning', 'team', 'batter', 'runs', 'pitcher', 'dist']
+    left = ['team', 'batter', 'pitcher', 'inning']
 
     for game in games:
         sp = newmlbstats.get_scoring_plays(game['gamePk'])
+        home = game['teams']['home']['team']['abbreviation']
+        away = game['teams']['away']['team']['abbreviation']
         # sp = game['scoringPlays']
         homers = []
         for p in sp:
@@ -753,9 +755,11 @@ def list_home_runs(team, delta=None):
                 h['batter'] = p['matchup']['batter']['fullName']
                 h['pitcher'] = p['matchup']['pitcher']['fullName']
                 h['inning'] = p['about']['halfInning']
+                h['team'] = away
                 if h['inning'] == 'bottom':
                     h['inning'] = 'bot'
-                h['inning'] = "%s %s" % (h['inning'], p['about']['inning'])
+                    h['team'] = home
+                h['inning'] = "%s" % (p['about']['inning'])
                 h['runs'] = p['result']['rbi']
 
                 event = None
