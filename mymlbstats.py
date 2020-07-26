@@ -2108,7 +2108,7 @@ def get_inning_plays(team, inning, delta=None):
         data = data# + "\n"
         output = "%s%s %s %s\n" % (output, count, desc, data)
         # output = output + "\n\n" + desc
-        print(highlights)
+        # print(highlights)
         for event in play['playEvents']:
             if 'playId' in event:
                 if event['playId'] in highlights:
