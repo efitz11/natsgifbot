@@ -174,30 +174,48 @@ def get_stat_leaders(stat, season=None, league=None):
         results = utils.get_json(url)['leagueLeaders']
         return results
 
-def print_stat_leaders(stat, season=None, league=None):
+def print_stat_leaders(statquery_list, season=None):
+    league = None
+    if 'al' in statquery_list:
+        league = 'al'
+        statquery_list.remove('al')
+    elif 'nl' in statquery_list:
+        league = 'nl'
+        statquery_list.remove('nl')
+
+    want_group = None
+    groups = ['hitting', 'pitching', 'fielding', 'catching']
+    for i in statquery_list:
+        if i in groups:
+            want_group = i
+            statquery_list.remove(i)
+            break
+    stat = ''.join(statquery_list)
+    print(stat)
     leaders = get_stat_leaders(stat, season=season, league=league)
     if leaders is None:
         return "Stat not found"
-    groups = list()
+    group = None
     for statgroup in leaders:
-        group = (statgroup['statGroup'], list())
-        # if len(groups) == 2 and group[0] == "catching":
-        #     continue
-        for leader in statgroup['leaders'][:10]:
-            player = dict()
-            player['team'] = leader['team']['abbreviation']
-            player['name'] = leader['person']['fullName']
-            player[stat] = leader['value']
-            group[1].append(player)
-        groups.append(group)
-    output = ""
-    for group in groups:
+        if statgroup['statGroup'] == want_group or want_group is None:
+            group = (statgroup['statGroup'], list())
+            for leader in statgroup['leaders'][:10]:
+                player = dict()
+                player['team'] = leader['team']['abbreviation']
+                player['name'] = leader['person']['fullName']
+                player[stat] = leader['value']
+                group[1].append(player)
+            break
+    if group is not None:
+        output = ""
         output += "%s:\n```python\n" % group[0]
         labels = ['team', 'name', stat]
         left = ['team', 'name']
         output += utils.format_table(labels, group[1], left_list=left)
         output += "```\n"
-    return output
+        return output
+    else:
+        return "problem finding leaders"
 
 def print_contract_info(name, year=None):
     # find player
