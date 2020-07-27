@@ -3,6 +3,7 @@ import json
 import utils
 from datetime import datetime
 from bs4 import BeautifulSoup
+import mymlbstats
 
 API_LINK = 'https://statsapi.mlb.com/api/v1/'
 
@@ -153,7 +154,7 @@ def get_scoring_plays(gamepk):
         playslist.append(data['allPlays'][play])
     return playslist
 
-def get_stat_leaders(stat, season=None, league=None, position=None):
+def get_stat_leaders(stat, season=None, league=None, position=None, teamid=None):
     with open('mlb/statsapi_json/baseballStats.json', 'r') as f:
         stats = json.loads(''.join(f.readlines()))
 
@@ -181,7 +182,10 @@ def get_stat_leaders(stat, season=None, league=None, position=None):
                 position_text += "&position=%s" % i
         else:
             position_text = "&position=%s" % position if position is not None else ''
-        url = API_LINK + 'stats/leaders?leaderCategories=%s%s%s%s&limit=10&hydrate=team' % (lookup_stat['name'], season_text, league_text, position_text)
+        teamtext = ""
+        if teamid is not None:
+            teamtext = "&teamId=%d" % teamid
+        url = API_LINK + 'stats/leaders?leaderCategories=%s%s%s%s%s&limit=10&hydrate=team' % (lookup_stat['name'], season_text, league_text, position_text, teamtext)
         results = utils.get_json(url)['leagueLeaders']
         return results
 
@@ -209,9 +213,13 @@ def print_stat_leaders(statquery_list, season=None):
             pos = i.upper()
             statquery_list.remove(i)
 
-    stat = ''.join(statquery_list)
+    stat = statquery_list.pop()
+    team = None
+    if len(statquery_list) > 0:
+        team = mymlbstats.get_teamid(' '.join(statquery_list))
+
     print(stat)
-    leaders = get_stat_leaders(stat, season=season, league=league, position=pos)
+    leaders = get_stat_leaders(stat, season=season, league=league, position=pos, teamid=team)
     if leaders is None:
         return "Stat not found"
     group = None
