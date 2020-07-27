@@ -547,15 +547,15 @@ async def poll(ctx, question, *answers):
     if len(answers) == 0:
         output = output + "\tYes or No\n"
         m = await ctx.send(output + "```")
-        await bot.add_reaction(m,emoji_letter_map['y'])
-        await bot.add_reaction(m,emoji_letter_map['n'])
+        await m.add_reaction(emoji_letter_map['y'])
+        await m.add_reaction(emoji_letter_map['n'])
         return
         
     m = await ctx.send(output + "```")
     a = ord('a')
     
     for i in range(len(answers)):
-        await bot.add_reaction(m,emoji_letter_map[chr(a+i)])
+        await m.add_reaction(emoji_letter_map[chr(a+i)])
         
 @bot.command(pass_context=True)
 async def terminate(ctx):
