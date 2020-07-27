@@ -55,7 +55,7 @@ def _get_player_info_line(player, seasons=None):
 
 
     if int(bdate[1]) == today.month and int(bdate[2]) == today.day:
-        ret += " | **HAPPY BIRTHDAY**"
+        ret += "\n         ****HAPPY BIRTHDAY****"
     return ret
 
 def get_player_season_stats(name, type=None, year=None, career=None, reddit=None):
