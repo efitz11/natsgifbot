@@ -167,7 +167,7 @@ def get_stat_leaders(stat, season=None, league=None):
     if lookup_stat is not None:
         season_text = "&season=%s" % season if season is not None else ''
         if league is not None:
-            league_text = "&leagueId=%d" % 103 if league == "al" else 104
+            league_text = "&leagueId=%d" % 103 if league == "al" else "&leagueId=%d" % 104
         else:
             league_text = ""
         url = API_LINK + 'stats/leaders?leaderCategories=%s%s%s&limit=10&hydrate=team' % (lookup_stat['dataField'], season_text, league_text)
