@@ -153,16 +153,21 @@ def get_scoring_plays(gamepk):
         playslist.append(data['allPlays'][play])
     return playslist
 
-def get_stat_leaders(stat, season=None, league=None):
-    with open('mlb/statsapi_json/stats.json', 'r') as f:
-        statgroups = json.loads(''.join(f.readlines()))['data']['columns']
+def get_stat_leaders(stat, season=None, league=None, position=None):
+    with open('mlb/statsapi_json/baseballStats.json', 'r') as f:
+        stats = json.loads(''.join(f.readlines()))
 
     lookup_stat = None
-    for group in statgroups:
-        for i in statgroups[group]['columns']:
-            for s in i['groupColumns']:
-                if stat == s['dataField'].lower() or stat == s['labelBrief'].lower():
-                    lookup_stat = s
+
+    for s in stats:
+        if stat == s['name'].lower() or stat == s['lookupParam']:
+            lookup_stat = s
+
+    # for group in statgroups:
+    #     for i in statgroups[group]['columns']:
+    #         for s in i['groupColumns']:
+    #             if stat == s['dataField'].lower() or stat == s['labelBrief'].lower():
+    #                 lookup_stat = s
 
     if lookup_stat is not None:
         season_text = "&season=%s" % season if season is not None else ''
@@ -170,7 +175,13 @@ def get_stat_leaders(stat, season=None, league=None):
             league_text = "&leagueId=%d" % 103 if league == "al" else "&leagueId=%d" % 104
         else:
             league_text = ""
-        url = API_LINK + 'stats/leaders?leaderCategories=%s%s%s&limit=10&hydrate=team' % (lookup_stat['dataField'], season_text, league_text)
+        if position is not None and position == "OF":
+            position_text = ""
+            for i in ['LF','CF','RF','OF']:
+                position_text += "&position=%s" % i
+        else:
+            position_text = "&position=%s" % position if position is not None else ''
+        url = API_LINK + 'stats/leaders?leaderCategories=%s%s%s%s&limit=10&hydrate=team' % (lookup_stat['name'], season_text, league_text, position_text)
         results = utils.get_json(url)['leagueLeaders']
         return results
 
@@ -190,9 +201,17 @@ def print_stat_leaders(statquery_list, season=None):
             want_group = i
             statquery_list.remove(i)
             break
+
+    positions = ['c','1b','2b','3b','ss','lf','cf','rf','of','p','dh']
+    pos = None
+    for i in statquery_list:
+        if i.lower() in positions:
+            pos = i.upper()
+            statquery_list.remove(i)
+
     stat = ''.join(statquery_list)
     print(stat)
-    leaders = get_stat_leaders(stat, season=season, league=league)
+    leaders = get_stat_leaders(stat, season=season, league=league, position=pos)
     if leaders is None:
         return "Stat not found"
     group = None
