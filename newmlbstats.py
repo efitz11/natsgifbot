@@ -51,7 +51,7 @@ def _get_player_info_line(player, seasons=None):
         age2 = t2.year - bdatetime.year - ((t2.month, t2.day) < (bdatetime.month, bdatetime.day))
         age = "%d-%d" % (age1, age2)
 
-    ret = "%s | %s/%s | %s | %s lbs | Age: %s" % (pos, bats, throws, height, weight, age)
+    ret = "%s | %s/%s | %s %s | Age: %s" % (pos, bats, throws, height, weight, age)
 
 
     if int(bdate[1]) == today.month and int(bdate[2]) == today.day:
