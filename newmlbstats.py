@@ -4,6 +4,8 @@ import utils
 from datetime import datetime
 from bs4 import BeautifulSoup
 
+API_LINK = 'https://statsapi.mlb.com/api/v1/'
+
 def _new_player_search(name):
     #url = "https://suggest.mlb.com/svc/suggest/v1/min_all/%s/99999" % urllib.parse.quote(name)
     url = "https://typeahead.mlb.com/api/v1/typeahead/suggestions/%s" % urllib.parse.quote(name)
@@ -151,6 +153,52 @@ def get_scoring_plays(gamepk):
         playslist.append(data['allPlays'][play])
     return playslist
 
+def get_stat_leaders(stat, season=None, league=None):
+    with open('mlb/statsapi_json/stats.json', 'r') as f:
+        statgroups = json.loads(''.join(f.readlines()))['data']['columns']
+
+    lookup_stat = None
+    for group in statgroups:
+        for i in statgroups[group]['columns']:
+            for s in i['groupColumns']:
+                if stat == s['dataField'].lower() or stat == s['labelBrief'].lower():
+                    lookup_stat = s
+
+    if lookup_stat is not None:
+        season_text = "&season=%s" % season if season is not None else ''
+        if league is not None:
+            league_text = "&leagueId=%d" % 103 if league == "al" else 104
+        else:
+            league_text = ""
+        url = API_LINK + 'stats/leaders?leaderCategories=%s%s%s&limit=10&hydrate=team' % (lookup_stat['dataField'], season_text, league_text)
+        results = utils.get_json(url)['leagueLeaders']
+        return results
+
+def print_stat_leaders(stat, season=None, league=None):
+    leaders = get_stat_leaders(stat, season=season, league=league)
+    if leaders is None:
+        return "Stat not found"
+    groups = list()
+    for statgroup in leaders:
+        group = (statgroup['statGroup'], list())
+        # if len(groups) == 2 and group[0] == "catching":
+        #     continue
+        for leader in statgroup['leaders'][:10]:
+            player = dict()
+            player['team'] = leader['team']['abbreviation']
+            player['name'] = leader['person']['fullName']
+            player[stat] = leader['value']
+            group[1].append(player)
+        groups.append(group)
+    output = ""
+    for group in groups:
+        output += "%s:\n```python\n" % group[0]
+        labels = ['team', 'name', stat]
+        left = ['team', 'name']
+        output += utils.format_table(labels, group[1], left_list=left)
+        output += "```\n"
+    return output
+
 def print_contract_info(name, year=None):
     # find player
     player = _new_player_search(name)
@@ -234,4 +282,5 @@ if __name__ == "__main__":
     # print(get_player_season_stats('daniel hudson'))
     # print(print_contract_info("max scherzer"))
     # print(get_player_contract_table(""))
-    get_scoring_plays(630851)
+    # get_scoring_plays(630851)
+    print(print_stat_leaders('sb', season=2019))

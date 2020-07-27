@@ -302,34 +302,46 @@ class Baseball(commands.Cog):
             player = '+'.join(team[1:])
             await ctx.send("```%s```" % mymlbstats.get_player_gamelogs(player,num,forcebatting=forcebatting))
             return
-        elif team[0].endswith("leaders") or team[0].endswith("losers"):
+        elif team[0].endswith("leaders"):
             stat = team[1]
-
-            if stat in self.savant_stats:
-                year = None
-                if team[-1].isdigit():
-                    year = team[-1]
-                await ctx.send(savant.get_oaa_leaders(year=year))
-                return
-
-            opts = []
-            for i in range(2,len(team)):
-                opts.append(team[i])
-            stattype = 'bat'
-            if team[0].startswith('p'):
-                t = team[0][1:]
-                stattype = 'pit'
-            elif team[0].startswith('f'):
-                t = team[0][1:]
-                stattype = 'fld'
+            season = None
+            if team[-1].isdigit():
+                season = team[-1]
+            if team[0] == 'leaders':
+                await ctx.send(newmlbstats.print_stat_leaders(stat, season=season))
             else:
-                t = team[0]
-            if t == "losers":
-                opts.append("reverse=yes")
-            fg = FG(stat.lower(),options=opts)
-            output = fg.get_stat_leaders_str(stattype=stattype)
-            await ctx.send(output)
-            return
+                league = "nl"
+                if team[0].startswith("al"):
+                    league = "al"
+                await ctx.send(newmlbstats.print_stat_leaders(stat, season=season, league=league))
+        # elif team[0].endswith("leaders") or team[0].endswith("losers"):
+        #     stat = team[1]
+        #
+        #     if stat in self.savant_stats:
+        #         year = None
+        #         if team[-1].isdigit():
+        #             year = team[-1]
+        #         await ctx.send(savant.get_oaa_leaders(year=year))
+        #         return
+        #
+        #     opts = []
+        #     for i in range(2,len(team)):
+        #         opts.append(team[i])
+        #     stattype = 'bat'
+        #     if team[0].startswith('p'):
+        #         t = team[0][1:]
+        #         stattype = 'pit'
+        #     elif team[0].startswith('f'):
+        #         t = team[0][1:]
+        #         stattype = 'fld'
+        #     else:
+        #         t = team[0]
+        #     if t == "losers":
+        #         opts.append("reverse=yes")
+        #     fg = FG(stat.lower(),options=opts)
+        #     output = fg.get_stat_leaders_str(stattype=stattype)
+        #     await ctx.send(output)
+        #     return
         elif team[0] == 'ohtani':
             out = mymlbstats.get_ohtani_line(delta)
             if len(out) > 0:
