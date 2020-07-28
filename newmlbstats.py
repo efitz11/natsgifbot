@@ -255,9 +255,17 @@ def get_40man(teamid):
     if 'roster' in results:
         return results['roster']
 
+def get_coaches(teamid):
+    url = API_LINK + "teams/%d/roster/coach?hydrate=person" % teamid
+    results = utils.get_json(url)
+    if 'roster' in results:
+        return results['roster']
+
 def print_birthdays(team):
     teamid = mymlbstats.get_teamid(team)
-    roster = get_40man(teamid)
+    if teamid is None:
+        return "could not find team"
+    roster = get_40man(teamid) + get_coaches(teamid)
     today = datetime.today()
     todaystr = "%02d-%02d" % (today.month, today.day)
     birthdays = list()
