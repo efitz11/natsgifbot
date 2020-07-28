@@ -324,25 +324,25 @@ async def flip(ctx):
 async def giflist(ctx):
     await ctx.send("https://github.com/efitz11/natsgifbot/blob/master/postlist.csv")
 
-def get_youtube(query):
-    query = query.replace(' ','+')
-    url = "https://www.youtube.com/results?search_query=" + query
-
-    req = Request(url)
-    req.headers["User-Agent"] = "windows 10 bot"
-    resource = urlopen(req)
-    content = resource.read().decode('utf-8')
-
-    findstr = "<li><div class=\"yt-lockup yt-lockup-tile yt-lockup-video vve-check clearfix\" data-context-item-id=\""
-    contents = content[content.find(findstr)+len(findstr):]
-    vid = contents[:contents.find("\"")]
-    return "https://youtube.com/watch?v="+vid
-
-@bot.command()
-async def youtube(ctx, *query:str):
-    """get the first youtube video for a query"""
-    q = '+'.join(query)
-    await ctx.send(get_youtube(q))
+# def get_youtube(query):
+#     query = query.replace(' ','+')
+#     url = "https://www.youtube.com/results?search_query=" + query
+#
+#     req = Request(url)
+#     req.headers["User-Agent"] = "windows 10 bot"
+#     resource = urlopen(req)
+#     content = resource.read().decode('utf-8')
+#
+#     findstr = "<li><div class=\"yt-lockup yt-lockup-tile yt-lockup-video vve-check clearfix\" data-context-item-id=\""
+#     contents = content[content.find(findstr)+len(findstr):]
+#     vid = contents[:contents.find("\"")]
+#     return "https://youtube.com/watch?v="+vid
+#
+# @bot.command()
+# async def youtube(ctx, *query:str):
+#     """get the first youtube video for a query"""
+#     q = '+'.join(query)
+#     await ctx.send(get_youtube(q))
 
 @bot.command()
 async def weather(ctx, *location:str):
@@ -784,10 +784,10 @@ async def on_message(message):
             await channel.send("balls.")
         if patternshitbot.search(message.content):
             await channel.send("Fuck off! I'm doing my best.")
-        match = patternalexaplay.search(message.content)
-        if match:
-            query = message.content[match.end():]
-            await channel.send(get_youtube(query.strip()))
+        # match = patternalexaplay.search(message.content)
+        # if match:
+        #     query = message.content[match.end():]
+        #     await channel.send(get_youtube(query.strip()))
 
         if patterntwitter.search(message.content):
             verified, api = web.check_tweet_verified(re.search(patterntwitter, message.content).group(1))
