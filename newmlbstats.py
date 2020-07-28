@@ -119,7 +119,10 @@ def get_player_season_stats(name, type=None, year=None, career=None, reddit=None
                     season['team'] = split['team']['abbreviation']
                     teams.append(season['team'])
                 else:
-                    season['team'] = split['sport']['abbreviation']
+                    if 'sport' in split:
+                        season['team'] = split['sport']['abbreviation']
+                    else:
+                        season['team'] = "MLB"
                 seasons.append(split['stat'])
     if type == "hitting":
         stats = ['atBats', 'hits', 'doubles', 'triples', 'homeRuns', 'runs', 'rbi', 'baseOnBalls', 'strikeOuts', 'stolenBases', 'caughtStealing', 'avg', 'obp', 'slg' ,'ops']
