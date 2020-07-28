@@ -249,6 +249,30 @@ def print_stat_leaders(statquery_list, season=None):
     else:
         return "problem finding leaders"
 
+def get_40man(teamid):
+    url = API_LINK + "teams/%d/roster/40Man?hydrate=person" % teamid
+    results = utils.get_json(url)
+    if 'roster' in results:
+        return results['roster']
+
+def print_birthdays(team):
+    teamid = mymlbstats.get_teamid(team)
+    roster = get_40man(teamid)
+    today = datetime.today()
+    todaystr = "%02d-%02d" % (today.month, today.day)
+    birthdays = list()
+    for player in roster:
+        p = dict()
+        player = player['person']
+        if player['birthDate'][5:] == todaystr:
+            p['age'] = today.year - int(player['birthDate'][:4])
+            p['name'] = player['firstLastName']
+            birthdays.append(p)
+    if len(birthdays) > 0:
+        return utils.format_table(['name', 'age'], birthdays, left_list=['name'])
+    else:
+        return "No birthdays today"
+
 def print_contract_info(name, year=None):
     # find player
     player = _new_player_search(name)
@@ -333,4 +357,5 @@ if __name__ == "__main__":
     # print(print_contract_info("max scherzer"))
     # print(get_player_contract_table(""))
     # get_scoring_plays(630851)
-    print(print_stat_leaders('sb', season=2019))
+    #print(print_stat_leaders('sb', season=2019))
+    print(print_birthdays('lad'))

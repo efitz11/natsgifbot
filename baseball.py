@@ -416,6 +416,9 @@ class Baseball(commands.Cog):
         elif team[0] == "contract":
             name = ' '.join(team[1:])
             await ctx.send(newmlbstats.print_contract_info(name))
+        elif team[0] == "birthdays":
+            team = ' '.join(team[1:]).lower()
+            await ctx.send("```python\n%s```" % newmlbstats.print_birthdays(team))
         else:
             teamname = ' '.join(team).lower()
             output = mymlbstats.get_single_game(teamname,delta=delta)
