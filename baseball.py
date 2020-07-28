@@ -419,6 +419,9 @@ class Baseball(commands.Cog):
         elif team[0] == "birthdays":
             team = ' '.join(team[1:]).lower()
             await ctx.send("```python\n%s```" % newmlbstats.print_birthdays(team))
+        elif team[0] == "pic":
+            name = ' '.join(team[1:])
+            await ctx.send(newmlbstats.get_player_headshot_url(name))
         else:
             teamname = ' '.join(team).lower()
             output = mymlbstats.get_single_game(teamname,delta=delta)

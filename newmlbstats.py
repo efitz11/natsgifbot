@@ -281,6 +281,12 @@ def print_birthdays(team):
     else:
         return "No birthdays today"
 
+def get_player_headshot_url(player_search):
+    player = _new_player_search(player_search)
+    if player is not None:
+        return "https://securea.mlb.com/mlb/images/players/head_shot/%d@3x.jpg" % player['id']
+    return "Could not find player"
+
 def print_contract_info(name, year=None):
     # find player
     player = _new_player_search(name)
