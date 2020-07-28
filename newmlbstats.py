@@ -58,6 +58,17 @@ def _get_player_info_line(player, seasons=None):
         ret += "\n         ****HAPPY BIRTHDAY****"
     return ret
 
+def get_team_info(teamid):
+    """
+    return stats api data for teamid
+    :param teamid:
+    :return:
+    """
+    url = API_LINK + "teams/%s?hydrate=team,sport" % teamid
+    results = utils.get_json(url)
+    if len(results['teams']) > 0:
+        return results['teams'][0]
+
 def get_player_season_stats(name, type=None, year=None, career=None, reddit=None):
     player = _new_player_search(name)
     if player is None:
@@ -69,9 +80,6 @@ def get_player_season_stats(name, type=None, year=None, career=None, reddit=None
     pos = player['primaryPosition']['abbreviation']
     infoline = _get_player_info_line(player, seasons=year)
     now = datetime.now()
-    # birthdate = player['birthDate']
-    # birthdate = birthdate[:birthdate.find('T')]
-    # birth = birthdate.split('-')
 
     if year is None:
         year = str(now.year)
@@ -82,16 +90,6 @@ def get_player_season_stats(name, type=None, year=None, career=None, reddit=None
         year2 = years[1]
     else:
         year2 = year
-
-    # d = None
-    # if year == None:
-    #     d = now.year - int(birth[0]) - ((now.month, now.day) < (int(birth[1]), int(birth[2])))
-    # elif year is not None:
-    #     d = int(year) - int(birth[0]) - ((7,1) < (int(birth[1]), int(birth[2])))
-    # if d is not None:
-    #     infoline = "%s | Age: %d" % (infoline, d)
-    # if now.month == int(birth[1]) and now.day == int(birth[2]):
-    #     infoline = infoline + "  **HAPPY BIRTHDAY**"
 
     if type is None and pos == 'P':
         type = "pitching"
@@ -135,6 +133,10 @@ def get_player_season_stats(name, type=None, year=None, career=None, reddit=None
     if year == year2:
         if year == str(now.year) and len(teams) == 0 and 'currentTeam' in player:
             teamabv = player['currentTeam']['abbreviation']
+            if player['currentTeam']['sport']['id'] != 1:
+                parent = get_team_info(player['currentTeam']['parentOrgId'])
+                milb = get_team_info(player['currentTeam']['id'])
+                teamabv += " - %s %s" % (parent['abbreviation'], milb['sport']['abbreviation'])
         else:
             teamabv = '/'.join(teams)
         output = "%s season stats for %s (%s):" % (year, disp_name, teamabv)
