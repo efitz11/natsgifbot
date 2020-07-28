@@ -262,7 +262,7 @@ def get_coaches(teamid):
         return results['roster']
 
 def print_birthdays(team):
-    teamid = mymlbstats.get_teamid(team)
+    teamid, teamdata = mymlbstats.get_teamid(team, extradata=True)
     if teamid is None:
         return "could not find team"
     roster = get_40man(teamid) + get_coaches(teamid)
@@ -277,7 +277,7 @@ def print_birthdays(team):
             p['name'] = player['firstLastName']
             birthdays.append(p)
     if len(birthdays) > 0:
-        return utils.format_table(['name', 'age'], birthdays, left_list=['name'])
+        return "%s birthdays today:\n\n" % teamdata['teamName'] + utils.format_table(['name', 'age'], birthdays, left_list=['name'])
     else:
         return "No birthdays today"
 
