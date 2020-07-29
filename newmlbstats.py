@@ -261,12 +261,15 @@ def get_coaches(teamid):
     if 'roster' in results:
         return results['roster']
 
-def print_birthdays(team):
+def print_birthdays(team, delta=None):
     teamid, teamdata = mymlbstats.get_teamid(team, extradata=True)
     if teamid is None:
         return "could not find team"
     roster = get_40man(teamid) + get_coaches(teamid)
-    today = datetime.today()
+    if delta is None:
+        today = datetime.today()
+    else:
+        today = mymlbstats._get_date_from_delta(delta)
     todaystr = "%02d-%02d" % (today.month, today.day)
     birthdays = list()
     for player in roster:
@@ -276,10 +279,14 @@ def print_birthdays(team):
             p['age'] = today.year - int(player['birthDate'][:4])
             p['name'] = player['firstLastName']
             birthdays.append(p)
-    if len(birthdays) > 0:
-        return "%s birthdays today:\n\n" % teamdata['teamName'] + utils.format_table(['name', 'age'], birthdays, left_list=['name'])
+    if delta is None:
+        todaystr = "today"
     else:
-        return "No birthdays today"
+        todaystr = todaystr.replace('-','/')
+    if len(birthdays) > 0:
+        return "%s birthdays on %s:\n\n" % (teamdata['teamName'], todaystr) + utils.format_table(['name', 'age'], birthdays, left_list=['name'])
+    else:
+        return "No %s birthdays on %s" % (teamdata['teamName'], todaystr)
 
 def get_player_headshot_url(player_search):
     player = _new_player_search(player_search)
