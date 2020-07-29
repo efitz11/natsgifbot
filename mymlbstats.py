@@ -2404,7 +2404,7 @@ def print_dongs(type, delta=None, reddit=False):
                     h['num'] = int(re.search('\(([^)]+)', number[number.index(search):]).group(1))
                     h['dist'] = 0
                     h['ev'] = 0
-                    h['angle'] = 0
+                    h['la'] = 0
                     h['time'] = p['about']['endTime']
                     event = None
                     for e in p['playEvents']:
@@ -2413,11 +2413,11 @@ def print_dongs(type, delta=None, reddit=False):
 
                     if 'hitData' in event:
                         if 'totalDistance' in event['hitData']:
-                            h['dist'] = event['hitData']['totalDistance']
+                            h['dist'] = int(event['hitData']['totalDistance'])
                         if 'launchSpeed' in event['hitData']:
                             h['ev'] = event['hitData']['launchSpeed']
                         if 'launchAngle' in event['hitData']:
-                            h['angle'] = event['hitData']['launchAngle']
+                            h['la'] = int(event['hitData']['launchAngle'])
                     h['video'] = ""
                     if find_videos:
                         if 'playId' in event:
@@ -2430,8 +2430,8 @@ def print_dongs(type, delta=None, reddit=False):
                                                 h['video'] = '[video](%s)' % pb['url']
                     dongs.append(h)
     repl_map = {'inning':'inn'}
-    labs = ['num', 'batter', 'pitcher', 'dist', 'ev', 'angle']
-    left = ['batter', 'pitcher', 'dist', 'ev', 'angle']
+    labs = ['num', 'batter', 'pitcher', 'dist', 'ev', 'la']
+    left = ['batter', 'pitcher']
     if reddit:
         labs.append('video')
         left.append('video')
