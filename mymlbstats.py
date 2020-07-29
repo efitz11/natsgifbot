@@ -1456,7 +1456,7 @@ def get_player_trailing_splits(name, days=None, forcebatting=False, forcepitchin
 def milb_player_search(name,parent=None):
     name = name.replace(' ','%25')
     name = name.replace('roidy','raudy')
-    url = "http://lookup-service-prod.bamgrid.com/lookup/json/named.milb_player_search.bam?active_sw=%27Y%27&name_part=%27"+ name +"%25%27"
+    url = "http://lookup-service-prod.mlb.com/lookup/json/named.milb_player_search.bam?active_sw=%27Y%27&name_part=%27"+ name +"%25%27"
     print(url)
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     s = json.loads(urlopen(req).read().decode("utf-8"))['milb_player_search']['queryResults']
