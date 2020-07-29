@@ -262,6 +262,8 @@ def get_coaches(teamid):
         return results['roster']
 
 def print_birthdays(team, delta=None):
+    if len(team) == 0:
+        return "No team specified"
     teamid, teamdata = mymlbstats.get_teamid(team, extradata=True)
     if teamid is None:
         return "could not find team"
