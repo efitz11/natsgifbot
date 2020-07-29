@@ -2292,11 +2292,11 @@ def old_print_dongs(type, delta=None, reddit=False):
 
                     if 'hitData' in event:
                         if 'totalDistance' in event['hitData']:
-                            h['dist'] = event['hitData']['totalDistance']
+                            h['dist'] = int(event['hitData']['totalDistance'])
                         if 'launchSpeed' in event['hitData']:
                             h['ev'] = event['hitData']['launchSpeed']
                         if 'launchAngle' in event['hitData']:
-                            h['angle'] = event['hitData']['launchAngle']
+                            h['angle'] = int(event['hitData']['launchAngle'])
                     h['video'] = ""
                     if find_videos:
                         if 'playId' in event:
