@@ -1496,7 +1496,7 @@ def get_milb_season_stats(name, type="hitting",year=None):
             type = "pitching"
     except:
         print("%s is an OF" % name)
-    url = "http://lookup-service-prod.milb.com/lookup/json/named.sport_"+type+"_composed.bam?" \
+    url = "http://lookup-service-prod.mlb.com/lookup/json/named.sport_"+type+"_composed.bam?" \
           "game_type=%27R%27&league_list_id=%27mlb_milb%27&sort_by=%27season_asc%27&player_id="+ id
     print(url)
     req = Request(url, headers={'User-Agent' : "ubuntu"})
