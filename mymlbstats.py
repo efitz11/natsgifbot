@@ -165,7 +165,7 @@ def get_single_game_info(gamepk, gamejson, show_on_deck=False, liveonly=False):
         for lineup in game['lineups']:  # why does this return a string instead of the dicts idk
             for i in range(len(game['lineups'][lineup])):
                 if game['lineups'][lineup][i]['id'] == batterid:
-                    batterpos = i
+                    batterpos = i + 1
                     break
             else:
                 continue
