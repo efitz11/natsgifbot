@@ -159,6 +159,17 @@ def get_single_game_info(gamepk, gamejson, show_on_deck=False, liveonly=False):
         if 'third' in ls['offense']:
             bases = bases[:2] + "3"
         batter = ls['offense']['batter']['lastName']
+        batterid = ls['offense']['batter']['id']
+        # find position in lineup
+        batterpos = ""
+        for lineup in game['lineups']:  # why does this return a string instead of the dicts idk
+            for i in range(len(game['lineups'][lineup])):
+                if game['lineups'][lineup][i]['id'] == batterid:
+                    batterpos = i
+                    break
+            else:
+                continue
+            break #yeah this is wild shit to break out of 2 for loops
         ondeck = "OD: " + ls['offense']['onDeck']['lastName']
         if not show_on_deck:
             ondeck = ""
@@ -180,13 +191,13 @@ def get_single_game_info(gamepk, gamejson, show_on_deck=False, liveonly=False):
         delayedlist = ['Delayed','Suspended']
         if detailstatus not in delayedlist:
             output = output + "%s %s %2d %d | %s | %s | %s %s\n" % (homeabv, str(homeruns).rjust(2), homehits, homeerrs,
-                                                                       outs, count, "B: " + batter, ondeck)
+                                                                       outs, count, "%d: %s" % (batterpos, batter), ondeck)
             # output = output + "%s %s %2d %d | %s %s | %s | %s %s\n" % (homeabv, str(homeruns).rjust(2), homehits, homeerrs,
                                                                      # outs, "out".ljust(outjust), count, "B: " + batter, ondeck)
         else:
             outs = detailstatus
             output = output + "%s %s %2d %d | %s | %s | %s %s\n" % (homeabv, str(homeruns).rjust(2), homehits, homeerrs,
-                                                                         outs, count, "B: " + batter, ondeck)
+                                                                         outs, count, "%d: %s" % (batterpos, batter), ondeck)
 
         special = None
         if game['flags']['noHitter']:
@@ -420,7 +431,7 @@ def get_day_schedule(delta=None,teamid=None,scoringplays=False,hydrates=None):
     now = _get_date_from_delta(delta)
     date = str(now.year) + "-" + str(now.month).zfill(2) + "-" + str(now.day).zfill(2)
     if hydrates is None:
-        hydrates = "&hydrate=probablePitcher,person,decisions,team,stats,flags,linescore(matchup,runners),previousPlay"
+        hydrates = "&hydrate=probablePitcher,person,decisions,team,stats,flags,lineups,linescore(matchup,runners),previousPlay"
         if scoringplays:
             hydrates = hydrates + ",scoringplays"
     team = ""
