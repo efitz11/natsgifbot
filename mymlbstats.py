@@ -2600,6 +2600,10 @@ def print_pitches_by_inning(team, delta=None):
                         p['s'] = p['results']['S']
                     if 'X' in p['results']:
                         p['x'] = p['results']['X']
+                    if p['pitch_type'] == "4-Seam Fastball":
+                        p['pitch_type'] = "4-Seam FB"
+                    elif p['pitch_type'] == "2-Seam Fastball":
+                        p['pitch_type'] = "2-Seam FB"
                     pitches.append(p)
                 cols = ['pitch_type', 'count', 'swinging_strikes', 'called_strikes', 'fouls',
                         'balls_in_play', 'avg_pitch_speed', 'min_pitch_speed', 'max_pitch_speed']
@@ -2612,7 +2616,7 @@ def print_pitches_by_inning(team, delta=None):
                            'avg_pitch_speed':'avg',
                            'min_pitch_speed':'min',
                            'max_pitch_speed':'max'}
-                output = output + "```\n%s```" % (utils.format_table(cols, pitches, repl_map=replace))
+                output = output + "```\n%s```" % (utils.format_table(cols, pitches, repl_map=replace, left_list=['pitch_type']))
     return output
 
 def _get_single_line_statcast(play):
