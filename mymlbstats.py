@@ -2040,25 +2040,33 @@ def get_inning_plays(team, inning, delta=None):
     except IndexError:
         return "Inning not found."
     output = "%s %d:\n" % (plays['allPlays'][0]['about']['halfInning'].upper(), plays['allPlays'][playsinning[0]]['about']['inning'])
+    # non batted ball events:
+    print_events_no_out = ['stolen_base_2b','stolen_base_3b','stolen_base_home', 'balk', 'wild_pitch']
+    print_events_out = ['pickoff_1b','pickoff_2b','pickoff_3b','pickoff_caught_stealing_2b','pickoff_caught_stealing_3b',
+                    'pickoff_caught_stealing_home','caught_stealing_2b', 'caught_stealing_3b', 'caught_stealing_home']
+    print_events = print_events_no_out + print_events_out
     for idx in playsinning:
         play = plays['allPlays'][idx]
-        try:
-            curplayevent = play['playEvents'][-1]
-            cnt = play['count']
-            balls = cnt['balls']
-            strikes = cnt['strikes']
-            outs = cnt['outs']
-            if play['about']['hasOut']:
-                outs -= 1
+        # try:
+        curplayevent = play['playEvents'][-1]
+        cnt = play['count']
+        balls = cnt['balls']
+        strikes = cnt['strikes']
+        outs = cnt['outs']
+        if play['about']['hasOut']:
+            outs -= 1
+        if curplayevent['type'] not in print_events_out and play['result']['eventType'] not in print_events_out:
             if curplayevent['details']['isBall']:
                 balls -= 1
             if curplayevent['details']['isStrike']:
                 strikes -= 1
-            for event in play['playEvents']:
-                if 'eventType' in event['details'] and 'stolen_base' in event['details']['eventType']:
-                    output = output + "(%d out, %d-%d) %s\n\n" % (outs, balls, strikes, event['details']['description'])
-        except:
-            continue
+        for event in play['playEvents']:
+            if 'eventType' in event['details'] and event['details']['eventType'] in print_events:
+                output = output + "(%d out, %d-%d) %s\n\n" % (outs, balls, strikes, event['details']['description'])
+                if event['details']['eventType'] in print_events_out:
+                    outs += 1
+        # except:
+        #     continue
         count = "(%d out, %d-%d)" % (outs, balls, strikes)
         opppitcher = play['matchup']['pitcher']['fullName']
         desc = ""
