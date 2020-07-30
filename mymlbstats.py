@@ -159,6 +159,17 @@ def get_single_game_info(gamepk, gamejson, show_on_deck=False, liveonly=False):
         if 'third' in ls['offense']:
             bases = bases[:2] + "3"
         batter = ls['offense']['batter']['lastName']
+        batterid = ls['offense']['batter']['id']
+        # find position in lineup
+        batterpos = "B"
+        for lineup in game['lineups']:  # why does this return a string instead of the dicts idk
+            for i in range(len(game['lineups'][lineup])):
+                if game['lineups'][lineup][i]['id'] == batterid:
+                    batterpos = i + 1
+                    break
+            else:
+                continue
+            break #yeah this is wild shit to break out of 2 for loops
         ondeck = "OD: " + ls['offense']['onDeck']['lastName']
         if not show_on_deck:
             ondeck = ""
@@ -179,14 +190,15 @@ def get_single_game_info(gamepk, gamejson, show_on_deck=False, liveonly=False):
                                                      bases.center(5), "P: " + pitcher)
         delayedlist = ['Delayed','Suspended']
         if detailstatus not in delayedlist:
+            print(batterpos)
             output = output + "%s %s %2d %d | %s | %s | %s %s\n" % (homeabv, str(homeruns).rjust(2), homehits, homeerrs,
-                                                                       outs, count, "B: " + batter, ondeck)
+                                                                       outs, count, "%s: %s" % (batterpos, batter), ondeck)
             # output = output + "%s %s %2d %d | %s %s | %s | %s %s\n" % (homeabv, str(homeruns).rjust(2), homehits, homeerrs,
                                                                      # outs, "out".ljust(outjust), count, "B: " + batter, ondeck)
         else:
             outs = detailstatus
             output = output + "%s %s %2d %d | %s | %s | %s %s\n" % (homeabv, str(homeruns).rjust(2), homehits, homeerrs,
-                                                                         outs, count, "B: " + batter, ondeck)
+                                                                         outs, count, "%d: %s" % (batterpos, batter), ondeck)
 
         special = None
         if game['flags']['noHitter']:
@@ -420,7 +432,7 @@ def get_day_schedule(delta=None,teamid=None,scoringplays=False,hydrates=None):
     now = _get_date_from_delta(delta)
     date = str(now.year) + "-" + str(now.month).zfill(2) + "-" + str(now.day).zfill(2)
     if hydrates is None:
-        hydrates = "&hydrate=probablePitcher,person,decisions,team,stats,flags,linescore(matchup,runners),previousPlay"
+        hydrates = "&hydrate=probablePitcher,person,decisions,team,stats,flags,lineups,linescore(matchup,runners),previousPlay"
         if scoringplays:
             hydrates = hydrates + ",scoringplays"
     team = ""
@@ -1445,7 +1457,7 @@ def get_player_trailing_splits(name, days=None, forcebatting=False, forcepitchin
 def milb_player_search(name,parent=None):
     name = name.replace(' ','%25')
     name = name.replace('roidy','raudy')
-    url = "http://lookup-service-prod.bamgrid.com/lookup/json/named.milb_player_search.bam?active_sw=%27Y%27&name_part=%27"+ name +"%25%27"
+    url = "http://lookup-service-prod.mlb.com/lookup/json/named.milb_player_search.bam?active_sw=%27Y%27&name_part=%27"+ name +"%25%27"
     print(url)
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     s = json.loads(urlopen(req).read().decode("utf-8"))['milb_player_search']['queryResults']
@@ -1485,7 +1497,7 @@ def get_milb_season_stats(name, type="hitting",year=None):
             type = "pitching"
     except:
         print("%s is an OF" % name)
-    url = "http://lookup-service-prod.bamgrid.com/lookup/json/named.sport_"+type+"_composed.bam?" \
+    url = "http://lookup-service-prod.mlb.com/lookup/json/named.sport_"+type+"_composed.bam?" \
           "game_type=%27R%27&league_list_id=%27mlb_milb%27&sort_by=%27season_asc%27&player_id="+ id
     print(url)
     req = Request(url, headers={'User-Agent' : "ubuntu"})
@@ -1517,7 +1529,7 @@ def get_milb_season_stats(name, type="hitting",year=None):
                     leagues.append(i)
     output = "%s Season stats for %s (%s-%s, %s):\n" % (season, name, teamabv, level, parent)
     teamid = player['team_id']
-    url = "http://lookup-service-prod.bamgrid.com/lookup/json/named.roster_all.bam?team_id=" + teamid
+    url = "http://lookup-service-prod.mlb.com/lookup/json/named.roster_all.bam?team_id=" + teamid
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     t = json.loads(urlopen(req).read().decode("utf-8"))['roster_all']['queryResults']['row']
     for player2 in t:
@@ -1565,7 +1577,7 @@ def get_milb_line(name, delta=None):
 
     output = "%s game line for %s (%s - %s):\n\n" % (date, name, teamabv, level)
 
-    url = "http://lookup-service-prod.bamgrid.com/lookup/json/named.schedule_vw_complete_affiliate.bam?" \
+    url = "http://lookup-service-prod.mlb.com/lookup/json/named.schedule_vw_complete_affiliate.bam?" \
           "game_date=%27" + year + "/" + month + "/" + day + "%27&season=" + year + "&org_id=" + str(orgid)
     print(url)
     req = Request(url, headers={'User-Agent' : "ubuntu"})
@@ -1611,10 +1623,10 @@ def get_milb_log(name,number=5):
     if number > 15:
         number = 15
     now = datetime.now()
-    url = "http://lookup-service-prod.bamgrid.com/lookup/json/named.sport_bio_hitting_last_10.bam?results=" + str(number) + "&game_type=%27R%27&game_type=%27F%27&game_type=%27D%27&game_type=%27L%27&game_type=%27W%27&game_type=%27C%27" \
+    url = "http://lookup-service-prod.mlb.com/lookup/json/named.sport_bio_hitting_last_10.bam?results=" + str(number) + "&game_type=%27R%27&game_type=%27F%27&game_type=%27D%27&game_type=%27L%27&game_type=%27W%27&game_type=%27C%27" \
           "&season=" + str(now.year) + "&player_id="+id+"&league_list_id=%27milb_all%27&sport_hitting_last_x.col_in=game_date&sport_hitting_last_x.col_in=opp&sport_hitting_last_x.col_in=ab&sport_hitting_last_x.col_in=r&sport_hitting_last_x.col_in=h&sport_hitting_last_x.col_in=hr&sport_hitting_last_x.col_in=rbi&sport_hitting_last_x.col_in=bb&sport_hitting_last_x.col_in=so&sport_hitting_last_x.col_in=sb&sport_hitting_last_x.col_in=avg&sport_hitting_last_x.col_in=home_away&sport_hitting_last_x.col_in=game_id&sport_hitting_last_x.col_in=game_type&sport_hitting_last_x.col_in=sport_id&sport_hitting_last_x.col_in=sport"
     if type == "pitching":
-        url = "http://lookup-service-prod.bamgrid.com/lookup/json/named.sport_bio_pitching_last_10.bam?results=" + str(number) + "&game_type=%27R%27&game_type=%27F%27&game_type=%27D%27&game_type=%27L%27&game_type=%27W%27&game_type=%27C%27" \
+        url = "http://lookup-service-prod.mlb.com/lookup/json/named.sport_bio_pitching_last_10.bam?results=" + str(number) + "&game_type=%27R%27&game_type=%27F%27&game_type=%27D%27&game_type=%27L%27&game_type=%27W%27&game_type=%27C%27" \
               "&season=" + str(now.year) + "&player_id="+id+"&league_list_id=%27milb_all%27&sport_pitching_last_x.col_in=game_date&sport_pitching_last_x.col_in=opp&sport_pitching_last_x.col_in=w&sport_pitching_last_x.col_in=l&sport_pitching_last_x.col_in=era&sport_pitching_last_x.col_in=sv&sport_pitching_last_x.col_in=ip&sport_pitching_last_x.col_in=h&sport_pitching_last_x.col_in=er&sport_pitching_last_x.col_in=bb&sport_pitching_last_x.col_in=so&sport_pitching_last_x.col_in=home_away&sport_pitching_last_x.col_in=game_id&sport_pitching_last_x.col_in=game_type&sport_pitching_last_x.col_in=sport_id&sport_pitching_last_x.col_in=sport"
     print(url)
     req = Request(url, headers={'User-Agent' : "ubuntu"})
@@ -1643,7 +1655,7 @@ def get_milb_aff_scores(teamid=120, delta=None):
     month = str(now.month)
     day = str(now.day)
     date = str(now.year) + "-" + str(now.month).zfill(2) + "-" + str(now.day).zfill(2)
-    url = "http://lookup-service-prod.bamgrid.com/lookup/json/named.schedule_vw_complete_affiliate.bam?" \
+    url = "http://lookup-service-prod.mlb.com/lookup/json/named.schedule_vw_complete_affiliate.bam?" \
           "game_date=%27" + year + "/" + month + "/" + day + "%27&season=" + year + "&org_id=" + str(teamid)
     print(url)
     req = Request(url, headers={'User-Agent' : "ubuntu"})
@@ -1685,7 +1697,7 @@ def get_milb_box(team, part='batting', teamid=120, delta=None):
     month = str(now.month)
     day = str(now.day)
     date = str(now.year) + "-" + str(now.month).zfill(2) + "-" + str(now.day).zfill(2)
-    url = "http://lookup-service-prod.bamgrid.com/lookup/json/named.schedule_vw_complete_affiliate.bam?" \
+    url = "http://lookup-service-prod.mlb.com/lookup/json/named.schedule_vw_complete_affiliate.bam?" \
           "game_date=%27" + year + "/" + month + "/" + day + "%27&season=" + year + "&org_id=" + str(teamid)
     print(url)
     req = Request(url, headers={'User-Agent' : "ubuntu"})
@@ -2300,11 +2312,11 @@ def old_print_dongs(type, delta=None, reddit=False):
 
                     if 'hitData' in event:
                         if 'totalDistance' in event['hitData']:
-                            h['dist'] = event['hitData']['totalDistance']
+                            h['dist'] = int(event['hitData']['totalDistance'])
                         if 'launchSpeed' in event['hitData']:
                             h['ev'] = event['hitData']['launchSpeed']
                         if 'launchAngle' in event['hitData']:
-                            h['angle'] = event['hitData']['launchAngle']
+                            h['angle'] = int(event['hitData']['launchAngle'])
                     h['video'] = ""
                     if find_videos:
                         if 'playId' in event:
@@ -2412,7 +2424,7 @@ def print_dongs(type, delta=None, reddit=False):
                     h['num'] = int(re.search('\(([^)]+)', number[number.index(search):]).group(1))
                     h['dist'] = 0
                     h['ev'] = 0
-                    h['angle'] = 0
+                    h['la'] = 0
                     h['time'] = p['about']['endTime']
                     event = None
                     for e in p['playEvents']:
@@ -2421,11 +2433,11 @@ def print_dongs(type, delta=None, reddit=False):
 
                     if 'hitData' in event:
                         if 'totalDistance' in event['hitData']:
-                            h['dist'] = event['hitData']['totalDistance']
+                            h['dist'] = int(event['hitData']['totalDistance'])
                         if 'launchSpeed' in event['hitData']:
                             h['ev'] = event['hitData']['launchSpeed']
                         if 'launchAngle' in event['hitData']:
-                            h['angle'] = event['hitData']['launchAngle']
+                            h['la'] = int(event['hitData']['launchAngle'])
                     h['video'] = ""
                     if find_videos:
                         if 'playId' in event:
@@ -2438,8 +2450,8 @@ def print_dongs(type, delta=None, reddit=False):
                                                 h['video'] = '[video](%s)' % pb['url']
                     dongs.append(h)
     repl_map = {'inning':'inn'}
-    labs = ['num', 'batter', 'pitcher', 'dist', 'ev', 'angle']
-    left = ['batter', 'pitcher', 'dist', 'ev', 'angle']
+    labs = ['num', 'batter', 'pitcher', 'dist', 'ev', 'la']
+    left = ['batter', 'pitcher']
     if reddit:
         labs.append('video')
         left.append('video')
@@ -2608,6 +2620,10 @@ def print_pitches_by_inning(team, delta=None):
                         p['s'] = p['results']['S']
                     if 'X' in p['results']:
                         p['x'] = p['results']['X']
+                    if p['pitch_type'] == "4-Seam Fastball":
+                        p['pitch_type'] = "4-Seam FB"
+                    elif p['pitch_type'] == "2-Seam Fastball":
+                        p['pitch_type'] = "2-Seam FB"
                     pitches.append(p)
                 cols = ['pitch_type', 'count', 'swinging_strikes', 'called_strikes', 'fouls',
                         'balls_in_play', 'avg_pitch_speed', 'min_pitch_speed', 'max_pitch_speed']
@@ -2620,7 +2636,7 @@ def print_pitches_by_inning(team, delta=None):
                            'avg_pitch_speed':'avg',
                            'min_pitch_speed':'min',
                            'max_pitch_speed':'max'}
-                output = output + "```\n%s```" % (utils.format_table(cols, pitches, repl_map=replace))
+                output = output + "```\n%s```" % (utils.format_table(cols, pitches, repl_map=replace, left_list=['pitch_type']))
     return output
 
 def _get_single_line_statcast(play):
