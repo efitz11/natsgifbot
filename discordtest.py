@@ -337,12 +337,11 @@ async def giflist(ctx):
 #     contents = content[content.find(findstr)+len(findstr):]
 #     vid = contents[:contents.find("\"")]
 #     return "https://youtube.com/watch?v="+vid
-#
-# @bot.command()
-# async def youtube(ctx, *query:str):
-#     """get the first youtube video for a query"""
-#     q = '+'.join(query)
-#     await ctx.send(get_youtube(q))
+
+@bot.command()
+async def youtube(ctx, *query:str):
+    """get the first youtube video for a query"""
+    await ctx.send(web.search_youtube(' '.join(query)))
 
 @bot.command()
 async def weather(ctx, *location:str):
@@ -784,10 +783,10 @@ async def on_message(message):
             await channel.send("balls.")
         if patternshitbot.search(message.content):
             await channel.send("Fuck off! I'm doing my best.")
-        # match = patternalexaplay.search(message.content)
-        # if match:
-        #     query = message.content[match.end():]
-        #     await channel.send(get_youtube(query.strip()))
+        match = patternalexaplay.search(message.content)
+        if match:
+            query = message.content[match.end():]
+            await channel.send(web.search_youtube(query.strip()))
 
         if patterntwitter.search(message.content):
             verified, api = web.check_tweet_verified(re.search(patterntwitter, message.content).group(1))

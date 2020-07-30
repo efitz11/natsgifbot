@@ -291,6 +291,15 @@ def get_definition(word):
                 count += 1
     return output
 
+def search_youtube(query):
+    key = get_keys("google")["key"]
+    params = {"part":"snippet", 'q':urllib.parse.quote_plus(query), 'key':key}
+    url = "https://www.googleapis.com/youtube/v3/search?" + urllib.parse.urlencode(params)
+    print(url)
+    results = utils.get_json(url)
+    if 'items' in results and len(results) > 0:
+        return "https://youtube.com/watch?v=%s" % results['items'][0]['id']['videoId']
+
 if __name__ == "__main__":
     # print(search_untappd("heineken"))
     # print(get_latest_tweet("nationalsump"))
@@ -300,4 +309,5 @@ if __name__ == "__main__":
     # print(cocktail("margarita"))
     # print(kym("wednesday my dudes"))
     # print(kym("iphone"))
-    print(check_tweet_verified("https://twitter.com/JeffFletcherOCR/status/1224883361388195840?s=19"))
+    # print(check_tweet_verified("https://twitter.com/JeffFletcherOCR/status/1224883361388195840?s=19"))
+    print(search_youtube("he man 10 hours"))
