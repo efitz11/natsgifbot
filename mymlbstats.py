@@ -124,6 +124,12 @@ def get_teamid(search, extradata=False):
             else:
                 return names[name][0], names[name][1]
 
+def _find_batter_in_lineup(batterid, lineups):
+    for lineup in lineups:
+        for i in range(len(lineups[lineup])):
+            if lineups[lineup][i]['id'] == batterid:
+                return i + 1
+
 def get_single_game_info(gamepk, gamejson, show_on_deck=False, liveonly=False):
     game = gamejson
     output = ""
@@ -161,16 +167,13 @@ def get_single_game_info(gamepk, gamejson, show_on_deck=False, liveonly=False):
         batter = ls['offense']['batter']['lastName']
         batterid = ls['offense']['batter']['id']
         # find position in lineup
-        batterpos = "B"
-        for lineup in game['lineups']:  # why does this return a string instead of the dicts idk
-            for i in range(len(game['lineups'][lineup])):
-                if game['lineups'][lineup][i]['id'] == batterid:
-                    batterpos = i + 1
-                    break
-            else:
-                continue
-            break #yeah this is wild shit to break out of 2 for loops
-        ondeck = "OD: " + ls['offense']['onDeck']['lastName']
+        batterpos = _find_batter_in_lineup(batterid, game['lineups'])
+        if batterpos is None:
+            batterpos = "B"
+        odpos = _find_batter_in_lineup(ls['offense']['onDeck']['id'], game['lineups'])
+        if odpos is None:
+            odpos = "OD: "
+        ondeck = "%s: %s" % (odpos, ls['offense']['onDeck']['lastName'])
         if not show_on_deck:
             ondeck = ""
         try:
