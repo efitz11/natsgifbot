@@ -161,7 +161,7 @@ def get_single_game_info(gamepk, gamejson, show_on_deck=False, liveonly=False):
         batter = ls['offense']['batter']['lastName']
         batterid = ls['offense']['batter']['id']
         # find position in lineup
-        batterpos = ""
+        batterpos = "B"
         for lineup in game['lineups']:  # why does this return a string instead of the dicts idk
             for i in range(len(game['lineups'][lineup])):
                 if game['lineups'][lineup][i]['id'] == batterid:
@@ -190,8 +190,9 @@ def get_single_game_info(gamepk, gamejson, show_on_deck=False, liveonly=False):
                                                      bases.center(5), "P: " + pitcher)
         delayedlist = ['Delayed','Suspended']
         if detailstatus not in delayedlist:
+            print(batterpos)
             output = output + "%s %s %2d %d | %s | %s | %s %s\n" % (homeabv, str(homeruns).rjust(2), homehits, homeerrs,
-                                                                       outs, count, "%d: %s" % (batterpos, batter), ondeck)
+                                                                       outs, count, "%s: %s" % (batterpos, batter), ondeck)
             # output = output + "%s %s %2d %d | %s %s | %s | %s %s\n" % (homeabv, str(homeruns).rjust(2), homehits, homeerrs,
                                                                      # outs, "out".ljust(outjust), count, "B: " + batter, ondeck)
         else:
