@@ -335,6 +335,7 @@ async def hamms(ctx, *addlist):
         u['user'] = user
         u['count'] = s['hamms'][user]
         users.append(u)
+    users = sorted(users, key=lambda k: k['count'], reverse=True)
     output = "```python\n%s```" % utils.format_table(labels, users, left_list=left)
     await ctx.send(output)
 
