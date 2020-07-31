@@ -1,55 +1,56 @@
 {
-    "links": {
-        "arod": "https://streamable.com/8nqds",
-        "don't": "https://twitter.com/rayknight25/status/921599441152434176?s=21",
-        "bot": "https://github.com/efitz11/natsgifbot",
-        "laugh": "https://streamable.com/xw2vb",
-        "dont": "https://twitter.com/rayknight25/status/921599441152434176?s=21"
+  "links": {
+    "arod": "https://streamable.com/8nqds",
+    "don't": "https://twitter.com/rayknight25/status/921599441152434176?s=21",
+    "bot": "https://github.com/efitz11/natsgifbot",
+    "laugh": "https://streamable.com/xw2vb",
+    "dont": "https://twitter.com/rayknight25/status/921599441152434176?s=21"
+  },
+  "countdown": [
+    {
+      "day": 16,
+      "month": 7,
+      "year": 2018,
+      "name": "/r/baseball trading begins"
     },
-    "countdown": [
-        {
-            "day": 16,
-            "month": 7,
-            "year": 2018,
-            "name": "/r/baseball trading begins"
-        },
-        {
-            "day": 17,
-            "month": 7,
-            "year": 2018,
-            "name": "2018 All Star Game"
-        },
-        {
-            "day": 20,
-            "month": 7,
-            "year": 2018,
-            "name": "/r/baseball trading game begins"
-        },
-        {
-            "day": 31,
-            "month": 7,
-            "year": 2018,
-            "name": "Non-waiver trade deadline"
-        }
-    ],
-    "fucklist": [
-        "THE METS",
-        "THE BARVES",
-        "THE CUBS",
-        "THE DODGERS",
-        "THE YANKEES",
-        "THE DH",
-        "THE PENGUINS",
-        "PETER ANGELOS",
-        "ROB MANFRED",
-        "TREVOR STORY",
-        "WARNING TRACK FLY OUTS",
-        "THIS TEAM",
-        "JAVY BAEZ",
-        "THIS UMPIRE",
-        "JOSE REYES",
-        "CHASE UTLEY",
-        "R/NATIONALS",
-        "ROB MANFRED"
-    ]
+    {
+      "day": 17,
+      "month": 7,
+      "year": 2018,
+      "name": "2018 All Star Game"
+    },
+    {
+      "day": 20,
+      "month": 7,
+      "year": 2018,
+      "name": "/r/baseball trading game begins"
+    },
+    {
+      "day": 31,
+      "month": 7,
+      "year": 2018,
+      "name": "Non-waiver trade deadline"
+    }
+  ],
+  "fucklist": [
+    "THE METS",
+    "THE BARVES",
+    "THE CUBS",
+    "THE DODGERS",
+    "THE YANKEES",
+    "THE DH",
+    "THE PENGUINS",
+    "PETER ANGELOS",
+    "ROB MANFRED",
+    "TREVOR STORY",
+    "WARNING TRACK FLY OUTS",
+    "THIS TEAM",
+    "JAVY BAEZ",
+    "THIS UMPIRE",
+    "JOSE REYES",
+    "CHASE UTLEY",
+    "R/NATIONALS",
+    "ROB MANFRED"
+  ],
+  "hamms": {}
 }
