@@ -389,7 +389,9 @@ class Baseball(commands.Cog):
         elif team[0] == "plays":
             inning = int(team[-1])
             team = ' '.join(team[1:-1]).lower()
-            await ctx.send(mymlbstats.get_inning_plays(team, inning, delta=delta))
+            msg = utils.split_long_message(mymlbstats.get_inning_plays(team, inning, delta=delta))
+            for m in msg:
+                await ctx.send(m)
         elif team[0] == "standings":
             div = team[1]
             await ctx.send(mymlbstats.get_div_standings(div))
