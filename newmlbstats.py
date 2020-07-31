@@ -308,9 +308,9 @@ def get_sorted_stats(statinfo, season=None, league=None, position=None, teamid=N
         params['season'] = season
     if league is not None:
         if league == 'nl':
-            params['league'] = 104
+            params['leagueId'] = 104
         elif league == 'al':
-            params['league'] = 103
+            params['leagueId'] = 103
     if position is not None:
         of = ['LF','CF','RF','OF']
         if position == 'OF':
