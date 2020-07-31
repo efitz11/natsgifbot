@@ -312,6 +312,12 @@ async def hamms(ctx, *addlist):
     if len(addlist) > 0:
         if str(ctx.message.author) in hamms_auth_users:
             user = addlist[0]
+
+            # if it's a mention, get the screen name
+            if '<@!' in user:
+                p = await bot.fetch_user(user[3:-1])
+                user = p.name
+
             if user in s['hamms'].keys():
                 s['hamms'][user] += int(addlist[1])
             else:
