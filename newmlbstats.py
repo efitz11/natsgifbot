@@ -325,8 +325,7 @@ def get_sorted_stats(statinfo, season=None, league=None, position=None, teamid=N
     if reverse:
         params['order'] = 'descending'
 
-    url += urllib.parse.urlencode(params)
-    print(url)
+    url += urllib.parse.urlencode(params, safe=',')
     return utils.get_json(url)['stats']
 
 def print_sorted_stats(statquery_list, season=None, reverse=False):
@@ -354,6 +353,8 @@ def print_sorted_stats(statquery_list, season=None, reverse=False):
         statname = statinfo['name']
     elif statinfo['lookupParam'] in stats['splits'][0]['stat']:
         statname = statinfo['lookupParam']
+    elif statinfo['name'].endswith('s') and statinfo['name'][:-1] in stats['splits'][0]['stat']:
+        statname = statinfo['name'][:-1]
     else:
         return "oh no"
 
