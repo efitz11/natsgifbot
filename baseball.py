@@ -130,11 +130,13 @@ class Baseball(commands.Cog):
                 delta = "+1"
             team = team[:-1]
 
-        if len(team) == 0 or (len(team) == 1 and team[0] == 'live'):
-            liveonly=False
-            if len(team) == 1:
+        if len(team) == 0 or (len(team) == 1 and (team[0] == 'live' or team[0] == 'close')):
+            liveonly, closeonly = False, False
+            if len(team) == 1 and team[0] == 'live':
                 liveonly = True
-            output = mymlbstats.get_all_game_info(delta=delta, liveonly=liveonly)
+            elif len(team) == 1 and team[0] == 'close':
+                closeonly = True
+            output = mymlbstats.get_all_game_info(delta=delta, liveonly=liveonly, closeonly=closeonly)
             if len(output) > 0:
                 await ctx.send("```python\n" + output + "```")
             else:

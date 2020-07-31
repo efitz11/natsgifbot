@@ -130,7 +130,7 @@ def _find_batter_in_lineup(batterid, lineups):
             if lineups[lineup][i]['id'] == batterid:
                 return i + 1
 
-def get_single_game_info(gamepk, gamejson, show_on_deck=False, liveonly=False):
+def get_single_game_info(gamepk, gamejson, show_on_deck=False, liveonly=False, closeonly=False):
     game = gamejson
     output = ""
     abstractstatus = game['status']['abstractGameState']
@@ -157,6 +157,11 @@ def get_single_game_info(gamepk, gamejson, show_on_deck=False, liveonly=False):
         homehits = ls['teams']['home']['hits']
         awayerrs = ls['teams']['away']['errors']
         homeerrs = ls['teams']['home']['errors']
+
+        if closeonly:
+            if ls['currentInning'] < 7 or abs(awayruns-homeruns) > 2:
+                return ""
+
         bases = "---"
         if 'first' in ls['offense']:
             bases = "1" + bases[1:]
@@ -216,7 +221,7 @@ def get_single_game_info(gamepk, gamejson, show_on_deck=False, liveonly=False):
             output = output + "\t##############################\n"
             output = output + "\t" + awayabv + " IS THROWING A %s\n" % (special)
             output = output + "\t##############################\n"
-    elif liveonly:
+    elif liveonly or closeonly:
         return ""
     elif abstractstatus == "Preview" or detailstatus in pregame_statuses:
         awaywins = game['teams']['away']['leagueRecord']['wins']
@@ -349,7 +354,7 @@ def get_single_game_info(gamepk, gamejson, show_on_deck=False, liveonly=False):
 
     return output
 
-def get_all_game_info(delta=None, liveonly=False):
+def get_all_game_info(delta=None, liveonly=False, closeonly=False):
     """delta is + or - a number of days"""
     s = get_day_schedule(delta)
     games = s['dates'][0]['games']
@@ -361,7 +366,7 @@ def get_all_game_info(delta=None, liveonly=False):
         output = "For %s, %d/%d/%d:\n\n" % (calendar.day_name[now.weekday()],now.month,now.day,now.year)
     for game in games:
         gamepk = str(game['gamePk'])
-        out = get_single_game_info(gamepk, game, liveonly=liveonly)
+        out = get_single_game_info(gamepk, game, liveonly=liveonly, closeonly=closeonly)
         if len(out) > 0:
             output = output + out + "\n"
     return output
