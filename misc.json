@@ -1,37 +1,5 @@
 {
-    "links": {
-        "arod": "https://streamable.com/8nqds",
-        "don't": "https://twitter.com/rayknight25/status/921599441152434176?s=21",
-        "bot": "https://github.com/efitz11/natsgifbot",
-        "laugh": "https://streamable.com/xw2vb",
-        "dont": "https://twitter.com/rayknight25/status/921599441152434176?s=21"
-    },
-    "countdown": [
-        {
-            "day": 16,
-            "month": 7,
-            "year": 2018,
-            "name": "/r/baseball trading begins"
-        },
-        {
-            "day": 17,
-            "month": 7,
-            "year": 2018,
-            "name": "2018 All Star Game"
-        },
-        {
-            "day": 20,
-            "month": 7,
-            "year": 2018,
-            "name": "/r/baseball trading game begins"
-        },
-        {
-            "day": 31,
-            "month": 7,
-            "year": 2018,
-            "name": "Non-waiver trade deadline"
-        }
-    ],
+    "covid": 31557407,
     "fucklist": [
         "THE METS",
         "THE BARVES",
@@ -44,12 +12,46 @@
         "ROB MANFRED",
         "TREVOR STORY",
         "WARNING TRACK FLY OUTS",
-        "THIS TEAM",
         "JAVY BAEZ",
         "THIS UMPIRE",
         "JOSE REYES",
         "CHASE UTLEY",
         "R/NATIONALS",
-        "ROB MANFRED"
-    ]
+        "THE SHIFT",
+        "DEREK DIETRICH",
+        "JOSE TABATA",
+        "PHILLY",
+        "JOE MADDON",
+        "ESPN FANTASY",
+        "THE CHOP",
+        "THE MODS",
+        "THE PHILLIES",
+        "BREGMAN",
+        "JIRA"
+    ],
+    "links": {
+        "dont": "https://twitter.com/rayknight25/status/921599441152434176?s=21",
+        "bot": "https://github.com/efitz11/natsgifbot",
+        "next": "https://twitter.com/Nationals/status/1113227728931696641?s=19",
+        "devastating": "https://twitter.com/RayKnight25/status/1028847029559156737",
+        "mood": "https://i.imgur.com/jvMSCgz.jpg",
+        "raywin": "https://twitter.com/rayknight25/status/1124874882649608199",
+        "blewit": "https://streamable.com/56xfw",
+        "botch": "https://streamable.com/0gnze",
+        "treydongz": "https://i.imgur.com/Ayt1Uzx.jpg",
+        "walker": "https://twitter.com/todd_dybas/status/1179530044311396355",
+        "arod": "https://streamable.com/8nqds",
+        "win": "https://i.imgur.com/SdGDxj0.png",
+        "maddon": "https://i.imgur.com/R0q5tFo.png",
+        "laugh": "https://streamable.com/xw2vb",
+        "love": "https://streamable.com/4p05",
+        "corbin": "https://cdn.discordapp.com/attachments/328677264566910977/519627697035673620/image0.png",
+        "cabbage": "https://i.imgur.com/tfr632f.png",
+        "dumbphilliesfan": "https://www.reddit.com/r/baseball/comments/9jdp0e/harper_posted_these_9_pictures_on_instagram_with/e6qrx2u/",
+        "shawn": "https://twitter.com/kelleytime27/status/1011628030404505601?s=19",
+        "don't": "https://twitter.com/rayknight25/status/921599441152434176?s=21",
+        "maxwhoa": "https://i.imgur.com/12d4wuM.png",
+        "bruh": "https://twitter.com/TheCUTCH22/status/1287885538922500101?s=20"
+    },
+    "countdown": []
 }

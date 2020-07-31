@@ -22,6 +22,7 @@ prefixes = ['!', '?', 'bot ', 'Bot']
 extensions = ["baseball","sports","reddit","temporary"]
 
 auth_users = ['fitz#6390']
+hamms_auth_users = auth_users + ['vasolinetigers#3888']
 
 pattern69 = re.compile('(^|[\s\.]|\$)[6][\.]*[9]([\s\.]|x|%|$|th)')
 patterncheer = re.compile('cheer$', re.IGNORECASE)
@@ -299,6 +300,37 @@ async def fuck(ctx,*addlist):
     l = s['fucklist']
     num = random.randint(0,len(l)-1)
     await ctx.send((l[num]).upper())
+
+@bot.command(pass_context=True)
+async def hamms(ctx, *addlist):
+    with open(miscfile, 'r') as f:
+        s = json.loads(f.read())
+
+    if 'hamms' not in s:
+        s['hamms'] = dict()
+
+    if len(addlist) > 0:
+        if str(ctx.message.author) in hamms_auth_users:
+            user = addlist[0]
+            if user in s['hamms'].keys():
+                s['hamms'][user] += int(addlist[1])
+            else:
+                s['hamms'][user] = int(addlist[1])
+
+            with open(miscfile, 'w') as f:
+                f.write(json.dumps(s, indent=4))
+            await ctx.send("Updated hamms count for %s." % user)
+
+    labels = ['user', 'count']
+    left = ['user']
+    users = list()
+    for user in s['hamms']:
+        u = dict()
+        u['user'] = user
+        u['count'] = s['hamms'][user]
+        users.append(u)
+    output = "```python\n%s```" % utils.format_table(labels, users, left_list=left)
+    await ctx.send(output)
 
 @bot.command()
 async def pajokie(ctx):
