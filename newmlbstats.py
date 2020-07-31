@@ -249,6 +249,129 @@ def print_stat_leaders(statquery_list, season=None):
     else:
         return "problem finding leaders"
 
+def _get_stats_query_params(statquery_list):
+    league = None
+    if 'al' in statquery_list:
+        league = 'al'
+        statquery_list.remove('al')
+    elif 'nl' in statquery_list:
+        league = 'nl'
+        statquery_list.remove('nl')
+
+    want_group = None
+    groups = ['hitting', 'pitching', 'fielding', 'catching']
+    for i in statquery_list:
+        if i in groups:
+            want_group = i
+            statquery_list.remove(i)
+            break
+
+    positions = ['c','1b','2b','3b','ss','lf','cf','rf','of','p','dh']
+    pos = None
+    for i in statquery_list:
+        if i.lower() in positions:
+            pos = i.upper()
+            statquery_list.remove(i)
+
+    stat = statquery_list.pop()
+    team = None
+    if len(statquery_list) > 0:
+        team = mymlbstats.get_teamid(' '.join(statquery_list))
+
+    return (league, want_group, pos, team, stat)
+
+def _find_stat_info(stat):
+    with open('mlb/statsapi_json/baseballStats.json', 'r') as f:
+        stats = json.loads(''.join(f.readlines()))
+
+    for s in stats:
+        if stat == s['name'].lower() or stat == s['lookupParam']:
+            return s
+
+def get_sorted_stats(statinfo, season=None, league=None, position=None, teamid=None, teams=False, group=None):
+    if teams:
+        url = API_LINK + "teams/stats?"
+    else:
+        url = API_LINK + "stats?"
+
+    params = {'sortStat':statinfo['name'], 'sportIds':1}
+    params['stats'] = 'season'
+    params['limit'] = 30
+    params['hydrate'] = "player,team"
+
+    if season is not None:
+        params['season'] = season
+    if league is not None:
+        if league == 'nl':
+            params['league'] = 104
+        elif league == 'al':
+            params['league'] = 103
+    if position is not None:
+        of = ['LF','CF','RF','OF']
+        if position == 'OF':
+            position = ','.join(of)
+        params['position'] = position
+    if teamid is not None:
+        params['teamId'] = teamid
+    if group is None:
+        params['group'] = statinfo['statGroups'][0]['displayName']
+    else:
+        params['group'] = group
+
+    url += urllib.parse.urlencode(params)
+    print(url)
+    return utils.get_json(url)['stats']
+
+def print_sorted_stats(statquery_list, season=None):
+    teams = False
+    if statquery_list[0] == "teams":
+        teams = True
+
+    league, group, position, team, stat = _get_stats_query_params(statquery_list)
+    # print(league, group, position, team, stat)
+
+    teamid = None
+    if team is not None:
+        teamid = mymlbstats.get_teamid(team)
+    statinfo = _find_stat_info(stat)
+
+    if group is not None and group not in ['hitting','pitching','catching','fielding']:
+        return "Invalid group"
+    if group is None:
+        group = statinfo['statGroups'][0]['displayName']
+
+    stats = get_sorted_stats(statinfo, season=season, league=league, position=position, teamid=teamid, teams=teams, group=group)
+    stats = stats[0]
+
+    if statinfo['name'] in stats['splits'][0]['stat']:
+        statname = statinfo['name']
+    elif statinfo['lookupParam'] in stats['splits'][0]['stat']:
+        statname = statinfo['lookupParam']
+    else:
+        return "oh no"
+
+    labels = ['team', 'name', statinfo['lookupParam']]
+    left = ['team', 'name']
+    # if teams:
+    #     labels.remove('team')
+
+    rows = list()
+    for player in stats['splits']:
+        row = dict()
+        row['team'] = player['team']['abbreviation']
+        if teams:
+            row['name'] = player['team']['teamName']
+        else:
+            row['name'] = player['player']['fullName']
+        row[statinfo['lookupParam']] = player['stat'][statname]
+        rows.append(row)
+        if len(rows) >= 10:
+            break
+    output = "%s:\n```python\n" % group
+    output += utils.format_table(labels, rows, left_list=left)
+    output += "```\n"
+    return output
+
 def get_40man(teamid):
     url = API_LINK + "teams/%d/roster/40Man?hydrate=person" % teamid
     results = utils.get_json(url)
@@ -380,5 +503,7 @@ if __name__ == "__main__":
     # print(print_contract_info("max scherzer"))
     # print(get_player_contract_table(""))
     # get_scoring_plays(630851)
-    #print(print_stat_leaders('sb', season=2019))
-    print(print_birthdays('lad'))
+    # print(print_stat_leaders('sb', season=2019))
+    # print(print_birthdays('lad'))
+    # print(print_sorted_stats("pitching nl hr".split(' '), season="2019"))
+    print(print_sorted_stats("teams pitching nl hr".split(' '), season="2019"))

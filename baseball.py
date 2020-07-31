@@ -308,7 +308,8 @@ class Baseball(commands.Cog):
             if team[-1].isdigit():
                 season = team[-1]
                 stat = stat[:-1]
-            await ctx.send(newmlbstats.print_stat_leaders(stat, season=season))
+            # await ctx.send(newmlbstats.print_stat_leaders(stat, season=season))
+            await ctx.send(newmlbstats.print_sorted_stats(stat, season=season))
         # elif team[0].endswith("leaders") or team[0].endswith("losers"):
         #     stat = team[1]
         #
