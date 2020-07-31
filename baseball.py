@@ -302,14 +302,17 @@ class Baseball(commands.Cog):
             player = '+'.join(team[1:])
             await ctx.send("```%s```" % mymlbstats.get_player_gamelogs(player,num,forcebatting=forcebatting))
             return
-        elif team[0].endswith("leaders"):
+        elif team[0] in ["leaders", "losers"]:
             stat = team[1:]
             season = None
             if team[-1].isdigit():
                 season = team[-1]
                 stat = stat[:-1]
             # await ctx.send(newmlbstats.print_stat_leaders(stat, season=season))
-            await ctx.send(newmlbstats.print_sorted_stats(stat, season=season))
+            reverse = False
+            if team[0] == 'losers':
+                reverse = True
+            await ctx.send(newmlbstats.print_sorted_stats(stat, season=season, reverse=reverse))
         # elif team[0].endswith("leaders") or team[0].endswith("losers"):
         #     stat = team[1]
         #
