@@ -846,10 +846,13 @@ async def check_covid_numbers():
         # send update right before midnight GMT
         now_time = datetime.utcnow().time()
         if now_time >= time(0,44) and now_time <= time(0,59,59) and not covid_sent_today:
-            if not covid_sent_today:
-                await corona_channel.send(covid.get_usa())
-                covid_sent_today = True
-                await asyncio.sleep(wait_time)
+            if now_time >= time(0,58,45) and not covid_sent_today:
+                if not covid_sent_today:
+                    await corona_channel.send(covid.get_usa())
+                    covid_sent_today = True
+                    await asyncio.sleep(wait_time)
+                else:
+                    await asyncio.sleep(60)
         else:
             covid_sent_today = False
             await asyncio.sleep(wait_time)
