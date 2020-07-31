@@ -288,7 +288,7 @@ def _find_stat_info(stat):
         if stat == s['name'].lower() or stat == s['lookupParam']:
             return s
 
-def get_sorted_stats(statinfo, season=None, league=None, position=None, teamid=None, teams=False, group=None):
+def get_sorted_stats(statinfo, season=None, league=None, position=None, teamid=None, teams=False, group=None, reverse=False):
     if teams:
         url = API_LINK + "teams/stats?"
     else:
@@ -317,12 +317,14 @@ def get_sorted_stats(statinfo, season=None, league=None, position=None, teamid=N
         params['group'] = statinfo['statGroups'][0]['displayName']
     else:
         params['group'] = group
+    if reverse:
+        params['order'] = 'descending'
 
     url += urllib.parse.urlencode(params)
     print(url)
     return utils.get_json(url)['stats']
 
-def print_sorted_stats(statquery_list, season=None):
+def print_sorted_stats(statquery_list, season=None, reverse=False):
     teams = False
     if statquery_list[0] == "teams":
         teams = True
@@ -340,7 +342,7 @@ def print_sorted_stats(statquery_list, season=None):
     if group is None:
         group = statinfo['statGroups'][0]['displayName']
 
-    stats = get_sorted_stats(statinfo, season=season, league=league, position=position, teamid=teamid, teams=teams, group=group)
+    stats = get_sorted_stats(statinfo, season=season, league=league, position=position, teamid=teamid, teams=teams, group=group, reverse=reverse)
     stats = stats[0]
 
     if statinfo['name'] in stats['splits'][0]['stat']:
