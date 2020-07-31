@@ -337,9 +337,9 @@ def print_sorted_stats(statquery_list, season=None, reverse=False):
     league, group, position, team, stat = _get_stats_query_params(statquery_list)
     # print(league, group, position, team, stat)
 
-    teamid = None
-    if team is not None:
-        teamid = mymlbstats.get_teamid(team)
+    #teamid = None
+    #if team is not None:
+    #    teamid = mymlbstats.get_teamid(team)
     statinfo = _find_stat_info(stat)
 
     if group is not None and group not in ['hitting','pitching','catching','fielding']:
@@ -347,7 +347,7 @@ def print_sorted_stats(statquery_list, season=None, reverse=False):
     if group is None:
         group = statinfo['statGroups'][0]['displayName']
 
-    stats = get_sorted_stats(statinfo, season=season, league=league, position=position, teamid=teamid, teams=teams, group=group, reverse=reverse)
+    stats = get_sorted_stats(statinfo, season=season, league=league, position=position, teamid=team, teams=teams, group=group, reverse=reverse)
     stats = stats[0]
 
     if statinfo['name'] in stats['splits'][0]['stat']:
