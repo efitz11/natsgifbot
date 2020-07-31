@@ -280,13 +280,18 @@ def _get_stats_query_params(statquery_list):
 
     return (league, want_group, pos, team, stat)
 
-def _find_stat_info(stat):
-    with open('mlb/statsapi_json/baseballStats.json', 'r') as f:
+def _find_stat_info(stat, retry=False):
+    statsfile = 'mlb/statsapi_json/baseballStats.json'
+    if retry:
+        statsfile = 'mlb/statsapi_json/baseballStats2.json'
+    with open(statsfile, 'r') as f:
         stats = json.loads(''.join(f.readlines()))
 
     for s in stats:
-        if stat == s['name'].lower() or stat == s['lookupParam']:
+        if stat == s['name'].lower() or ('lookupParam' in s and stat == s['lookupParam']):
             return s
+    if not retry:
+        return _find_stat_info(stat, retry=True)
 
 def get_sorted_stats(statinfo, season=None, league=None, position=None, teamid=None, teams=False, group=None, reverse=False):
     if teams:
