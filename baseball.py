@@ -140,7 +140,10 @@ class Baseball(commands.Cog):
             if len(output) > 0:
                 await ctx.send("```python\n" + output + "```")
             else:
-                await ctx.send("```No live games at the moment.```")
+                if liveonly:
+                    await ctx.send("```No live games at the moment.```")
+                elif closeonly:
+                    await ctx.send("```No games in the 7th or later within 2 runs at the moment.```")
             return
 
         if team[0] == 'help':
