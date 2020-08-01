@@ -1,4 +1,5 @@
 from urllib.request import urlopen, Request
+import urllib.error
 import json
 from datetime import datetime, timedelta
 from xml.etree import ElementTree
@@ -45,9 +46,9 @@ def search_mlbn():
         if yest_md in v['blurb'] or yest_monthday in v['blurb'] or date in v['id']:
             if any(x in v['id'] for x in ignorelist):
                 continue
-            t = get_vid_info(v['id'])
-            if 'url' in t:
-                output = output + "[%s](%s) - %s\n\n" % (t['blurb'], t['url'], t['duration'][3:])
+            # t = get_vid_info(v['id'])
+            # if 'url' in t:
+            output = output + "[%s](%s) - %s\n\n" % (v['blurb'], v['url'], v['duration'][3:])
     return output
 
 def find_defense():
@@ -73,10 +74,12 @@ def find_defense():
                 match = True
                 break
         if match:
-            info = get_vid_info(vid['id'])
-            if 'url' in info:
-                v = (vid['blurb'], info['url'], vid['duration'][3:])
-                vids.append((v))
+            # info = get_vid_info(vid['id'])
+            # if 'url' in info:
+            #     v = (vid['blurb'], info['url'], vid['duration'][3:])
+            #     vids.append((v))
+            v = (vid['blurb'], vid['url'], vid['duration'][3:])
+            vids.append((v))
 
             # output = output + "[%s](%s) - %s\n\n" % (vid['blurb'], info['url'], vid['duration'][3:])
     if len(vids) > 0:
@@ -142,7 +145,7 @@ def get_recaps(return_both=False):
         recapstr = ""
         cgstr = ""
         for item in c['highlights']['highlights']['items']:
-            if any(x in item['title'] or x in item['description'] for x in highlights):
+            if any(x in item['title'] or ('description' in item and x in item['description']) for x in highlights):
                 title = item['title']
                 link = None
                 if 'playbacks' in item:
@@ -371,15 +374,18 @@ def find_top_plays(return_str=False):
     date = "%d-%02d-%02d" % (now.year, now.month, now.day)
     url = "https://www.mlb.com/data-service/en/videos/%s-top-5-plays-of-the-day" % yestdate
     print(url)
-    req = Request(url, headers={'User-Agent' : "ubuntu"})
-    s = json.loads(urlopen(req).read().decode("utf-8"))
-    if yest in s['blurb']:
-        duration = s['duration'][3:]
-        playback = get_playback(s['playbacks'])
-        s = "[%s](%s) - %s\n\n" % (s['blurb'], playback, duration)
-        if return_str:
-            return s
-        return (s['blurb'],s['url'],duration)
+    try:
+        req = Request(url, headers={'User-Agent' : "ubuntu"})
+        s = json.loads(urlopen(req).read().decode("utf-8"))
+        if yest in s['blurb']:
+            duration = s['duration'][3:]
+            playback = get_playback(s['playbacks'])
+            s = "[%s](%s) - %s\n\n" % (s['blurb'], playback, duration)
+            if return_str:
+                return s
+            return (s['blurb'],s['url'],duration)
+    except urllib.error.HTTPError:
+        pass
     return ""
 
     # url = "https://search-api.mlb.com/svc/search/v2/mlb_global_sitesearch_en/sitesearch?hl=true&facet=type&expand=partner.media&q=top%2Bplays&page=1"
@@ -662,7 +668,7 @@ def get_all_outputs(defense=False, spoilcomment=False):
     output = find_fastcast(return_str=True)
     # output = output + find_quick_pitch(return_str=True)
     # output = output + find_youtube_homeruns(return_str=True)
-    output = output + find_top_plays(return_str=True)
+    # output = output + find_top_plays(return_str=True)
     output = output + find_daily_dash(return_str=True)
     # output = output + "****\n"
     # output = output + find_must_cs(return_str=True)
@@ -670,7 +676,7 @@ def get_all_outputs(defense=False, spoilcomment=False):
     # output = output + find_statcasts(return_str=True)
 
     output = output + find_realfast()
-    # output = output + search_mlbn()
+    output = output + search_mlbn()
     output = output + "****\n"
     if spoilcomment:
         caps = get_recaps(return_both=True)
@@ -680,11 +686,11 @@ def get_all_outputs(defense=False, spoilcomment=False):
         output = output + caps
     output = output + "\n****\n"
     output = output + "Longest dongs of the day:\n\n" + mymlbstats.print_dongs("long", delta="-1", reddit=True)
-    # if defense:
-    #     x = find_defense()
-    #     if x is not None:
-    #         output = output + "\n****\n"
-    #         output = output + x
+    if defense:
+        x = find_defense()
+        if x is not None:
+            output = output + "\n****\n"
+            output = output + x
     if spoilcomment:
         return (output, caps[1])
     else:
