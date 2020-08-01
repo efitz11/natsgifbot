@@ -7,7 +7,7 @@ import mymlbstats
 
 class RedditBot():
     def __init__(self):
-        self.enabled_subs = ["computerdudetest","nationals","aaahhhtionals"]
+        self.enabled_subs = ["computerdudetest","nationals","aaahhhtionals","nationalsgifs"]
         self.banned_subs = ["baseball"] #fuck the mods
         self.all_subs = self.enabled_subs + self.banned_subs
     
