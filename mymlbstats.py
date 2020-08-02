@@ -173,11 +173,18 @@ def get_single_game_info(gamepk, gamejson, show_on_deck=False, liveonly=False, c
         batterid = ls['offense']['batter']['id']
         # find position in lineup
         batterpos = _find_batter_in_lineup(batterid, game['lineups'])
+        odpos = _find_batter_in_lineup(ls['offense']['onDeck']['id'], game['lineups'])
+        holepos = _find_batter_in_lineup(ls['offense']['inHole']['id'], game['lineups'])
         if batterpos is None:
             batterpos = "B"
-        odpos = _find_batter_in_lineup(ls['offense']['onDeck']['id'], game['lineups'])
+            if odpos is not None:
+                batterpos = int(odpos) - 1
+            elif holepos is not None:
+                batterpos = int(holepos) - 2
         if odpos is None:
             odpos = "OD: "
+            if batterpos is not None:
+                odpos = int(batterpos) + 1
         ondeck = "%s: %s" % (odpos, ls['offense']['onDeck']['lastName'])
         if not show_on_deck:
             ondeck = ""
@@ -198,7 +205,6 @@ def get_single_game_info(gamepk, gamejson, show_on_deck=False, liveonly=False, c
                                                      bases.center(5), "P: " + pitcher)
         delayedlist = ['Delayed','Suspended']
         if detailstatus not in delayedlist:
-            print(batterpos)
             output = output + "%s %s %2d %d | %s | %s | %s %s\n" % (homeabv, str(homeruns).rjust(2), homehits, homeerrs,
                                                                        outs, count, "%s: %s" % (batterpos, batter), ondeck)
             # output = output + "%s %s %2d %d | %s %s | %s | %s %s\n" % (homeabv, str(homeruns).rjust(2), homehits, homeerrs,
