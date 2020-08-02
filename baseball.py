@@ -227,9 +227,10 @@ class Baseball(commands.Cog):
                 year = team[-1]
                 team = team[0:-1]
             team = team[1:]
-            playerlist = []
-            for t in team:
-                playerlist.append(t)
+            # playerlist = []
+            # for t in team:
+            #     playerlist.append(t)
+            playerlist = ' '.join(team).split('/')
             if year is None:
                 await ctx.send("```%s```" % mymlbstats.compare_player_stats(playerlist, reddit=reddit))
             else:
