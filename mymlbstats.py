@@ -364,6 +364,7 @@ def get_all_game_info(delta=None, liveonly=False, closeonly=False):
     """delta is + or - a number of days"""
     s = get_day_schedule(delta)
     games = s['dates'][0]['games']
+    numgames = 0
 
     output = ""
     if delta is not None:
@@ -374,8 +375,9 @@ def get_all_game_info(delta=None, liveonly=False, closeonly=False):
         gamepk = str(game['gamePk'])
         out = get_single_game_info(gamepk, game, liveonly=liveonly, closeonly=closeonly)
         if len(out) > 0:
+            numgames += 1
             output = output + out + "\n"
-    return output
+    return output, numgames > 5
 
 def get_linescore(gamepk):
     url = "https://statsapi.mlb.com/api/v1/game/" + gamepk + "/linescore"
@@ -631,6 +633,12 @@ def get_single_game(team,delta=None,print_statcast=True):
     if s['totalGames'] == 0:
         return "No games found."
     games = s['dates'][0]['games']
+
+    botchannel = False
+    numgames = len(games)
+    if numgames > 5:
+        botchannel = True
+
     output = ""
     if delta is not None:
         now = _get_date_from_delta(delta)
@@ -705,7 +713,7 @@ def get_single_game(team,delta=None,print_statcast=True):
                 except Exception as e:
                     # print("Error in parsing game %d" % gamepk)
                     print(e)
-    return output
+    return output, botchannel
 
 def get_team_schedule(team, num, backward=True):
     teamid = get_teamid(team)

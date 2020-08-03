@@ -1,3 +1,4 @@
+import discord
 from discord.ext import commands
 
 from urllib.request import urlopen, Request
@@ -136,14 +137,18 @@ class Baseball(commands.Cog):
                 liveonly = True
             elif len(team) == 1 and team[0] == 'close':
                 closeonly = True
-            output = mymlbstats.get_all_game_info(delta=delta, liveonly=liveonly, closeonly=closeonly)
+            output, botchannel = mymlbstats.get_all_game_info(delta=delta, liveonly=liveonly, closeonly=closeonly)
+            cmdchannel = ctx.channel
+            if botchannel:
+                cmdchannel = discord.utils.find(lambda m: 'bot' in m.name, ctx.channel.guild.channels)
+                await ctx.channel.send("response in %s" % cmdchannel.mention)
             if len(output) > 0:
-                await ctx.send("```python\n" + output + "```")
+                await cmdchannel.send("```python\n" + output + "```")
             else:
                 if liveonly:
-                    await ctx.send("```No live games at the moment.```")
+                    await cmdchannel.send("```No live games at the moment.```")
                 elif closeonly:
-                    await ctx.send("```No games in the 7th or later within 2 runs at the moment.```")
+                    await cmdchannel.send("```No games in the 7th or later within 2 runs at the moment.```")
             return
 
         if team[0] == 'help':
