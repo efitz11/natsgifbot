@@ -352,7 +352,7 @@ class Baseball(commands.Cog):
         elif team[0] == 'ohtani':
             out = mymlbstats.get_ohtani_line(delta)
             if len(out) > 0:
-                await ctx.send("```%s```" % out)
+                await ctx.send("%s" % out)
             else:
                 await ctx.send("No stats found")
             return
