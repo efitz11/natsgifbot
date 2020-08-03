@@ -355,6 +355,8 @@ def print_sorted_stats(statquery_list, season=None, reverse=False):
         statname = statinfo['lookupParam']
     elif statinfo['name'].endswith('s') and statinfo['name'][:-1] in stats['splits'][0]['stat']:
         statname = statinfo['name'][:-1]
+    elif not statinfo['name'].endswith('s') and statinfo['name']+'s' in stats['splits'][0]['stat']:
+        statname = statinfo['name']+'s'
     else:
         return "couldn't find stat %s or stat %s in search results" % (statinfo['name'], statinfo['lookupParam'])
 
