@@ -634,11 +634,6 @@ def get_single_game(team,delta=None,print_statcast=True):
         return "No games found."
     games = s['dates'][0]['games']
 
-    botchannel = False
-    numgames = len(games)
-    if numgames > 5:
-        botchannel = True
-
     output = ""
     if delta is not None:
         now = _get_date_from_delta(delta)
@@ -713,7 +708,7 @@ def get_single_game(team,delta=None,print_statcast=True):
                 except Exception as e:
                     # print("Error in parsing game %d" % gamepk)
                     print(e)
-    return output, botchannel
+    return output
 
 def get_team_schedule(team, num, backward=True):
     teamid = get_teamid(team)
