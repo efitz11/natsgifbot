@@ -141,7 +141,8 @@ class Baseball(commands.Cog):
             cmdchannel = ctx.channel
             if botchannel:
                 cmdchannel = discord.utils.find(lambda m: 'bot' in m.name, ctx.channel.guild.channels)
-                await ctx.channel.send("response in %s" % cmdchannel.mention)
+                if cmdchannel != ctx.channel:
+                    await ctx.channel.send("response in %s" % cmdchannel.mention)
             if len(output) > 0:
                 await cmdchannel.send("```python\n" + output + "```")
             else:
