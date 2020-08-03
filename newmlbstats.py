@@ -356,9 +356,9 @@ def print_sorted_stats(statquery_list, season=None, reverse=False):
     elif statinfo['name'].endswith('s') and statinfo['name'][:-1] in stats['splits'][0]['stat']:
         statname = statinfo['name'][:-1]
     else:
-        return "oh no"
+        return "couldn't find stat %s or stat %s in search results" % (statinfo['name'], statinfo['lookupParam'])
 
-    labels = ['team', 'name', statinfo['lookupParam']]
+    labels = ['team', 'name', statinfo['name']]
     left = ['team', 'name']
     # if teams:
     #     labels.remove('team')
@@ -371,7 +371,7 @@ def print_sorted_stats(statquery_list, season=None, reverse=False):
             row['name'] = player['team']['teamName']
         else:
             row['name'] = player['player']['fullName']
-        row[statinfo['lookupParam']] = player['stat'][statname]
+        row[statinfo['name']] = player['stat'][statname]
         rows.append(row)
         if len(rows) >= 10:
             break
