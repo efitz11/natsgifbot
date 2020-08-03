@@ -471,6 +471,7 @@ def get_player_contract_table(html, url):
     salary_th = []
     for header in rows[0].find_all('th'):
         salary_th.append(header.get_text())
+    print(salary_th)
     for row in rows[1:]:
         year_row = {}
         cells = row.find_all('td')
@@ -480,14 +481,17 @@ def get_player_contract_table(html, url):
                 if 'noborder' not in cells[i]['class'] or 'fayear' in cells[i]['class']:
                     data = cells[i].get_text().lstrip()
                     if data.startswith('$'):
+                        if '(' in data:
+                            data = data[:data.find('(')]
                         data = utils.human_format(data)
                     year_row[salary_th[i]] = data
             except:
                 pass
         if len(year_row.keys()) > 0:
             salary_table.append(year_row)
-    labs = ['Year', 'Age', 'Base Salary','Luxury Tax Salary','Payroll  Salary']
-    repl = {"Base Salary":"Base", "Luxury Tax Salary":"Luxury Tax", "Payroll  Salary":"Payroll"}
+    print(salary_table)
+    labs = ['Year', 'Age', 'Base Salary','Luxury Tax Salary','Payroll  Salary', 'Adjusted Salary', 'Yearly Cash']
+    repl = {"Base Salary":"Base", "Luxury Tax Salary":"Luxury Tax", "Payroll  Salary":"Payroll", "Adjusted Salary":"Adjusted", "Yearly Cash":"Take home"}
     output = output + "\n```python\n%s```" % utils.format_table(labs, salary_table, repl_map=repl)
     output = output + "\n<%s>" % url
     return output
