@@ -164,7 +164,7 @@ def get_usa():
             if lab in data and isinstance(data[lab], int):
                 data[lab] = format_number(data[lab])
     tab = utils.format_table(labels, l, repl_map=replmap, left_list=['state'])
-
+    # utils.list_to_plotly(labels, l, repl_map=replmap, left_list=['state'])
     return "```python\n%s```More: <https://www.worldometers.info/coronavirus/country/us>" % tab
 
 def get_state_data(yesterday=False):
