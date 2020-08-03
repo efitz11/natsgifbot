@@ -237,8 +237,9 @@ def list_to_plotly(labels, dicts, repl_map={}, left_list=[]):
     fig = go.Figure(data=go.Table(header=dict(values=newlabs),
                                   cells=dict(values=cols, align=aligns)))
     height = 27 + 20*len(dicts)
+    width = 500
     fig.update_layout(margin=dict(l=0,r=0,t=0,b=0))
-    fig.write_image("table.png", height=height)
+    fig.write_image("table.png", height=height, width=width)
 
 # def create_pandas_image(df, filename):
 #     ax = plt.subplot(911, frame_on=False)
