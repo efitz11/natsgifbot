@@ -60,6 +60,10 @@ def get_player_stats(name, group=None, stattype=None, startDate=None, endDate=No
         url = "https://statsapi.mlb.com/api/v1/people/%s?" \
           "hydrate=currentTeam,team,stats(%stype=[byDateRange](team(league)),leagueListId=mlb_hist,startDate=%s,endDate=%s)" \
               % (playerid, groupstr, startDate, endDate)
+    elif stattype == "lastXGames":
+        url = "https://statsapi.mlb.com/api/v1/people/%s?" \
+              "hydrate=currentTeam,team,stats(%stype=[lastXGames](team(league)),leagueListId=mlb_hist,limit=%s)" \
+              % (playerid, groupstr, lastgames)
     if url is not None:
         player = utils.get_json(url)['people'][0]
         return player
@@ -71,14 +75,20 @@ def print_player_stats(name, group=None, stattype=None, startDate=None, endDate=
         player = get_player_stats(**locals())  # don't set any vars before this
 
         statsstr = _get_stats_string(player['stats'], group=group, include_gp=True)
+        output = ""
         if stattype == "byDateRange":
             output = "%s to %s for %s:\n\n" % (startDate, endDate, player['fullName'])
-            output += statsstr
+        elif stattype == "lastXGames":
+            output = "Last %s games for %s:\n\n" % (lastgames, player['fullName'])
+        output += statsstr
         return output
 
 def print_last_x_days(name, ndays, group=None):
     startDate = mymlbstats._timedelta_to_mlb(datetime.today() - timedelta(days=ndays))
     return print_player_stats(name, group=group, stattype="byDateRange", startDate=startDate)
+
+def print_last_x_games(name, ngames, group=None):
+    return print_player_stats(name, group=group, stattype="lastXGames", lastgames=ngames)
 
 def _get_player_info_line(player, seasons=None):
     pos = player['primaryPosition']['abbreviation']
@@ -583,4 +593,4 @@ if __name__ == "__main__":
     # print(print_player_stats("judge", stattype="byDateRange", startDate="2020-07-27"))
     # print(get_player_stats("ohtani", stattype="byDateRange", startDate="2020-07-27", endDate="2020-08-03"))
     # print(get_player_stats("ohtani", group="hitting", stattype="byDateRange", startDate="2020-07-27", endDate="2020-08-03"))
-    print(print_last_x_days("judge", 7))
+    print(print_last_x_games("judge", 6))

@@ -290,7 +290,7 @@ class Baseball(commands.Cog):
             await ctx.send("```%s```" % mymlbstats.get_team_schedule(team,num,backward=backwards))
             return
         elif team[0].startswith("last") or team[0].startswith("blast") or team[0].startswith("plast"):
-            group = None
+            group, usegames = None, False
             if team[0].startswith('blast'):
                 team[0] = team[0][1:]
                 group = 'hitting'
@@ -303,8 +303,16 @@ class Baseball(commands.Cog):
             else:
                 team = team[1:]
                 days = None
+            if team[0] == 'games':
+                usegames = True
+                team = team[1:]
+            elif team[0] == 'days':
+                team = team[1:]
             # await ctx.send("```%s```" % mymlbstats.get_player_trailing_splits('+'.join(team), days, forcebatting=forcebatting, forcepitching=forcepitching, reddit=reddit))
-            await ctx.send("```%s```" % newmlbstats.print_last_x_days(' '.join(team), days, group=group))
+            if usegames:
+                await ctx.send("```%s```" % newmlbstats.print_last_x_games(' '.join(team), days, group=group))
+            else:
+                await ctx.send("```%s```" % newmlbstats.print_last_x_days(' '.join(team), days, group=group))
             return
         elif team[0].endswith("log"):
             forcebatting = team[0].startswith("b")
