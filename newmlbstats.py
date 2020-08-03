@@ -23,7 +23,7 @@ def _new_player_search(name):
     url = "https://statsapi.mlb.com/api/v1/people/%s?hydrate=currentTeam,team,stats(type=[yearByYear,yearByYearAdvanced,careerRegularSeason,careerAdvanced,availableStats](team(league)),leagueListId=mlb_hist)" % p
     return utils.get_json(url)['people'][0]
 
-def _get_stats_string(stats, group=None):
+def _get_stats_string(stats, group=None, include_gp=False):
     if group is None:
         group = stats[0]['group']['displayName']
 
@@ -34,6 +34,9 @@ def _get_stats_string(stats, group=None):
 
     repl = {'atBats':'ab', 'plateAppearances':'pa','hits':'h','doubles':'2B','triples':'3b','homeRuns':'hr', 'runs':'r', 'baseOnBalls':'bb','strikeOuts':'so', 'stolenBases':'sb', 'caughtStealing':'cs',
             'wins':'w', 'losses':'l', 'gamesPlayed':'g', 'gamesStarted':'gs', 'saveOpportunities':'svo', 'saves':'sv', 'inningsPitched':'ip'}
+
+    if include_gp:
+        labels.insert(0, 'gamesPlayed')
 
     statrows = []
     for g in stats:
@@ -67,7 +70,7 @@ def print_player_stats(name, group=None, stattype=None, startDate=None, endDate=
             endDate = mymlbstats._timedelta_to_mlb(datetime.today())
         player = get_player_stats(**locals())  # don't set any vars before this
 
-        statsstr = _get_stats_string(player['stats'], group=group)
+        statsstr = _get_stats_string(player['stats'], group=group, include_gp=True)
         if stattype == "byDateRange":
             output = "%s to %s for %s:\n\n" % (startDate, endDate, player['fullName'])
             output += statsstr
