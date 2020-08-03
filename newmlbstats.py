@@ -1,16 +1,14 @@
 import urllib.parse
 import json
 import utils
-from datetime import datetime
+from datetime import datetime, timedelta
 from bs4 import BeautifulSoup
 import mymlbstats
 
 API_LINK = 'https://statsapi.mlb.com/api/v1/'
 
-def _new_player_search(name):
-    #url = "https://suggest.mlb.com/svc/suggest/v1/min_all/%s/99999" % urllib.parse.quote(name)
+def _find_player_id(name):
     url = "https://typeahead.mlb.com/api/v1/typeahead/suggestions/%s" % urllib.parse.quote(name)
-    #players = utils.get_json(url)['suggestions']
     players = utils.get_json(url)['players']
     if len(players) > 0:
         p = players[0]['playerId']
@@ -18,8 +16,66 @@ def _new_player_search(name):
             if player['teamId'] == 120:
                 p = player['playerId']
                 break
-        url = "https://statsapi.mlb.com/api/v1/people/%s?hydrate=currentTeam,team,stats(type=[yearByYear,yearByYearAdvanced,careerRegularSeason,careerAdvanced,availableStats](team(league)),leagueListId=mlb_hist)" % p
-        return utils.get_json(url)['people'][0]
+        return p
+
+def _new_player_search(name):
+    p = _find_player_id(name)
+    url = "https://statsapi.mlb.com/api/v1/people/%s?hydrate=currentTeam,team,stats(type=[yearByYear,yearByYearAdvanced,careerRegularSeason,careerAdvanced,availableStats](team(league)),leagueListId=mlb_hist)" % p
+    return utils.get_json(url)['people'][0]
+
+def _get_stats_string(stats, group=None):
+    if group is None:
+        group = stats[0]['group']['displayName']
+
+    if group == "hitting":
+        labels = ['atBats', 'hits', 'doubles', 'triples', 'homeRuns', 'runs', 'rbi', 'baseOnBalls', 'strikeOuts', 'stolenBases', 'caughtStealing', 'avg', 'obp', 'slg' ,'ops']
+    elif group == "pitching":
+       labels = ['wins', 'losses', 'gamesPlayed', 'gamesStarted', 'saveOpportunities', 'saves', 'inningsPitched', 'strikeOuts', 'baseOnBalls', 'homeRuns', 'era', 'whip']
+
+    repl = {'atBats':'ab', 'plateAppearances':'pa','hits':'h','doubles':'2B','triples':'3b','homeRuns':'hr', 'runs':'r', 'baseOnBalls':'bb','strikeOuts':'so', 'stolenBases':'sb', 'caughtStealing':'cs',
+            'wins':'w', 'losses':'l', 'gamesPlayed':'g', 'gamesStarted':'gs', 'saveOpportunities':'svo', 'saves':'sv', 'inningsPitched':'ip'}
+
+    statrows = []
+    for g in stats:
+        if g['group']['displayName'] == group:
+            row = g['splits'][0]['stat']
+            row['season'] = g['splits'][0]['season']
+            statrows.append(row)
+
+    return utils.format_table(labels, statrows, repl_map=repl)
+
+def get_player_stats(name, group=None, stattype=None, startDate=None, endDate=None, lastgames=None):
+    playerid = _find_player_id(name)
+    if playerid is None:
+        return "Couldn't find player"
+    url = None
+    groupstr = ""
+    if group is not None:
+        groupstr = "group=%s," % group
+
+    if stattype == "byDateRange":
+        url = "https://statsapi.mlb.com/api/v1/people/%s?" \
+          "hydrate=currentTeam,team,stats(%stype=[byDateRange](team(league)),leagueListId=mlb_hist,startDate=%s,endDate=%s)" \
+              % (playerid, groupstr, startDate, endDate)
+    if url is not None:
+        player = utils.get_json(url)['people'][0]
+        return player
+
+def print_player_stats(name, group=None, stattype=None, startDate=None, endDate=None, lastgames=None):
+    if stattype is not None:
+        if startDate is not None and endDate is None:
+            endDate = mymlbstats._timedelta_to_mlb(datetime.today())
+        player = get_player_stats(**locals())  # don't set any vars before this
+
+        statsstr = _get_stats_string(player['stats'], group=group)
+        if stattype == "byDateRange":
+            output = "%s to %s for %s:\n\n" % (startDate, endDate, player['fullName'])
+            output += statsstr
+        return output
+
+def print_last_x_days(name, ndays, group=None):
+    startDate = mymlbstats._timedelta_to_mlb(datetime.today() - timedelta(days=ndays))
+    return print_player_stats(name, group=group, stattype="byDateRange", startDate=startDate)
 
 def _get_player_info_line(player, seasons=None):
     pos = player['primaryPosition']['abbreviation']
@@ -520,4 +576,8 @@ if __name__ == "__main__":
     # print(print_stat_leaders('sb', season=2019))
     # print(print_birthdays('lad'))
     # print(print_sorted_stats("pitching nl hr".split(' '), season="2019"))
-    print(print_sorted_stats("teams pitching nl hr".split(' '), season="2019"))
+    # print(print_sorted_stats("teams pitching nl hr".split(' '), season="2019"))
+    # print(print_player_stats("judge", stattype="byDateRange", startDate="2020-07-27"))
+    # print(get_player_stats("ohtani", stattype="byDateRange", startDate="2020-07-27", endDate="2020-08-03"))
+    # print(get_player_stats("ohtani", group="hitting", stattype="byDateRange", startDate="2020-07-27", endDate="2020-08-03"))
+    print(print_last_x_days("judge", 7))
