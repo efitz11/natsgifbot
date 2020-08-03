@@ -20,7 +20,7 @@ def _find_player_id(name):
 
 def _new_player_search(name):
     p = _find_player_id(name)
-    url = "https://statsapi.mlb.com/api/v1/people/%s?hydrate=currentTeam,team,stats(type=[yearByYear,yearByYearAdvanced,careerRegularSeason,careerAdvanced,availableStats](team(league)),leagueListId=mlb_hist)" % p
+    url = API_LINK + "people/%s?hydrate=currentTeam,team,stats(type=[yearByYear,yearByYearAdvanced,careerRegularSeason,careerAdvanced,availableStats](team(league)),leagueListId=mlb_hist)" % p
     return utils.get_json(url)['people'][0]
 
 def _get_stats_string(stats, group=None, include_gp=False):
@@ -47,7 +47,40 @@ def _get_stats_string(stats, group=None, include_gp=False):
 
     return utils.format_table(labels, statrows, repl_map=repl)
 
+def _get_multiple_stats_string(playerlist, group=None, include_gp=False, reddit=False):
+    if group is None:
+        group = playerlist[0]['stats'][0]['group']['displayName']
+
+    if group == "hitting":
+        labels = ['atBats', 'hits', 'doubles', 'triples', 'homeRuns', 'runs', 'rbi', 'baseOnBalls', 'strikeOuts', 'stolenBases', 'caughtStealing', 'avg', 'obp', 'slg' ,'ops']
+    elif group == "pitching":
+        labels = ['wins', 'losses', 'gamesPlayed', 'gamesStarted', 'saveOpportunities', 'saves', 'inningsPitched', 'strikeOuts', 'baseOnBalls', 'homeRuns', 'era', 'whip']
+
+    repl = {'atBats':'ab', 'plateAppearances':'pa','hits':'h','doubles':'2B','triples':'3b','homeRuns':'hr', 'runs':'r', 'baseOnBalls':'bb','strikeOuts':'so', 'stolenBases':'sb', 'caughtStealing':'cs',
+            'wins':'w', 'losses':'l', 'gamesPlayed':'g', 'gamesStarted':'gs', 'saveOpportunities':'svo', 'saves':'sv', 'inningsPitched':'ip', 'lastName':'name'}
+    left = ['lastName']
+
+    if include_gp:
+        labels.insert(0, 'gamesPlayed')
+    if len(playerlist) > 1:
+        labels.insert(0, 'lastName')
+
+    statrows = []
+    for player in playerlist:
+        for g in player['stats']:
+            if g['group']['displayName'] == group:
+                row = g['splits'][0]['stat']
+                row['season'] = g['splits'][0]['season']
+                row['lastName'] = player['lastName']
+                if not reddit:
+                    row['lastName'] = row['lastName'][:5]
+                statrows.append(row)
+
+    return utils.format_table(labels, statrows, repl_map=repl, left_list=left, reddit=reddit, bold=True)
+
 def get_player_stats(name, group=None, stattype=None, startDate=None, endDate=None, lastgames=None):
+    if stattype is None:
+        return None
     playerid = _find_player_id(name)
     if playerid is None:
         return "Couldn't find player"
@@ -57,38 +90,45 @@ def get_player_stats(name, group=None, stattype=None, startDate=None, endDate=No
         groupstr = "group=%s," % group
 
     if stattype == "byDateRange":
-        url = "https://statsapi.mlb.com/api/v1/people/%s?" \
+        url = API_LINK + "people/%s?" \
           "hydrate=currentTeam,team,stats(%stype=[byDateRange](team(league)),leagueListId=mlb_hist,startDate=%s,endDate=%s)" \
               % (playerid, groupstr, startDate, endDate)
     elif stattype == "lastXGames":
-        url = "https://statsapi.mlb.com/api/v1/people/%s?" \
+        url = API_LINK + "people/%s?" \
               "hydrate=currentTeam,team,stats(%stype=[lastXGames](team(league)),leagueListId=mlb_hist,limit=%s)" \
               % (playerid, groupstr, lastgames)
     if url is not None:
         player = utils.get_json(url)['people'][0]
         return player
 
-def print_player_stats(name, group=None, stattype=None, startDate=None, endDate=None, lastgames=None):
+def print_player_stats(name, group=None, stattype=None, startDate=None, endDate=None, lastgames=None, reddit=False):
     if stattype is not None:
         if startDate is not None and endDate is None:
             endDate = mymlbstats._timedelta_to_mlb(datetime.today())
-        player = get_player_stats(**locals())  # don't set any vars before this
+        names = name.split('/')
+        players = list()
+        for name in names:
+            players.append(get_player_stats(name, group=group, stattype=stattype, startDate=startDate, endDate=endDate, lastgames=lastgames))
 
-        statsstr = _get_stats_string(player['stats'], group=group, include_gp=True)
+        statsstr = _get_multiple_stats_string(players, group=group, include_gp=True, reddit=reddit)
         output = ""
+        namesliststr = ""
+        for player in players:
+            namesliststr += "%s, " % player['fullName']
+        namesliststr = namesliststr[:-2]
         if stattype == "byDateRange":
-            output = "%s to %s for %s:\n\n" % (startDate, endDate, player['fullName'])
+            output = "%s to %s for %s:\n\n" % (startDate, endDate, namesliststr)
         elif stattype == "lastXGames":
-            output = "Last %s games for %s:\n\n" % (lastgames, player['fullName'])
+            output = "Last %s games for %s:\n\n" % (lastgames, namesliststr)
         output += statsstr
         return output
 
-def print_last_x_days(name, ndays, group=None):
+def print_last_x_days(name, ndays, group=None, reddit=False):
     startDate = mymlbstats._timedelta_to_mlb(datetime.today() - timedelta(days=ndays))
-    return print_player_stats(name, group=group, stattype="byDateRange", startDate=startDate)
+    return print_player_stats(name, group=group, stattype="byDateRange", startDate=startDate, reddit=reddit)
 
-def print_last_x_games(name, ngames, group=None):
-    return print_player_stats(name, group=group, stattype="lastXGames", lastgames=ngames)
+def print_last_x_games(name, ngames, group=None, reddit=False):
+    return print_player_stats(name, group=group, stattype="lastXGames", lastgames=ngames, reddit=reddit)
 
 def _get_player_info_line(player, seasons=None):
     pos = player['primaryPosition']['abbreviation']
@@ -593,4 +633,5 @@ if __name__ == "__main__":
     # print(print_player_stats("judge", stattype="byDateRange", startDate="2020-07-27"))
     # print(get_player_stats("ohtani", stattype="byDateRange", startDate="2020-07-27", endDate="2020-08-03"))
     # print(get_player_stats("ohtani", group="hitting", stattype="byDateRange", startDate="2020-07-27", endDate="2020-08-03"))
-    print(print_last_x_games("judge", 6))
+    print(print_last_x_games("judge/castellanos", 6))
+    print(print_last_x_days("judge", 6))

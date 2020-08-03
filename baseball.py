@@ -310,9 +310,9 @@ class Baseball(commands.Cog):
                 team = team[1:]
             # await ctx.send("```%s```" % mymlbstats.get_player_trailing_splits('+'.join(team), days, forcebatting=forcebatting, forcepitching=forcepitching, reddit=reddit))
             if usegames:
-                await ctx.send("```%s```" % newmlbstats.print_last_x_games(' '.join(team), days, group=group))
+                await ctx.send("```%s```" % newmlbstats.print_last_x_games(' '.join(team), days, group=group, reddit=reddit))
             else:
-                await ctx.send("```%s```" % newmlbstats.print_last_x_days(' '.join(team), days, group=group))
+                await ctx.send("```%s```" % newmlbstats.print_last_x_days(' '.join(team), days, group=group, reddit=reddit))
             return
         elif team[0].endswith("log"):
             forcebatting = team[0].startswith("b")
