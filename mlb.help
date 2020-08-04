@@ -1,21 +1,39 @@
 $delta:
-  - <delta>: +/- a number of days, or a date in mm/dd</yyyy> format, or [yesterday, tomorrow]
+  - <delta>: (optional) +/- a number of days, or a date in mm/dd</yyyy> format, or [yesterday, tomorrow]
 $season:
-  - <season>: a year indicating what season to search in
+  - <season>: (optional) a year indicating what season to search in
 $reddit:
-  - <reddit>: include 'reddit' in command to output a reddit formatted table (instead of discord)
+  - <reddit>: (optional) include 'reddit' in command to output a reddit formatted table (instead of discord)
 #mlb
 !mlb <team> <delta>
+  Display game scores
   - <team>: one or none of: <[live, close], team abbreviation, substring of team name>
     * live: only display live games
     * close: only display games in the 7th inning or later, where the score gap is 2 runs or less
     * if <team> is empty, displays all games for the day in the bot channel
 #leaders
-!mlb leaders/losers <opts> stat <season>
-  - <opts>: one of: [teams, league, position, group, team]
+!mlb leaders/losers <opts> <stat> <season>
+  - <opts>: one or more of: [teams, league, position, group, team]
     * teams: sort stats by teams instead of players
     * league: only include teams/players from one league
     * position: only include players at one position
     * group: [hitting, pitching, fielding, catching] - the kind of stat
     * team: only include players from one team
-  - stat: the stat to list leaders for
+  - <stat>: the stat to list leaders for
+#sp
+!mlb sp/lsp <team> <delta>
+  Display a team's <last> scoring play(s)
+  - sp: all scoring plays
+  - lsp: last scoring play
+  - team: team who did the scoring
+#homers
+!mlb homers <team> <delta>
+  Show all home runs hit in "team"s game (both teams)
+#dongs
+!mlb <opt>dongs <delta>
+  Show home runs sorted by a certain criteria:
+  - <opt>: one or none of: [long, short, fast, slow, high, low]
+    * none (just "dongs") displays home runs by most recent
+#splits
+!mlb splits <split> <player> <season>
+  Show a player's splits. List possible splits with !mlb splits list
