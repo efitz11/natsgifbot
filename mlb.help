@@ -2,6 +2,7 @@ $delta:
   - <delta>: (optional) +/- a number of days, or a date in mm/dd</yyyy> format, or [yesterday, tomorrow]
 $season:
   - <season>: (optional) a year indicating what season to search in
+              * some commands that support year ranges will accept them in the form <year1-year2>
 $reddit:
   - <reddit>: (optional) include 'reddit' in command to output a reddit formatted table (instead of discord)
 #help
@@ -11,6 +12,67 @@ $reddit:
     * live: only display live games
     * close: only display games in the 7th inning or later, where the score gap is 2 runs or less
     * if <team> is empty, displays all games for the day in the bot channel
+
+  For full help on every subcommand, visit https://github.com/efitz11/natsgifbot/blob/master/mlb.help
+#abs
+!mlb abs <player> <delta>
+  Display all abs for <player> on a certain day.
+  Prints the play-by-play description and statcast metrics for each at-bat
+  Provides video of the at-bat if available
+#batters
+!mlb batters/hitters <team>
+  Displays all position players on <team>'s active roster, as well as their stats for this season
+#batting
+!mlb batting/hitting <team> <delta>
+  Part of the box score group of commands (batting, pitching, notes, info, bench, bullpen)
+  Displays the batting section of the box score for <team>
+#bench
+!mlb bench <team> <delta>
+  Part of the box score group of commands (batting, pitching, notes, info, bench, bullpen)
+  Displays the bench section of the box score for <team>
+#birthdays
+!mlb birthdays <team> <delta>
+  Displays all birthdays for players/coaches on <team> on a certain day
+#broadcasts
+!mlb broadcasts <team> <delta>
+  Display broadcast info for a game
+#bullpen
+!mlb bullpen <team> <delta>
+  Part of the box score group of commands (batting, pitching, notes, info, bench, bullpen)
+  Displays the bullpen section of the box score for <team>
+  Command displays every pitcher available in the pen, as well as their pitch counts in recent previous games
+#bvp
+!mlb bvp <batter> <pitcher>
+  Displays a batter's stats against a pitcher, year by year and career
+#compare
+!mlb compare <players> <season>
+  Compare season stats of two or more players
+  - <players>: a list of players separated by '/'
+    * Whether the stats are batting or pitching is decided by the position of the first player
+#contract
+!mlb contract <player>
+  Displays current contract data for <player>, includes pay numbers by year and date of FA
+#dongs
+!mlb <opt>dongs <delta>
+  Show home runs sorted by a certain criteria:
+  - <opt>: one or none of: [long, short, fast, slow, high, low]
+    * none (just "dongs") displays home runs by most recent
+#highlight
+!mlb highlight/highlights <player>
+  Do a recent video search for <player> (don't think this works right now)
+#homers
+!mlb homers <team> <delta>
+  Show all home runs hit in "team"s game (both teams)
+#info
+!mlb info <team> <delta>
+  Part of the box score group of commands (batting, pitching, notes, info, bench, bullpen)
+  Displays the info section of the box score for <team>
+#last
+!mlb last <num> <type> <player>
+  Shows player's trailing stats over the last n games or days
+  "last" can be prefixed by "b" or "p" to force batting or pitching stats, respectively
+  - <num> (optional): the number of days or games to go back
+  - <type> (optional): either [games, days], defaults to "days"
 #leaders
 !mlb leaders/losers <opts> <stat> <season>
   - <opts>: one or more of: [teams, league, position, group, team]
@@ -20,20 +82,82 @@ $reddit:
     * group: [hitting, pitching, fielding, catching] - the kind of stat
     * team: only include players from one team
   - <stat>: the stat to list leaders for
+#line
+!mlb line <player> <delta>
+  Show a player's game line for a given day
+#linescore
+!mlb linescore <team> <delta>
+  Display the linescore (score by inning) for a game
+#log
+!mlb log <player> <num>
+  Show a player's trailing game log
+  'log' can be prefixed by 'b' to force batting stats
+  <num> (optional): defaults to 5, the number of games to show
+#next
+!mlb next <num> <team>
+  Just like "past" but for future days.
+  Display games during next <num> days for <team>
+  - <num> (optional): defaults to 3
+#notes
+!mlb notes <team> <delta>
+  Part of the box score group of commands (batting, pitching, notes, info, bench, bullpen)
+  Displays the notes section of the box score for <team>
+#ohtani
+!mlb ohtani
+  Shortcut for '!mlb abs ohtani'
+  It's sho-time
+#past
+!mlb past <num> <team>
+  Just like "next" but for previous days.
+  Display games during past <num> days for <team>
+  - <num> (optional): defaults to 3
+#pic
+!mlb pic <player>
+  Displays <player>'s mlb.com headshot, if it exists
+#pitchers
+!mlb pitchers <team>
+  Displays all pitchers on <team>'s active roster, as well as their season stats
+!mlb pitches <pitcher> <delta>
+  Displays <pitcher>'s pitch count by inning.
+  Also displays statcast data for each type of pitch thrown by <pitcher> during the game.
+#pitching
+!mlb pitching <team> <delta>
+  Part of the box score group of commands (batting, pitching, notes, info, bench, bullpen)
+  Displays the pitching section of the box score for <team>
+#plays
+!mlb plays <team> <inning>
+  Show the play-by-play descriptions of every play in the half <inning> where <team> was batting
+#savant
+!mlb savant <team/player> <delta>
+  Show baseball savant data for a game
+  If given a team, displays the game's info:
+    * Score, RHE, team xBA, win probability
+    * WPA of recent events and leaders
+    * Statcast info for the 5 most recent batted balls
+  If given a player, displays statcast info for every at-bat
 #sp
 !mlb sp/lsp <team> <delta>
   Display a team's <last> scoring play(s)
   - sp: all scoring plays
   - lsp: last scoring play
   - team: team who did the scoring
-#homers
-!mlb homers <team> <delta>
-  Show all home runs hit in "team"s game (both teams)
-#dongs
-!mlb <opt>dongs <delta>
-  Show home runs sorted by a certain criteria:
-  - <opt>: one or none of: [long, short, fast, slow, high, low]
-    * none (just "dongs") displays home runs by most recent
 #splits
 !mlb splits <split> <player> <season>
   Show a player's splits. List possible splits with !mlb splits list
+#standings
+!mlb standings <division>
+  Display a division's standings
+  - <division>: [nl, al, nle, nlc, nlw, ale, alc, alw]
+#stats
+!mlb stats <player> <season>
+  Display a player's stats during a season or range of seasons
+  Prefix stats with 'c' for career stats.
+  Prefix stats with 'b' or 'p' to get batting or pitching stats, respectively.
+#umps
+!mlb umps <team> <delta>
+  Display the umpires for a team's game(s)
+#vs
+!mlb vs <team> <player> <season>
+  Display a player's stats against a certain team.
+    * If <player> is a batter, shows batting stats against every pitcher on <team> during <season>
+    * If <player> is a pitcher, shows pitching stats against every batter on <team> during the last 5 years
