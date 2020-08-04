@@ -104,39 +104,7 @@ class Baseball(commands.Cog):
     @commands.command()
     async def mlb(self, ctx, *team :str):
         """Get MLB info
-
-        Help is now too long for a discord message. Check the github link for full help.
-
-        Supported sub commands:
-        blank
-        <team>
-        <division>
-        standings <division>
-        [l]sp <team>
-        line <player>
-        ohtani
-        <part> <team>
-        linescore <team>
-
-            each of the previous commands can end in a number of (+days or -days) to change the date
-
-        dl <team>
-        batters <team>
-        pitchers <team>
-
-        last [n] <team>
-        next [n] <team>
-
-        [h][c][b,p]stats <player> [year] [year2]
-        splits <split> <player> [year]
-        vs <team> <player>
-        [b]last <player> [n]
-        [b]log [n] <player>
-        [p,f]leaders <stat>
-
-        highlight <query>
-
-        help - https://github.com/efitz11/natsgifbot/blob/master/mlbhelp.txt
+        get help on a specific subcommand using !mlb <subcommand> help
         """
         delta=None
 
