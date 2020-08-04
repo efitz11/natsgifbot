@@ -1,0 +1,21 @@
+$delta:
+  - <delta>: +/- a number of days, or a date in mm/dd</yyyy> format, or [yesterday, tomorrow]
+$season:
+  - <season>: a year indicating what season to search in
+$reddit:
+  - <reddit>: include 'reddit' in command to output a reddit formatted table (instead of discord)
+#mlb
+!mlb <team> <delta>
+  - <team>: one or none of: <[live, close], team abbreviation, substring of team name>
+    * live: only display live games
+    * close: only display games in the 7th inning or later, where the score gap is 2 runs or less
+    * if <team> is empty, displays all games for the day in the bot channel
+#leaders
+!mlb leaders/losers <opts> stat <season>
+  - <opts>: one of: [teams, league, position, group, team]
+    * teams: sort stats by teams instead of players
+    * league: only include teams/players from one league
+    * position: only include players at one position
+    * group: [hitting, pitching, fielding, catching] - the kind of stat
+    * team: only include players from one team
+  - stat: the stat to list leaders for
