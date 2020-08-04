@@ -87,7 +87,7 @@ class Baseball(commands.Cog):
                 if lines[i].startswith('!'):
                     for opt in lines[i].split(' '):
                         if opt.startswith('<') and opt[1:-2] in opts_dict:
-                            add_opts_str += "\n" + opts_dict[opt[1:-2]]
+                            add_opts_str += opts_dict[opt[1:-2]]
 
                 while i < len(lines) and not lines[i].startswith('#'):
                     help += lines[i]
