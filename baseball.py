@@ -64,11 +64,42 @@ class Baseball(commands.Cog):
         return direction + str(delta.days)
 
 
-    @commands.command()
-    async def newmlb(self, ctx, *query:str):
-        """New version of mlb command, with proper subcommands (in progress)"""
-        delta = None
-        team = ["wsh" if x.lower() == "nats" else x for x in query]
+    def get_help_str(self, command):
+        with open("mlb.help", 'r') as f:
+            lines = f.readlines()
+        help = ""
+        opts_dict = dict()
+
+        for i in range(len(lines)):
+            line = lines[i]
+            if line.startswith('$'):
+                cur_opt = line[1:line.find(':')]
+                opt_str = ""
+                i += 1
+                while not lines[i].startswith('$') and not lines[i].startswith('#'):
+                    opt_str += lines[i]
+                    i += 1
+                opts_dict[cur_opt] = opt_str
+            elif line.startswith('#%s' % command):
+                i += 1
+                add_opts_str = ""
+                if lines[i].startswith('!'):
+                    for opt in lines[i].split(' '):
+                        if opt.startswith('<') and opt[1:-2] in opts_dict:
+                            add_opts_str += "\n" + opts_dict[opt[1:-2]]
+
+                while i < len(lines) and not lines[i].startswith('#'):
+                    help += lines[i]
+                    i += 1
+        help += add_opts_str
+
+        return "```%s```" % help
+
+    # @commands.command()
+    # async def newmlb(self, ctx, *query:str):
+    #     """New version of mlb command, with proper subcommands (in progress)"""
+    #     delta = None
+    #     team = ["wsh" if x.lower() == "nats" else x for x in query]
 
     @commands.command()
     async def mlb(self, ctx, *team :str):
@@ -117,6 +148,10 @@ class Baseball(commands.Cog):
                 reddit = True
                 team.remove(i)
 
+        if 'help' in team:
+            await ctx.send(self.get_help_str(team[0]))
+            return
+
         if len(team) > 0 and (team[-1].startswith('-') or team[-1].startswith('+')):
             delta = team[-1]
             team = team[:-1]
@@ -152,9 +187,9 @@ class Baseball(commands.Cog):
                     await cmdchannel.send("```No games in the 7th or later within 2 runs at the moment.```")
             return
 
-        if team[0] == 'help':
-            await ctx.send("https://github.com/efitz11/natsgifbot/blob/master/mlbhelp.txt")
-            return
+        # if team[0] == 'help':
+        #     await ctx.send("https://github.com/efitz11/natsgifbot/blob/master/mlbhelp.txt")
+        #     return
 
         if team[0] in ["sp","lsp"]:
             teamname = ' '.join(team[1:])
@@ -296,7 +331,7 @@ class Baseball(commands.Cog):
                 group = 'hitting'
             elif team[0].startswith('plast'):
                 team[0] = team[0][1:]
-                group = 'pithing'
+                group = 'pitching'
             if team[1].isdigit():
                 days = int(team[1])
                 team = team[2:]
@@ -334,7 +369,10 @@ class Baseball(commands.Cog):
             reverse = False
             if team[0] == 'losers':
                 reverse = True
-            await ctx.send(newmlbstats.print_sorted_stats(stat, season=season, reverse=reverse))
+            if len(team) == 1:
+                await ctx.send(self.get_help_str('leaders'))
+            else:
+                await ctx.send(newmlbstats.print_sorted_stats(stat, season=season, reverse=reverse))
         # elif team[0].endswith("leaders") or team[0].endswith("losers"):
         #     stat = team[1]
         #
@@ -452,11 +490,14 @@ class Baseball(commands.Cog):
             await ctx.send(newmlbstats.get_player_headshot_url(name))
         else:
             teamname = ' '.join(team).lower()
-            output = mymlbstats.get_single_game(teamname,delta=delta)
-            if len(output) > 0:
-                await ctx.send("```python\n" + output + "```")
+            if teamname == 'help':
+                await ctx.send(self.get_help_str('mlb'))
             else:
-                await ctx.send("no games found")
+                output = mymlbstats.get_single_game(teamname,delta=delta)
+                if len(output) > 0:
+                    await ctx.send("```python\n" + output + "```")
+                else:
+                    await ctx.send("no games found")
 
     #######################################
     ##### BEGIN MINOR LEAGUE COMMANDS #####
