@@ -4,7 +4,7 @@ $season:
   - <season>: (optional) a year indicating what season to search in
 $reddit:
   - <reddit>: (optional) include 'reddit' in command to output a reddit formatted table (instead of discord)
-#mlb
+#help
 !mlb <team> <delta>
   Display game scores
   - <team>: one or none of: <[live, close], team abbreviation, substring of team name>

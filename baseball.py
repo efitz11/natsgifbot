@@ -69,6 +69,7 @@ class Baseball(commands.Cog):
             lines = f.readlines()
         help = ""
         opts_dict = dict()
+        add_opts_str = ""
 
         for i in range(len(lines)):
             line = lines[i]
