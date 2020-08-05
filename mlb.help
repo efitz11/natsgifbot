@@ -8,17 +8,19 @@ $reddit:
 #help
 !mlb <team> <delta>
   Display game scores
+  For full help on every subcommand, visit https://github.com/efitz11/natsgifbot/blob/master/mlb.help
   - <team>: one or none of: <[live, close], team abbreviation, substring of team name>
     * live: only display live games
     * close: only display games in the 7th inning or later, where the score gap is 2 runs or less
     * if <team> is empty, displays all games for the day in the bot channel
-
-  For full help on every subcommand, visit https://github.com/efitz11/natsgifbot/blob/master/mlb.help
 #abs
 !mlb abs <player> <delta>
   Display all abs for <player> on a certain day.
   Prints the play-by-play description and statcast metrics for each at-bat
   Provides video of the at-bat if available
+#arsenal
+!mlb arsenal <player> <season>
+  Print the pitcher's arsenal for a given season
 #batters
 !mlb batters/hitters <team>
   Displays all position players on <team>'s active roster, as well as their stats for this season

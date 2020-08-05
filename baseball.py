@@ -457,6 +457,14 @@ class Baseball(commands.Cog):
         elif team[0] == "pic":
             name = ' '.join(team[1:])
             await ctx.send(newmlbstats.get_player_headshot_url(name))
+        elif team[0] == "arsenal":
+            season = None
+            if team[-1].isdigit():
+                season = team[-1]
+                team = ' '.join(team[1:-1])
+            else:
+                team = ' '.join(team[1:])
+            await ctx.send(newmlbstats.print_pitch_arsenal(team, season=season))
         else:
             teamname = ' '.join(team).lower()
             if teamname == 'help':

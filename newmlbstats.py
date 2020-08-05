@@ -538,6 +538,36 @@ def get_player_headshot_url(player_search):
         return "https://securea.mlb.com/mlb/images/players/head_shot/%d@3x.jpg" % player['id']
     return "Could not find player"
 
+def get_pitch_arsenal(pitcherid, season=None):
+    url = API_LINK + "people/%s/stats?stats=pitchArsenal&group=pitching" % pitcherid
+    if season is not None:
+        url += "&season=%s" % season
+    results = utils.get_json(url)
+
+    pitches = list()
+    for pitch in results['stats'][0]['splits']:
+        p = pitch['stat']
+        p['code'] = pitch['stat']['type']['code']
+        p['description'] = pitch['stat']['type']['description']
+        p['percentage'] = '%.1f' % (p['percentage']*100)
+        p['averageSpeed'] = '%.1f' % p['averageSpeed']
+        pitches.append(p)
+    return pitches
+
+def print_pitch_arsenal(pitcher, season=None, reddit=False):
+    print(pitcher)
+    player = _new_player_search(pitcher)
+    if player is None:
+        return "could not find pitcher"
+
+    pitches = get_pitch_arsenal(player['id'], season=season)
+
+    labels = ['description', 'percentage', 'averageSpeed']
+    left = ['description']
+    repl = {'description':'pitch', 'percentage':'%', 'averageSpeed':'avg mph'}
+
+    return "```python\n%s```" % utils.format_table(labels, pitches, left_list=left, repl_map=repl, reddit=reddit)
+
 def print_contract_info(name, year=None):
     # find player
     player = _new_player_search(name)
@@ -633,5 +663,6 @@ if __name__ == "__main__":
     # print(print_player_stats("judge", stattype="byDateRange", startDate="2020-07-27"))
     # print(get_player_stats("ohtani", stattype="byDateRange", startDate="2020-07-27", endDate="2020-08-03"))
     # print(get_player_stats("ohtani", group="hitting", stattype="byDateRange", startDate="2020-07-27", endDate="2020-08-03"))
-    print(print_last_x_games("judge/castellanos", 6))
-    print(print_last_x_days("judge", 6))
+    # print(print_last_x_games("judge/castellanos", 6))
+    # print(print_last_x_days("judge", 6))
+    print(print_pitch_arsenal('scherzer'))
