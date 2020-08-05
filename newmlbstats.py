@@ -355,7 +355,7 @@ def print_stat_leaders(statquery_list, season=None):
     if group is not None:
         output = ""
         output += "%s:\n```python\n" % group[0]
-        labels = ['team', 'name', stat]
+        labels = ['team', 'name', 'gamesPlayed', stat]
         left = ['team', 'name']
         output += utils.format_table(labels, group[1], left_list=left)
         output += "```\n"
@@ -474,14 +474,19 @@ def print_sorted_stats(statquery_list, season=None, reverse=False):
     else:
         return "couldn't find stat %s or stat %s in search results" % (statinfo['name'], statinfo['lookupParam'])
 
-    labels = ['team', 'name', statinfo['name']]
+    labels = ['team', 'name', 'gamesPlayed', statinfo['name']]
+    repl = {'gamesPlayed':'gp', 'atBats':'ab', 'plateAppearances':'pa', 'inningsPitched':'ip'}
     left = ['team', 'name']
-    # if teams:
-    #     labels.remove('team')
+
+    if group == 'hitting':
+        labels.insert(3,'plateAppearances')
+    elif group == 'pitching':
+        labels.insert(3,'inningsPitched')
 
     rows = list()
     for player in stats['splits']:
         row = dict()
+        row = player['stat']
         row['team'] = player['team']['abbreviation']
         if teams:
             row['name'] = player['team']['teamName']
@@ -492,7 +497,7 @@ def print_sorted_stats(statquery_list, season=None, reverse=False):
         if len(rows) >= 10:
             break
     output = "%s:\n```python\n" % group
-    output += utils.format_table(labels, rows, left_list=left)
+    output += utils.format_table(labels, rows, left_list=left, repl_map=repl)
     output += "```\n"
     return output
 
