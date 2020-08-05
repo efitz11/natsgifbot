@@ -137,6 +137,10 @@ def _get_player_info_line(player, seasons=None):
     height = player['height'].replace(' ','')
     weight = player['weight']
 
+    nick = None
+    if 'nickName' in player:
+        nick = player['nickName']
+
     bdate = player['birthDate'].split("-")
     bdatetime = datetime.strptime(player['birthDate'], "%Y-%m-%d")
     today = datetime.today()
@@ -161,7 +165,8 @@ def _get_player_info_line(player, seasons=None):
         age = "%d-%d" % (age1, age2)
 
     ret = "%s | %s/%s | %s %s | Age: %s" % (pos, bats, throws, height, weight, age)
-
+    if nick is not None:
+        ret += " | \"%s\"" % nick
 
     if int(bdate[1]) == today.month and int(bdate[2]) == today.day:
         ret += "\n         ****HAPPY BIRTHDAY****"
@@ -256,7 +261,7 @@ def get_player_season_stats(name, type=None, year=None, career=None, reddit=None
         output = "%s-%s seasons stats for %s:" % (year, year2, disp_name)
     if career:
         output = "Career stats for %s (%s):" % (disp_name, years)
-    output = "%s\n\t%s\n\n" % (output, infoline)
+    output = "%s\n  %s\n\n" % (output, infoline)
     output = output + utils.format_table(stats, seasons, repl_map=repl, reddit=reddit)
     return output
 
