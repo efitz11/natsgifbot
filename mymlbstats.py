@@ -2480,10 +2480,10 @@ def print_dongs(type, delta=None, reddit=False):
         sorteddongs = sorted(dongs, key=lambda k: k['dist'])
         sorteddongs = list(filter(lambda k: k['dist'] > 0, sorteddongs))[:10]
     elif type == "high":
-        sorteddongs = sorted(dongs, key=lambda k: k['angle'], reverse=True)[:10]
+        sorteddongs = sorted(dongs, key=lambda k: k['la'], reverse=True)[:10]
     elif type == "low":
-        sorteddongs = sorted(dongs, key=lambda k: k['angle'])
-        sorteddongs = list(filter(lambda k: k['angle'] > 0, sorteddongs))[:10]
+        sorteddongs = sorted(dongs, key=lambda k: k['la'])
+        sorteddongs = list(filter(lambda k: k['la'] > 0, sorteddongs))[:10]
     elif type == "fast":
         sorteddongs = sorted(dongs, key=lambda k: k['ev'], reverse=True)[:10]
     elif type == "slow":
