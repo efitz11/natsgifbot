@@ -580,7 +580,7 @@ def print_sorted_stats(statquery_list, season=None, reverse=False, delta=None):
     output = ""
     if stattype == 'byDateRange':
         if date1 is None:
-            output = "Stats from today\n" % (date1)
+            output = "Stats from today\n"
         elif date2 is None:
             output = "Stats from %s to today\n" % (date1)
         elif date1 == date2:
