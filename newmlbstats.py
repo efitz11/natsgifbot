@@ -727,13 +727,15 @@ def print_stat_streaks(query_list, season=None):
             stats = streak['stats']
             stats['name'] = streak['person']['boxscoreName']
             stats['team'] = streak['team']['abbreviation']
+            stats['start'] = streak['startDate'][5:10]
+            stats['end'] = streak['finalDate'][5:10]
             players.append(stats)
-    return "```python\n%s```" %_print_stats_game_line(players, include_gp=True, include_slash=True)
+    return "```python\n%s```" %_print_stats_game_line(players, include_gp=True, include_slash=True, include_start_end=True)
 
-def _print_stats_game_line(list_of_stats, type='hitting', include_gp=False, include_slash=False):
+def _print_stats_game_line(list_of_stats, type='hitting', include_gp=False, include_slash=False, include_start_end=False):
     """
     print stats game-line style:
-    [GP] AB H 2B 3B HR R RBI BB SO SB CS [AVG OBP SLG]
+    [S E] [GP] AB H 2B 3B HR R RBI BB SO SB CS [AVG OBP SLG]
     """
     labels = ['atBats', 'hits', 'doubles', 'triples', 'homeRuns', 'baseOnBalls', 'strikeOuts']
     if 'stolenBases' in list_of_stats[0]:
@@ -747,9 +749,13 @@ def _print_stats_game_line(list_of_stats, type='hitting', include_gp=False, incl
                 labels.append(s)
     if include_gp:
         labels.insert(0, 'gamesPlayed')
+    if include_start_end:
+        labels.insert(0, 'end')
+        labels.insert(0, 'start')
     if len(list_of_stats) > 1:
         labels.insert(0, 'name')
         labels.insert(0, 'team')
+
     replace = _get_common_replace_map()
     left = ['name', 'team']
     return utils.format_table(labels, list_of_stats, repl_map=replace, left_list=left)
