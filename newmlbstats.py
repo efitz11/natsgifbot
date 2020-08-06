@@ -387,6 +387,7 @@ def _get_stats_query_params(statquery_list, delta=None):
     date1, date2 = None, None
     if delta is not None:
         date1 = mymlbstats._get_date_from_delta(delta)
+        date2 = date1
 
     stattype = "season"
     if 'today' in statquery_list:
@@ -557,7 +558,16 @@ def print_sorted_stats(statquery_list, season=None, reverse=False, delta=None):
         rows.append(row)
         if len(rows) >= 10:
             break
-    output = "%s:\n```python\n" % group
+    output = ""
+    if stattype == 'byDateRange':
+        if date2 is None:
+            output = "Stats from %s to today\n" % (date1)
+        elif date1 == date2:
+            output = "Stats from %s\n" % (date1 if isinstance(date1, str) else _convert_date_to_mlb_str(date1))
+        else:
+            output = "Stats from %s to %s\n" % (date1, date2)
+
+    output += "%s:\n```python\n" % group
     output += utils.format_table(labels, rows, left_list=left, repl_map=repl)
     output += "```\n"
     return output
