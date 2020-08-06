@@ -7,6 +7,13 @@ import mymlbstats
 
 API_LINK = 'https://statsapi.mlb.com/api/v1/'
 
+def _get_common_replace_map():
+    repl = {'atBats':'ab', 'plateAppearances':'pa','hits':'h','doubles':'2B','triples':'3b','homeRuns':'hr', 'runs':'r',
+            'baseOnBalls':'bb','strikeOuts':'so', 'stolenBases':'sb', 'caughtStealing':'cs',
+            'wins':'w', 'losses':'l', 'gamesPlayed':'g', 'gamesStarted':'gs', 'saveOpportunities':'svo', 'saves':'sv',
+            'inningsPitched':'ip', 'lastName':'name'}
+    return repl
+
 def _convert_date_to_mlb_str(date):
     """converts mm/dd</yyyy> to yyyy-mm-dd"""
     if isinstance(date, datetime):
@@ -659,6 +666,94 @@ def print_pitch_arsenal(pitcher, season=None, reddit=False):
 
     return "```python\n%s```" % utils.format_table(labels, pitches, left_list=left, repl_map=repl, reddit=reddit)
 
+def get_stat_streaks(streak_type, streak_filter="overall", span=None, season=None):
+    """
+    :param streak_type: hitting, onbase
+    :param streak_filter: overall, home, away
+    :param span: career, season, currentStreakInSeason, notable, notableInSeason
+    :param season:
+    :return:
+    """
+    url = API_LINK + "stats/streaks?"
+    params = {'sportId':1, 'limit':10, 'gameType':'R'}
+    params['hydrate'] = "person"
+    if streak_type == "hitting":
+        params['streakType'] = "hittingStreak"
+    elif streak_type == "onbase":
+        params['streakType'] = "onBase"
+    else:
+        return None
+    if streak_filter is None:
+        streak_filter = "overall"
+    params['streakType'] += streak_filter.title()
+
+    if span is not None:
+        params['streakSpan'] = span
+    else:
+        if season is None:
+            params['streakSpan'] = 'currentStreakInSeason'
+        else:
+            params['streakSpan'] = 'season'
+    if season is not None:
+        params['season'] = season
+    else:
+        now = datetime.now()
+        params['season'] = now.year
+
+    return utils.get_json(url+urllib.parse.urlencode(params, safe=','))
+
+def print_stat_streaks(query_list, season=None):
+    streak_type = query_list.pop(0)
+    span = None
+    filter = None
+    filters = ['home', 'away', 'overall']
+    for l in query_list:
+        if l in filters:
+            filter = l
+            query_list.remove(l)
+            break
+    spans = ['career', 'season', 'current', 'notable', 'notableInSeason']
+    for l in query_list:
+        if l in spans:
+            span = l
+            query_list.remove(l)
+            break
+
+    streaks = get_stat_streaks(streak_type, streak_filter=filter, span=span, season=season)
+    players = list()
+    if streaks is not None:
+        streaks = streaks['streaks'][:10]
+        for streak in streaks:
+            stats = streak['stats']
+            stats['name'] = streak['person']['boxscoreName']
+            stats['team'] = streak['team']['abbreviation']
+            players.append(stats)
+    return "```python\n%s```" %_print_stats_game_line(players, include_gp=True, include_slash=True)
+
+def _print_stats_game_line(list_of_stats, type='hitting', include_gp=False, include_slash=False):
+    """
+    print stats game-line style:
+    [GP] AB H 2B 3B HR R RBI BB SO SB CS [AVG OBP SLG]
+    """
+    labels = ['atBats', 'hits', 'doubles', 'triples', 'homeRuns', 'baseOnBalls', 'strikeOuts']
+    if 'stolenBases' in list_of_stats[0]:
+        labels.append('stolenBases')
+    if 'caughtStealing' in list_of_stats[0]:
+        labels.append('caughtStealing')
+    if include_slash:
+        slash = ['avg','obp','slg']
+        for s in slash:
+            if s in list_of_stats[0]:
+                labels.append(s)
+    if include_gp:
+        labels.insert(0, 'gamesPlayed')
+    if len(list_of_stats) > 1:
+        labels.insert(0, 'name')
+        labels.insert(0, 'team')
+    replace = _get_common_replace_map()
+    left = ['name', 'team']
+    return utils.format_table(labels, list_of_stats, repl_map=replace, left_list=left)
+
 def print_contract_info(name, year=None):
     # find player
     player = _new_player_search(name)
@@ -758,4 +853,5 @@ if __name__ == "__main__":
     # print(print_last_x_days("judge", 6))
     # print(print_pitch_arsenal('scherzer'))
     # get_sorted_stats(_find_stat_info('tb'), stats='byDateRange')
-    print(print_sorted_stats(['today', 'tb'], delta="-1"))
+    # print(print_sorted_stats(['today', 'tb'], delta="-1"))
+    print(print_stat_streaks(["onbase"]))

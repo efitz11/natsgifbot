@@ -163,6 +163,15 @@ $reddit:
   Display a player's stats during a season or range of seasons
   Prefix stats with 'c' for career stats.
   Prefix stats with 'b' or 'p' to get batting or pitching stats, respectively.
+#streaks
+!mlb streaks <opts> <type> <season>
+  Display streaks for a season
+  - <opts> (optional): one of the following:
+    * filter: [overall, home, away] - defaults to overall
+      -- option to show top home streaks or away streaks
+    * span: [career, season, currentStreak, currentStreakInSeason, notable, notableInSeason]
+      -- defaults to currentStreakInSeason, unless <season> is specified, then defaults to 'season'
+  - <type> (required): either "hitting" or "onbase"
 #umps
 !mlb umps <team> <delta>
   Display the umpires for a team's game(s)

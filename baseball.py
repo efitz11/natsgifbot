@@ -465,6 +465,13 @@ class Baseball(commands.Cog):
             else:
                 team = ' '.join(team[1:])
             await ctx.send(newmlbstats.print_pitch_arsenal(team, season=season))
+        elif team[0] == "streaks":
+            team = team[1:]
+            season = None
+            if team[-1].isdigit():
+                season = team[-1]
+                team = team[:-1]
+            await ctx.send(newmlbstats.print_stat_streaks(team, season=season))
         else:
             teamname = ' '.join(team).lower()
             if teamname == 'help':
