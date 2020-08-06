@@ -574,7 +574,7 @@ def print_sorted_stats(statquery_list, season=None, reverse=False, delta=None):
     else:
         gamesplayed = "gamesPlayed"
     labels = ['team', 'name', gamesplayed, statinfo['name']]
-    repl = {'gamesPlayed':'gp', 'atBats':'ab', 'plateAppearances':'pa', 'inningsPitched':'ip'}
+    repl = {'gamesPlayed':'gp', 'atBats':'ab', 'plateAppearances':'pa', 'inningsPitched':'ip', 'games':'g'}
     left = ['team', 'name']
 
     if group == 'hitting':
