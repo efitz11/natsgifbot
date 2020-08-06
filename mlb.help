@@ -77,19 +77,20 @@ $reddit:
   - <type> (optional): either [games, days], defaults to "days"
 #leaders
 !mlb leaders/losers <opts> <stat> <season>
-  - <opts>: one or more of: [teams, league, position, group, team]
-    * teams: sort stats by teams instead of players
-    * league: only include teams/players from one league
-    * position: only include players at one position
+  - <opts>: one or more of the following
+    * "teams": sort stats by teams instead of players
+    * league: [al, nl] only include teams/players from one league
+    * position: [p, c, 1b, ss, lf...] only include players at one position
     * group: [hitting, pitching, fielding, catching] - the kind of stat
-    * team: only include players from one team
-    * today: only include stats from a single day (use delta to pick day)
-    * date: only include stats from a date range
+    * team: [laa, washington nationals...] only include players from one team
+    * "today": only include stats from a single day (use delta to pick day)
+    * "date": only include stats from a date range
         > if using 'date', must include at least one date (mm/dd with optional <yy>yy)
             - one date means from that date until today
             - two dates means between those two dates, can separate dates by a space or '-'
             - example: !mlb leaders date 7/28-8/3 hr
                 * shows HR leaders from 7/28 to 8/3
+    * pool: ['all', 'rookies', 'qualified'] change the player pool from which to draw from (defaults to qualified)
   - <stat>: the stat to list leaders for
 #line
 !mlb line <player> <delta>
