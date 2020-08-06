@@ -540,6 +540,8 @@ def print_sorted_stats(statquery_list, season=None, reverse=False, delta=None):
 
     stats = get_sorted_stats(statinfo, season=season, league=league, position=position, teamid=team, teams=teams,
                              group=group, reverse=reverse, stats=stattype, date1=date1, date2=date2, pool=pool)
+    if len(stats) == 0:
+        return "Leaders search query returned an empty list"
     stats = stats[0]
 
     if statinfo['name'] in stats['splits'][0]['stat']:
