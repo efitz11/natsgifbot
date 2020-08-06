@@ -7,6 +7,26 @@ import mymlbstats
 
 API_LINK = 'https://statsapi.mlb.com/api/v1/'
 
+def _convert_date_to_mlb_str(date):
+    """converts mm/dd</yyyy> to yyyy-mm-dd"""
+    if isinstance(date, datetime):
+        return "%d-%02d-%02d" % (date.year, date.month, date.day)
+    if len(date.split('-')) == 3:
+        return date
+    now = datetime.now().date()
+    if isinstance(date, list):
+        datelist = date[-1].split('/')
+    else:
+        datelist = date.split('/')
+    if len(datelist) == 2:
+        datelist.append(str(now.year))
+    if len(datelist[2]) == 2:
+        if int("20" + datelist[2]) <= now.year:
+            datelist[2] = "20" + datelist[2]
+        else:
+            datelist[2] = "19" + datelist[2]
+    return "%s-%s-%s" % (datelist[2], datelist[0], datelist[1])
+
 def _find_player_id(name):
     url = "https://typeahead.mlb.com/api/v1/typeahead/suggestions/%s" % urllib.parse.quote(name)
     players = utils.get_json(url)['players']
@@ -363,7 +383,36 @@ def print_stat_leaders(statquery_list, season=None):
     else:
         return "problem finding leaders"
 
-def _get_stats_query_params(statquery_list):
+def _get_stats_query_params(statquery_list, delta=None):
+    date1, date2 = None, None
+    if delta is not None:
+        date1 = mymlbstats._get_date_from_delta(delta)
+
+    stattype = "season"
+    if 'today' in statquery_list:
+        stattype = 'byDateRange'
+        statquery_list.remove('today')
+    if 'date' in statquery_list:
+        stattype = 'byDateRange'
+        statquery_list.remove('date')
+        dates = 0
+        for item in statquery_list:
+            if '-' in item:
+                sp = item.split('-')
+                if '/' in sp[0] and '/' in sp[1]:
+                    date1, date2 = sp[0], sp[1]
+                    statquery_list.remove(item)
+                    break
+            elif len(item.split('/')) == 2 or len(item.split('/')) == 3:
+                if dates == 0:
+                    date1 = item
+                    dates += 1
+                elif dates == 1:
+                    date2 = item
+                    statquery_list.remove(date1)
+                    statquery_list.remove(date2)
+                    break
+
     league = None
     if 'al' in statquery_list:
         league = 'al'
@@ -392,7 +441,7 @@ def _get_stats_query_params(statquery_list):
     if len(statquery_list) > 0:
         team = mymlbstats.get_teamid(' '.join(statquery_list))
 
-    return (league, want_group, pos, team, stat)
+    return (league, want_group, pos, team, stat, stattype, date1, date2)
 
 def _find_stat_info(stat, retry=False):
     statsfile = 'mlb/statsapi_json/baseballStats.json'
@@ -407,16 +456,27 @@ def _find_stat_info(stat, retry=False):
     if not retry:
         return _find_stat_info(stat, retry=True)
 
-def get_sorted_stats(statinfo, season=None, league=None, position=None, teamid=None, teams=False, group=None, reverse=False):
+def get_sorted_stats(statinfo, season=None, league=None, position=None, teamid=None, teams=False, group=None, reverse=False, stats='season', date1=None, date2=None):
     if teams:
         url = API_LINK + "teams/stats?"
     else:
         url = API_LINK + "stats?"
 
     params = {'sortStat':statinfo['name'], 'sportIds':1}
-    params['stats'] = 'season'
+    params['stats'] = stats
     params['limit'] = 30
     params['hydrate'] = "player,team"
+
+    if stats == 'byDateRange':
+        if date1 is None:
+            date1 = mymlbstats._timedelta_to_mlb(datetime.now())
+        else:
+            date1 = _convert_date_to_mlb_str(date1)
+        if date2 is not None:
+            date2 = _convert_date_to_mlb_str(date2)
+        params['startDate'] = date1
+        if date2 is not None:
+            params['endDate'] = date2
 
     if season is not None:
         params['season'] = season
@@ -442,12 +502,12 @@ def get_sorted_stats(statinfo, season=None, league=None, position=None, teamid=N
     url += urllib.parse.urlencode(params, safe=',')
     return utils.get_json(url)['stats']
 
-def print_sorted_stats(statquery_list, season=None, reverse=False):
+def print_sorted_stats(statquery_list, season=None, reverse=False, delta=None):
     teams = False
     if statquery_list[0] == "teams":
         teams = True
 
-    league, group, position, team, stat = _get_stats_query_params(statquery_list)
+    league, group, position, team, stat, stattype, date1, date2 = _get_stats_query_params(statquery_list, delta=delta)
     # print(league, group, position, team, stat)
 
     #teamid = None
@@ -460,7 +520,8 @@ def print_sorted_stats(statquery_list, season=None, reverse=False):
     if group is None:
         group = statinfo['statGroups'][0]['displayName']
 
-    stats = get_sorted_stats(statinfo, season=season, league=league, position=position, teamid=team, teams=teams, group=group, reverse=reverse)
+    stats = get_sorted_stats(statinfo, season=season, league=league, position=position, teamid=team, teams=teams,
+                             group=group, reverse=reverse, stats=stattype, date1=date1, date2=date2)
     stats = stats[0]
 
     if statinfo['name'] in stats['splits'][0]['stat']:
@@ -675,4 +736,6 @@ if __name__ == "__main__":
     # print(get_player_stats("ohtani", group="hitting", stattype="byDateRange", startDate="2020-07-27", endDate="2020-08-03"))
     # print(print_last_x_games("judge/castellanos", 6))
     # print(print_last_x_days("judge", 6))
-    print(print_pitch_arsenal('scherzer'))
+    # print(print_pitch_arsenal('scherzer'))
+    # get_sorted_stats(_find_stat_info('tb'), stats='byDateRange')
+    print(print_sorted_stats(['today', 'tb'], delta="-1"))
