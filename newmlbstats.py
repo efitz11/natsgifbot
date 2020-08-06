@@ -579,7 +579,9 @@ def print_sorted_stats(statquery_list, season=None, reverse=False, delta=None):
             break
     output = ""
     if stattype == 'byDateRange':
-        if date2 is None:
+        if date1 is None:
+            output = "Stats from today\n" % (date1)
+        elif date2 is None:
             output = "Stats from %s to today\n" % (date1)
         elif date1 == date2:
             output = "Stats from %s\n" % (date1 if isinstance(date1, str) else _convert_date_to_mlb_str(date1))
