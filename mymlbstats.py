@@ -2386,6 +2386,8 @@ def print_dongs(type, delta=None, reddit=False):
     """
     hydrates="&hydrate=scoringplays,team"
     games = get_day_schedule(delta=delta, scoringplays=True,hydrates=hydrates)['dates'][0]['games']
+    if len(games) == 0:
+        return None
     dongs = []
     find_videos = False
     if reddit:

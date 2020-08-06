@@ -4,16 +4,15 @@ import random
 from datetime import datetime, timedelta, time
 import re, json, os
 import asyncio
-from urllib.request import urlopen, Request
-import urllib.parse
 import utils
+import sched
 
 import mymlbgame, cfbgame, nflgame, xmlreader, nhlscores, cbbgame, stocks, olympics, gifs, gfycat
+import mymlbstats
 import odds as oddsmod
 import weather as weathermodule
 import frinkiac, web, tacobell
 import hq as hqmod
-import temporary
 import covid
 
 bot = commands.Bot(command_prefix='!')
@@ -839,7 +838,7 @@ async def on_message(message):
         # if patterneaton.search(message.content):
         #     await bot.send_message(message.channel,"Miami University Great Adam Eaton*")
 
-updater = mymlbgame.Updater()
+# updater = mymlbgame.Updater()
 
 async def my_bg_task():
     await bot.wait_until_ready()
@@ -896,11 +895,31 @@ async def check_covid_numbers():
             covid_sent_today = False
             await asyncio.sleep(wait_time)
 
+async def dongs_poster():
+    await bot.wait_until_ready()
+    channel = bot.get_channel(id=main_chid)
+    baseball_channel = discord.utils.find(lambda m: 'baseball' in m.name, channel.guild.channels)
+    while not bot.is_closed():
+        now_time = datetime.now()
+        post_hour, post_min = 21, 1
+        if now_time.hour == post_hour and now_time.minute == post_min:
+            output = mymlbstats.print_dongs('recent')
+            if output is not None:
+                await baseball_channel.send(output)
+                await baseball_channel.send("https://gfycat.com/FaintElasticAmericanavocet")  # go find the dongs
+        post_time = datetime(now_time.year, now_time.month, now_time.day, hour=post_hour, minute=post_min)
+        # sleep until post time
+        if post_time > now_time:
+            await asyncio.sleep((post_time - now_time).total_seconds())
+        else:
+            await asyncio.sleep(12*60*60)  # wait 12 hours
+
 mlbtr = xmlreader.XmlReader()
 
 #print(reddit.read_only)
 #bot.loop.create_task(my_bg_task())
 bot.loop.create_task(update_mlbtr())
+bot.loop.create_task(dongs_poster())
 # temp variable
 covid_sent_today = False
 bot.loop.create_task(check_covid_numbers())
