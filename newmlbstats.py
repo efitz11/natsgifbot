@@ -414,6 +414,14 @@ def _get_stats_query_params(statquery_list, delta=None):
                     statquery_list.remove(date2)
                     break
 
+    pool = None
+    if "all" in statquery_list:
+        pool = "all"
+    elif "rookies" in statquery_list:
+        pool = "qualified_rookies"
+    elif "qualified" in statquery_list:
+        pool = "qualified"
+
     league = None
     if 'al' in statquery_list:
         league = 'al'
@@ -442,7 +450,7 @@ def _get_stats_query_params(statquery_list, delta=None):
     if len(statquery_list) > 0:
         team = mymlbstats.get_teamid(' '.join(statquery_list))
 
-    return (league, want_group, pos, team, stat, stattype, date1, date2)
+    return (league, want_group, pos, team, stat, stattype, date1, date2, pool)
 
 def _find_stat_info(stat, retry=False):
     statsfile = 'mlb/statsapi_json/baseballStats.json'
@@ -457,7 +465,7 @@ def _find_stat_info(stat, retry=False):
     if not retry:
         return _find_stat_info(stat, retry=True)
 
-def get_sorted_stats(statinfo, season=None, league=None, position=None, teamid=None, teams=False, group=None, reverse=False, stats='season', date1=None, date2=None):
+def get_sorted_stats(statinfo, season=None, league=None, position=None, teamid=None, teams=False, group=None, reverse=False, stats='season', date1=None, date2=None, pool=None):
     if teams:
         url = API_LINK + "teams/stats?"
     else:
@@ -499,6 +507,8 @@ def get_sorted_stats(statinfo, season=None, league=None, position=None, teamid=N
         params['group'] = group
     if reverse:
         params['order'] = 'descending'
+    if pool is not None:
+        params['playerPool'] = pool
 
     url += urllib.parse.urlencode(params, safe=',')
     return utils.get_json(url)['stats']
@@ -508,7 +518,7 @@ def print_sorted_stats(statquery_list, season=None, reverse=False, delta=None):
     if statquery_list[0] == "teams":
         teams = True
 
-    league, group, position, team, stat, stattype, date1, date2 = _get_stats_query_params(statquery_list, delta=delta)
+    league, group, position, team, stat, stattype, date1, date2, pool = _get_stats_query_params(statquery_list, delta=delta)
     # print(league, group, position, team, stat)
 
     #teamid = None
@@ -522,7 +532,7 @@ def print_sorted_stats(statquery_list, season=None, reverse=False, delta=None):
         group = statinfo['statGroups'][0]['displayName']
 
     stats = get_sorted_stats(statinfo, season=season, league=league, position=position, teamid=team, teams=teams,
-                             group=group, reverse=reverse, stats=stattype, date1=date1, date2=date2)
+                             group=group, reverse=reverse, stats=stattype, date1=date1, date2=date2, pool=pool)
     stats = stats[0]
 
     if statinfo['name'] in stats['splits'][0]['stat']:
