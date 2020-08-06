@@ -341,7 +341,7 @@ class Baseball(commands.Cog):
             if len(team) == 1:
                 await ctx.send(self.get_help_str('leaders'))
             else:
-                await ctx.send(newmlbstats.print_sorted_stats(stat, season=season, reverse=reverse))
+                await ctx.send(newmlbstats.print_sorted_stats(stat, season=season, reverse=reverse, delta=delta))
         # elif team[0].endswith("leaders") or team[0].endswith("losers"):
         #     stat = team[1]
         #
@@ -486,7 +486,7 @@ class Baseball(commands.Cog):
             delta = args[-1]
             args = args[:-1]
 
-        if len(args) > 0 and len(args[-1].split('/')) == 3:
+        if len(args) > 0 and len(args[-1].split('/')) == 3 or len(args[-1].split('/') == 2):
             delta = self.convert_date_to_delta(args)
             args = args[:-1]
         return delta, args

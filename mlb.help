@@ -83,6 +83,13 @@ $reddit:
     * position: only include players at one position
     * group: [hitting, pitching, fielding, catching] - the kind of stat
     * team: only include players from one team
+    * today: only include stats from a single day (use delta to pick day)
+    * date: only include stats from a date range
+        > if using 'date', must include at least one date (mm/dd with optional <yy>yy)
+            - one date means from that date until today
+            - two dates means between those two dates, can separate dates by a space or '-'
+            - example: !mlb leaders date 7/28-8/3 hr
+                * shows HR leaders from 7/28 to 8/3
   - <stat>: the stat to list leaders for
 #line
 !mlb line <player> <delta>
