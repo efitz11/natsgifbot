@@ -2,7 +2,7 @@ $delta:
   - <delta>: (optional) +/- a number of days, or a date in mm/dd</yyyy> format, or [yesterday, tomorrow]
 $season:
   - <season>: (optional) a year indicating what season to search in
-              * some commands that support year ranges will accept them in the form <year1-year2>
+      * some commands that support year ranges will accept them in the form <year1-year2>
 $reddit:
   - <reddit>: (optional) include 'reddit' in command to output a reddit formatted table (instead of discord)
 #help
