@@ -555,15 +555,6 @@ def print_sorted_stats(statquery_list, season=None, reverse=False, delta=None):
     else:
         return "couldn't find stat %s or stat %s in search results" % (statinfo['name'], statinfo['lookupParam'])
 
-    labels = ['team', 'name', 'gamesPlayed', statinfo['name']]
-    repl = {'gamesPlayed':'gp', 'atBats':'ab', 'plateAppearances':'pa', 'inningsPitched':'ip'}
-    left = ['team', 'name']
-
-    if group == 'hitting':
-        labels.insert(3,'plateAppearances')
-    elif group == 'pitching':
-        labels.insert(3,'inningsPitched')
-
     rows = list()
     for player in stats['splits']:
         row = dict()
@@ -577,6 +568,20 @@ def print_sorted_stats(statquery_list, season=None, reverse=False, delta=None):
         rows.append(row)
         if len(rows) >= 10:
             break
+
+    if 'games' in rows[0]:
+        gamesplayed = "games"
+    else:
+        gamesplayed = "gamesPlayed"
+    labels = ['team', 'name', gamesplayed, statinfo['name']]
+    repl = {'gamesPlayed':'gp', 'atBats':'ab', 'plateAppearances':'pa', 'inningsPitched':'ip'}
+    left = ['team', 'name']
+
+    if group == 'hitting':
+        labels.insert(3,'plateAppearances')
+    elif group == 'pitching':
+        labels.insert(3,'inningsPitched')
+
     output = ""
     if stattype == 'byDateRange':
         if date1 is None:
