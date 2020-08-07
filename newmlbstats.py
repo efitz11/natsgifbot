@@ -211,7 +211,10 @@ def get_team_info(teamid):
         return results['teams'][0]
 
 def get_player_season_stats(name, type=None, year=None, career=None, reddit=None):
-    player = _new_player_search(name)
+    try:
+        player = _new_player_search(name)
+    except:
+        return "Error finding player %s" % name
     if player is None:
         return "No matching player found"
     # teamid = player['currentTeam']['id']
