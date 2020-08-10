@@ -75,8 +75,13 @@ def _get_stats_string(stats, group=None, include_gp=False):
     return utils.format_table(labels, statrows, repl_map=repl)
 
 def _get_multiple_stats_string(playerlist, group=None, include_gp=False, reddit=False):
-    if group is None:
-        group = playerlist[0]['stats'][0]['group']['displayName']
+    output = ""
+    while group is None:
+        if 'stats' in playerlist[0]:
+            group = playerlist[0]['stats'][0]['group']['displayName']
+        else:
+            output += "No stats for %s\n" % playerlist[0]['fullName']
+            playerlist.pop(0)
 
     if group == "hitting":
         labels = ['atBats', 'hits', 'doubles', 'triples', 'homeRuns', 'runs', 'rbi', 'baseOnBalls', 'strikeOuts', 'stolenBases', 'caughtStealing', 'avg', 'obp', 'slg' ,'ops']
@@ -93,17 +98,28 @@ def _get_multiple_stats_string(playerlist, group=None, include_gp=False, reddit=
         labels.insert(0, 'lastName')
 
     statrows = []
+    removelist = []
     for player in playerlist:
-        for g in player['stats']:
-            if g['group']['displayName'] == group:
-                row = g['splits'][0]['stat']
-                row['season'] = g['splits'][0]['season']
-                row['lastName'] = player['lastName']
-                if not reddit:
-                    row['lastName'] = row['lastName'][:5]
-                statrows.append(row)
+        if 'stats' in player:
+            for g in player['stats']:
+                if g['group']['displayName'] == group:
+                    row = g['splits'][0]['stat']
+                    row['season'] = g['splits'][0]['season']
+                    row['lastName'] = player['lastName']
+                    if not reddit:
+                        row['lastName'] = row['lastName'][:5]
+                    statrows.append(row)
+        else:
+            output += "No stats for %s\n" % player['fullName']
+            removelist.append(player)
 
-    return utils.format_table(labels, statrows, repl_map=repl, left_list=left, reddit=reddit, bold=True)
+    for player in removelist:
+        playerlist.remove(player)
+
+    if len(output) > 0:
+        output += "\n"
+
+    return output + utils.format_table(labels, statrows, repl_map=repl, left_list=left, reddit=reddit, bold=True)
 
 def get_player_stats(name, group=None, stattype=None, startDate=None, endDate=None, lastgames=None):
     if stattype is None:
