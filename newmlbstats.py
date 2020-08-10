@@ -467,7 +467,7 @@ def _get_stats_query_params(statquery_list, delta=None):
             statquery_list.remove(i)
             break
 
-    positions = ['c','1b','2b','3b','ss','lf','cf','rf','of','p','dh']
+    positions = ['c','1b','2b','3b','ss','if','lf','cf','rf','of','p','dh']
     pos = None
     for i in statquery_list:
         if i.lower() in positions:
@@ -525,8 +525,11 @@ def get_sorted_stats(statinfo, season=None, league=None, position=None, teamid=N
             params['leagueId'] = 103
     if position is not None:
         of = ['LF','CF','RF','OF']
+        inf = ['C','1B','2B','3B','SS']
         if position == 'OF':
             position = ','.join(of)
+        elif position == 'IF':
+            position = ','.join(inf)
         params['position'] = position
     if teamid is not None:
         params['teamId'] = teamid
