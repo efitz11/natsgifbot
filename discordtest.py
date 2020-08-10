@@ -905,7 +905,7 @@ async def dongs_poster():
         if now_time.hour == post_hour and now_time.minute == post_min:
             output = mymlbstats.print_dongs('recent')
             if output is not None:
-                await baseball_channel.send("```python\n%s```" % output)
+                await baseball_channel.send("```%s```" % output)
                 await baseball_channel.send("https://gfycat.com/FaintElasticAmericanavocet")  # go find the dongs
         post_time = datetime(now_time.year, now_time.month, now_time.day, hour=post_hour, minute=post_min)
         # sleep until post time
