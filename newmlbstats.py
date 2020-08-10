@@ -579,6 +579,8 @@ def print_sorted_stats(statquery_list, season=None, reverse=False, delta=None):
 
     rows = list()
     for player in stats['splits']:
+        if group == 'hitting' and player['stat']['plateAppearances'] == 0:
+            continue
         row = dict()
         row = player['stat']
         row['team'] = player['team']['abbreviation']
