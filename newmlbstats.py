@@ -121,10 +121,11 @@ def _get_multiple_stats_string(playerlist, group=None, include_gp=False, reddit=
 
     return output + utils.format_table(labels, statrows, repl_map=repl, left_list=left, reddit=reddit, bold=True)
 
-def get_player_stats(name, group=None, stattype=None, startDate=None, endDate=None, lastgames=None):
+def get_player_stats(name, group=None, stattype=None, startDate=None, endDate=None, lastgames=None, playerid=None):
     if stattype is None:
         return None
-    playerid = _find_player_id(name)
+    if playerid is None:
+        playerid = _find_player_id(name)
     if playerid is None:
         return "Couldn't find player"
     url = None
@@ -148,17 +149,40 @@ def print_player_stats(name, group=None, stattype=None, startDate=None, endDate=
     if stattype is not None:
         if startDate is not None and endDate is None:
             endDate = mymlbstats._timedelta_to_mlb(datetime.today())
-        names = name.split('/')
+        roster = None
+        team = None
         players = list()
-        for name in names:
-            players.append(get_player_stats(name, group=group, stattype=stattype, startDate=startDate, endDate=endDate, lastgames=lastgames))
+        if '/' not in name:
+            teamid, team = mymlbstats.get_teamid(name, extradata=True)
+            if teamid is not None:
+                roster = mymlbstats.get_team_info(teamid)['roster']
+                if group is None:
+                    group = 'hitting'
+                for player in roster:
+                    if group == 'hitting' and player['person']['primaryPosition']['code'] != '1':
+                        players.append(get_player_stats("", playerid=player['person']['id'], group=group, stattype=stattype, startDate=startDate, endDate=endDate, lastgames=lastgames))
+                    elif group == 'pitching' and player['person']['primaryPosition']['code'] == '1':
+                        players.append(get_player_stats("", playerid=player['person']['id'], group=group, stattype=stattype, startDate=startDate, endDate=endDate, lastgames=lastgames))
+                if group == 'hitting':
+                    players = sorted(players, key = lambda k: k['stats'][0]['splits'][0]['stat']['plateAppearances'], reverse=True)
+                elif group == 'pitching':
+                    players = sorted(players, key = lambda k: k['stats'][0]['splits'][0]['stat']['inningsPitched'], reverse=True)
+
+        if roster is None:
+            names = name.split('/')
+            for name in names:
+                players.append(get_player_stats(name, group=group, stattype=stattype, startDate=startDate, endDate=endDate, lastgames=lastgames))
 
         statsstr = _get_multiple_stats_string(players, group=group, include_gp=True, reddit=reddit)
         output = ""
         namesliststr = ""
-        for player in players:
-            namesliststr += "%s, " % player['fullName']
-        namesliststr = namesliststr[:-2]
+        if roster is None:
+            for player in players:
+                namesliststr += "%s, " % player['fullName']
+            namesliststr = namesliststr[:-2]
+        else:
+            print(team)
+            namesliststr = team['abbreviation']
         if stattype == "byDateRange":
             output = "%s to %s for %s:\n\n" % (startDate, endDate, namesliststr)
         elif stattype == "lastXGames":

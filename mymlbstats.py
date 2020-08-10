@@ -74,6 +74,7 @@ def get_ET_from_timestamp(timestamp):
 
 def get_mlb_teams():
     url = "http://statsapi.mlb.com/api/v1/teams?sportId=1"
+    print(url)
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     s = json.loads(urlopen(req).read().decode("utf-8"))
     teams = s['teams']
@@ -123,6 +124,8 @@ def get_teamid(search, extradata=False):
                 return names[name][0]
             else:
                 return names[name][0], names[name][1]
+    if extradata:
+        return None, None
 
 def _find_batter_in_lineup(batterid, lineups):
     for lineup in lineups:
