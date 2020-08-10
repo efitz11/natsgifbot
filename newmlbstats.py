@@ -443,10 +443,13 @@ def _get_stats_query_params(statquery_list, delta=None):
     pool = None
     if "all" in statquery_list:
         pool = "all"
+        statquery_list.remove('all')
     elif "rookies" in statquery_list:
         pool = "qualified_rookies"
+        statquery_list.remove('rookies')
     elif "qualified" in statquery_list:
         pool = "qualified"
+        statquery_list.remove('qualified')
 
     league = None
     if 'al' in statquery_list:
