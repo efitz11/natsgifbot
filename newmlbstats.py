@@ -119,7 +119,11 @@ def _get_multiple_stats_string(playerlist, group=None, include_gp=False, reddit=
     if len(output) > 0:
         output += "\n"
 
-    return output + utils.format_table(labels, statrows, repl_map=repl, left_list=left, reddit=reddit, bold=True)
+    bold = False
+    if len(playerlist) > 1:
+        bold = True
+
+    return output + utils.format_table(labels, statrows, repl_map=repl, left_list=left, reddit=reddit, bold=bold)
 
 def get_player_stats(name, group=None, stattype=None, startDate=None, endDate=None, lastgames=None, playerid=None):
     if stattype is None:
