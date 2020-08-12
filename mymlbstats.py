@@ -1169,18 +1169,21 @@ def player_vs_pitcher(player1, player2, reddit=False):
         return "format:\n!mlb bvp <batter> <pitcher>"
     output = "%s vs %s:\n\n" % (p1['name_display_first_last'], p2['name_display_first_last'])
     seasons = []
+    pa_or_ab = "plateAppearances"
     for s in res:
         if s['type']['displayName'] == "vsPlayer":
             for t in s['splits']:
                 season = t['stat']
+                if 'plateAppearances' not in season and 'atBats' in season:
+                    pa_or_ab = "atBats"
                 season['season'] = t['season']
                 seasons.append(season)
         elif s['type']['displayName'] == "vsPlayerTotal":
             season = s['splits'][0]['stat']
             season['season'] = "Total"
             seasons.append(season)
-    labs = ['season','plateAppearances','hits','doubles','triples','homeRuns','baseOnBalls','strikeOuts','stolenBases','avg','ops']
-    repl = {'side':'b','plateAppearances':'pa','hits':'h','doubles':'2B','triples':'3b','homeRuns':'hr','baseOnBalls':'bb','strikeOuts':'so', 'stolenBases':'sb'}
+    labs = ['season',pa_or_ab,'hits','doubles','triples','homeRuns','baseOnBalls','strikeOuts','stolenBases','avg','ops']
+    repl = {'side':'b','plateAppearances':'pa','atBats':'ab','hits':'h','doubles':'2B','triples':'3b','homeRuns':'hr','baseOnBalls':'bb','strikeOuts':'so', 'stolenBases':'sb'}
     leftlist = ['name','side']
     output = output + utils.format_table(labs, seasons, repl_map=repl, left_list=leftlist, reddit=reddit)
     return output
