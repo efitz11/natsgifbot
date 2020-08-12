@@ -110,7 +110,7 @@ def _get_multiple_stats_string(playerlist, group=None, include_gp=False, reddit=
         if 'stats' in player:
             for g in player['stats']:
                 rnge = [0]
-                if len(playerlist) == 1:
+                if len(playerlist) == 1 and len(g['splits']) > 2:
                     rnge = range(len(g['splits']))
                     insert_season = True
 
