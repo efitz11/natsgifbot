@@ -50,7 +50,8 @@ def _parse_players(input, pitchers=False):
         if '/' in input:
             names = input.split('/')
         for n in names:
-            player = _get_player_search(n)
+            # player = _get_player_search(n)
+            player = newmlbstats._new_player_search(n)
             if player is not None:
                 players.append(player)
     else:
@@ -1341,26 +1342,23 @@ def get_player_season_splits(name, split, type='hitting', year=None, active='Y',
             print(url)
             try:
                 json = _get_json(url)['sport_'+type+'_sits_composed']['sport_'+type+'_sits_total']['queryResults']['row']
-                if 'name_display_first_last' in player:
-                    json['name'] = player['name_display_first_last']
-                else:
-                    json['name'] = player['person']['fullName']
+                json['name'] = player['fullName']
                 results.append(json)
             except KeyError as e:
-                print(e)
+                print('KeyError:', e)
                 print(player)
                 continue
 
         if len(players) == 1 and len(results) > 0:
             if len(splits) == 1:
-                output = output + "%s's %s splits (%s):\n\n" % (player['name_display_first_last'], results[0]['situation'], results[0]['season'])
+                output = output + "%s's %s splits (%s):\n\n" % (player['fullName'], results[0]['situation'], results[0]['season'])
                 stats.pop(0)
             else:
-                output = output + "%s's splits (%s):\n\n" % (player['name_display_first_last'], results[0]['season'])
+                output = output + "%s's splits (%s):\n\n" % (player['fullName'], results[0]['season'])
 
     if len(players) > 1:
         stats.insert(0, 'name')
-    output = output + utils.format_table(stats,results,repl_map={'situation':'split'}, left_list=['name', 'split'], reddit=reddit, bold=True)
+    output = output + utils.format_table(stats,results,repl_map={'situation':'split'}, left_list=['name', 'situation'], reddit=reddit, bold=True)
     return output
 
 def get_player_trailing_splits(name, days=None, forcebatting=False, forcepitching=False, reddit=False):
