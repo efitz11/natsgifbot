@@ -51,7 +51,10 @@ def _find_player_id(name):
 def _new_player_search(name):
     p = _find_player_id(name)
     url = API_LINK + "people/%s?hydrate=currentTeam,team,stats(type=[yearByYear,yearByYearAdvanced,careerRegularSeason,careerAdvanced,availableStats](team(league)),leagueListId=mlb_hist)" % p
-    return utils.get_json(url)['people'][0]
+    player = utils.get_json(url)['people'][0]
+    # for backwards compat
+    player['player_id'] = str(player['id'])
+    return player
 
 def _get_stats_string(stats, group=None, include_gp=False):
     if group is None:
