@@ -247,6 +247,20 @@ class Baseball(commands.Cog):
                 await ctx.send("```%s```" % mymlbstats.compare_player_stats(playerlist, reddit=reddit))
             else:
                 await ctx.send("```%s```" % mymlbstats.compare_player_stats(playerlist, year=year, reddit=reddit))
+        elif team[0] == 'range':
+            if '-' in team[1]:
+                date1, date2 = team[1].split('-')
+                date1 = newmlbstats._convert_date_to_mlb_str(date1)
+                date2 = newmlbstats._convert_date_to_mlb_str(date2)
+                team = team[2:]
+                group = None
+                for t in team:
+                    if t in ['hitting', 'pitching']:
+                        group = t
+                        team.remove(t)
+                await ctx.send("```%s```" % newmlbstats.print_player_stats(' '.join(team), group=group, stattype="byDateRange", startDate=date1, endDate=date2, reddit=reddit))
+            else:
+                await ctx.send("date range (mm/dd/[yy]yy-mm/dd/[yy]yy) required")
         elif team[0] in ['splits', 'psplits']:
             t = 'pitching' if team[0] == 'psplits' else 'hitting'
             split = team[1]

@@ -137,6 +137,13 @@ $reddit:
 #plays
 !mlb plays <team> <inning>
   Show the play-by-play descriptions of every play in the half <inning> where <team> was batting
+#range
+!mlb range <date range> <player(s)>
+  Show stats over a certain date range for one or more players.
+  WARNING: MLB does not group stats over multiple seasons. If you search for a single player, this will display stats in the range for each season. If you search for multiple players, this will only display stats for the first season.
+
+  - <date range>: a range in the format "mm/dd/yyyy-mm/dd/yyyy"
+          the year is optional and can also be 2 digits
 #savant
 !mlb savant <team/player> <delta>
   Show baseball savant data for a game

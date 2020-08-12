@@ -34,6 +34,9 @@ def _convert_date_to_mlb_str(date):
             datelist[2] = "19" + datelist[2]
     return "%s-%s-%s" % (datelist[2], datelist[0], datelist[1])
 
+def _convert_mlb_date_to_datetime(date):
+    return datetime.strptime(date, '%Y-%m-%d')
+
 def _find_player_id(name):
     url = "https://typeahead.mlb.com/api/v1/typeahead/suggestions/%s" % urllib.parse.quote(name)
     players = utils.get_json(url)['players']
@@ -90,7 +93,7 @@ def _get_multiple_stats_string(playerlist, group=None, include_gp=False, reddit=
 
     repl = {'atBats':'ab', 'plateAppearances':'pa','hits':'h','doubles':'2B','triples':'3b','homeRuns':'hr', 'runs':'r', 'baseOnBalls':'bb','strikeOuts':'so', 'stolenBases':'sb', 'caughtStealing':'cs',
             'wins':'w', 'losses':'l', 'gamesPlayed':'g', 'gamesStarted':'gs', 'saveOpportunities':'svo', 'saves':'sv', 'inningsPitched':'ip', 'lastName':'name'}
-    left = ['lastName']
+    left = ['lastName', 'season']
 
     if include_gp:
         labels.insert(0, 'gamesPlayed')
@@ -99,20 +102,29 @@ def _get_multiple_stats_string(playerlist, group=None, include_gp=False, reddit=
 
     statrows = []
     removelist = []
+    insert_season = False
     for player in playerlist:
         if 'stats' in player:
             for g in player['stats']:
-                if g['group']['displayName'] == group:
-                    row = g['splits'][0]['stat']
-                    row['season'] = g['splits'][0]['season']
-                    row['lastName'] = player['lastName']
-                    if not reddit:
-                        row['lastName'] = row['lastName'][:5]
-                    statrows.append(row)
+                rnge = [0]
+                if len(playerlist) == 1:
+                    rnge = range(len(g['splits']))
+                    insert_season = True
+
+                for i in rnge:
+                    if g['group']['displayName'] == group and g['splits'][i]['sport']['id'] != 0:
+                        row = g['splits'][i]['stat']
+                        row['season'] = g['splits'][i]['season']
+                        row['lastName'] = player['lastName']
+                        if not reddit:
+                            row['lastName'] = row['lastName'][:5]
+                        statrows.append(row)
         else:
             output += "No stats for %s\n" % player['fullName']
             removelist.append(player)
 
+    if insert_season:
+        labels.insert(0, 'season')
     for player in removelist:
         playerlist.remove(player)
 
@@ -188,7 +200,12 @@ def print_player_stats(name, group=None, stattype=None, startDate=None, endDate=
             print(team)
             namesliststr = team['abbreviation']
         if stattype == "byDateRange":
+            print(startDate, endDate)
             output = "%s to %s for %s:\n\n" % (startDate, endDate, namesliststr)
+            start = _convert_mlb_date_to_datetime(startDate)
+            end = _convert_mlb_date_to_datetime(endDate)
+            if len(players) > 1 and start.year != end.year:
+                output += "These stats only show the first season in the date range. To get all seasons, search each player individually.\n\n"
         elif stattype == "lastXGames":
             output = "Last %s games for %s:\n\n" % (lastgames, namesliststr)
         output += statsstr
