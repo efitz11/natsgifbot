@@ -1320,7 +1320,7 @@ def get_player_season_splits(name, split, type='hitting', year=None, active='Y',
     if len(players) > 1:
         splits = [splits[0]]
     else:
-        if len(splits) == 0 and split == "months":
+        if len(splits) == 1 and split == "months":
             splits = ['march','april','may','june','july','august','september','october']
         elif len(splits) == 0:
             splits = [split]
@@ -1360,7 +1360,7 @@ def get_player_season_splits(name, split, type='hitting', year=None, active='Y',
 
     if len(players) > 1:
         stats.insert(0, 'name')
-    output = output + utils.format_table(stats,results,repl_map={'situation':'split'}, left_list=['name'], reddit=reddit, bold=True)
+    output = output + utils.format_table(stats,results,repl_map={'situation':'split'}, left_list=['name', 'split'], reddit=reddit, bold=True)
     return output
 
 def get_player_trailing_splits(name, days=None, forcebatting=False, forcepitching=False, reddit=False):
