@@ -2528,7 +2528,8 @@ def print_at_bats(name, delta=None):
                 if half == "bottom":
                     half = "bot"
                 if play['about']['isComplete']:
-                    output = output + "%s %d: %s " % (half, play['about']['inning'], play['result']['description'])
+                    pitching = "With %s pitching," % (play['matchup']['pitcher']['fullName'])
+                    output = output + "%s %d: %s %s " % (half, play['about']['inning'], pitching, play['result']['description'])
                     playevent = play['playEvents'][-1]
                     output = output + _get_single_line_statcast(playevent) + "\n\n"
                     if 'playId' in playevent:
