@@ -743,6 +743,7 @@ def print_pitch_arsenal(pitcher, season=None, reddit=False):
         return "could not find pitcher"
 
     pitches = get_pitch_arsenal(player['id'], season=season)
+    pitches = sorted(pitches, key = lambda k: float(k['percentage']), reverse=True)
 
     labels = ['description', 'percentage', 'averageSpeed']
     left = ['description']
