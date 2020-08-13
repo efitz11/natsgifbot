@@ -435,7 +435,10 @@ class Baseball(commands.Cog):
                 await ctx.send(m)
         elif team[0] == "standings":
             div = team[1]
-            await ctx.send(mymlbstats.get_div_standings(div))
+            if div is None or len(div) == 0:
+                await ctx.send('a division or league is a required argument')
+            else:
+                await ctx.send(mymlbstats.get_div_standings(div))
         elif team[0] in ["broadcast","broadcasts"]:
             team = ' '.join(team[1:]).lower()
             out = mymlbstats.print_broadcasts(team, delta=delta)
