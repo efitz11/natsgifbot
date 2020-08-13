@@ -2529,7 +2529,8 @@ def print_at_bats(name, delta=None):
                     half = "bot"
                 if play['about']['isComplete']:
                     pitching = "With %s pitching," % (play['matchup']['pitcher']['fullName'])
-                    output = output + "%s %d: %s %s " % (half, play['about']['inning'], pitching, play['result']['description'])
+                    scoring = "**" if play['about']['isScoringPlay'] else ""
+                    output = output + "%s %d: %s%s %s%s " % (half, play['about']['inning'], scoring, pitching, play['result']['description'], scoring)
                     playevent = play['playEvents'][-1]
                     output = output + _get_single_line_statcast(playevent) + "\n\n"
                     if 'playId' in playevent:
