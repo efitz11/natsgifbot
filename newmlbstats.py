@@ -687,32 +687,56 @@ def get_coaches(teamid):
         return results['roster']
 
 def print_birthdays(team, delta=None):
-    if len(team) == 0:
-        return "No team specified"
-    teamid, teamdata = mymlbstats.get_teamid(team, extradata=True)
-    if teamid is None:
-        return "could not find team"
-    roster = get_40man(teamid) + get_coaches(teamid)
+    birthdays = list()
     if delta is None:
         today = datetime.today()
     else:
         today = mymlbstats._get_date_from_delta(delta)
     todaystr = "%02d-%02d" % (today.month, today.day)
-    birthdays = list()
-    for player in roster:
-        if 'birthDate' in player['person']:
-            p = dict()
-            player = player['person']
-            if player['birthDate'][5:] == todaystr:
-                p['age'] = today.year - int(player['birthDate'][:4])
-                p['name'] = player['firstLastName']
-                birthdays.append(p)
+
+    if len(team) == 0:
+        url = API_LINK + "sports/1/players"
+        players = utils.get_json(url)['people']
+        teams = dict()
+        for player in players:
+            if 'birthDate' in player:
+                p = dict()
+                if player['birthDate'][5:] == todaystr:
+                    p['age'] = today.year - int(player['birthDate'][:4])
+                    p['name'] = player['firstLastName']
+                    curteamid = player['currentTeam']['id']
+
+                    if curteamid in teams:
+                        p['team'] = teams[curteamid]['abbreviation']
+
+                    else:
+                        teaminfo = get_team_info(curteamid)
+                        teams[curteamid] = teaminfo
+                        p['team'] = teaminfo['abbreviation']
+
+                    birthdays.append(p)
+    else:
+        teamid, teamdata = mymlbstats.get_teamid(team, extradata=True)
+        if teamid is None:
+            return "could not find team"
+        roster = get_40man(teamid) + get_coaches(teamid)
+        for player in roster:
+            if 'birthDate' in player['person']:
+                p = dict()
+                player = player['person']
+                if player['birthDate'][5:] == todaystr:
+                    p['age'] = today.year - int(player['birthDate'][:4])
+                    p['name'] = player['firstLastName']
+                    birthdays.append(p)
     if delta is None:
         todaystr = "today"
     else:
         todaystr = 'on ' + todaystr.replace('-','/')
     if len(birthdays) > 0:
-        return "%s birthdays %s:\n\n" % (teamdata['teamName'], todaystr) + utils.format_table(['name', 'age'], birthdays, left_list=['name'])
+        if len(team) > 0:
+            return "%s birthdays %s:\n\n" % (teamdata['teamName'], todaystr) + utils.format_table(['name', 'age'], birthdays, left_list=['name'])
+        else:
+            return "All birthdays %s:\n\n%s" % (todaystr, utils.format_table(['team','name','age'], birthdays, left_list=['team','name']))
     else:
         return "No %s birthdays on %s" % (teamdata['teamName'], todaystr)
 
