@@ -106,7 +106,7 @@ $reddit:
 #next
 !mlb next <num> <team>
   Just like "past" but for future days.
-  Display games during next <num> days for <team>
+  Display next <num> games for <team>. Won't display today's game if it started.
   - <num> (optional): defaults to 3
 #notes
 !mlb notes <team> <delta>
@@ -119,7 +119,7 @@ $reddit:
 #past
 !mlb past <num> <team>
   Just like "next" but for previous days.
-  Display games during past <num> days for <team>
+  Display past <num> games for <team>. Won't display today's game unless it ended.
   - <num> (optional): defaults to 3
 #pic
 !mlb pic <player>

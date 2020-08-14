@@ -282,7 +282,7 @@ class Baseball(commands.Cog):
             team = ' '.join(team[1:])
             await ctx.send("```%s```" % mymlbstats.print_roster(team, hitters=h))
         elif team[0] in ['past', 'next']:
-            num = 2
+            num = 3
             backwards = team[0] == 'past'
             if team[1].isdigit():
                 num = int(team[1])
