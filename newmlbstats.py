@@ -926,23 +926,113 @@ def _parse_contract_search(html):
         if pos.get_text() in positions:
             return item.find_all("a")[0]['href']
 
+def get_schedule(date, endDate=None, teamid=None):
+    # if it's a string then it's a delta
+    if date is None:
+        date = mymlbstats._get_date_from_delta("+0")
+    elif isinstance(date, str):
+        date = mymlbstats._get_date_from_delta(date)
+    d = str(date.year) + "-" + str(date.month).zfill(2) + "-" + str(date.day).zfill(2)
+    hydrates = "&hydrate=probablePitcher,person,decisions,team,stats,flags,lineups,linescore(matchup,runners),previousPlay"
+    team = ""
+    if teamid is not None:
+        team = "&teamId=" + str(teamid)
+    if endDate is None:
+        datestr = "&date=%s" % d
+    else:
+        enddate_mlbstr = str(endDate.year) + "-" + str(endDate.month).zfill(2) + "-" + str(endDate.day).zfill(2)
+        datestr = "&startDate=%s&endDate=%s" % (d, enddate_mlbstr)
+
+    url = "https://statsapi.mlb.com/api/v1/schedule?sportId=1" + team + datestr +  hydrates
+    return utils.get_json(url)['dates']
+
+def print_games(args, delta=None):
+    divs = {'nle':204,'nlc':205,'nlw':203,'ale':201,'alc':202,'alw':200}
+    if isinstance(args, list):
+        args = ' '.join(args)
+
+    all_games = get_schedule(delta)[0]['games']
+    games = list()
+    add_last_play = False
+
+    if 'close' in args:
+        for game in all_games:
+            if game['status']['abstractGameCode'] == "L" :
+                awayruns = game['linescore']['teams']['away']['runs']
+                homeruns = game['linescore']['teams']['home']['runs']
+                if game['linescore']['currentInning'] >= 7 and abs(awayruns-homeruns) <= 2:
+                    games.append(game)
+        if len(games) == 0:
+            return "No close (7th inning or later within 2 runs) games at the moment."
+    elif 'live' in args:
+        for game in all_games:
+            if game['status']['abstractGameCode'] == "L":
+                games.append(game)
+        if len(games) == 0:
+            return "No live games at the moment."
+    elif args in divs:
+        for game in all_games:
+            awaydiv = game['teams']['away']['team']['division']['id']
+            homediv = game['teams']['home']['team']['division']['id']
+            if awaydiv == divs[args] or homediv == divs[args]:
+                games.append(game)
+            if len(games) == 0:
+                return "No games for division found"
+    elif len(args) > 0:
+        add_last_play = True
+        teamid = mymlbstats.get_teamid(args)
+        if teamid is None:
+            return "Could not find team"
+        else:
+            for game in all_games:
+                away = game['teams']['away']['team']['id']
+                home = game['teams']['home']['team']['id']
+                if away == teamid or home == teamid:
+                    games.append(game)
+            if len(games) == 0:
+                return "No games found for %s" % args
+    output = ""
+    if len(games) == 0:
+        games = all_games
+    for game in games:
+        output += mymlbstats.get_single_game_info(game['gamePk'], gamejson=game) + "\n"
+        if add_last_play:
+            output += _add_last_play_info(game)
+    return output, len(games)
+
+def _add_last_play_info(game):
+    output = ""
+    gamepk = game['gamePk']
+    abstractstatus = game['status']['abstractGameState']
+    detailedstatus = game['status']['detailedState']
+    if abstractstatus == "Live" and detailedstatus != 'Delayed':
+        pbp = mymlbstats.get_pbp(gamepk)
+        try:
+            if 'description' not in pbp['allPlays'][-1]['result']:
+                lastplay = pbp['allPlays'][-2]
+            else:
+                lastplay = pbp['allPlays'][-1]
+            desc = lastplay['result']['description']
+            pitch = lastplay['matchup']['pitcher']['fullName']
+            if desc.startswith('Pitching Change:'):
+                output = output + desc + "\n\n"
+            else:
+                output = output + "Last Play: With " + pitch + " pitching, " + desc + "\n\n"
+            if 'pitchData' in lastplay['playEvents'][-1]:
+                data = lastplay['playEvents'][-1]
+                output = output + "Pitch: %s, %.02f mph\n" % (data['details']['type']['description'],
+                                                              data['pitchData']['startSpeed'])
+            if 'hitData' in lastplay['playEvents'][-1]:
+                data = lastplay['playEvents'][-1]['hitData']
+                output = output + "Statcast: %.02f ft, %.02f mph, %.02f degrees\n\n" % (data['totalDistance'],
+                                                                                        data['launchSpeed'],
+                                                                                        data['launchAngle'])
+        except Exception as e:
+            # print("Error in parsing game %d" % gamepk)
+            print(e)
+    return output
+
 if __name__ == "__main__":
-    # print(get_player_season_stats("rendon", year="2016-2019"))
-    # print(get_player_season_stats("rendon", career=True))
-    # print(get_player_season_stats('daniel hudson'))
-    # print(print_contract_info("max scherzer"))
-    # print(get_player_contract_table(""))
-    # get_scoring_plays(630851)
-    # print(print_stat_leaders('sb', season=2019))
-    # print(print_birthdays('lad'))
-    # print(print_sorted_stats("pitching nl hr".split(' '), season="2019"))
-    # print(print_sorted_stats("teams pitching nl hr".split(' '), season="2019"))
-    # print(print_player_stats("judge", stattype="byDateRange", startDate="2020-07-27"))
-    # print(get_player_stats("ohtani", stattype="byDateRange", startDate="2020-07-27", endDate="2020-08-03"))
-    # print(get_player_stats("ohtani", group="hitting", stattype="byDateRange", startDate="2020-07-27", endDate="2020-08-03"))
-    # print(print_last_x_games("judge/castellanos", 6))
-    # print(print_last_x_days("judge", 6))
-    # print(print_pitch_arsenal('scherzer'))
-    # get_sorted_stats(_find_stat_info('tb'), stats='byDateRange')
-    # print(print_sorted_stats(['today', 'tb'], delta="-1"))
-    print(print_stat_streaks(["onbase"]))
+    # get_schedule("-1")
+    # print(print_games('wsh'))
+    print(print_games("lad"))

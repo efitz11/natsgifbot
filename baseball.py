@@ -136,31 +136,15 @@ class Baseball(commands.Cog):
             team = team[:-1]
 
         if len(team) == 0 or (len(team) == 1 and (team[0] == 'live' or team[0] == 'close')):
-            liveonly, closeonly = False, False
-            if len(team) == 1 and team[0] == 'live':
-                liveonly = True
-            elif len(team) == 1 and team[0] == 'close':
-                closeonly = True
-            output, botchannel = mymlbstats.get_all_game_info(delta=delta, liveonly=liveonly, closeonly=closeonly)
+            output, numgames = newmlbstats.print_games(team, delta=delta)
             cmdchannel = ctx.channel
-            if botchannel:
+            if numgames > 5:
                 cmdchannel = discord.utils.find(lambda m: 'bot' in m.name, ctx.channel.guild.channels)
                 if cmdchannel != ctx.channel:
                     await ctx.channel.send("response in %s" % cmdchannel.mention)
             if len(output) > 0:
                 await cmdchannel.send("```python\n" + output + "```")
-            else:
-                if liveonly:
-                    await cmdchannel.send("```No live games at the moment.```")
-                elif closeonly:
-                    await cmdchannel.send("```No games in the 7th or later within 2 runs at the moment.```")
-            return
-
-        # if team[0] == 'help':
-        #     await ctx.send("https://github.com/efitz11/natsgifbot/blob/master/mlbhelp.txt")
-        #     return
-
-        if team[0] in ["sp","lsp"]:
+        elif team[0] in ["sp","lsp"]:
             teamname = ' '.join(team[1:])
             if team[0] == "lsp":
                 scoring_plays = mymlbstats.list_scoring_plays(teamname, delta,lastonly=True)
@@ -356,34 +340,6 @@ class Baseball(commands.Cog):
                 await ctx.send(self.get_help_str('leaders'))
             else:
                 await ctx.send(newmlbstats.print_sorted_stats(stat, season=season, reverse=reverse, delta=delta))
-        # elif team[0].endswith("leaders") or team[0].endswith("losers"):
-        #     stat = team[1]
-        #
-        #     if stat in self.savant_stats:
-        #         year = None
-        #         if team[-1].isdigit():
-        #             year = team[-1]
-        #         await ctx.send(savant.get_oaa_leaders(year=year))
-        #         return
-        #
-        #     opts = []
-        #     for i in range(2,len(team)):
-        #         opts.append(team[i])
-        #     stattype = 'bat'
-        #     if team[0].startswith('p'):
-        #         t = team[0][1:]
-        #         stattype = 'pit'
-        #     elif team[0].startswith('f'):
-        #         t = team[0][1:]
-        #         stattype = 'fld'
-        #     else:
-        #         t = team[0]
-        #     if t == "losers":
-        #         opts.append("reverse=yes")
-        #     fg = FG(stat.lower(),options=opts)
-        #     output = fg.get_stat_leaders_str(stattype=stattype)
-        #     await ctx.send(output)
-        #     return
         elif team[0] == 'ohtani':
             out = mymlbstats.get_ohtani_line(delta)
             if len(out) > 0:
@@ -494,7 +450,7 @@ class Baseball(commands.Cog):
             if teamname == 'help':
                 await ctx.send(self.get_help_str('mlb'))
             else:
-                output = mymlbstats.get_single_game(teamname,delta=delta)
+                output, numgames = newmlbstats.print_games(teamname, delta=delta)
                 if len(output) > 0:
                     await ctx.send("```python\n" + output + "```")
                 else:
