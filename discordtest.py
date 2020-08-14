@@ -8,7 +8,7 @@ import utils
 import sched
 
 import mymlbgame, cfbgame, nflgame, xmlreader, nhlscores, cbbgame, stocks, olympics, gifs, gfycat
-import mymlbstats
+import mymlbstats, newmlbstats
 import odds as oddsmod
 import weather as weathermodule
 import frinkiac, web, tacobell
@@ -909,12 +909,30 @@ async def dongs_poster():
         else:
             await asyncio.sleep(12*60*60)  # wait 12 hours
 
+async def birthday_poster():
+    await bot.wait_until_ready()
+    channel = bot.get_channel(id=main_chid)
+    while not bot.is_closed():
+        now_time = datetime.now()
+        post_hour, post_min = 8, 0
+        if now_time.hour == post_hour and now_time.minute == post_min:
+            output = newmlbstats.print_birthdays("")
+            if output is not None:
+                await channel.send("```%s```" % output)
+        post_time = datetime(now_time.year, now_time.month, now_time.day, hour=post_hour, minute=post_min)
+        # sleep until post time
+        if post_time > now_time:
+            await asyncio.sleep((post_time - now_time).total_seconds())
+        else:
+            await asyncio.sleep(12*60*60)  # wait 12 hours
+
 mlbtr = xmlreader.XmlReader()
 
 #print(reddit.read_only)
 # bot.loop.create_task(my_bg_task())
 bot.loop.create_task(update_mlbtr())
 bot.loop.create_task(dongs_poster())
+bot.loop.create_task(birthday_poster())
 # temp variable
 bot.loop.create_task(check_covid_numbers())
 for ext in extensions:
