@@ -729,7 +729,7 @@ def get_team_schedule(team, num, backward=True):
         startdate = str(now.year) + "-" + str(now.month).zfill(2) + "-" + str(now.day).zfill(2)
     url = "https://statsapi.mlb.com/api/v1/schedule?lang=en&sportId=1&hydrate=team(venue(timezone)),venue(timezone)," \
           "game(seriesStatus,seriesSummary,tickets,promotions,sponsorships,content(summary,media(epg))),seriesStatus," \
-          "seriesSummary,tickets,radioBroadcasts,broadcasts(all),probablePitcher,decisions,person,stats,flags,linescore(matchup,runners)&" \
+          "seriesSummary,tickets,radioBroadcasts,broadcasts(all),probablePitcher,decisions,lineups,person,stats,flags,linescore(matchup,runners)&" \
           "season=" + str(now.year) + "&startDate="+str(startdate)+"&endDate=" + str(enddate) + "&teamId=" + str(teamid) + "&" \
           "eventTypes=primary&scheduleTypes=games,events,xref"
     print(url)
