@@ -878,22 +878,17 @@ async def check_covid_numbers():
     channel = bot.get_channel(id=main_chid)
     corona_channel = discord.utils.find(lambda m: 'coronavirus' in m.name, channel.guild.channels)
     while not bot.is_closed():
-        global covid_sent_today
+        now_time = datetime.utcnow()
+        post_hour, post_min = 1,0
+        if now_time.hour == post_hour and now_time.minute == post_min:
+            await corona_channel.send(covid.get_usa())
 
-        wait_time = 60*15
-        # send update right before midnight GMT
-        now_time = datetime.utcnow().time()
-        if now_time >= time(0,44) and now_time <= time(0,59,59) and not covid_sent_today:
-            if now_time >= time(0,58,45) and not covid_sent_today:
-                if not covid_sent_today:
-                    await corona_channel.send(covid.get_usa())
-                    covid_sent_today = True
-                    await asyncio.sleep(wait_time)
-                else:
-                    await asyncio.sleep(60)
+        post_time = datetime(now_time.year, now_time.month, now_time.day, hour=post_hour, minute=post_min)
+        # sleep until post time
+        if post_time > now_time:
+            await asyncio.sleep((post_time - now_time).total_seconds())
         else:
-            covid_sent_today = False
-            await asyncio.sleep(wait_time)
+            await asyncio.sleep(12*60*60)  # wait 12 hours
 
 async def dongs_poster():
     await bot.wait_until_ready()
@@ -917,11 +912,10 @@ async def dongs_poster():
 mlbtr = xmlreader.XmlReader()
 
 #print(reddit.read_only)
-#bot.loop.create_task(my_bg_task())
+# bot.loop.create_task(my_bg_task())
 bot.loop.create_task(update_mlbtr())
 bot.loop.create_task(dongs_poster())
 # temp variable
-covid_sent_today = False
 bot.loop.create_task(check_covid_numbers())
 for ext in extensions:
     bot.load_extension(ext)
