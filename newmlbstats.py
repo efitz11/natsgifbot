@@ -736,7 +736,7 @@ def print_birthdays(team, delta=None):
         if len(team) > 0:
             return "%s birthdays %s:\n\n" % (teamdata['teamName'], todaystr) + utils.format_table(['name', 'age'], birthdays, left_list=['name'])
         else:
-            return "All birthdays %s:\n\n%s" % (todaystr, utils.format_table(['team','name','age'], birthdays, left_list=['team','name']))
+            return "All player birthdays %s:\n\n%s" % (todaystr, utils.format_table(['team','name','age'], birthdays, left_list=['team','name']))
     else:
         return "No %s birthdays on %s" % (teamdata['teamName'], todaystr)
 
