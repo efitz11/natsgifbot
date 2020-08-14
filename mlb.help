@@ -35,6 +35,8 @@ $reddit:
 #birthdays
 !mlb birthdays <team> <delta>
   Displays all birthdays for players/coaches on <team> on a certain day
+
+    * if <team> is omitted, displays all player birthdays across the league
 #broadcasts
 !mlb broadcasts <team> <delta>
   Display broadcast info for a game
