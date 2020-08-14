@@ -289,7 +289,8 @@ class Baseball(commands.Cog):
                 team = ' '.join(team[2:])
             else:
                 team = ' '.join(team[1:])
-            await ctx.send("```%s```" % mymlbstats.get_team_schedule(team,num,backward=backwards))
+            # await ctx.send("```%s```" % mymlbstats.get_team_schedule(team,num,backward=backwards))
+            await ctx.send("```%s```" % newmlbstats.print_team_schedule(team, num, forward=(not backwards)))
             return
         elif team[0].startswith("last") or team[0].startswith("blast") or team[0].startswith("plast"):
             group, usegames = None, False

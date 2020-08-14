@@ -4,6 +4,7 @@ import utils
 from datetime import datetime, timedelta
 from bs4 import BeautifulSoup
 import mymlbstats
+import calendar
 
 API_LINK = 'https://statsapi.mlb.com/api/v1/'
 
@@ -999,6 +1000,50 @@ def print_games(args, delta=None):
         if add_last_play:
             output += _add_last_play_info(game)
     return output, len(games)
+
+def print_team_schedule(team, num, forward=True):
+    """print next/previous <num> days for a team"""
+    teamid = mymlbstats.get_teamid(team)
+    if teamid is None:
+        return "Could not find team"
+
+    today = mymlbstats._get_date_from_delta("+0")
+    plus = "+" if forward else "-"
+    date2 = mymlbstats._get_date_from_delta(plus + str(num))
+    if forward:
+        dates = get_schedule(today, endDate=date2, teamid=teamid)
+    else:
+        dates = get_schedule(date2, endDate=today, teamid=teamid)
+
+    output = ""
+    for date in dates:
+        for game in date['games']:
+            if 'status' in game:
+                if forward and game['status']['abstractGameCode'] in ['L', 'F']:
+                    continue
+                elif not forward and game['status']['abstractGameCode'] in ['L', 'P']:
+                    continue
+
+            dt = datetime.strptime(date['date'], "%Y-%m-%d")
+            if today.day-dt.day == 0:
+                day = "Today"
+            elif not forward:
+                if today.day-dt.day == 1:
+                    day = "Yesterday"
+                else:
+                    day = calendar.day_name[dt.weekday()]
+            else:
+                if dt.day-today.day == 1:
+                    day = "Tomorrow"
+                else:
+                    day = calendar.day_name[dt.weekday()]
+            output = output + date['date'] + " (%s):\n" % (day)
+            output += mymlbstats.get_single_game_info(game['gamePk'], gamejson=game) + "\n"
+
+    if len(output) == 0:
+        return "no games found"
+    else:
+        return output
 
 def _add_last_play_info(game):
     output = ""
