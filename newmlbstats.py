@@ -1017,6 +1017,15 @@ def print_games(args, delta=None):
                     games.append(game)
             if len(games) == 0:
                 return "No games found for %s" % args
+            # check doubleheader
+            is_dh_live = False
+            for game in games:
+                if game['doubleHeader'] == "Y" and game['status']['codedGameState'] == 'I':
+                    is_dh_live = True
+            for game in games:
+                if game['doubleHeader'] == "Y" and game['status']['codedGameState'] != 'I':
+                    games.remove(game)
+
     output = ""
     if len(games) == 0:
         games = all_games
