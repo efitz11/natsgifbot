@@ -700,18 +700,19 @@ def print_birthdays(team, delta=None):
     todaystr = "%02d-%02d" % (today.month, today.day)
     birthdays = list()
     for player in roster:
-        p = dict()
-        player = player['person']
-        if player['birthDate'][5:] == todaystr:
-            p['age'] = today.year - int(player['birthDate'][:4])
-            p['name'] = player['firstLastName']
-            birthdays.append(p)
+        if 'birthDate' in player['person']:
+            p = dict()
+            player = player['person']
+            if player['birthDate'][5:] == todaystr:
+                p['age'] = today.year - int(player['birthDate'][:4])
+                p['name'] = player['firstLastName']
+                birthdays.append(p)
     if delta is None:
         todaystr = "today"
     else:
-        todaystr = todaystr.replace('-','/')
+        todaystr = 'on ' + todaystr.replace('-','/')
     if len(birthdays) > 0:
-        return "%s birthdays on %s:\n\n" % (teamdata['teamName'], todaystr) + utils.format_table(['name', 'age'], birthdays, left_list=['name'])
+        return "%s birthdays %s:\n\n" % (teamdata['teamName'], todaystr) + utils.format_table(['name', 'age'], birthdays, left_list=['name'])
     else:
         return "No %s birthdays on %s" % (teamdata['teamName'], todaystr)
 
