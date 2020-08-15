@@ -191,7 +191,11 @@ def print_player_stats(name, group=None, stattype=None, startDate=None, endDate=
         if roster is None:
             names = name.split('/')
             for name in names:
-                players.append(get_player_stats(name, group=group, stattype=stattype, startDate=startDate, endDate=endDate, lastgames=lastgames))
+                player = get_player_stats(name, group=group, stattype=stattype, startDate=startDate, endDate=endDate, lastgames=lastgames)
+                if player != "Couldn't find player":
+                    players.append(player)
+                else:
+                    return player
 
         statsstr = _get_multiple_stats_string(players, group=group, include_gp=True, reddit=reddit)
         output = ""
