@@ -97,8 +97,8 @@ def get_player(game_json, playerid):
         if e['batter'] == playerid:
             events.append(e)
 
-    cols = ['batter_name', 'result','hit_speed','hit_distance','hit_angle','xba']
-    repl = {'batter_name':'batter','hit_speed':'EV','hit_distance':'dist','hit_angle':'LA'}
+    cols = ['inning','batter_name', 'result','hit_speed','hit_distance','hit_angle','xba']
+    repl = {'inning':'inn','batter_name':'batter','hit_speed':'EV','hit_distance':'dist','hit_angle':'LA'}
     left = ['batter_name', 'result']
     output = "```python\n%s```" % utils.format_table(cols,events,repl_map=repl,left_list=left)
     return output
@@ -120,7 +120,7 @@ def print_player_or_team(query, delta=None):
         if p is None:
             return "Query did not match team or player"
         teamid = int(p['team_id'])
-        return get_player(get_game(find_gamepks(None,teamid=teamid, delta=delta)[0]), int(p['player_id']))
+        return get_player(get_game(find_gamepks(None, teamid=teamid, delta=delta)[0]), int(p['player_id']))
     else:
         return get_five(get_game(find_gamepks(None, teamid=teamid, delta=delta)[0]))
 
