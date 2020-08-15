@@ -507,6 +507,7 @@ def print_box(team,part, delta=None):
         if team == game['teams']['away']['team']['abbreviation'].lower() or \
                 team == game['teams']['home']['team']['abbreviation'].lower():
             useabv = True
+    output = ""
     for game in games:
         awayname = game['teams']['away']['team']['name'].lower()
         homename = game['teams']['home']['team']['name'].lower()
@@ -546,7 +547,8 @@ def print_box(team,part, delta=None):
                         # print(game[1])
 
                 out = bs.print_box(side=side, part=part, display_pitches=dp, oldboxes=boxes)
-                return out
+                output += "```%s```" % out
+    return output
 
 def print_linescore(team, delta=None):
     teamid = get_teamid(team)
