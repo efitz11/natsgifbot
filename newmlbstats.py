@@ -634,6 +634,9 @@ def print_sorted_stats(statquery_list, season=None, reverse=False, delta=None):
         return "couldn't find stat %s or stat %s in search results" % (statinfo['name'], statinfo['lookupParam'])
 
     rows = list()
+    num = 10
+    if teams:
+        num = 15
     for player in stats['splits']:
         if group == 'hitting' and player['stat']['plateAppearances'] == 0:
             continue
@@ -646,7 +649,7 @@ def print_sorted_stats(statquery_list, season=None, reverse=False, delta=None):
             row['name'] = player['player']['fullName']
         row[statinfo['name']] = player['stat'][statname]
         rows.append(row)
-        if len(rows) >= 10:
+        if len(rows) >= num:
             break
 
     if 'games' in rows[0]:
