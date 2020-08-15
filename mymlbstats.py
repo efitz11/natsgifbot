@@ -536,11 +536,16 @@ def print_box(team,part, delta=None):
                     schedule = get_days_schedule(_timedelta_to_mlb(_get_date_from_delta(-3)), _timedelta_to_mlb(_get_date_from_delta(-1)),teamid=teamid)
                     gamepks = []
                     for date in schedule['dates']:
+                        count = 1
                         for game in date['games']:
                             gamedate = game['gameDate'][:game['gameDate'].find('T')]
                             parts = gamedate.split('-')
                             month, day = int(parts[1]), int(parts[2])
-                            gamepks.append((game['gamePk'], "%s/%s" % (month, day)))
+                            extra = ""
+                            if len(date['games']) > 1:
+                                extra = "-%d" % count
+                            gamepks.append((game['gamePk'], "%s/%s%s" % (month, day, extra)))
+                            count += 1
                     for game in gamepks:
                         boxes.append(BoxScore.BoxScore(get_boxscore(game[0])))
                         boxes[-1].box['date'] = game[1]
