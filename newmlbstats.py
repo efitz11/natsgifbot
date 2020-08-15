@@ -1027,10 +1027,13 @@ def print_games(args, delta=None):
                     games.remove(game)
 
     output = ""
+    show_on_deck = False
     if len(games) == 0:
         games = all_games
+    elif len(games) == 1:
+        show_on_deck = True
     for game in games:
-        output += mymlbstats.get_single_game_info(game['gamePk'], gamejson=game) + "\n"
+        output += mymlbstats.get_single_game_info(game['gamePk'], gamejson=game, show_on_deck=show_on_deck) + "\n"
         if add_last_play:
             output += _add_last_play_info(game)
     return output, len(games)
