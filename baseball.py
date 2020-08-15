@@ -359,7 +359,7 @@ class Baseball(commands.Cog):
             team = ' '.join(team[1:]).lower()
             out = mymlbstats.print_box(team, part=part, delta=delta)
             if out is not None:
-                await ctx.send("```%s```" % out)
+                await ctx.send("%s" % out)
             return
         elif team[0] in ['umps', 'umpires']:
             team = ' '.join(team[1:]).lower()
