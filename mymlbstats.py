@@ -1044,10 +1044,13 @@ def get_player_line(name, delta=None, player=None, schedule=None):
         try:
             stats = box['teams'][side]['players']['ID' + str(pid)]['stats']
         except KeyError:
-            output = output + "No stats found for player %s" % disp_name
+            output = output + "No stats found for player %s\n\n" % disp_name
             continue
         d = _get_date_from_delta(delta)
-        output = output + "%s (%s) %d/%d vs %s:\n\n" % (disp_name, team_abbr, d.month, d.day, opp.upper())
+        vs_or_at = "vs"
+        if side == "away":
+            vs_or_at = "@"
+        output = output + "%s (%s) %d/%d %s %s:\n\n" % (disp_name, team_abbr, d.month, d.day, vs_or_at, opp.upper())
         hasstats = False
         pitcher = False
         if 'inningsPitched' in stats['pitching']:
