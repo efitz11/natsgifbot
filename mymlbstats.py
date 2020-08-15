@@ -1031,9 +1031,11 @@ def get_player_line(name, delta=None, player=None, schedule=None):
         gamepk = game['gamePk']
         if game['teams']['away']['team']['id'] == teamid:
             opp = game['teams']['home']['team']['abbreviation']
+            team_abbr = game['teams']['away']['team']['abbreviation']
             side = 'away'
         else:
             opp = game['teams']['away']['team']['abbreviation']
+            team_abbr = game['teams']['home']['team']['abbreviation']
             side = 'home'
         useDH = False
         if game['teams']['home']['team']['league']['id'] == 103:
@@ -1045,7 +1047,7 @@ def get_player_line(name, delta=None, player=None, schedule=None):
             output = output + "No stats found for player %s" % disp_name
             continue
         d = _get_date_from_delta(delta)
-        output = output + "%s %d/%d vs %s:\n\n" % (disp_name, d.month, d.day, opp.upper())
+        output = output + "%s (%s) %d/%d vs %s:\n\n" % (disp_name, team_abbr, d.month, d.day, opp.upper())
         hasstats = False
         pitcher = False
         if 'inningsPitched' in stats['pitching']:
@@ -1070,7 +1072,7 @@ def get_player_line(name, delta=None, player=None, schedule=None):
             hasstats=True
             s = stats['batting']
             output = output + "AB H 2B 3B HR R RBI BB SO SB CS\n"
-            output = output + "%2d %d %2d %2d %2d %d %3d %2d %2d %2d %2d\n" % (
+            output = output + "%2d %d %2d %2d %2d %d %3d %2d %2d %2d %2d\n\n" % (
                 s['atBats'],
                 s['hits'],
                 s['doubles'],
