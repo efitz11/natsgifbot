@@ -472,9 +472,12 @@ def _get_stats_query_params(statquery_list, delta=None):
     if 'today' in statquery_list:
         stattype = 'byDateRange'
         statquery_list.remove('today')
-    if 'date' in statquery_list:
+    if 'date' in statquery_list or 'dates' in statquery_list:
         stattype = 'byDateRange'
-        statquery_list.remove('date')
+        if 'date' in statquery_list:
+            statquery_list.remove('date')
+        elif 'dates' in statquery_list:
+            statquery_list.remove('dates')
         dates = 0
         for item in statquery_list:
             if '-' in item:
