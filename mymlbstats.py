@@ -2585,60 +2585,90 @@ def print_pitches_by_inning(team, delta=None):
     games = schedule['dates'][0]['games']
     for game in games:
         gamepk = game['gamePk']
-        pbp = get_pbp(gamepk)['allPlays']
+        savantdata = utils.get_json("https://baseballsavant.mlb.com/gf?game_pk=%d" % gamepk)
         away = game['teams']['away']['team']['id'] == teamid
-        half = "top" if not away else "bottom"
-        pitchers = []
-        columns = ['pitcher']
-        curpitcher = None
-        curtotal = 0
-        for play in pbp:
-            if play['about']['halfInning'] == half:
-                pitcher = play['matchup']['pitcher']['fullName']
-                inning = play['about']['inning']
-                inningstr = str(inning)
-                pitches = len(play['pitchIndex'])
-                for event in play['playEvents']:
-                    if event['type'] == "pickoff":
-                        pitches -= 1
-                if curpitcher is None:
-                    curpitcher = pitcher
-                    p = dict()
-                    p['pitcher'] = pitcher
-                    p['id'] = play['matchup']['pitcher']['id']
-                    p['1'] = pitches
-                    curtotal += pitches
-                    columns.append(str(inning))
-                elif pitcher != curpitcher:
-                    curpitcher = pitcher
-                    pitchers.append(p)
-                    p['total'] = curtotal
-                    p = dict()
-                    p['pitcher'] = pitcher
-                    p['id'] = play['matchup']['pitcher']['id']
-                    p[inningstr] = pitches
-                    curtotal = pitches
-                    if inningstr not in columns:
-                        columns.append(str(inning))
-                else:
-                    curtotal += pitches
-                    if inningstr in p:
-                        p[inningstr] += pitches
-                    else:
-                        p[inningstr] = pitches
-                        columns.append(str(inning))
-        p['total'] = curtotal
-        pitchers.append(p)
-        columns.append('total')
-        if not useteam:
-            for i in range(len(pitchers)-1, -1, -1):
-                if pitchers[i]['id'] != playerid:
-                    pitchers.pop(i)
 
+        if away:
+            pitchers_savant = savantdata['away_pitchers']
+        else:
+            pitchers_savant = savantdata['home_pitchers']
+
+        pitchers = list()
+        columns = list()
+        side = 'away' if away else 'home'
+        for pitcher in savantdata['boxscore']['teams'][side]['pitchers']:
+            if not useteam:
+                if pitcher != playerid:
+                    continue
+            pitcher = pitchers_savant[str(pitcher)]
+            p = dict()
+            p['pitcher'] = pitcher[0]['pitcher_name']
+            p['total'] = len(pitcher)
+            for pitch in pitcher:
+                inning = str(pitch['inning'])
+                if inning not in p:
+                    p[inning] = 1
+                    if inning not in columns:
+                        columns.append(inning)
+                else:
+                    p[inning] += 1
+            pitchers.append(p)
+            print(p)
+        columns = ['pitcher'] + sorted(columns) + ['total']
         output = output + "```python\n%s```" % (utils.format_table(columns, pitchers))
 
+        # pbp = get_pbp(gamepk)['allPlays']
+        # half = "top" if not away else "bottom"
+        # pitchers = []
+        # columns = ['pitcher']
+        # curpitcher = None
+        # curtotal = 0
+        # for play in pbp:
+        #     if play['about']['halfInning'] == half:
+        #         pitcher = play['matchup']['pitcher']['fullName']
+        #         inning = play['about']['inning']
+        #         inningstr = str(inning)
+        #         pitches = len(play['pitchIndex'])
+        #         for event in play['playEvents']:
+        #             if event['type'] == "pickoff":
+        #                 pitches -= 1
+        #         if curpitcher is None:
+        #             curpitcher = pitcher
+        #             p = dict()
+        #             p['pitcher'] = pitcher
+        #             p['id'] = play['matchup']['pitcher']['id']
+        #             p['1'] = pitches
+        #             curtotal += pitches
+        #             columns.append(str(inning))
+        #         elif pitcher != curpitcher:
+        #             curpitcher = pitcher
+        #             pitchers.append(p)
+        #             p['total'] = curtotal
+        #             p = dict()
+        #             p['pitcher'] = pitcher
+        #             p['id'] = play['matchup']['pitcher']['id']
+        #             p[inningstr] = pitches
+        #             curtotal = pitches
+        #             if inningstr not in columns:
+        #                 columns.append(str(inning))
+        #         else:
+        #             curtotal += pitches
+        #             if inningstr in p:
+        #                 p[inningstr] += pitches
+        #             else:
+        #                 p[inningstr] = pitches
+        #                 columns.append(str(inning))
+        # p['total'] = curtotal
+        # pitchers.append(p)
+        # columns.append('total')
+        # if not useteam:
+        #     for i in range(len(pitchers)-1, -1, -1):
+        #         if pitchers[i]['id'] != playerid:
+        #             pitchers.pop(i)
+
+        # output = output + "```python\n%s```" % (utils.format_table(columns, pitchers))
+
         if not useteam:
-            savantdata = utils.get_json("https://baseballsavant.mlb.com/gf?game_pk=%d" % gamepk)
             if not away:
                 key = 'home_pitchers'
             else:
