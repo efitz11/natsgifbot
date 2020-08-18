@@ -2631,7 +2631,7 @@ def print_pitches_by_inning(team, delta=None):
         pitchers.append(p)
         columns.append('total')
         if not useteam:
-            for i in range(len(pitchers) -1, -1, -1):
+            for i in range(len(pitchers)-1, -1, -1):
                 if pitchers[i]['id'] != playerid:
                     pitchers.pop(i)
 
@@ -2646,6 +2646,18 @@ def print_pitches_by_inning(team, delta=None):
             pitcher_data = None
             if str(playerid) in savantdata[key]:
                 pitcher_data = savantdata[key][str(playerid)]
+            # print last 5 pitches
+            pitch_events = list()
+            if pitcher_data is not None:
+                for i in range(len(pitcher_data)-1, len(pitcher_data)-6, -1):
+                    pitch = pitcher_data[i]
+                    pitch_events.append(pitch)
+                labs = ["batter_name", "player_total_pitches", "inning", "description", "pitch_name","start_speed"]
+                repl = {"batter_name":"batter", "player_total_pitches":"num", "inning":"inn", "pitch_name":"pitch", "start_speed":"vel"}
+                left = ["batter_name", "description", "pitch_name"]
+                output += "```python\n%s```" % utils.format_table(labs, pitch_events, repl_map=repl, left_list=left)
+
+            # print pitches summary
             if pitcher_data is not None:
                 pitches = []
                 pitchtypes = pitcher_data[0]['pitch_types']
