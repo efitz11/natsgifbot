@@ -16,9 +16,12 @@ def _get_json(url,encoding="utf-8"):
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     return json.loads(urlopen(req).read().decode(encoding))
 
-def _get_date_from_delta(delta=None):
-    now = datetime.now() - timedelta(hours=5)
-    if delta is not None and (isinstance(delta,int) or (delta.startswith('+') or delta.startswith('-'))):
+def _get_date_from_delta(delta=None, offset=True):
+    if offset:
+        now = datetime.now() - timedelta(hours=5)
+    else:
+        now = datetime.now()
+    if delta is not None and (isinstance(delta, int) or (delta.startswith('+') or delta.startswith('-'))):
         delta = int(delta)
         now = now + timedelta(days=delta)
     return now
