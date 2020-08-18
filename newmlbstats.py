@@ -701,7 +701,7 @@ def print_birthdays(team, delta=None):
     if delta is None:
         today = datetime.today()
     else:
-        today = mymlbstats._get_date_from_delta(delta)
+        today = mymlbstats._get_date_from_delta(delta, offset=False)
     todaystr = "%02d-%02d" % (today.month, today.day)
 
     if len(team) == 0:
