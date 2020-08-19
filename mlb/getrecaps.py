@@ -328,15 +328,16 @@ def find_realfast():
     date = "%d-%02d-%02d" % (now.year, now.month, now.day)
     for item in s['docs']:
         if date in item['date'] and "real fast" in item['blurb'].lower():
-            url = "https://www.mlb.com/data-service/en/videos/" + item['id']
-            print(url)
-            req = Request(url, headers={'User-Agent' : "ubuntu"})
-            t = json.loads(urlopen(req).read().decode("utf-8"))
-            for p in t['playbacks']:
+            # url = "https://www.mlb.com/data-service/en/videos/" + item['id']
+            # print(url)
+            # req = Request(url, headers={'User-Agent' : "ubuntu"})
+            # t = json.loads(urlopen(req).read().decode("utf-8"))
+            # for p in t['playbacks']:
+            for p in item['playbacks']:
                 if p['name'] == "mp4Avc":
-                    blurb = t['blurb']
+                    blurb = item['blurb']
                     url = p['url']
-                    duration = t['duration'][3:]
+                    duration = item['duration'][3:]
                     s = "[%s](%s) - %s\n\n" % (blurb,url,duration)
                     return s
     return ""
