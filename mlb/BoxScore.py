@@ -96,8 +96,10 @@ class BoxScore:
         elif part == 'bullpen':
             teamid = self.box['teams'][side]['team']['id']
             table = []
+            starters = list()
             for playerid in self.box['teams'][side][part]:
                 player = self.players[playerid]
+                is_starter = False
                 data = dict()
                 data['name'] = player['person']['boxscoreName']
                 data['era'] = player['seasonStats']['pitching']['era']
@@ -110,7 +112,15 @@ class BoxScore:
                         data[box.box['date']] = box.box['teams'][oldside]['players']["ID" + str(playerid)]['stats']['pitching']['pitchesThrown']
                     except:
                         data[box.box['date']] = ""
-                table.append(data)
+                    if box.box['teams'][oldside]['pitchers'][0] == playerid:
+                        is_starter = True
+                if is_starter:
+                    starters.append(data)
+                else:
+                    table.append(data)
+            table.append([dict()])
+            table += starters
+
             import sys, os
             sys.path.insert(1, os.path.join(sys.path[0],'..'))
             import mymlbstats
