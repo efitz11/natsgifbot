@@ -185,7 +185,7 @@ class Baseball(commands.Cog):
             if len(out) == 0:
                 await ctx.send("couldn't find stats")
             else:
-                await ctx.send("```%s```" % out)
+                await ctx.send(out)
             return
         # elif team[0] in ['stats','bstats','pstats','hstats','hbstats','hpstats']:
         elif team[0].endswith('stats'):

@@ -1058,7 +1058,7 @@ def get_player_line(name, delta=None, player=None, schedule=None):
         vs_or_at = "vs"
         if side == "away":
             vs_or_at = "@"
-        output = output + "%s (%s) %d/%d %s %s:\n\n" % (disp_name, team_abbr, d.month, d.day, vs_or_at, opp.upper())
+        gameoutput = "%s (%s) %d/%d %s %s:\n\n" % (disp_name, team_abbr, d.month, d.day, vs_or_at, opp.upper())
         hasstats = False
         pitcher = False
         if 'inningsPitched' in stats['pitching']:
@@ -1068,8 +1068,8 @@ def get_player_line(name, delta=None, player=None, schedule=None):
             dec = ""
             if 'note' in s:
                 dec = s['note']
-            output = output + " IP  H  R ER HR BB SO  P-S\n"
-            output = output + "%s %2d %2d %2d %2d %2d %2d %2d-%d %s\n\n" % (s['inningsPitched'],
+            gameoutput += " IP  H  R ER HR BB SO  P-S\n"
+            gameoutput += "%s %2d %2d %2d %2d %2d %2d %2d-%d %s\n\n" % (s['inningsPitched'],
                                                                    s['hits'],
                                                                    s['runs'],
                                                                    s['earnedRuns'],
@@ -1082,8 +1082,8 @@ def get_player_line(name, delta=None, player=None, schedule=None):
         if 'atBats' in stats['batting'] and (not pitcher or (pitcher and not useDH)):
             hasstats=True
             s = stats['batting']
-            output = output + "AB H 2B 3B HR R RBI BB SO SB CS\n"
-            output = output + "%2d %d %2d %2d %2d %d %3d %2d %2d %2d %2d\n\n" % (
+            gameoutput += "AB H 2B 3B HR R RBI BB SO SB CS\n"
+            gameoutput += "%2d %d %2d %2d %2d %d %3d %2d %2d %2d %2d\n\n" % (
                 s['atBats'],
                 s['hits'],
                 s['doubles'],
@@ -1096,7 +1096,8 @@ def get_player_line(name, delta=None, player=None, schedule=None):
                 s['stolenBases'],
                 s['caughtStealing'])
         if not hasstats:
-            output = output + "No stats for %s on %d/%d vs %s\n" % (disp_name, d.month, d.day, opp.upper())
+            gameoutput = "No stats for %s on %d/%d vs %s\n" % (disp_name, d.month, d.day, opp.upper())
+        output += "```%s```" % gameoutput
 
     return output
 
