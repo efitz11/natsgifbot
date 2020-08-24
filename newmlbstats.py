@@ -856,7 +856,7 @@ def print_stat_streaks(query_list, season=None):
 def _print_stats_game_line(list_of_stats, type='hitting', include_gp=False, include_slash=False, include_start_end=False):
     """
     print stats game-line style:
-    [S E] [GP] AB H 2B 3B HR R RBI BB SO SB CS [AVG OBP SLG]
+    [GP] [S E] AB H 2B 3B HR R RBI BB SO SB CS [AVG OBP SLG]
     """
     labels = ['atBats', 'hits', 'doubles', 'triples', 'homeRuns', 'baseOnBalls', 'strikeOuts']
     if 'stolenBases' in list_of_stats[0]:
@@ -868,11 +868,11 @@ def _print_stats_game_line(list_of_stats, type='hitting', include_gp=False, incl
         for s in slash:
             if s in list_of_stats[0]:
                 labels.append(s)
-    if include_gp:
-        labels.insert(0, 'gamesPlayed')
     if include_start_end:
         labels.insert(0, 'end')
         labels.insert(0, 'start')
+    if include_gp:
+        labels.insert(0, 'gamesPlayed')
     if len(list_of_stats) > 1:
         labels.insert(0, 'name')
         labels.insert(0, 'team')
