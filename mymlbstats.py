@@ -2532,7 +2532,7 @@ def print_at_bats(name, delta=None):
     schedule = get_day_schedule(teamid=teamid, delta=delta)
     games = schedule['dates'][0]['games']
     date = _get_date_from_delta(delta)
-    output = "```%s```\n" % get_player_line(name, delta=delta, player=player, schedule=schedule)
+    output = "%s\n" % get_player_line(name, delta=delta, player=player, schedule=schedule)
     for game in games:
         gamepk = game['gamePk']
         pbp = get_pbp(gamepk)['allPlays']
