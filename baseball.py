@@ -445,7 +445,7 @@ class Baseball(commands.Cog):
             if team[-1].isdigit():
                 season = team[-1]
                 team = team[:-1]
-            await ctx.send(newmlbstats.print_stat_streaks(team, season=season))
+            await ctx.send(newmlbstats.print_stat_streaks(team, season=season, reddit=reddit))
         else:
             teamname = ' '.join(team).lower()
             if teamname == 'help':

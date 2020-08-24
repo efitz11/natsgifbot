@@ -823,7 +823,7 @@ def get_stat_streaks(streak_type, streak_filter="overall", span=None, season=Non
 
     return utils.get_json(url+urllib.parse.urlencode(params, safe=','))
 
-def print_stat_streaks(query_list, season=None):
+def print_stat_streaks(query_list, season=None, reddit=False):
     streak_type = query_list.pop(0)
     span = None
     filter = None
@@ -851,9 +851,9 @@ def print_stat_streaks(query_list, season=None):
             stats['start'] = streak['startDate'][5:10]
             stats['end'] = streak['finalDate'][5:10]
             players.append(stats)
-    return "```python\n%s```" %_print_stats_game_line(players, include_gp=True, include_slash=True, include_start_end=True)
+    return "```python\n%s```" %_print_stats_game_line(players, include_gp=True, include_slash=True, include_start_end=True, reddit=reddit)
 
-def _print_stats_game_line(list_of_stats, type='hitting', include_gp=False, include_slash=False, include_start_end=False):
+def _print_stats_game_line(list_of_stats, type='hitting', include_gp=False, include_slash=False, include_start_end=False, reddit=False):
     """
     print stats game-line style:
     [GP] [S E] AB H 2B 3B HR R RBI BB SO SB CS [AVG OBP SLG]
@@ -879,7 +879,7 @@ def _print_stats_game_line(list_of_stats, type='hitting', include_gp=False, incl
 
     replace = _get_common_replace_map()
     left = ['name', 'team']
-    return utils.format_table(labels, list_of_stats, repl_map=replace, left_list=left)
+    return utils.format_table(labels, list_of_stats, repl_map=replace, left_list=left, reddit=reddit)
 
 def print_contract_info(name, year=None):
     # find player
