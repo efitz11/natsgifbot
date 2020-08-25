@@ -823,7 +823,7 @@ def get_stat_streaks(streak_type, streak_filter="overall", span=None, season=Non
 
     return utils.get_json(url+urllib.parse.urlencode(params, safe=','))
 
-def print_stat_streaks(query_list, season=None, reddit=False):
+def print_stat_streaks(query_list, season=None, reddit=False, redditpost=False):
     streak_type = query_list.pop(0)
     span = None
     filter = None
@@ -851,6 +851,8 @@ def print_stat_streaks(query_list, season=None, reddit=False):
             stats['start'] = streak['startDate'][5:10]
             stats['end'] = streak['finalDate'][5:10]
             players.append(stats)
+    if redditpost:
+        return _print_stats_game_line(players, include_gp=True, include_slash=True, include_start_end=True, reddit=True)
     return "```python\n%s```" %_print_stats_game_line(players, include_gp=True, include_slash=True, include_start_end=True, reddit=reddit)
 
 def _print_stats_game_line(list_of_stats, type='hitting', include_gp=False, include_slash=False, include_start_end=False, reddit=False):
@@ -1139,4 +1141,5 @@ def _add_last_play_info(game):
 if __name__ == "__main__":
     # get_schedule("-1")
     # print(print_games('wsh'))
-    print(print_games("lad"))
+    # print(print_games("lad"))
+    print(print_stat_streaks(['hitting'], redditpost=True))
