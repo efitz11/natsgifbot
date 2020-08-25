@@ -630,7 +630,7 @@ def post_self_submission(selftext, cron=False):
     # add active streaks
     defense_vids += "\n****\n"
     defense_vids += "Longest active hitting streaks:\n%s" % newmlbstats.print_stat_streaks(["hitting"], redditpost=True)
-    defense_vids += "Longest active on base streaks:\n%s" % newmlbstats.print_stat_streaks(["on base"], redditpost=True)
+    defense_vids += "Longest active on base streaks:\n%s" % newmlbstats.print_stat_streaks(["onbase"], redditpost=True)
     spoilers = isinstance(selftext, tuple)
     if spoilers:
         post = reddit.subreddit('baseball').submit(title, selftext=selftext[0])
