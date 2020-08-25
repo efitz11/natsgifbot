@@ -848,6 +848,8 @@ def print_stat_streaks(query_list, season=None, reddit=False, redditpost=False):
             stats = streak['stats']
             stats['name'] = streak['person']['boxscoreName']
             stats['team'] = streak['team']['abbreviation']
+            if redditpost:
+                stats['team'] = "[](/%s)%s" % (stats['team'], stats['team'])
             stats['start'] = streak['startDate'][5:10]
             stats['end'] = streak['finalDate'][5:10]
             players.append(stats)
