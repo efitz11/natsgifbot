@@ -303,15 +303,15 @@ def find_fastcast(return_str=False):
     date = "%d-%02d-%02d" % (now.year, now.month, now.day)
     for item in s['docs']:
         if date in item['date'] and "fastcast" in item['title'].lower():
-            url = "https://www.mlb.com/data-service/en/videos/" + item['id']
-            print(url)
-            req = Request(url, headers={'User-Agent' : "ubuntu"})
-            t = json.loads(urlopen(req).read().decode("utf-8"))
-            for p in t['playbacks']:
+            # url = "https://www.mlb.com/data-service/en/videos/" + item['id']
+            # print(url)
+            # req = Request(url, headers={'User-Agent' : "ubuntu"})
+            # t = json.loads(urlopen(req).read().decode("utf-8"))
+            for p in item['playbacks']:
                 if p['name'] == "mp4Avc":
-                    blurb = t['blurb']
+                    blurb = item['blurb']
                     url = p['url']
-                    duration = t['duration'][3:]
+                    duration = item['duration'][3:]
                     s = "[%s](%s) - %s\n\n" % (blurb,url,duration)
                     if return_str:
                         return s
@@ -627,6 +627,10 @@ def post_self_submission(selftext, cron=False):
     yest = datetime.now() - timedelta(days=1)
     title = "%d/%d Highlight Roundup: FastCast, top plays, recaps/condensed games and longest dongs of the day" % (yest.month, yest.day)
     defense_vids = find_defense()
+    # add active streaks
+    defense_vids += "\n****\n"
+    defense_vids += "Longest active hitting streaks:\n%s" % newmlbstats.print_stat_streaks("hitting")
+    defense_vids += "Longest active on base streaks:\n%s" % newmlbstats.print_stat_streaks("on base")
     spoilers = isinstance(selftext, tuple)
     if spoilers:
         post = reddit.subreddit('baseball').submit(title, selftext=selftext[0])
@@ -699,7 +703,7 @@ def get_all_outputs(defense=False, spoilcomment=False):
 
 if __name__ == "__main__":
     sys.path.insert(1, os.path.join(sys.path[0],'..'))
-    import mymlbstats
+    import mymlbstats, newmlbstats
     import utils
 
     if len(sys.argv) > 1 and sys.argv[1] == "post":
