@@ -642,11 +642,11 @@ def post_self_submission(selftext, cron=False):
         time.sleep(10)
         post.reply(defense_vids)
 
-    # check every 30 minutes for new videos
+    # check every 60 minutes for new videos
     if cron:
         numchecks = 0
-        while numchecks <= 8:
-            time.sleep(30*60)
+        while numchecks <= 4:
+            time.sleep(60*60)
             if spoilers:
                 newout = get_all_outputs(spoilcomment=True)
                 if newout[0] != selftext[0]:
