@@ -696,7 +696,7 @@ def get_coaches(teamid):
     if 'roster' in results:
         return results['roster']
 
-def print_birthdays(team, delta=None):
+def print_birthdays(team, delta=None, reddit=False):
     birthdays = list()
     if delta is None:
         today = datetime.today()
@@ -723,6 +723,8 @@ def print_birthdays(team, delta=None):
                         teaminfo = get_team_info(curteamid)
                         teams[curteamid] = teaminfo
                         p['team'] = teaminfo['abbreviation']
+                        if reddit:
+                            p['team'] = "[](/%s)%s" % (p['team'], p['team'])
 
                     birthdays.append(p)
     else:
@@ -744,9 +746,9 @@ def print_birthdays(team, delta=None):
         todaystr = 'on ' + todaystr.replace('-','/')
     if len(birthdays) > 0:
         if len(team) > 0:
-            return "%s birthdays %s:\n\n" % (teamdata['teamName'], todaystr) + utils.format_table(['name', 'age'], birthdays, left_list=['name'])
+            return "%s birthdays %s:\n\n" % (teamdata['teamName'], todaystr) + utils.format_table(['name', 'age'], birthdays, left_list=['name'], reddit=reddit)
         else:
-            return "All player birthdays %s:\n\n%s" % (todaystr, utils.format_table(['team','name','age'], birthdays, left_list=['team','name']))
+            return "All player birthdays %s:\n\n%s" % (todaystr, utils.format_table(['team','name','age'], birthdays, left_list=['team','name'], reddit=reddit))
     else:
         return "No %s birthdays on %s" % (teamdata['teamName'], todaystr)
 
