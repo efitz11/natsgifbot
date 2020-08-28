@@ -1105,7 +1105,7 @@ def get_ohtani_line(delta=None):
     # return get_player_line("shohei ohtani", delta=delta)
     return print_at_bats("shohei ohtani", delta=delta)
 
-def get_player_gamelogs(name, num=5, forcebatting=False):
+def get_player_gamelogs(name, num=5, forcebatting=False, reddit=False):
     # cap at 15
     if num > 15:
         num = 15
@@ -1148,7 +1148,8 @@ def get_player_gamelogs(name, num=5, forcebatting=False):
         stats = ['game_day','opponent_abbrev','w','l','svo','sv','ip','h','r','er','bb','so','hr','era','whip', 'np']
     repl_map = {'game_day':'day','opponent_abbrev':'opp', 'd':'2B', 't':'3B'}
     # output = output + _print_labeled_list(stats,game,header=(i==0),repl_map=repl_map) + "\n"
-    output = output + _print_table(stats,games,repl_map=repl_map) + "\n"
+    # output = output + _print_table(stats,games,repl_map=repl_map) + "\n"
+    output += utils.format_table(stats, games, repl_map=repl_map, reddit=reddit) + "\n"
     return output
 
 def _get_player_info_line(player):
