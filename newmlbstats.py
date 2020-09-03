@@ -750,7 +750,10 @@ def print_birthdays(team, delta=None, reddit=False):
         else:
             return "All player birthdays %s:\n\n%s" % (todaystr, utils.format_table(['team','name','age'], birthdays, left_list=['team','name'], reddit=reddit))
     else:
-        return "No %s birthdays on %s" % (teamdata['teamName'], todaystr)
+        if len(team) > 0:
+            return "No %s birthdays on %s" % (teamdata['teamName'], todaystr)
+        else:
+            return "No birthdays %s" % todaystr
 
 def get_player_headshot_url(player_search):
     player = _new_player_search(player_search)
