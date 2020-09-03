@@ -718,6 +718,8 @@ def print_birthdays(team, delta=None, reddit=False):
 
                     if curteamid in teams:
                         p['team'] = teams[curteamid]['abbreviation']
+                        if reddit:
+                            p['team'] = "[](/%s)%s" % (p['team'], p['team'])
 
                     else:
                         teaminfo = get_team_info(curteamid)
