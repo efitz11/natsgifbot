@@ -1041,11 +1041,12 @@ def print_games(args, delta=None):
             # check doubleheader
             is_dh_live = False
             for game in games:
-                if game['doubleHeader'] == "Y" and game['status']['codedGameState'] == 'I':
+                if game['doubleHeader'] == "Y" and game['status']['abstractGameCode'] == 'L':
                     is_dh_live = True
-            for game in games:
-                if game['doubleHeader'] == "Y" and game['status']['codedGameState'] != 'I':
-                    games.remove(game)
+            if is_dh_live:
+                for game in games:
+                    if game['doubleHeader'] == "Y" and game['status']['abstractGameCode'] != 'L':
+                        games.remove(game)
 
     output = ""
     show_on_deck = False
