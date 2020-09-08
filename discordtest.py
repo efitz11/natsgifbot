@@ -888,7 +888,7 @@ async def check_covid_numbers():
         if post_time > now_time:
             await asyncio.sleep((post_time - now_time).total_seconds())
         else:
-            await asyncio.sleep(12*60*60)  # wait 12 hours
+            await asyncio.sleep(1*60*60)  # wait 12 hours
 
 async def dongs_poster():
     await bot.wait_until_ready()
@@ -907,7 +907,7 @@ async def dongs_poster():
         if post_time > now_time:
             await asyncio.sleep((post_time - now_time).total_seconds())
         else:
-            await asyncio.sleep(12*60*60)  # wait 12 hours
+            await asyncio.sleep(1*60*60)  # wait 12 hours
 
 async def birthday_poster():
     await bot.wait_until_ready()
@@ -919,12 +919,14 @@ async def birthday_poster():
             output = newmlbstats.print_birthdays("")
             if output is not None:
                 await channel.send("```%s```" % output)
+            else:
+                print('no bday output')
         post_time = datetime(now_time.year, now_time.month, now_time.day, hour=post_hour, minute=post_min)
         # sleep until post time
         if post_time > now_time:
             await asyncio.sleep((post_time - now_time).total_seconds())
         else:
-            await asyncio.sleep(12*60*60)  # wait 12 hours
+            await asyncio.sleep(1*60*60)  # wait 12 hours
 
 mlbtr = xmlreader.XmlReader()
 
