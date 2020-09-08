@@ -346,20 +346,29 @@ async def pajokie(ctx):
 @bot.command()
 async def roll(ctx, *num):
     """roll an n-sided die (6 default)"""
+    add_num = 0
     if len(num) == 0:
         ndice, nsides = 1, 6
     else:
         num = ''.join(num)
         if 'd' in num:
+            if '+' in num:
+                idx = num.find('+')
+                add_num = int(num[idx:])
+                num = num[:idx]
             ndice, nsides = list(map(int, num.split('d')))
         else:
             ndice, nsides = 1, int(num)
 
     rolls = list()
-    rolls_str = "Rolled %dx %d-sided dice: " % (ndice, nsides)
+    if add_num > 0:
+        add_str = " (+%d)" % add_num
+    else:
+        add_str = ""
+    rolls_str = "Rolled %dx %d-sided dice%s: " % (ndice, nsides, add_str)
     total = 0
     for i in range(ndice):
-        roll = random.randint(1, nsides)
+        roll = random.randint(1, nsides) + add_num
         total += roll
         rolls_str += "%d, " % roll
         rolls.append(roll)
