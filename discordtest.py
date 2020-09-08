@@ -344,13 +344,33 @@ async def pajokie(ctx):
     await ctx.send("https://cdn.discordapp.com/attachments/328677264566910977/343555639227842571/image.jpg")
 
 @bot.command()
-async def roll(ctx, *num:int):
+async def roll(ctx, *num):
     """roll an n-sided die (6 default)"""
-    nu = 6
-    if len(num) != 0:
-        nu = num[0]
-    n = random.randint(1,nu)
-    await ctx.send(n)
+    if len(num) == 0:
+        ndice, nsides = 1, 6
+    else:
+        num = ''.join(num)
+        if 'd' in num:
+            ndice, nsides = list(map(int, num.split('d')))
+        else:
+            ndice, nsides = 1, int(num)
+
+    rolls = list()
+    rolls_str = "Rolled %dx %d-sided dice: " % (ndice, nsides)
+    total = 0
+    for i in range(ndice):
+        roll = random.randint(1, nsides)
+        total += roll
+        rolls_str += "%d, " % roll
+        rolls.append(roll)
+    rolls_str = rolls_str + " total: %d" % total
+    await ctx.send(rolls_str)
+
+    # nu = 6
+    # if len(num) != 0:
+    #     nu = num[0]
+    # n = random.randint(1,nu)
+    # await ctx.send(n)
     
 @bot.command()
 async def flip(ctx):
