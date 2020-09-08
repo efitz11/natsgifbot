@@ -352,8 +352,11 @@ async def roll(ctx, *num):
     else:
         num = ''.join(num)
         if 'd' in num:
-            if '+' in num:
-                idx = num.find('+')
+            if '+' in num or '-' in num:
+                if '+' in num:
+                    idx = num.find('+')
+                else:
+                    idx = num.find('-')
                 add_num = int(num[idx:])
                 num = num[:idx]
             ndice, nsides = list(map(int, num.split('d')))
@@ -361,8 +364,8 @@ async def roll(ctx, *num):
             ndice, nsides = 1, int(num)
 
     rolls = list()
-    if add_num > 0:
-        add_str = " (+%d)" % add_num
+    if add_num != 0:
+        add_str = " (%+d)" % add_num
     else:
         add_str = ""
     rolls_str = "Rolled %dx %d-sided dice%s: " % (ndice, nsides, add_str)
