@@ -50,10 +50,10 @@ def get_game(team, sport):
     scoreData = scoreData[scoreData.find('= ')+len('= '):]    
     scoreData = json.loads(scoreData[:scoreData.find('};')+1])
     
-    #print(scoreData)
-    #f = open('espnout.txt','w')
-    #f.write(json.dumps(scoreData))
-    #f.close()
+    # print(scoreData)
+    # f = open('espnout.txt','w')
+    # f.write(json.dumps(scoreData, indent=2))
+    # f.close()
     
     if sport == "nba":
         scorew = NBA_SCORE_WIDTH
@@ -87,8 +87,8 @@ def get_game(team, sport):
         team2abv = event['competitions'][0]['competitors'][1]['team']['abbreviation']
             
         homestatus = event['competitions'][0]['competitors'][0]['homeAway']
-        name1 = event['competitions'][0]['competitors'][0]['team']['name']
-        name2 = event['competitions'][0]['competitors'][1]['team']['name']
+        name1 = event['competitions'][0]['competitors'][0]['team']['shortDisplayName']
+        name2 = event['competitions'][0]['competitors'][1]['team']['shortDisplayName']
         game['homeid'] = event['competitions'][0]['competitors'][0]['id']
         game['awayid'] = event['competitions'][0]['competitors'][1]['id']
         
