@@ -274,7 +274,8 @@ def get_team_info(teamid):
     :param teamid:
     :return:
     """
-    url = API_LINK + "teams/%s?hydrate=team,sport" % teamid
+    #url = API_LINK + "teams/%s?hydrate=team,sport" % teamid
+    url = API_LINK + "teams/%s" % teamid
     results = utils.get_json(url)
     if len(results['teams']) > 0:
         return results['teams'][0]
