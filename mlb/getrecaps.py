@@ -300,9 +300,11 @@ def find_fastcast(return_str=False):
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     s = json.loads(urlopen(req).read().decode("utf-8"))
     now = datetime.now()
+    yesterday = now - timedelta(days=1)
     date = "%d-%02d-%02d" % (now.year, now.month, now.day)
+    yest = "%d-%02d-%02d" % (yesterday.year, yesterday.month, yesterday.day)
     for item in s['docs']:
-        if date in item['date'] and "fastcast" in item['title'].lower():
+        if (date in item['date'] or yest in item['date']) and "fastcast" in item['title'].lower():
             # url = "https://www.mlb.com/data-service/en/videos/" + item['id']
             # print(url)
             # req = Request(url, headers={'User-Agent' : "ubuntu"})
