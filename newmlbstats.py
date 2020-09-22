@@ -180,9 +180,13 @@ def print_player_stats(name, group=None, stattype=None, startDate=None, endDate=
                     group = 'hitting'
                 for player in roster:
                     if group == 'hitting' and player['person']['primaryPosition']['code'] != '1':
-                        players.append(get_player_stats("", playerid=player['person']['id'], group=group, stattype=stattype, startDate=startDate, endDate=endDate, lastgames=lastgames))
+                        p = get_player_stats("", playerid=player['person']['id'], group=group, stattype=stattype, startDate=startDate, endDate=endDate, lastgames=lastgames)
+                        if 'stats' in p:
+                            players.append(p)
                     elif group == 'pitching' and player['person']['primaryPosition']['code'] == '1':
-                        players.append(get_player_stats("", playerid=player['person']['id'], group=group, stattype=stattype, startDate=startDate, endDate=endDate, lastgames=lastgames))
+                        p = get_player_stats("", playerid=player['person']['id'], group=group, stattype=stattype, startDate=startDate, endDate=endDate, lastgames=lastgames)
+                        if 'stats' in p:
+                            players.append(p)
                 if group == 'hitting':
                     players = sorted(players, key = lambda k: k['stats'][0]['splits'][0]['stat']['plateAppearances'], reverse=True)
                 elif group == 'pitching':
@@ -274,7 +278,8 @@ def get_team_info(teamid):
     :param teamid:
     :return:
     """
-    url = API_LINK + "teams/%s?hydrate=team,sport" % teamid
+    #url = API_LINK + "teams/%s?hydrate=team,sport" % teamid
+    url = API_LINK + "teams/%s" % teamid
     results = utils.get_json(url)
     if len(results['teams']) > 0:
         return results['teams'][0]
