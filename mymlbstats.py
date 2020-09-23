@@ -2605,20 +2605,21 @@ def print_pitches_by_inning(team, delta=None):
             if not useteam:
                 if pitcher != playerid:
                     continue
-            pitcher = pitchers_savant[str(pitcher)]
-            p = dict()
-            p['pitcher'] = pitcher[0]['pitcher_name']
-            p['total'] = len(pitcher)
-            for pitch in pitcher:
-                inning = str(pitch['inning'])
-                if inning not in p:
-                    p[inning] = 1
-                    if inning not in columns:
-                        columns.append(inning)
-                else:
-                    p[inning] += 1
-            pitchers.append(p)
-            print(p)
+            if pitcher in pitchers_savant:
+                pitcher = pitchers_savant[str(pitcher)]
+                p = dict()
+                p['pitcher'] = pitcher[0]['pitcher_name']
+                p['total'] = len(pitcher)
+                for pitch in pitcher:
+                    inning = str(pitch['inning'])
+                    if inning not in p:
+                        p[inning] = 1
+                        if inning not in columns:
+                            columns.append(inning)
+                    else:
+                        p[inning] += 1
+                pitchers.append(p)
+                print(p)
         columns = ['pitcher'] + sorted(columns) + ['total']
         output = output + "```python\n%s```" % (utils.format_table(columns, pitchers))
 
