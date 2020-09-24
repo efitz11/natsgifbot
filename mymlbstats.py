@@ -2605,7 +2605,7 @@ def print_pitches_by_inning(team, delta=None):
             if not useteam:
                 if pitcher != playerid:
                     continue
-            if pitcher in pitchers_savant:
+            if str(pitcher) in pitchers_savant:
                 pitcher = pitchers_savant[str(pitcher)]
                 p = dict()
                 p['pitcher'] = pitcher[0]['pitcher_name']
