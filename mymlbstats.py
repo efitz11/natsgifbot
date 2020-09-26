@@ -2589,6 +2589,9 @@ def print_pitches_by_inning(team, delta=None):
 
     games = schedule['dates'][0]['games']
     for game in games:
+        # skip game if haven't started
+        if game['status']['abstractGameCode'] == 'P':
+            continue
         gamepk = game['gamePk']
         savantdata = utils.get_json("https://baseballsavant.mlb.com/gf?game_pk=%d" % gamepk)
         away = game['teams']['away']['team']['id'] == teamid
