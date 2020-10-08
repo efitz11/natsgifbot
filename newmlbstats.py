@@ -999,6 +999,7 @@ def get_schedule(date, endDate=None, teamid=None):
     return utils.get_json(url)['dates']
 
 def print_games(args, delta=None):
+    lgs = {'alwc':103,'nlwc':104}
     divs = {'nle':204,'nlc':205,'nlw':203,'ale':201,'alc':202,'alw':200}
     if isinstance(args, list):
         args = ' '.join(args)
@@ -1022,14 +1023,24 @@ def print_games(args, delta=None):
                 games.append(game)
         if len(games) == 0:
             return "No live games at the moment."
+    elif args in lgs:
+        standings = mymlbstats.get_lg_standings(lgs[args],wc=True)['records'][0]['teamRecords']
+        wcteams = []
+        for i in range(5):
+            wcteams.append(standings[i]['team']['id'])
+        for game in all_games:
+            away = game['teams']['away']['team']['id']
+            home = game['teams']['home']['team']['id']
+            if away in wcteams or home in wcteams:
+                games.append(game)
     elif args in divs:
         for game in all_games:
             awaydiv = game['teams']['away']['team']['division']['id']
             homediv = game['teams']['home']['team']['division']['id']
             if awaydiv == divs[args] or homediv == divs[args]:
                 games.append(game)
-            if len(games) == 0:
-                return "No games for division found"
+        if len(games) == 0:
+            return "No games for division found"
     elif len(args) > 0:
         add_last_play = True
         teamid = mymlbstats.get_teamid(args)
