@@ -30,6 +30,8 @@ if __name__ == "__main__":
         pitcher['id'] = player_id
         stats = get_postseason_stats(player_id)
         pitcher.update(stats)
+    # sort pitchers by ERA
+    pitchers = sorted(pitchers, key=lambda i: i['era'])
     labels = ['name', 'inningsPitched', 'homeRuns', 'era']
     replace = {'inningsPitched':'ip', 'homeRuns':'hr'}
     left = ['name']
