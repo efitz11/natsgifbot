@@ -50,11 +50,19 @@ def _find_player_id(name):
         return p
 
 def _new_player_search(name):
+    post = False
+    if 'postseason' in name:
+        name = name.replace('postseason', '').strip()
+        post = True
     p = _find_player_id(name)
     url = API_LINK + "people/%s?hydrate=currentTeam,team,stats(type=[yearByYear,yearByYearAdvanced,careerRegularSeason,careerAdvanced,availableStats](team(league)),leagueListId=mlb_hist)" % p
     player = utils.get_json(url)['people'][0]
     # for backwards compat
     player['player_id'] = str(player['id'])
+    if post:
+        url = API_LINK + "people/%s/stats?stats=yearByYear,career&gameType=P&leagueListId=mlb_hist&hydrate=team" % p
+        stats = utils.get_json(url)
+        player['stats'] = stats['stats']
     return player
 
 def _get_stats_string(stats, group=None, include_gp=False):
@@ -286,6 +294,7 @@ def get_team_info(teamid):
 
 def get_player_season_stats(name, type=None, year=None, career=None, reddit=None):
     try:
+        postseason = True if 'postseason' in name else False
         player = _new_player_search(name)
     except:
         return "Error finding player %s" % name
@@ -360,11 +369,11 @@ def get_player_season_stats(name, type=None, year=None, career=None, reddit=None
                 teamabv += " - %s %s" % (parent['abbreviation'], milb['sport']['abbreviation'])
         else:
             teamabv = '/'.join(teams)
-        output = "%s season stats for %s (%s):" % (year, disp_name, teamabv)
+        output = "%s %sseason stats for %s (%s):" % (year, 'post' if postseason else '', disp_name, teamabv)
     else:
-        output = "%s-%s seasons stats for %s:" % (year, year2, disp_name)
+        output = "%s-%s %sseason stats for %s:" % (year, year2, 'post' if postseason else '', disp_name)
     if career:
-        output = "Career stats for %s (%s):" % (disp_name, years)
+        output = "Career %sstats for %s (%s):" % ('post' if postseason else '', disp_name, years)
     output = "%s\n  %s\n\n" % (output, infoline)
     output = output + utils.format_table(stats, seasons, repl_map=repl, reddit=reddit)
     return output
