@@ -536,12 +536,13 @@ def print_box(team,part, delta=None):
                 boxes = []
                 if part == 'bullpen' and delta is None:
                     dp = True
-                    schedule = get_days_schedule(_timedelta_to_mlb(_get_date_from_delta(-3)), _timedelta_to_mlb(_get_date_from_delta(-1)),teamid=teamid)
+                    schedule = get_days_schedule(_timedelta_to_mlb(_get_date_from_delta(-4)), _timedelta_to_mlb(_get_date_from_delta(-1)),teamid=teamid)
                     gamepks = []
                     for date in schedule['dates']:
                         count = 1
                         for game in date['games']:
-                            gamedate = game['gameDate'][:game['gameDate'].find('T')]
+                            # gamedate = game['gameDate'][:game['gameDate'].find('T')]
+                            gamedate = game['officialDate']
                             parts = gamedate.split('-')
                             month, day = int(parts[1]), int(parts[2])
                             extra = ""
