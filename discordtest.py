@@ -865,8 +865,8 @@ async def on_message(message):
             else:
                 await message.add_reaction(u"\u274C")
             # check age of tweet
-            age = web.check_tweet_age(re.search(patterntwitterstatus, message.content).group(2), api=api)
-            await channel.send(age)
+            # age = web.check_tweet_age(re.search(patterntwitterstatus, message.content).group(2), api=api)
+            # await channel.send(age)
         # if patterneaton.search(message.content):
         #     await bot.send_message(message.channel,"Miami University Great Adam Eaton*")
 
