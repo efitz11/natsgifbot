@@ -797,7 +797,7 @@ async def say(ctx, *message):
 
 @bot.command()
 async def odds(ctx, *query):
-    leagues = ["ufc"]
+    leagues = ["ufc", "politics"]
     if len(query) == 0 or query[0] not in leagues:
         await ctx.send('```Supported leagues: %s```' % leagues)
     else:
