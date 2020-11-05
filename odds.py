@@ -24,6 +24,28 @@ def get_league_odds(league, sport=None):
     return get_odds_games(odds)
 
 def get_league_odds_table(league, sport=None, team=None):
+    if league == "politics":
+        sport = "politics"
+        league = "us-politics"
+
+        url = _build_url(sport, league=league)
+        odds = utils.get_json(url)
+
+        outstr = ""
+        labels = ['name', 'odds']
+        for cat in odds:
+            if 'Exotics' not in cat['path'][0]['description']:
+                for event in cat['events']:
+                    lines = list()
+                    outcomes = event['displayGroups'][0]['markets'][0]['outcomes']
+                    for outcome in outcomes:
+                        line = dict()
+                        line['name'] = outcome['description']
+                        line['odds'] = outcome['price']['american']
+                        lines.append(line)
+                    outstr += event['description'] + "\n" + utils.format_table(labels, lines, left_list=labels) + "\n\n"
+        return outstr
+
     games = get_league_odds(league, sport=sport)
 
     labels = ["status", "name", "spread", "ml", "total"]
@@ -210,5 +232,4 @@ if __name__ == "__main__":
     # print(get_odds_pp(sport="nba", team="wiz"))
     # print(get_odds_pp("nhl", team="capitals"))
     # print(get_odds_pp("nba"))
-    print(get_odds_pp("nba", team="new"))
-    # print(get_league_odds_table('xfl'))
+    print(get_league_odds_table('politics'))
