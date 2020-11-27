@@ -797,15 +797,15 @@ async def say(ctx, *message):
 
 @bot.command()
 async def odds(ctx, *query):
-    leagues = ["ufc", "politics"]
-    if len(query) == 0 or query[0] not in leagues:
-        await ctx.send('```Supported leagues: %s```' % leagues)
-    else:
-        league = query[0]
-        team = ' '.join(query[1:])
-        if len(team) == 0:
-            team = None
-        await ctx.send("```python\n%s```" % oddsmod.get_league_odds_table(league, team=team))
+    # leagues = ["ufc", "politics", "cbb"]
+    # if len(query) == 0 or query[0] not in leagues:
+    #     await ctx.send('```Supported leagues: %s```' % leagues)
+    # else:
+    league = query[0]
+    team = ' '.join(query[1:])
+    if len(team) == 0:
+        team = None
+    await ctx.send("```%s```" % oddsmod.get_league_odds_table(league, team=team))
 
 @bot.event
 async def on_message(message):
