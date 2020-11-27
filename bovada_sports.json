@@ -1,0 +1,7 @@
+{
+  "ufc":{"sport":null, "league":"ufc-mma"},
+  "cbb":{"sport":"basketball", "league":"college-basketball"},
+  "nba":{"sport":"basketball", "league":"nba"},
+  "nfl":{"sport":"football", "league":"nfl"},
+  "nhl":{"sport":"hockey", "league":"nhl"}
+}

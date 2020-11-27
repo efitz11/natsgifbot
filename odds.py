@@ -1,5 +1,6 @@
 import utils
 import time
+import json
 
 def _build_url(sport, league):
     if league is not None:
@@ -15,13 +16,18 @@ def _build_url_live(sport, league, live=False):
     return "https://www.bovada.lv/services/sports/event/coupon/events/A/description/%s/%s?marketFilterId=def&%s&lang=en" % (sport, league, l)
 
 def get_league_odds(league, sport=None):
-    if league == "ufc":
-        sport = "ufc-mma"
-        league = None
+    with open('bovada_sports.json', 'r') as f:
+        leagues = json.load(f)
+    if league in leagues:
+        league = leagues[league]
+        league_new = league['league']
+        sport_new = league['sport']
+    else:
+        return "Supported leagues: %s" % list(leagues.keys()), False
 
-    url = _build_url(sport, league=league)
+    url = _build_url(sport_new, league=league_new)
     odds = utils.get_json(url)[0]['events']
-    return get_odds_games(odds)
+    return get_odds_games(odds), True
 
 def get_league_odds_table(league, sport=None, team=None):
     if league == "politics":
@@ -46,7 +52,9 @@ def get_league_odds_table(league, sport=None, team=None):
                     outstr += event['description'] + "\n" + utils.format_table(labels, lines, left_list=labels) + "\n\n"
         return outstr
 
-    games = get_league_odds(league, sport=sport)
+    games, valid = get_league_odds(league, sport=sport)
+    if not valid:
+        return games
 
     labels = ["status", "name", "spread", "ml", "total"]
     left = ["status", "name"]
