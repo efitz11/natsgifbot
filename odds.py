@@ -81,6 +81,8 @@ def get_league_odds_table(league, sport=None, team=None):
         ret = utils.format_table(labels, newgames, left_list=left).rstrip()
     else:
         ret = utils.format_table(labels, games, left_list=left).rstrip()
+    if len(ret) > 2000:
+        return "list of events is too long, use a more restrictive search"
     return ret
 
 
