@@ -597,6 +597,11 @@ async def wiki(ctx, *query:str):
     await ctx.send(web.get_wiki_page(' '.join(query)))
 
 @bot.command()
+async def twiki(ctx, *query:str):
+    """get a link to The Official Terraria Wiki's first search result for your query"""
+    await ctx.send(web.get_twiki_page(' '.join(query)))
+
+@bot.command()
 async def beer(ctx, *beer_name):
     """get untappd info on a beer"""
     await ctx.send(web.search_untappd(' '.join(beer_name)))
