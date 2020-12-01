@@ -21,6 +21,11 @@ def get_wiki_page(query):
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     data = json.loads(urlopen(req).read().decode('utf-8'))
     return data[-1][0]
+
+def get_twiki_page(query):
+    url = "https://terraria.gamepedia.com/api.php?action=opensearch&format=json&formatversion=2&search=" + urllib.parse.quote_plus(query) + "&namespace=0%7C110&limit=10&suggest=true"
+    data = utils.get_json(url)
+    return data[3][0]
     
 def search_untappd(beer_name):
     """search untappd for a beer"""
