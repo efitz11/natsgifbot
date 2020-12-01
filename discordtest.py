@@ -916,7 +916,7 @@ async def check_covid_numbers():
     corona_channel = discord.utils.find(lambda m: 'coronavirus' in m.name, channel.guild.channels)
     while not bot.is_closed():
         now_time = datetime.now()
-        post_hour, post_min = 21,0
+        post_hour, post_min = 20,45
         if now_time.hour == post_hour and now_time.minute == post_min:
             await corona_channel.send(covid.get_usa())
 
