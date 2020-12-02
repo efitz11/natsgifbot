@@ -300,8 +300,10 @@ def get_player_season_stats(name, type=None, year=None, career=None, reddit=None
         return "Error finding player %s" % name
     if player is None:
         return "No matching player found"
-    # teamid = player['currentTeam']['id']
-    teamabv = player['currentTeam']['abbreviation']
+    teamid = player['currentTeam']['id']
+    # team = get_team_info(teamid)
+
+    #teamabv = player['currentTeam']['abbreviation']
     # pid = player['id']
     disp_name = player['fullName']
     pos = player['primaryPosition']['abbreviation']
@@ -1177,4 +1179,5 @@ if __name__ == "__main__":
     # get_schedule("-1")
     # print(print_games('wsh'))
     # print(print_games("lad"))
-    print(print_stat_streaks(['hitting'], redditpost=True))
+    # print(print_stat_streaks(['hitting'], redditpost=True))
+    print(get_player_season_stats("starling marte"))
