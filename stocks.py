@@ -47,7 +47,7 @@ def get_quote(symbol):
     output = "%s - %s:```python\n Last price: %s (%s, %s%%, %s%% YTD" % \
              (symbol.upper(),quote['companyName'],quote['latestPrice'],ch,chper,chytd)+")"
     output = output + " %s mkt cap\n" % cap
-    output = output + " 52w high: %.02f\t52w low:%.02f" % (quote['week52High'], quote['week52Low'])
+    output = output + " 52w high: %.02f\t52w low:%.02f" % (quote.get('week52High', 0), quote.get('week52Low', 0))
     output = output + "```"
     return output
 
