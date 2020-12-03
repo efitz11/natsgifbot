@@ -25,19 +25,22 @@ def get_quote(symbol):
         chper = "n/a"
         chytd = "n/a"
     mcap = quote['marketCap']
-    if mcap >= 1e12:
-        cap = round(mcap/1e12, 1)
-        cap = str(cap) + "T"
-    elif mcap >= 1e9:
-        cap = round(mcap/1e9, 1)
-        cap = str(cap) + "B"
-    elif mcap >= 1e6:
-        cap = round(mcap/1e6, 1)
-        cap = str(cap) + "M"
-    elif mcap >= 1e3:
-        cap = str(round(mcap/1e3,1))+ "k"
+    if mcap is not None:
+        if mcap >= 1e12:
+            cap = round(mcap/1e12, 1)
+            cap = str(cap) + "T"
+        elif mcap >= 1e9:
+            cap = round(mcap/1e9, 1)
+            cap = str(cap) + "B"
+        elif mcap >= 1e6:
+            cap = round(mcap/1e6, 1)
+            cap = str(cap) + "M"
+        elif mcap >= 1e3:
+            cap = str(round(mcap/1e3,1))+ "k"
+        else:
+            cap = str(mcap)
     else:
-        cap = str(mcap)
+        mcap = ""
     if change != "n/a" and change > 0:
         ch = "+" + ch
         chper = "+" + chper
@@ -47,6 +50,10 @@ def get_quote(symbol):
     output = output + " 52w high: %.02f\t52w low:%.02f" % (quote['week52High'], quote['week52Low'])
     output = output + "```"
     return output
+
+def get_quote_yahoo(symbol):
+    url = "https://query1.finance.yahoo.com/v7/finance/options/%s" % symbol
+    quote = utils.get_json(url)['optionChain']['result'][0]['quote']
 
 def get_stocks():
     output = "Latest quotes:\n```python\n"
@@ -141,4 +148,5 @@ def get_index_futures():
 if __name__ == "__main__":
     # print(get_quote("msft"))
     # print(get_indexes())
-    print(get_index_futures())
+    # print(get_index_futures())
+    print(get_quote_yahoo("sq"))
