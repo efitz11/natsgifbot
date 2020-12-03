@@ -40,7 +40,7 @@ def get_quote(symbol):
         else:
             cap = str(mcap)
     else:
-        mcap = ""
+        cap = ""
     if change != "n/a" and change > 0:
         ch = "+" + ch
         chper = "+" + chper
