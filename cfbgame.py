@@ -150,7 +150,7 @@ def get_game(team, delta=0,fcs=False):
         for game in games:
             awayr = "("+str(game['awayrank']['current'])+")" if game['awayrank']['current'] <= 25 else ""
             homer = "("+str(game['homerank']['current'])+")" if game['homerank']['current'] <= 25 else ""
-            output = output +  "%s %s %s @ %s %s %s # %s%s\n" % (awayr.rjust(4),game['awayabv'].rjust(5), game['awayscore'].rjust(2), homer.rjust(4),game['homeabv'].rjust(5), game['homescore'].rjust(2), game['time'],game['odds'])
+            output = output +  "%s %s %s @ %s %s %s # %s%s\n" % (awayr.rjust(4),game['awayabv'].ljust(5), game['awayscore'].rjust(2), homer.rjust(4),game['homeabv'].ljust(5), game['homescore'].rjust(2), game['time'],game['odds'])
         return (output+"```")
     for game in games:
         if game['hometeam'].lower() == team.lower() or game['homeabv'].lower() == team.lower() or game['awayteam'].lower() == team.lower() or game['awayabv'].lower() == team.lower():
