@@ -3,10 +3,10 @@ import time
 import json
 
 def _build_url(sport, league):
-    if league is not None:
+    if sport is not None:
         return "https://www.bovada.lv/services/sports/event/coupon/events/A/description/%s/%s?marketFilterId=def&lang=en" % (sport, league)
     else:
-        return "https://www.bovada.lv/services/sports/event/coupon/events/A/description/%s?marketFilterId=def&lang=en" % (sport)
+        return "https://www.bovada.lv/services/sports/event/coupon/events/A/description/%s?marketFilterId=def&lang=en" % (league)
 
 def _build_url_live(sport, league, live=False):
     if live:
