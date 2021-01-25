@@ -16,14 +16,14 @@ def get_quote(symbol):
     quote = json.loads(urlopen(req).read().decode("utf-8"))
     try:
         change = float(quote['change'])
-        ch = "%0.2f" %(change)
-        chper = "%0.2f" %(quote['changePercent'])
-        chytd = "%0.2f" % (quote['ytdChange'])
+        quote['ch'] = "%0.2f" %(change)
+        quote['chper'] = "%0.2f" %(quote['changePercent'])
+        quote['chytd'] = "%0.2f" % (quote['ytdChange'])
     except TypeError:
         change = "n/a"
-        ch = "n/a"
-        chper = "n/a"
-        chytd = "n/a"
+        quote['ch'] = "n/a"
+        quote['chper'] = "n/a"
+        quote['chytd'] = "n/a"
     mcap = quote['marketCap']
     if mcap is not None:
         if mcap >= 1e12:
@@ -42,13 +42,15 @@ def get_quote(symbol):
     else:
         cap = ""
     if change != "n/a" and change > 0:
-        ch = "+" + ch
-        chper = "+" + chper
-    output = "%s - %s:```python\n Last price: %s (%s, %s%%, %s%% YTD" % \
-             (symbol.upper(),quote['companyName'],quote['latestPrice'],ch,chper,chytd)+")"
+        quote['ch'] = "+" + quote['ch']
+        quote['chper'] = "+" + quote['chper']
+    output = "%s - %s:\n" % (symbol.upper(), quote['companyName'])
+    output += "```python\nRealtime price: {iexRealtimePrice}\n" \
+              "{latestSource} - {latestTime}:\n" \
+              "Last price: {latestPrice} ({ch}, {chper}%, {chytd}% YTD)".format_map(quote)
     output = output + " %s mkt cap\n" % cap
     if quote['week52High'] is not None:
-        output = output + " 52w high: %.02f\t52w low:%.02f" % (quote.get('week52High'), quote.get('week52Low'))
+        output = output + "52w high: %.02f\t52w low:%.02f" % (quote.get('week52High'), quote.get('week52Low'))
     output = output + "```"
     return output
 
@@ -147,7 +149,7 @@ def get_index_futures():
     return "```%s```" % (utils.format_table(labels,idxs,left_list=left))
 
 if __name__ == "__main__":
-    # print(get_quote("msft"))
+    print(get_quote("msft"))
     # print(get_indexes())
     # print(get_index_futures())
-    print(get_quote_yahoo("sq"))
+    # print(get_quote_yahoo("sq"))
