@@ -45,8 +45,10 @@ def get_quote(symbol):
         quote['ch'] = "+" + quote['ch']
         quote['chper'] = "+" + quote['chper']
     output = "%s - %s:\n" % (symbol.upper(), quote['companyName'])
-    output += "```python\nRealtime price: {iexRealtimePrice}\n" \
-              "{latestSource} - {latestTime}:\n" \
+    output += "```python\n"
+    if quote['latestSource'] != "IEX real time price":
+        output += "Realtime price: {iexRealtimePrice}\n".format_map(quote)
+    output += "{latestSource} - {latestTime}:\n" \
               "Last price: {latestPrice} ({ch}, {chper}%, {chytd}% YTD)".format_map(quote)
     output = output + " %s mkt cap\n" % cap
     if quote['week52High'] is not None:
