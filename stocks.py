@@ -84,9 +84,14 @@ def get_quote_yahoo(symbol):
 
     output = "{shortName} ({symbol})\n".format_map(quote)
     output += "```python\n"
-    if quote['marketState'] == "POST":
+    if quote['marketState'] in ["POST", "POSTPOST"]:
         output += "After Hours:  %.02f (%.02f, %.02f%%)\n" % (quote.get("postMarketPrice"), quote.get("postMarketChange"), quote.get("postMarketChangePercent"))
         output += "Market Close: %.02f (%.02f, %.02f%%)\n" % (quote.get("regularMarketPrice"), quote.get("regularMarketChange"), quote.get("regularMarketChangePercent"))
+    elif quote['marketState'] in ["PRE"]:
+        output += "PreMarket:    %.02f (%.02f, %.02f%%)\n" % (
+            quote.get("preMarketPrice"), quote.get("preMarketChange"), quote.get("preMarketChangePercent"))
+        output += "Market Close: %.02f (%.02f, %.02f%%)\n" % (
+            quote.get("regularMarketPrice"), quote.get("regularMarketChange"), quote.get("regularMarketChangePercent"))
     else:
         output += "Market Hours: %.02f (%.02f, %.02f%%)\n" % (quote.get("regularMarketPrice"), quote.get("regularMarketChange"), quote.get("regularMarketChangePercent"))
     output += "Day volume: %s (%s 10 day avg)\n" % (simpleMarketCap(quote.get("regularMarketVolume")), simpleMarketCap(quote.get("averageDailyVolume10Day")))
