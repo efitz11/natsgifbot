@@ -2,6 +2,7 @@ from urllib.request import urlopen, Request
 import json
 import utils
 from bs4 import BeautifulSoup
+from datetime import datetime
 
 def simpleMarketCap(mcap):
     if mcap is not None:
@@ -85,20 +86,20 @@ def get_quote_yahoo(symbol):
     output = "{shortName} ({symbol})\n".format_map(quote)
     output += "```python\n"
     if quote['marketState'] in ["POST", "POSTPOST"]:
-        output += "After Hours:  %.02f (%.02f, %.02f%%)\n" % (quote.get("postMarketPrice"), quote.get("postMarketChange"), quote.get("postMarketChangePercent"))
-        output += "Market Close: %.02f (%.02f, %.02f%%)\n" % (quote.get("regularMarketPrice"), quote.get("regularMarketChange"), quote.get("regularMarketChangePercent"))
+        output += "After Hours:  %.02f (%.02f, %.02f%%) (%s)\n" % (quote.get("postMarketPrice"), quote.get("postMarketChange"), quote.get("postMarketChangePercent"), datetime.fromtimestamp(quote.get("postMarketTime")))
+        output += "Market Close: %.02f (%.02f, %.02f%%) (%s)\n" % (quote.get("regularMarketPrice"), quote.get("regularMarketChange"), quote.get("regularMarketChangePercent"), datetime.fromtimestamp(quote.get("regularMarketTime")))
     elif quote['marketState'] in ["PRE"]:
-        output += "PreMarket:    %.02f (%.02f, %.02f%%)\n" % (
-            quote.get("preMarketPrice"), quote.get("preMarketChange"), quote.get("preMarketChangePercent"))
-        output += "Market Close: %.02f (%.02f, %.02f%%)\n" % (
-            quote.get("regularMarketPrice"), quote.get("regularMarketChange"), quote.get("regularMarketChangePercent"))
+        output += "PreMarket:    %.02f (%.02f, %.02f%%) (%s)\n" % (
+            quote.get("preMarketPrice"), quote.get("preMarketChange"), quote.get("preMarketChangePercent"), datetime.fromtimestamp(quote.get("preMarketTime")))
+        output += "Market Close: %.02f (%.02f, %.02f%%) (%s)\n" % (
+            quote.get("regularMarketPrice"), quote.get("regularMarketChange"), quote.get("regularMarketChangePercent"), datetime.fromtimestamp(quote.get("regularMarketTime")))
     else:
-        output += "Market Hours: %.02f (%.02f, %.02f%%)\n" % (quote.get("regularMarketPrice"), quote.get("regularMarketChange"), quote.get("regularMarketChangePercent"))
+        output += "Market Hours: %.02f (%.02f, %.02f%%) (%s)\n" % (quote.get("regularMarketPrice"), quote.get("regularMarketChange"), quote.get("regularMarketChangePercent"), datetime.fromtimestamp(quote.get("regularMarketTime")))
     output += "Day volume: %s (%s 10 day avg)\n" % (simpleMarketCap(quote.get("regularMarketVolume")), simpleMarketCap(quote.get("averageDailyVolume10Day")))
     output += "Day range: {regularMarketDayRange}\n".format_map(quote)
     output += "52w range: {fiftyTwoWeekRange}\n".format_map(quote)
-    output += "Market Cap: %s\n" % simpleMarketCap(quote.get("marketCap"))
-    output += "```"
+    output += "Market Cap: %s, P/E: %.02f\n" % (simpleMarketCap(quote.get("marketCap")), quote.get("trailingPE"))
+    output += "```\n<https://finance.yahoo.com/quote/%s>" % (quote.get("symbol"))
 
     return output
 
