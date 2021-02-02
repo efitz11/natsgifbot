@@ -544,7 +544,7 @@ async def stock(ctx, *symbol:str):
     if len(symbol) == 0:
         await ctx.send(stocks.get_indexes())
         return
-    out = stocks.get_quote(symbol[0])
+    out = stocks.get_quote_yahoo(symbol[0])
     await ctx.send(out)
     
 @bot.command()

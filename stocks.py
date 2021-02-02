@@ -3,6 +3,25 @@ import json
 import utils
 from bs4 import BeautifulSoup
 
+def simpleMarketCap(mcap):
+    if mcap is not None:
+        if mcap >= 1e12:
+            cap = round(mcap/1e12, 1)
+            cap = str(cap) + "T"
+        elif mcap >= 1e9:
+            cap = round(mcap/1e9, 1)
+            cap = str(cap) + "B"
+        elif mcap >= 1e6:
+            cap = round(mcap/1e6, 1)
+            cap = str(cap) + "M"
+        elif mcap >= 1e3:
+            cap = str(round(mcap/1e3,1))+ "k"
+        else:
+            cap = str(mcap)
+    else:
+        cap = ""
+    return cap
+
 def get_quote(symbol):
     if symbol.lower() == 'futures':
         return get_index_futures()
@@ -57,8 +76,26 @@ def get_quote(symbol):
     return output
 
 def get_quote_yahoo(symbol):
+    if symbol.lower() == 'futures':
+        return get_index_futures()
+
     url = "https://query1.finance.yahoo.com/v7/finance/options/%s" % symbol
     quote = utils.get_json(url)['optionChain']['result'][0]['quote']
+
+    output = "{shortName} ({symbol})\n".format_map(quote)
+    output += "```python\n"
+    if quote['marketState'] == "POST":
+        output += "After Hours:  %.02f (%.02f, %.02f%%)\n" % (quote.get("postMarketPrice"), quote.get("postMarketChange"), quote.get("postMarketChangePercent"))
+        output += "Market Close: %.02f (%.02f, %.02f%%)\n" % (quote.get("regularMarketPrice"), quote.get("regularMarketChange"), quote.get("regularMarketChangePercent"))
+    else:
+        output += "Market Hours: %.02f (%.02f, %.02f%%)\n" % (quote.get("regularMarketPrice"), quote.get("regularMarketChange"), quote.get("regularMarketChangePercent"))
+    output += "Day volume: %s (%s 10 day avg)\n" % (simpleMarketCap(quote.get("regularMarketVolume")), simpleMarketCap(quote.get("averageDailyVolume10Day")))
+    output += "Day range: {regularMarketDayRange}\n".format_map(quote)
+    output += "52w range: {fiftyTwoWeekRange}\n".format_map(quote)
+    output += "Market Cap: %s\n" % simpleMarketCap(quote.get("marketCap"))
+    output += "```"
+
+    return output
 
 def get_stocks():
     output = "Latest quotes:\n```python\n"
@@ -151,7 +188,7 @@ def get_index_futures():
     return "```%s```" % (utils.format_table(labels,idxs,left_list=left))
 
 if __name__ == "__main__":
-    print(get_quote("msft"))
+    # print(get_quote("msft"))
     # print(get_indexes())
     # print(get_index_futures())
-    # print(get_quote_yahoo("sq"))
+    print(get_quote_yahoo("sq"))
