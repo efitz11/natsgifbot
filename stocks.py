@@ -98,7 +98,7 @@ def get_quote_yahoo(symbol):
     output += "Day volume: %s (%s 10 day avg)\n" % (simpleMarketCap(quote.get("regularMarketVolume")), simpleMarketCap(quote.get("averageDailyVolume10Day")))
     output += "Day range: {regularMarketDayRange}\n".format_map(quote)
     output += "52w range: {fiftyTwoWeekRange}\n".format_map(quote)
-    output += "Market Cap: %s, P/E: %.02f\n" % (simpleMarketCap(quote.get("marketCap")), quote.get("trailingPE"))
+    output += "Market Cap: %s, P/E: %s\n" % (simpleMarketCap(quote.get("marketCap")), "%.02f" % quote.get("trailingPE") if "trailingPE" in quote else "N/A")
     output += "```\n<https://finance.yahoo.com/quote/%s>" % (quote.get("symbol"))
 
     return output
