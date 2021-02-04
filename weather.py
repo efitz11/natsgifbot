@@ -157,19 +157,21 @@ def get_current_metar(airport_code):
     # close = '</raw_text>'
     # metar = content[content.find(tag) + len(tag):content.find(close)]
     # return metar
-    url = 'https://api.weather.gov/stations/%s/observations?limit=1' % (airport_code)
+    url = 'https://api.weather.gov/stations/%s/observations?limit=25' % (airport_code)
     data = utils.get_json(url)
     if len(data['features']) > 0:
-        ts = data['features'][0]['properties']['timestamp']
-        updated = _get_ET_from_timestamp(ts)
-        return "```Time: %s\n%s```" % (updated, data['features'][0]['properties']['rawMessage'])
+        for i in range(len(data['features'])):
+            if len(data['features'][i]['properties']['rawMessage']) > 0:
+                ts = data['features'][i]['properties']['timestamp']
+                updated = _get_ET_from_timestamp(ts)
+                return "```Time: %s\n%s```" % (updated, data['features'][i]['properties']['rawMessage'])
     else:
         return "Airport code not found"
 
 if __name__ == "__main__":
     #get_current_weather('%2C'.join(("fairfax,","va")))
-    print(get_current_weatherbit('sterling, va'))
+    # print(get_current_weatherbit('sterling, va'))
     # print(get_lat_lon("potomac, md"))
-    # print(get_current_metar('kiad'))
+    print(get_current_metar('kduj'))
     # print(get_forecast("arlington,va"))
 
