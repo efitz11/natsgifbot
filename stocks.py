@@ -80,8 +80,10 @@ def get_quote_yahoo(symbol):
     if symbol.lower() == 'futures':
         return get_index_futures()
 
-    url = "https://query1.finance.yahoo.com/v7/finance/options/%s" % symbol
-    quote = utils.get_json(url)['optionChain']['result'][0]['quote']
+    # url = "https://query1.finance.yahoo.com/v7/finance/options/%s" % symbol
+    # quote = utils.get_json(url)['optionChain']['result'][0]['quote']
+    url = "https://query1.finance.yahoo.com/v7/finance/quote?symbols=%s" % symbol
+    quote = utils.get_json(url)['quoteResponse']['result'][0]
 
     output = "{shortName} ({symbol})\n".format_map(quote)
     output += "```python\n"
@@ -197,4 +199,4 @@ if __name__ == "__main__":
     # print(get_quote("msft"))
     # print(get_indexes())
     # print(get_index_futures())
-    print(get_quote_yahoo("sq"))
+    print(get_quote_yahoo("btc-usd"))
