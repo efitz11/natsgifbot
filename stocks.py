@@ -91,8 +91,9 @@ def get_quote_yahoo(symbol):
         output += "After Hours:  %.02f (%.02f, %.02f%%) (%s)\n" % (quote.get("postMarketPrice"), quote.get("postMarketChange"), quote.get("postMarketChangePercent"), datetime.fromtimestamp(quote.get("postMarketTime")))
         output += "Market Close: %.02f (%.02f, %.02f%%) (%s)\n" % (quote.get("regularMarketPrice"), quote.get("regularMarketChange"), quote.get("regularMarketChangePercent"), datetime.fromtimestamp(quote.get("regularMarketTime")))
     elif quote['marketState'] in ["PRE"]:
-        output += "PreMarket:    %.02f (%.02f, %.02f%%) (%s)\n" % (
-            quote.get("preMarketPrice"), quote.get("preMarketChange"), quote.get("preMarketChangePercent"), datetime.fromtimestamp(quote.get("preMarketTime")))
+        if "preMarketPrice" in quote:
+            output += "PreMarket:    %.02f (%.02f, %.02f%%) (%s)\n" % (
+                quote.get("preMarketPrice"), quote.get("preMarketChange"), quote.get("preMarketChangePercent"), datetime.fromtimestamp(quote.get("preMarketTime")))
         output += "Market Close: %.02f (%.02f, %.02f%%) (%s)\n" % (
             quote.get("regularMarketPrice"), quote.get("regularMarketChange"), quote.get("regularMarketChangePercent"), datetime.fromtimestamp(quote.get("regularMarketTime")))
     else:
