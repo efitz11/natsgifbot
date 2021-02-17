@@ -107,6 +107,35 @@ def get_quote_yahoo(symbol):
 
     return output
 
+def get_crypto_yahoo():
+    url = "https://query1.finance.yahoo.com/v7/finance/quote?symbols=btc-usd,eth-usd,ltc-usd,xlm-usd,doge-usd"
+    results = utils.get_json(url)['quoteResponse']['result']
+
+    if len(results) > 0:
+        for res in results:
+            price = res['regularMarketPrice']
+            if price < 1.0:
+                res['regularMarketPrice'] = str(round(price, 3))
+                res['regularMarketDayLow'] = str(round(res['regularMarketDayLow'], 3))
+                res['regularMarketDayHigh'] = str(round(res['regularMarketDayHigh'], 3))
+            else:
+                res['regularMarketPrice'] = int(price)
+                res['regularMarketDayLow'] = int(res['regularMarketDayLow'])
+                res['regularMarketDayHigh'] = int(res['regularMarketDayHigh'])
+            res['marketCap'] = simpleMarketCap(res['marketCap'])
+
+        labels = ["fromCurrency", "regularMarketPrice", "regularMarketDayHigh", "regularMarketDayLow", "marketCap"]
+        left_labels = ["fromCurrency"]
+        replace = {"fromCurrency":"coin", "regularMarketPrice":"Price", "regularMarketDayHigh":"24h high",
+                   "regularMarketDayLow":"24h low", "marketCap":"market cap"}
+        out = "```python\n"
+
+        out += utils.format_table(labels, results, left_list=left_labels, repl_map=replace)
+        out += "```"
+        return out
+    else:
+        return "error"
+
 def get_stocks():
     output = "Latest quotes:\n```python\n"
     stocks = []
@@ -201,4 +230,5 @@ if __name__ == "__main__":
     # print(get_quote("msft"))
     # print(get_indexes())
     # print(get_index_futures())
-    print(get_quote_yahoo("btc-usd"))
+    # print(get_quote_yahoo("btc-usd"))
+    print(get_crypto_yahoo())
