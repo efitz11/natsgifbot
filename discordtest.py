@@ -549,9 +549,8 @@ async def stock(ctx, *symbol:str):
     
 @bot.command()
 async def crypto(ctx, *symbol:str):
-    """list the top 10 crypto prices, or a specific coin. from coinmarketcap"""
-    sym = '-'.join(symbol)
-    await ctx.send(web.get_cryptocurrency_data(sym))
+    """list the prices of btc/eth/ltc/xlm/doge"""
+    await ctx.send(stocks.get_crypto_yahoo())
     
 @bot.command()
 async def frink(ctx, *query:str):
