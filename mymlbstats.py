@@ -190,7 +190,7 @@ def get_single_game_info(gamepk, gamejson, show_on_deck=False, liveonly=False, c
                 batterpos = int(holepos) - 2
         if odpos is None:
             odpos = "OD: "
-            if batterpos is not None:
+            if batterpos is not None and batterpos != "B":
                 odpos = int(batterpos) + 1
         ondeck = "%s: %s" % (odpos, ls['offense']['onDeck']['lastName'])
         if not show_on_deck:
