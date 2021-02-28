@@ -51,9 +51,13 @@ def _find_player_id(name):
 
 def _new_player_search(name):
     post = False
+    spring = False
     if 'postseason' in name:
         name = name.replace('postseason', '').strip()
         post = True
+    elif 'spring ' in name:
+        name = name.replace('spring ', '').strip()
+        spring = True
     p = _find_player_id(name)
     url = API_LINK + "people/%s?hydrate=currentTeam,team,stats(type=[yearByYear,yearByYearAdvanced,careerRegularSeason,careerAdvanced,availableStats](team(league)),leagueListId=mlb_hist)" % p
     player = utils.get_json(url)['people'][0]
@@ -61,6 +65,10 @@ def _new_player_search(name):
     player['player_id'] = str(player['id'])
     if post:
         url = API_LINK + "people/%s/stats?stats=yearByYear,career&gameType=P&leagueListId=mlb_hist&hydrate=team" % p
+        stats = utils.get_json(url)
+        player['stats'] = stats['stats']
+    elif spring:
+        url = API_LINK + "people/%s/stats?stats=yearByYear,career&gameType=S&leagueListId=mlb_hist&hydrate=team" % p
         stats = utils.get_json(url)
         player['stats'] = stats['stats']
     return player
@@ -295,6 +303,7 @@ def get_team_info(teamid):
 def get_player_season_stats(name, type=None, year=None, career=None, reddit=None):
     try:
         postseason = True if 'postseason' in name else False
+        spring = True if 'spring ' in name else False
         player = _new_player_search(name)
     except:
         return "Error finding player %s" % name
@@ -362,6 +371,11 @@ def get_player_season_stats(name, type=None, year=None, career=None, reddit=None
     repl = {'atBats':'ab', 'plateAppearances':'pa','hits':'h','doubles':'2B','triples':'3b','homeRuns':'hr', 'runs':'r', 'baseOnBalls':'bb','strikeOuts':'so', 'stolenBases':'sb', 'caughtStealing':'cs',
             'wins':'w', 'losses':'l', 'gamesPlayed':'g', 'gamesStarted':'gs', 'saveOpportunities':'svo', 'saves':'sv', 'inningsPitched':'ip'}
 
+    stats_type = "season"
+    if postseason:
+        stats_type = "postseason"
+    elif spring:
+        stats_type = "spring"
     if year == year2:
         if year == str(now.year) and len(teams) == 0 and 'currentTeam' in player:
             teamabv = player['currentTeam']['abbreviation']
@@ -371,11 +385,11 @@ def get_player_season_stats(name, type=None, year=None, career=None, reddit=None
                 teamabv += " - %s %s" % (parent['abbreviation'], milb['sport']['abbreviation'])
         else:
             teamabv = '/'.join(teams)
-        output = "%s %sseason stats for %s (%s):" % (year, 'post' if postseason else '', disp_name, teamabv)
+        output = "%s %s stats for %s (%s):" % (year, stats_type, disp_name, teamabv)
     else:
-        output = "%s-%s %sseason stats for %s:" % (year, year2, 'post' if postseason else '', disp_name)
+        output = "%s-%s %s stats for %s:" % (year, year2, stats_type, disp_name)
     if career:
-        output = "Career %sstats for %s (%s):" % ('post' if postseason else '', disp_name, years)
+        output = "Career %s stats for %s (%s):" % (stats_type, disp_name, years)
     output = "%s\n  %s\n\n" % (output, infoline)
     output = output + utils.format_table(stats, seasons, repl_map=repl, reddit=reddit)
     return output
@@ -1180,4 +1194,5 @@ if __name__ == "__main__":
     # print(print_games('wsh'))
     # print(print_games("lad"))
     # print(print_stat_streaks(['hitting'], redditpost=True))
-    print(get_player_season_stats("starling marte"))
+    # print(get_player_season_stats("starling marte"))
+    print(_new_player_search("trea"))
