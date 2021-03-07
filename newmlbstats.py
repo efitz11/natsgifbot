@@ -730,62 +730,64 @@ def print_birthdays(team, delta=None, reddit=False):
     birthdays = list()
     if delta is None:
         today = datetime.today()
+        todayyear = 2020 # use this until it's actually updated to 2021 i guess
     else:
         today = mymlbstats._get_date_from_delta(delta, offset=False)
     todaystr = "%02d-%02d" % (today.month, today.day)
 
-    if len(team) == 0:
-        url = API_LINK + "sports/1/players"
-        players = utils.get_json(url)['people']
-        teams = dict()
-        for player in players:
-            if 'birthDate' in player:
-                p = dict()
-                if player['birthDate'][5:] == todaystr:
-                    p['age'] = today.year - int(player['birthDate'][:4])
-                    p['name'] = player['firstLastName']
-                    curteamid = player['currentTeam']['id']
+    # if len(team) == 0:
+    url = API_LINK + "sports/1/players?fields=people,fullName,lastName,firstLastName,birthDate&season=%d&hydrate=currentTeam" % todayyear
+    players = utils.get_json(url)['people']
+    teams = dict()
+    for player in players:
+        if 'birthDate' in player:
+            p = dict()
+            if player['birthDate'][5:] == todaystr:
+                p['age'] = today.year - int(player['birthDate'][:4])
+                p['name'] = player['firstLastName']
+                # curteamid = player['currentTeam']['id']
+                #
+                # if curteamid in teams:
+                #     p['team'] = teams[curteamid]['abbreviation']
+                #     if reddit:
+                #         p['team'] = "[](/%s)%s" % (p['team'], p['team'])
+                #
+                # else:
+                #     teaminfo = get_team_info(curteamid)
+                #     teams[curteamid] = teaminfo
+                #     p['team'] = teaminfo['abbreviation']
+                #     if reddit:
+                #         p['team'] = "[](/%s)%s" % (p['team'], p['team'])
 
-                    if curteamid in teams:
-                        p['team'] = teams[curteamid]['abbreviation']
-                        if reddit:
-                            p['team'] = "[](/%s)%s" % (p['team'], p['team'])
-
-                    else:
-                        teaminfo = get_team_info(curteamid)
-                        teams[curteamid] = teaminfo
-                        p['team'] = teaminfo['abbreviation']
-                        if reddit:
-                            p['team'] = "[](/%s)%s" % (p['team'], p['team'])
-
-                    birthdays.append(p)
-    else:
-        teamid, teamdata = mymlbstats.get_teamid(team, extradata=True)
-        if teamid is None:
-            return "could not find team"
-        roster = get_40man(teamid) + get_coaches(teamid)
-        for player in roster:
-            if 'birthDate' in player['person']:
-                p = dict()
-                player = player['person']
-                if player['birthDate'][5:] == todaystr:
-                    p['age'] = today.year - int(player['birthDate'][:4])
-                    p['name'] = player['firstLastName']
-                    birthdays.append(p)
+                birthdays.append(p)
+    # else:
+    #     teamid, teamdata = mymlbstats.get_teamid(team, extradata=True)
+    #     if teamid is None:
+    #         return "could not find team"
+    #     roster = get_40man(teamid) + get_coaches(teamid)
+    #     for player in roster:
+    #         if 'birthDate' in player['person']:
+    #             p = dict()
+    #             player = player['person']
+    #             if player['birthDate'][5:] == todaystr:
+    #                 p['age'] = today.year - int(player['birthDate'][:4])
+    #                 p['name'] = player['firstLastName']
+    #                 birthdays.append(p)
     if delta is None:
         todaystr = "today"
     else:
         todaystr = 'on ' + todaystr.replace('-','/')
     if len(birthdays) > 0:
-        if len(team) > 0:
-            return "%s birthdays %s:\n\n" % (teamdata['teamName'], todaystr) + utils.format_table(['name', 'age'], birthdays, left_list=['name'], reddit=reddit)
-        else:
-            return "All player birthdays %s:\n\n%s" % (todaystr, utils.format_table(['team','name','age'], birthdays, left_list=['team','name'], reddit=reddit))
+        # if len(team) > 0:
+        #     return "%s birthdays %s:\n\n" % (teamdata['teamName'], todaystr) + utils.format_table(['name', 'age'], birthdays, left_list=['name'], reddit=reddit)
+        # else:
+        # return "All player birthdays %s:\n\n%s" % (todaystr, utils.format_table(['team','name','age'], birthdays, left_list=['team','name'], reddit=reddit))
+         return "All player birthdays %s:\n\n%s" % (todaystr, utils.format_table(['name','age'], birthdays, left_list=['name'], reddit=reddit))
     else:
-        if len(team) > 0:
-            return "No %s birthdays on %s" % (teamdata['teamName'], todaystr)
-        else:
-            return "No birthdays %s" % todaystr
+        # if len(team) > 0:
+        #     return "No %s birthdays on %s" % (teamdata['teamName'], todaystr)
+        # else:
+        return "No birthdays %s" % todaystr
 
 def get_player_headshot_url(player_search):
     player = _new_player_search(player_search)
