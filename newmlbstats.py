@@ -49,7 +49,7 @@ def _find_player_id(name):
                 break
         return p
 
-def _new_player_search(name):
+def _new_player_search(name, type=None):
     post = False
     spring = False
     if 'postseason' in name:
@@ -59,7 +59,10 @@ def _new_player_search(name):
         name = name.replace('spring ', '').strip()
         spring = True
     p = _find_player_id(name)
-    url = API_LINK + "people/%s?hydrate=currentTeam,team,stats(type=[yearByYear,yearByYearAdvanced,careerRegularSeason,careerAdvanced,availableStats](team(league)),leagueListId=mlb_hist)" % p
+    if type is None:
+        url = API_LINK + "people/%s?hydrate=currentTeam,team,stats(type=[yearByYear,yearByYearAdvanced,careerRegularSeason,careerAdvanced,availableStats](team(league)),leagueListId=mlb_hist)" % p
+    else:
+        url = API_LINK + "people/%s?hydrate=currentTeam,team,stats(type=[yearByYear,yearByYearAdvanced,careerRegularSeason,careerAdvanced,availableStats](team(league)),leagueListId=mlb_hist,group=%s)" % (p, type)
     player = utils.get_json(url)['people'][0]
     # for backwards compat
     player['player_id'] = str(player['id'])
@@ -304,7 +307,7 @@ def get_player_season_stats(name, type=None, year=None, career=None, reddit=None
     try:
         postseason = True if 'postseason' in name else False
         spring = True if 'spring ' in name else False
-        player = _new_player_search(name)
+        player = _new_player_search(name, type=type)
     except:
         return "Error finding player %s" % name
     if player is None:
