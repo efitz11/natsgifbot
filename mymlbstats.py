@@ -2083,9 +2083,10 @@ def get_inning_plays(team, inning, delta=None):
         highlights = get_game_highlights_plays(gamepk, new=True)
     else:
         highlights = get_game_highlights_plays(gamepk)
-    url = "https://statsapi.mlb.com/api/v1/game/" + str(gamepk) + "/playByPlay"
+    # url = "https://statsapi.mlb.com/api/v1/game/" + str(gamepk) + "/playByPlay"
+    url = "https://statsapi.mlb.com/api/v1.1/game/" + str(gamepk) + "/feed/live?language=en"
     print(url)
-    plays = _get_json(url)
+    plays = _get_json(url)["liveData"]["plays"]
     try:
         playsinning = plays['playsByInning'][inning-1][side]
     except IndexError:
@@ -2852,7 +2853,7 @@ if __name__ == "__main__":
     # print(player_vs_pitcher("kendrick", "samardzija"))
     # print(player_vs_pitcher("samardzija", "kendrick"))
     # print(get_game_highlights_plays("530753"))
-    # print(get_inning_plays("col", 7))
+    print(get_inning_plays("sea", 10, delta=-1))
     # print(compare_player_stats(["ohtani", "harper"]))
     # print(print_roster('wsh',hitters=False))
     # print(get_milb_aff_scores(delta="-1"))
@@ -2866,5 +2867,5 @@ if __name__ == "__main__":
     # print(print_at_bats("Chris Davis", delta="-1"))
     # print(get_all_game_highlights("565905"))
     # print(find_game_highlights('wsh', delta="-1"))
-    print(print_pitches_by_inning('wsh'))
+    # print(print_pitches_by_inning('wsh'))
     # print(_parse_players("harper/eaton"))
