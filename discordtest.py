@@ -34,6 +34,7 @@ patternmasn = re.compile('masn', re.IGNORECASE)
 # patterneaton = re.compile('(?<!(Miami University Great ))(Adam Eaton)', re.IGNORECASE)
 patterntwitter = re.compile('https://.*twitter.com/([^/?]+)*')
 patterntwitterstatus = re.compile('https://.*twitter.com/([^/?]+)/status/([0-9]+)')
+masn_time = datetime.now()
 
 pidfile = 'discordbotpid.txt'
 miscfile = 'misc.json'
@@ -98,7 +99,7 @@ async def on_ready():
     print(bot.user.name)
     print(bot.user.id)
     print('------')
-    
+
 @bot.command()
 async def gif(ctx, *name : str):
     """returns a nationals gif matching the search query"""
@@ -859,7 +860,14 @@ async def on_message(message):
         if patternshitbot.search(message.content):
             await channel.send("Fuck off! I'm doing my best.")
         if patternmasn.search(message.content):
-            await channel.send("masan sucks")
+            # check history for recent trigger so we're not spamming
+            ctx = await bot.get_context(message)
+            recent = False
+            async for m in ctx.history(limit=25):
+                if "masan sucks" in m.clean_content:
+                    recent = True
+            if not recent:
+                await channel.send("masan sucks")
         match = patternalexaplay.search(message.content)
         if match:
             query = message.content[match.end():]
