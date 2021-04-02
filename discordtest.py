@@ -30,6 +30,7 @@ patternperf = re.compile('perfect game',re.IGNORECASE)
 patternbenoit = re.compile('benoit$',re.IGNORECASE)
 patternalexaplay = re.compile('alexa play', re.IGNORECASE)
 patternshitbot = re.compile('shit bot', re.IGNORECASE)
+patternmasn = re.compile('masn', re.IGNORECASE)
 # patterneaton = re.compile('(?<!(Miami University Great ))(Adam Eaton)', re.IGNORECASE)
 patterntwitter = re.compile('https://.*twitter.com/([^/?]+)*')
 patterntwitterstatus = re.compile('https://.*twitter.com/([^/?]+)/status/([0-9]+)')
@@ -857,6 +858,8 @@ async def on_message(message):
             await channel.send("balls.")
         if patternshitbot.search(message.content):
             await channel.send("Fuck off! I'm doing my best.")
+        if patternmasn.search(message.content):
+            await channel.send("masan sucks")
         match = patternalexaplay.search(message.content)
         if match:
             query = message.content[match.end():]
