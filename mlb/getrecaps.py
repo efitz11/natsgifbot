@@ -629,10 +629,12 @@ def post_self_submission(selftext, cron=False):
     yest = datetime.now() - timedelta(days=1)
     title = "%d/%d Highlight Roundup: FastCast, top plays, recaps/condensed games and longest dongs of the day" % (yest.month, yest.day)
     defense_vids = find_defense()
+    if defense_vids is None:
+        defense_vids = ""
     # add active streaks
-    defense_vids += "\n****\n"
-    defense_vids += "\n\nLongest active hitting streaks:\n\n%s" % newmlbstats.print_stat_streaks(["hitting"], redditpost=True)
-    defense_vids += "\n\nLongest active on base streaks:\n\n%s" % newmlbstats.print_stat_streaks(["onbase"], redditpost=True)
+    #defense_vids += "\n****\n"
+    #defense_vids += "\n\nLongest active hitting streaks:\n\n%s" % newmlbstats.print_stat_streaks(["hitting"], redditpost=True)
+    #defense_vids += "\n\nLongest active on base streaks:\n\n%s" % newmlbstats.print_stat_streaks(["onbase"], redditpost=True)
     defense_vids += "\n\n****\n\n"
     defense_vids += newmlbstats.print_birthdays("", reddit=True)
     spoilers = isinstance(selftext, tuple)
