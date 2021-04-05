@@ -10,7 +10,7 @@ bbref_teams = {"LAA":108, "ARI":109, "BAL":110, "BOS":111, "CHC":112, "CIN":113,
                "PHI":143, "ATL":144, "CHW":145, "MIA":146, "NYY":147, "MIL":158}
 
 # read bases loaded no out PAs
-with open("nobletiger2018.csv") as f:
+with open("nobletiger2020.csv") as f:
     pas = [{k: v for k, v in row.items()}
            for row in csv.DictReader(f, skipinitialspace=True)]
 
