@@ -875,7 +875,7 @@ def print_stat_streaks(query_list, season=None, reddit=False, redditpost=False):
             filter = l
             query_list.remove(l)
             break
-    spans = ['career', 'season', 'current', 'notable', 'notableInSeason']
+    spans = ['career', 'season', 'currentStreak', 'notable', 'notableInSeason']
     for l in query_list:
         if l in spans:
             span = l
