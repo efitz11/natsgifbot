@@ -820,6 +820,11 @@ def print_pitch_arsenal(pitcher, season=None, reddit=False):
     if player is None:
         return "could not find pitcher"
 
+    if season is None:
+        now = datetime.now()
+        season = str(now.year)
+    player_info = "%s pitch arsenal for %s (%s)\n\n" % (season, player['fullName'], player['currentTeam']['abbreviation'])
+
     pitches = get_pitch_arsenal(player['id'], season=season)
     pitches = sorted(pitches, key = lambda k: float(k['percentage']), reverse=True)
 
@@ -827,7 +832,7 @@ def print_pitch_arsenal(pitcher, season=None, reddit=False):
     left = ['description']
     repl = {'description':'pitch', 'percentage':'%', 'averageSpeed':'avg mph'}
 
-    return "```python\n%s```" % utils.format_table(labels, pitches, left_list=left, repl_map=repl, reddit=reddit)
+    return "```python\n%s%s```" % (player_info, utils.format_table(labels, pitches, left_list=left, repl_map=repl, reddit=reddit))
 
 def get_stat_streaks(streak_type, streak_filter="overall", span=None, season=None):
     """
