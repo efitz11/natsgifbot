@@ -112,7 +112,7 @@ class BoxScore:
                         data[box.box['date']] = box.box['teams'][oldside]['players']["ID" + str(playerid)]['stats']['pitching']['pitchesThrown']
                     except:
                         data[box.box['date']] = ""
-                    if box.box['teams'][oldside]['pitchers'][0] == playerid:
+                    if len(box.box['teams'][oldside]['pitchers']) > 0 and box.box['teams'][oldside]['pitchers'][0] == playerid:
                         is_starter = True
                 if is_starter:
                     starters.append(data)
