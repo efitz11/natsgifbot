@@ -2568,6 +2568,9 @@ def print_at_bats(name, delta=None):
                                     if playback['name'] == "FLASH_2500K_1280X720":
                                         url = playback['url']
                                 output = output + " -- %s: <" % blurb + url + ">\n\n"
+                        else:
+                            savanturl = "https://baseballsavant.mlb.com/sporty-videos?playId=" + playevent['playId']
+                            output = output + " -- <" + savanturl + ">\n\n"
                 else:
                     output = output + "%s %d: %s " % (half, play['about']['inning'], "Currently at bat.")
     if len(output) == 0:
