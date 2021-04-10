@@ -137,7 +137,7 @@ def _get_multiple_stats_string(playerlist, group=None, include_gp=False, reddit=
                 for i in rnge:
                     if g['group']['displayName'] == group and g['splits'][i]['sport']['id'] != 0:
                         row = g['splits'][i]['stat']
-                        row['season'] = g['splits'][i]['season']
+                        # row['season'] = g['splits'][i]['season']
                         row['lastName'] = player['lastName']
                         if not reddit:
                             row['lastName'] = row['lastName'][:5]
