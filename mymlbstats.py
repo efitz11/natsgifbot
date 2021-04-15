@@ -2569,8 +2569,10 @@ def print_at_bats(name, delta=None):
                                         url = playback['url']
                                 output = output + " -- %s: <" % blurb + url + ">\n\n"
                         else:
-                            savanturl = "https://baseballsavant.mlb.com/sporty-videos?playId=" + playevent['playId']
-                            output = output[:-1] + "<" + savanturl + ">\n\n"
+                            # only post if not day-of
+                            if delta is not None or delta in ["+0", "-0"]:
+                                savanturl = "https://baseballsavant.mlb.com/sporty-videos?playId=" + playevent['playId']
+                                output = output[:-1] + "<" + savanturl + ">\n\n"
                 else:
                     output = output + "%s %d: %s " % (half, play['about']['inning'], "Currently at bat.")
     if len(output) == 0:
