@@ -979,7 +979,7 @@ mlbtr = xmlreader.XmlReader()
 
 #print(reddit.read_only)
 # bot.loop.create_task(my_bg_task())
-bot.loop.create_task(update_mlbtr())
+#bot.loop.create_task(update_mlbtr())
 bot.loop.create_task(dongs_poster())
 bot.loop.create_task(birthday_poster())
 # temp variable
