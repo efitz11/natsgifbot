@@ -501,7 +501,7 @@ def print_umpires(team, delta=None):
             if 'Umpires' in line:
                 return line
 
-def print_box(team,part, delta=None):
+def print_box(team,part, delta=None, reddit=False):
     teamid = get_teamid(team)
     s = get_day_schedule(delta=delta, teamid=teamid)
     games = s['dates'][0]['games']
@@ -555,7 +555,7 @@ def print_box(team,part, delta=None):
                         boxes[-1].box['date'] = game[1]
                         # print(game[1])
 
-                out = bs.print_box(side=side, part=part, display_pitches=dp, oldboxes=boxes)
+                out = bs.print_box(side=side, part=part, display_pitches=dp, oldboxes=boxes, reddit=reddit)
                 output += "```%s```" % out
     return output
 

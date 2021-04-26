@@ -22,7 +22,7 @@ class BoxScore:
                 pid = self.box['teams'][t]['players'][p]['person']['id']
                 self.players[pid] = self.box['teams'][t]['players'][p]
 
-    def print_box(self, side="home", part="batting", display_pitches=False, oldboxes=[], playerid=None):
+    def print_box(self, side="home", part="batting", display_pitches=False, oldboxes=[], playerid=None, reddit=False):
         output = None
         if part == "batting":
             output = "%s %s %s %s %s %s %s %s %s %s %s\n" % ("".ljust(18),'AB','R','H','RBI','BB','SO','LOB',' AVG', ' OBP',' SLG')
@@ -131,7 +131,7 @@ class BoxScore:
             # print(labels)
             # print(mymlbstats._print_table(labels, table))
             import utils
-            return utils.format_table(labels, table, left_list=leftlist, def_repl=False)
+            return utils.format_table(labels, table, left_list=leftlist, def_repl=False, reddit=reddit)
 
         elif part in ['bench','bullpen']:
             if part == 'bench':
