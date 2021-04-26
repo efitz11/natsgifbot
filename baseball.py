@@ -357,7 +357,7 @@ class Baseball(commands.Cog):
                 team[0] = 'batting'
             part = team[0]
             team = ' '.join(team[1:]).lower()
-            out = mymlbstats.print_box(team, part=part, delta=delta)
+            out = mymlbstats.print_box(team, part=part, delta=delta, reddit=reddit)
             if out is not None:
                 await ctx.send("%s" % out)
             return
