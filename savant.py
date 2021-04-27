@@ -235,11 +235,13 @@ def print_player_rankings(player, year=None):
         if stat in stats_dict and stats_dict[stat] is not None:
             d = dict()
             d['stat'] = stat.replace("percent_rank_", "")
-            d['value'] = stats_dict[stat]
+            d['value'] = int(stats_dict[stat])
             table_rows.append(d)
-    player_line = f"{year} percentile rankings for {savant_json['playerName']}"
+    # sort by value (desc)
+    table_rows = sorted(table_rows, key=lambda i: i["value"], reverse=True)
+    player_line = f"{year} {type} percentile rankings for {savant_json['playerName']}"
     table_output = utils.format_table(['stat','value'], table_rows, showlabels=False)
-    return f"```python\n{player_line}\n\n{table_output}"
+    return f"```python\n{player_line}\n\n{table_output}```"
 
 if __name__ == "__main__":
     # print(find_gamepks('wsh'))
