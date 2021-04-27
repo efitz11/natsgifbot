@@ -454,6 +454,14 @@ class Baseball(commands.Cog):
                 team = team[:-1]
             player = ' '.join(team)
             await ctx.send(savant.print_player_advanced_stats(player, year=year, reddit=reddit))
+        elif team[0] == "percentiles":
+            team = team[1:]
+            season = None
+            if team[-1].isdigit():
+                season = team[-1]
+                team = team[:-1]
+            player = ' '.join(team)
+            await ctx.send(savant.print_player_rankings(player, year=season))
         else:
             teamname = ' '.join(team).lower()
             if teamname == 'help':

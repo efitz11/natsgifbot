@@ -126,6 +126,10 @@ $reddit:
   Just like "next" but for previous days.
   Display past <num> games for <team>. Won't display today's game unless it ended.
   - <num> (optional): defaults to 3
+#percentiles
+!mlb percentiles <player> [year]
+  Display a player's baseball savant percentile rankings for [year]
+  - [year]: defaults to current year
 #pic
 !mlb pic <player>
   Displays <player>'s mlb.com headshot, if it exists
