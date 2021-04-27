@@ -446,6 +446,14 @@ class Baseball(commands.Cog):
                 season = team[-1]
                 team = team[:-1]
             await ctx.send(newmlbstats.print_stat_streaks(team, season=season, reddit=reddit))
+        elif team[0] == "advanced":
+            team = team[1:]
+            year = None
+            if team[-1].isdigit() or (team[-1].split('-')[0].isdigit() and team[-1].split('-')[1].isdigit()):
+                year = team[-1]
+                team = team[:-1]
+            player = ' '.join(team)
+            await ctx.send(savant.print_player_advanced_stats(player, year=year, reddit=reddit))
         else:
             teamname = ' '.join(team).lower()
             if teamname == 'help':

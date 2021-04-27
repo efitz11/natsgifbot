@@ -1,3 +1,4 @@
+import loosejson
 import utils, mymlbstats
 from datetime import datetime, timedelta
 
@@ -135,9 +136,70 @@ def get_oaa_leaders(year=None):
     left = ['last_name','name_abbrev']
     return "```python\n%s```" % utils.format_table(cols, players,repl_map=replace, left_list=left)
 
+def get_player_savant_json():
+    with open("test/fake.json", 'r') as f:
+        fixed = loosejson.parse_loosely_defined_json(f.read())
+        return fixed
+
+def get_player_savant_stats(player):
+    p = mymlbstats._get_player_search(player)
+    if p is None:
+        return "No matching player found"
+    url = f"https://baseballsavant.mlb.com/savant-player/{p['player_id']}'"
+    page = utils.get_page(url)
+    page = page[page.rfind("var serverVals = {"):]
+    page = page[page.find('{'):page.rfind("};\n")+1]
+    return loosejson.parse_loosely_defined_json(page)
+
+def print_savant_advanced_stats(savant_json, year=None, reddit=None):
+    type = None
+    if savant_json['statcast'][0]['grouping_cat'] == "Batter":
+        labels = ['ba','xba','woba','xwoba','wobadif','bb_percent','k_percent']
+        type = "batting"
+    elif savant_json['statcast'][0]['grouping_cat'] == "Pitcher":
+        labels = ['woba','xwoba','wobadif','bb_percent','k_percent','era','xera']
+        type = "pitching"
+    if type is None:
+        return "Error getting advanced stats"
+
+    repls = {'bb_percent':'bb%','k_percent':'k%'}
+    this_year = datetime.now().year
+    stats = None
+    if year is None:
+        year = this_year
+        for year_entry in savant_json['statcast']:
+            if year_entry['aggregate'] == "0" and this_year == int(year_entry['year']):
+                stats = [year_entry]
+    else:
+        if '-' in year:
+            startyear, stopyear = year.split('-')
+            labels.insert(0,'year')
+        else:
+            startyear, stopyear = year
+        startyear = int(startyear)
+        stopyear = int(stopyear)
+        stats = list()
+        for year_entry in savant_json['statcast']:
+            if year_entry['aggregate'] == "0" and \
+                int(year_entry['year']) >= startyear and \
+                int(year_entry['year']) <= stopyear:
+                stats.append(year_entry)
+
+    player_line = f"{year} {type} advanced stats for {savant_json['playerName']}"
+    if stats is None:
+        return "Cannot find year in stats"
+
+    return "```python\n%s\n\n%s```" % (player_line, utils.format_table(labels, stats, repl_map=repls, reddit=reddit))
+
+def print_player_advanced_stats(player, year=None, reddit=None):
+    return print_savant_advanced_stats(get_player_savant_stats(player), year=year, reddit=reddit)
+
 if __name__ == "__main__":
     # print(find_gamepks('wsh'))
     # print(print_player_abs("soto"))
     # print(get_last_five(get_game(find_gamepks('wsh')[0])))
-    print(print_player_or_team("col"))
+    # print(print_player_or_team("col"))
     # print(get_oaa_leaders())
+    # print(print_savant_advanced_stats(get_player_savant_json(),year="2016-2021"))
+    print(print_savant_advanced_stats(get_player_savant_stats("josh bell")))
+    # print_savant_advanced_stats("")

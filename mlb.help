@@ -18,6 +18,9 @@ $reddit:
   Display all abs for <player> on a certain day.
   Prints the play-by-play description and statcast metrics for each at-bat
   Provides video of the at-bat if available
+#advanced
+!mlb advanced <player> <season>
+  Display a player's advanced stats for a season (or range of seasons)
 #arsenal
 !mlb arsenal <player> <season>
   Print the pitcher's arsenal for a given season
