@@ -194,6 +194,53 @@ def print_savant_advanced_stats(savant_json, year=None, reddit=None):
 def print_player_advanced_stats(player, year=None, reddit=None):
     return print_savant_advanced_stats(get_player_savant_stats(player), year=year, reddit=reddit)
 
+def print_player_rankings(player, year=None):
+    savant_json = get_player_savant_stats(player)
+    type = savant_json['statcast'][0]['grouping_cat']
+    stats = None
+    if type == "Pitcher":
+        stats = ["percent_rank_exit_velocity_avg",
+                 "percent_rank_barrel_batted_rate",
+                 "percent_rank_xwoba",
+                 "percent_rank_xera",
+                 "percent_rank_k_percent",
+                 "percent_rank_bb_percent",
+                 "percent_rank_chase_percent",
+                 "percent_rank_whiff_percent"]
+    elif type == "Batter":
+        stats = ["percent_rank_exit_velocity_avg",
+                 "percent_rank_barrel_batted_rate",
+                 "percent_rank_xwoba",
+                 "percent_rank_xba",
+                 "percent_rank_k_percent",
+                 "percent_rank_bb_percent",
+                 "percent_rank_chase_percent",
+                 "percent_rank_whiff_percent",
+                 "percent_rank_sprint_speed",
+                 "percent_rank_oaa",
+                 "percent_rank_framing"]
+    if stats is None:
+        return "error getting player rankings"
+    if year is None:
+        year = datetime.now().year
+    stats_dict = None
+    for year_stats in savant_json['statcast']:
+        if year_stats['aggregate'] == "0" and year == int(year_stats['year']):
+            stats_dict = year_stats
+    if stats_dict is None:
+        return f"No stats for {year}"
+    # build dict for table
+    table_rows = list()
+    for stat in stats:
+        if stat in stats_dict and stats_dict[stat] is not None:
+            d = dict()
+            d['stat'] = stat.replace("percent_rank_", "")
+            d['value'] = stats_dict[stat]
+            table_rows.append(d)
+    player_line = f"{year} percentile rankings for {savant_json['playerName']}"
+    table_output = utils.format_table(['stat','value'], table_rows, showlabels=False)
+    return f"```python\n{player_line}\n\n{table_output}"
+
 if __name__ == "__main__":
     # print(find_gamepks('wsh'))
     # print(print_player_abs("soto"))
@@ -201,5 +248,6 @@ if __name__ == "__main__":
     # print(print_player_or_team("col"))
     # print(get_oaa_leaders())
     # print(print_savant_advanced_stats(get_player_savant_json(),year="2016-2021"))
-    print(print_savant_advanced_stats(get_player_savant_stats("josh bell")))
+    # print(print_savant_advanced_stats(get_player_savant_stats("josh bell")))
     # print_savant_advanced_stats("")
+    print(print_player_rankings("grandal"))
