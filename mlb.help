@@ -52,8 +52,9 @@ $reddit:
 !mlb bvp <batter> <pitcher>
   Displays a batter's stats against a pitcher, year by year and career
 #compare
-!mlb compare <players> <season>
+!mlb compare [career] <players> <season>
   Compare season stats of two or more players
+  - [career]: compare careers if specified
   - <players>: a list of players separated by '/'
     * Whether the stats are batting or pitching is decided by the position of the first player
 #contract
