@@ -1771,16 +1771,20 @@ def compare_player_stats(playerlist,career=False,year=None, reddit=False):
     players = []
     output = ""
     for player in playerlist:
-        p = _get_player_search(player)
+        p = newmlbstats._new_player_search(player)
         if p is not None:
             players.append(p)
-            output = output + p['name_display_first_last'] + " vs "
-    pos = players[0]['position']
+            output = output + p['fullName'] + " vs "
+    pos = players[0]['primaryPosition']['abbreviation']
     type = 'hitting'
-    statlist = ['name','ab','h','d','t','hr','r','rbi','bb','so','sb','cs','avg','obp','slg','ops']
+    statlist = ['name', 'atBats', 'hits', 'doubles', 'triples', 'homeRuns', 'runs', 'rbi', 'baseOnBalls', 'strikeOuts',
+             'stolenBases', 'caughtStealing', 'avg', 'obp', 'slg', 'ops']
     if pos == 'P':
         type = 'pitching'
-        statlist = ['name','w','l','g','svo','sv','ip','so','bb','hr','era','whip']
+        statlist = ['name', 'wins', 'losses', 'gamesPlayed', 'gamesStarted', 'saveOpportunities', 'saves', 'inningsPitched', 'strikeOuts', 'baseOnBalls', 'homeRuns', 'era', 'whip']
+
+    repl = {'atBats':'ab', 'plateAppearances':'pa','hits':'h','doubles':'2B','triples':'3b','homeRuns':'hr', 'runs':'r', 'baseOnBalls':'bb','strikeOuts':'so', 'stolenBases':'sb', 'caughtStealing':'cs',
+            'wins':'w', 'losses':'l', 'gamesPlayed':'g', 'gamesStarted':'gs', 'saveOpportunities':'svo', 'saves':'sv', 'inningsPitched':'ip'}
     errors = ""
     stats = []
     now = datetime.now()
@@ -1788,51 +1792,35 @@ def compare_player_stats(playerlist,career=False,year=None, reddit=False):
         year = str(now.year)
     output = output[:-4] + " (%s)\n\n" % year
     for player in players:
-        pid = player['player_id']
-        disp_name = player['name_display_first_last']
-        url = "http://lookup-service-prod.mlb.com/json/named.sport_" + type + "_composed.bam?game_type=%27R%27&league_list_id=%27mlb_hist%27&player_id=" + str(pid)
-        print(url)
-        s = _get_json(url)
-        sport = "sport_"
+        pid = player['id']
+        disp_name = player['fullName']
         if career:
-            sport = "sport_career_"
-        if s['sport_'+type+'_composed'][sport+type+"_agg"]["queryResults"]["totalSize"] == "0":
-            errors = errors + "No %s stats for %s\n" % (type, disp_name)
-            continue
-        seasonstats = s['sport_'+type+'_composed'][sport+type+"_agg"]["queryResults"]["row"]
-        seasons = s['sport_'+type+'_composed']["sport_"+type+"_agg"]["queryResults"]["row"]
-        sport_tm = s['sport_'+type+'_composed']['sport_'+type+"_tm"]['queryResults']['row']
-        if not career:
-            if "season" in seasonstats:
-                if seasonstats["season"] == year:
-                    s = seasonstats
-                if sport_tm['season'] != year:
-                    errors = errors + "No %s stats for %s\n" % (year, disp_name)
-                    continue
-            else:
-                for season in seasonstats:
-                    if season["season"] == year:
-                        s = season
-                if s is None:
-                    errors = errors + "No %s stats for %s\n" % (year, disp_name)
-                    continue
-        else: #career stats
-            s = seasonstats
-        if 'season' not in s:
-            errors = errors + "No %s stats for %s\n" % (year, disp_name)
-            continue
-        if reddit:
-            s['name'] = player['name_last']
+            for group in player['stats']:
+                if 'group' in group:
+                    if group['group']['displayName'] == type and group['type']['displayName'] == "career":
+                        player_stats = group['splits'][0]['stat']
+                        break
         else:
-            s['name'] = player['name_last'][:5]
-        stats.append(s)
-    # output = output + _print_table(statlist, stats) + "\n\n" + errors
+            for group in player['stats']:
+                if 'group' in group:
+                    if group['group']['displayName'] == type and group['type']['displayName'] == "yearByYear":
+                        for split in group['splits']:
+                            if split['season'] == year:
+                                player_stats = split['stat']
+                                break
+
+        if reddit:
+            player_stats['name'] = player['lastName']
+        else:
+            player_stats['name'] = player['lastName'][:5]
+        stats.append(player_stats)
+
     left = ['name']
     if type == 'hitting':
-        reverse = ['cs','so']
+        reverse = ['caughtStealing','strikeOuts']
     else:
-        reverse = ['l','bb','era','whip']
-    output = output + utils.format_table(statlist, stats, reddit=reddit, left_list=left, repl_map=REPL_MAP, bold=True, low_stats=reverse)
+        reverse = ['losses','baseOnBalls','era','whip']
+    output = output + utils.format_table(statlist, stats, reddit=reddit, left_list=left, repl_map=repl, bold=True, low_stats=reverse)
     return output
 
 def get_player_spring_stats(playerid, year=None, type="hitting"):
@@ -2858,8 +2846,8 @@ if __name__ == "__main__":
     # print(player_vs_pitcher("kendrick", "samardzija"))
     # print(player_vs_pitcher("samardzija", "kendrick"))
     # print(get_game_highlights_plays("530753"))
-    print(get_inning_plays("sea", 10, delta=-1))
-    # print(compare_player_stats(["ohtani", "harper"]))
+    # print(get_inning_plays("sea", 10, delta=-1))
+    print(compare_player_stats(["bell", "trea"], career=True))
     # print(print_roster('wsh',hitters=False))
     # print(get_milb_aff_scores(delta="-1"))
     # print(get_milb_box('syr'))
