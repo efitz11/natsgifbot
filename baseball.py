@@ -221,6 +221,12 @@ class Baseball(commands.Cog):
                 year = team[-1]
                 team = team[0:-1]
             team = team[1:]
+
+            career = False
+            if team[0] == 'career':
+                career = True
+                team = team[1:]
+
             if '/' in ' '.join(team):
                 playerlist = ' '.join(team).split('/')
             else:
@@ -228,9 +234,9 @@ class Baseball(commands.Cog):
                 for t in team:
                     playerlist.append(t)
             if year is None:
-                await ctx.send("```%s```" % mymlbstats.compare_player_stats(playerlist, reddit=reddit))
+                await ctx.send("```%s```" % mymlbstats.compare_player_stats(playerlist, career=career, reddit=reddit))
             else:
-                await ctx.send("```%s```" % mymlbstats.compare_player_stats(playerlist, year=year, reddit=reddit))
+                await ctx.send("```%s```" % mymlbstats.compare_player_stats(playerlist, year=year, career=career, reddit=reddit))
         elif team[0] == 'range':
             if '-' in team[1]:
                 date1, date2 = team[1].split('-')
