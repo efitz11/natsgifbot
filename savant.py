@@ -225,7 +225,7 @@ def print_player_rankings(player, year=None):
         year = datetime.now().year
     stats_dict = None
     for year_stats in savant_json['statcast']:
-        if year_stats['aggregate'] == "0" and year == int(year_stats['year']):
+        if year_stats['aggregate'] == "0" and int(year) == int(year_stats['year']):
             stats_dict = year_stats
     if stats_dict is None:
         return f"No stats for {year}"
