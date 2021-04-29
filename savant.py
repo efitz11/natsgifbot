@@ -175,7 +175,7 @@ def print_savant_advanced_stats(savant_json, year=None, reddit=None):
             startyear, stopyear = year.split('-')
             labels.insert(0,'year')
         else:
-            startyear, stopyear = year
+            startyear, stopyear = year, year
         startyear = int(startyear)
         stopyear = int(stopyear)
         stats = list()
