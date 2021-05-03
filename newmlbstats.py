@@ -135,7 +135,7 @@ def _get_multiple_stats_string(playerlist, group=None, include_gp=False, reddit=
                     insert_season = True
 
                 for i in rnge:
-                    if g['group']['displayName'] == group and g['splits'][i]['sport']['id'] != 0:
+                    if g['group']['displayName'] == group and ('sport' not in g['splits'][i] or g['splits'][i]['sport']['id'] != 0):
                         row = g['splits'][i]['stat']
                         # row['season'] = g['splits'][i]['season']
                         row['lastName'] = player['lastName']
@@ -201,10 +201,15 @@ def print_player_stats(name, group=None, stattype=None, startDate=None, endDate=
                     if group == 'hitting' and player['person']['primaryPosition']['code'] != '1':
                         p = get_player_stats("", playerid=player['person']['id'], group=group, stattype=stattype, startDate=startDate, endDate=endDate, lastgames=lastgames)
                         if 'stats' in p:
+                            if len(p['stats'][0]['splits']) == 0:
+                                d = {'stat':{'plateAppearances':0}}
+                                p['stats'][0]['splits'].append(d)
                             players.append(p)
                     elif group == 'pitching' and player['person']['primaryPosition']['code'] == '1':
                         p = get_player_stats("", playerid=player['person']['id'], group=group, stattype=stattype, startDate=startDate, endDate=endDate, lastgames=lastgames)
-                        if 'stats' in p:
+                        if 'stats' in p and len(p['stats'][0]['splits']) > 0:
+                            if 'inningsPitched' not in p['stats'][0]['splits'][0]['stat']:
+                                p['stats'][0]['splits'][0]['stat']['inningsPitched'] = 0
                             players.append(p)
                 if group == 'hitting':
                     players = sorted(players, key = lambda k: k['stats'][0]['splits'][0]['stat']['plateAppearances'], reverse=True)
