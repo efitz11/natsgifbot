@@ -1819,7 +1819,7 @@ def compare_player_stats(playerlist,career=False,year=None, reddit=False):
     if type == 'hitting':
         reverse = ['caughtStealing','strikeOuts']
     else:
-        reverse = ['losses','baseOnBalls','era','whip']
+        reverse = ['losses','baseOnBalls','era','whip','homeRuns']
     output = output + utils.format_table(statlist, stats, reddit=reddit, left_list=left, repl_map=repl, bold=True, low_stats=reverse)
     return output
 
