@@ -76,11 +76,12 @@ def get_ET_from_timestamp(timestamp):
     utc = utc + diff
     return datetime.strftime(utc, "%I:%M ET")
 
-def get_mlb_teams():
+def _get_mlb_team_json():
     url = "http://statsapi.mlb.com/api/v1/teams?sportId=1"
-    print(url)
-    req = Request(url, headers={'User-Agent' : "ubuntu"})
-    s = json.loads(urlopen(req).read().decode("utf-8"))
+    return utils.get_json(url)
+
+def get_mlb_teams():
+    s = _get_mlb_team_json()
     teams = s['teams']
     teammap = {}
     abbrevmap = {}
@@ -88,6 +89,14 @@ def get_mlb_teams():
         teammap[s['name']] = (s['id'], s)
         abbrevmap[s['abbreviation'].lower()] = (s['id'], s)
     return (abbrevmap, teammap)
+
+def get_mlb_teamid_list():
+    s = _get_mlb_team_json()
+    teams = s['teams']
+    ids = list()
+    for s in teams:
+        ids.append(s['id'])
+    return ids
 
 def get_milb_teams():
     teams = []
