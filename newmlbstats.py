@@ -42,11 +42,13 @@ def _find_player_id(name):
     url = "https://typeahead.mlb.com/api/v1/typeahead/suggestions/%s" % urllib.parse.quote(name)
     players = utils.get_json(url)['players']
     if len(players) > 0:
-        p = players[0]['playerId']
+        teamids = mymlbstats.get_mlb_teamid_list()
+        p = None
         for player in players:
             if player['teamId'] == 120:
-                p = player['playerId']
-                break
+                return player['playerId']
+            elif p is None and player['teamId'] in teamids:
+                p = player['playerId'] # don't just return here to keep searching for Nats
         return p
 
 def _new_player_search(name, type=None):
