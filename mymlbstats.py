@@ -2379,7 +2379,7 @@ def old_print_dongs(type, delta=None, reddit=False):
                                                 h['video'] = '[video](%s)' % pb['url']
                     dongs.append(h)
     repl_map = {'inning':'inn'}
-    labs = ['num', 'batter', 'pitcher', 'dist', 'ev', 'angle']
+    labs = ['num', 'batter', 'pitcher', 'runs', 'dist', 'ev', 'angle']
     left = ['batter', 'pitcher', 'dist', 'ev', 'angle']
     if reddit:
         labs.append('video')
@@ -2501,8 +2501,8 @@ def print_dongs(type, delta=None, reddit=False):
                                             if pb['name'] == 'mp4Avc':
                                                 h['video'] = '[video](%s)' % pb['url']
                     dongs.append(h)
-    repl_map = {'inning':'inn'}
-    labs = ['num', 'batter', 'pitcher', 'dist', 'ev', 'la']
+    repl_map = {'inning':'inn', 'runs':'rbi'}
+    labs = ['num', 'batter', 'pitcher', 'runs', 'dist', 'ev', 'la']
     left = ['batter', 'pitcher']
     if reddit:
         labs.append('video')
