@@ -367,6 +367,19 @@ def get_single_game_info(gamepk, gamejson, show_on_deck=False, liveonly=False, c
                 line1 = line1 + " | %s | %s %s %s" % (res, wpdisp.ljust(20), save, rec)
                 line2 = line2 + " | %s | %s %s" % (inn, lp, lprec)
             output = output + line1 + "\n" + line2 + "\n"
+            special = None
+            if game['flags']['noHitter']:
+                special = "NO HITTER"
+            if game['flags']['perfectGame']:
+                special = "PERFECT GAME"
+            if special is not None and awayhits == 0:
+                output = output + "\t##############################\n"
+                output = output + "\t" + homeabv + " %s\n" % (special)
+                output = output + "\t##############################\n"
+            if special is not None and homehits == 0:
+                output = output + "\t##############################\n"
+                output = output + "\t" + awayabv + " %s\n" % (special)
+                output = output + "\t##############################\n"
         except KeyError as e:
             print(e)
             # no score - game was probably postponed
