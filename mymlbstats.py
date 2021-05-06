@@ -188,20 +188,22 @@ def get_single_game_info(gamepk, gamejson, show_on_deck=False, liveonly=False, c
         batter = ls['offense']['batter']['lastName']
         batterid = ls['offense']['batter']['id']
         # find position in lineup
-        batterpos = _find_batter_in_lineup(batterid, game['lineups'])
-        odpos = _find_batter_in_lineup(ls['offense']['onDeck']['id'], game['lineups'])
-        holepos = _find_batter_in_lineup(ls['offense']['inHole']['id'], game['lineups'])
-        if batterpos is None:
-            batterpos = "B"
-            if odpos is not None:
-                batterpos = int(odpos) - 1
-            elif holepos is not None:
-                batterpos = int(holepos) - 2
-        if odpos is None:
-            odpos = "OD: "
-            if batterpos is not None and batterpos != "B":
-                odpos = int(batterpos) + 1
-        ondeck = "%s: %s" % (odpos, ls['offense']['onDeck']['lastName'])
+        batterpos = ""
+        if 'lineups' in game:
+            batterpos = _find_batter_in_lineup(batterid, game['lineups'])
+            odpos = _find_batter_in_lineup(ls['offense']['onDeck']['id'], game['lineups'])
+            holepos = _find_batter_in_lineup(ls['offense']['inHole']['id'], game['lineups'])
+            if batterpos is None:
+                batterpos = "B"
+                if odpos is not None:
+                    batterpos = int(odpos) - 1
+                elif holepos is not None:
+                    batterpos = int(holepos) - 2
+            if odpos is None:
+                odpos = "OD: "
+                if batterpos is not None and batterpos != "B":
+                    odpos = int(batterpos) + 1
+            ondeck = "%s: %s" % (odpos, ls['offense']['onDeck']['lastName'])
         if not show_on_deck:
             ondeck = ""
         try:
