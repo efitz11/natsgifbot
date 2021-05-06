@@ -188,7 +188,7 @@ def get_single_game_info(gamepk, gamejson, show_on_deck=False, liveonly=False, c
         batter = ls['offense']['batter']['lastName']
         batterid = ls['offense']['batter']['id']
         # find position in lineup
-        batterpos = ""
+        batterpos = "B"
         if 'lineups' in game:
             batterpos = _find_batter_in_lineup(batterid, game['lineups'])
             odpos = _find_batter_in_lineup(ls['offense']['onDeck']['id'], game['lineups'])
