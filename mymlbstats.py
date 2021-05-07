@@ -188,20 +188,22 @@ def get_single_game_info(gamepk, gamejson, show_on_deck=False, liveonly=False, c
         batter = ls['offense']['batter']['lastName']
         batterid = ls['offense']['batter']['id']
         # find position in lineup
-        batterpos = _find_batter_in_lineup(batterid, game['lineups'])
-        odpos = _find_batter_in_lineup(ls['offense']['onDeck']['id'], game['lineups'])
-        holepos = _find_batter_in_lineup(ls['offense']['inHole']['id'], game['lineups'])
-        if batterpos is None:
-            batterpos = "B"
-            if odpos is not None:
-                batterpos = int(odpos) - 1
-            elif holepos is not None:
-                batterpos = int(holepos) - 2
-        if odpos is None:
-            odpos = "OD: "
-            if batterpos is not None and batterpos != "B":
-                odpos = int(batterpos) + 1
-        ondeck = "%s: %s" % (odpos, ls['offense']['onDeck']['lastName'])
+        batterpos = "B"
+        if 'lineups' in game:
+            batterpos = _find_batter_in_lineup(batterid, game['lineups'])
+            odpos = _find_batter_in_lineup(ls['offense']['onDeck']['id'], game['lineups'])
+            holepos = _find_batter_in_lineup(ls['offense']['inHole']['id'], game['lineups'])
+            if batterpos is None:
+                batterpos = "B"
+                if odpos is not None:
+                    batterpos = int(odpos) - 1
+                elif holepos is not None:
+                    batterpos = int(holepos) - 2
+            if odpos is None:
+                odpos = "OD: "
+                if batterpos is not None and batterpos != "B":
+                    odpos = int(batterpos) + 1
+            ondeck = "%s: %s" % (odpos, ls['offense']['onDeck']['lastName'])
         if not show_on_deck:
             ondeck = ""
         try:
@@ -2379,7 +2381,7 @@ def old_print_dongs(type, delta=None, reddit=False):
                                                 h['video'] = '[video](%s)' % pb['url']
                     dongs.append(h)
     repl_map = {'inning':'inn'}
-    labs = ['num', 'batter', 'pitcher', 'dist', 'ev', 'angle']
+    labs = ['num', 'batter', 'pitcher', 'runs', 'dist', 'ev', 'angle']
     left = ['batter', 'pitcher', 'dist', 'ev', 'angle']
     if reddit:
         labs.append('video')
@@ -2501,8 +2503,8 @@ def print_dongs(type, delta=None, reddit=False):
                                             if pb['name'] == 'mp4Avc':
                                                 h['video'] = '[video](%s)' % pb['url']
                     dongs.append(h)
-    repl_map = {'inning':'inn'}
-    labs = ['num', 'batter', 'pitcher', 'dist', 'ev', 'la']
+    repl_map = {'inning':'inn', 'runs':'rbi'}
+    labs = ['num', 'batter', 'pitcher', 'runs', 'dist', 'ev', 'la']
     left = ['batter', 'pitcher']
     if reddit:
         labs.append('video')
