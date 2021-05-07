@@ -141,7 +141,7 @@ def get_recaps(return_both=False):
         vids = dict()
         vids['title'] = deftitle
 
-        highlights = ['Recap', 'Highlights', 'Must C:', 'Statcast', 'CG:']
+        highlights = ['Recap', 'Highlights', 'highlights', 'Must C:', 'Statcast', 'CG:']
         recapstr = ""
         cgstr = ""
         for item in c['highlights']['highlights']['items']:
@@ -155,7 +155,7 @@ def get_recaps(return_both=False):
                     if link is None:
                         continue
                     duration = item['duration'][3:]
-                    if 'Recap' in title or 'Highlights' in title:
+                    if 'Recap' in title or 'highlights' in title.lower():
                         recapstr = "[%s](%s) - %s\n" % (title, link, duration)
                         vids["recap"] = "[recap](%s) - %s" % (link, duration)
                     elif 'CG:' in title:
