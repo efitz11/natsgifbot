@@ -484,12 +484,17 @@ class Baseball(commands.Cog):
     #######################################
 
     def _find_delta(self, args):
+        args = list(args)
         delta = None
+
+        if len(args) == 1 and args[0] == '':
+            args = []
+
         if len(args) > 0 and (args[-1].startswith('-') or args[-1].startswith('+')):
             delta = args[-1]
             args = args[:-1]
 
-        if len(args) > 0 and len(args[-1].split('/')) == 3 or len(args[-1].split('/') == 2):
+        if len(args) > 0 and (len(args[-1].split('/')) == 3 or len(args[-1].split('/')) == 2):
             delta = self.convert_date_to_delta(args)
             args = args[:-1]
         return delta, args
