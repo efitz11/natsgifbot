@@ -233,6 +233,7 @@ class Baseball(commands.Cog):
                 playerlist = []
                 for t in team:
                     playerlist.append(t)
+            print(playerlist)
             if year is None:
                 await ctx.send("```%s```" % mymlbstats.compare_player_stats(playerlist, career=career, reddit=reddit))
             else:
