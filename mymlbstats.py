@@ -1794,18 +1794,20 @@ def _calc_age(birthdate, year=None):
 def compare_player_stats(playerlist,career=False,year=None, reddit=False):
     players = []
     output = ""
+    type = None
     for player in playerlist:
-        p = newmlbstats._new_player_search(player)
+        p = newmlbstats._new_player_search(player, type=type)
         if p is not None:
             players.append(p)
             output = output + p['fullName'] + " vs "
-    pos = players[0]['primaryPosition']['abbreviation']
-    type = 'hitting'
-    statlist = ['name', 'atBats', 'hits', 'doubles', 'triples', 'homeRuns', 'runs', 'rbi', 'baseOnBalls', 'strikeOuts',
-             'stolenBases', 'caughtStealing', 'avg', 'obp', 'slg', 'ops']
-    if pos == 'P':
-        type = 'pitching'
-        statlist = ['name', 'wins', 'losses', 'gamesPlayed', 'gamesStarted', 'saveOpportunities', 'saves', 'inningsPitched', 'strikeOuts', 'baseOnBalls', 'homeRuns', 'era', 'whip']
+        if len(players) == 1:
+            pos = players[0]['primaryPosition']['abbreviation']
+            type = 'hitting'
+            statlist = ['name', 'atBats', 'hits', 'doubles', 'triples', 'homeRuns', 'runs', 'rbi', 'baseOnBalls', 'strikeOuts',
+                     'stolenBases', 'caughtStealing', 'avg', 'obp', 'slg', 'ops']
+            if pos == 'P':
+                type = 'pitching'
+                statlist = ['name', 'wins', 'losses', 'gamesPlayed', 'gamesStarted', 'saveOpportunities', 'saves', 'inningsPitched', 'strikeOuts', 'baseOnBalls', 'homeRuns', 'era', 'whip']
 
     repl = {'atBats':'ab', 'plateAppearances':'pa','hits':'h','doubles':'2B','triples':'3b','homeRuns':'hr', 'runs':'r', 'baseOnBalls':'bb','strikeOuts':'so', 'stolenBases':'sb', 'caughtStealing':'cs',
             'wins':'w', 'losses':'l', 'gamesPlayed':'g', 'gamesStarted':'gs', 'saveOpportunities':'svo', 'saves':'sv', 'inningsPitched':'ip'}
@@ -1818,6 +1820,7 @@ def compare_player_stats(playerlist,career=False,year=None, reddit=False):
     for player in players:
         pid = player['id']
         disp_name = player['fullName']
+        player_stats = dict()
         if career:
             for group in player['stats']:
                 if 'group' in group:
