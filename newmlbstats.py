@@ -1087,7 +1087,7 @@ def print_games(args, delta=None):
         add_last_play = True
         teamid = mymlbstats.get_teamid(args)
         if teamid is None:
-            return "Could not find team"
+            return "Could not find team", 0
         else:
             for game in all_games:
                 away = game['teams']['away']['team']['id']
@@ -1095,7 +1095,7 @@ def print_games(args, delta=None):
                 if away == teamid or home == teamid:
                     games.append(game)
             if len(games) == 0:
-                return "No games found for %s" % args
+                return "No games found for %s" % args, 0
             # check doubleheader
             is_dh_live = False
             for game in games:
