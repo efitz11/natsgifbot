@@ -1152,7 +1152,7 @@ def print_team_schedule(team, num, forward=True):
         games = games[-num:]
 
     for game in games:
-        date = game['gameDate'][:10]
+        date = game['officialDate'][:10]
         dt = datetime.strptime(date, "%Y-%m-%d")
         if today.day-dt.day == 0:
             day = "Today"
