@@ -552,7 +552,10 @@ async def stock(ctx, *symbol:str):
 @bot.command()
 async def crypto(ctx, *symbol:str):
     """list the prices of btc/eth/ltc/xlm/doge"""
-    await ctx.send(stocks.get_crypto_yahoo())
+    if len(symbol) == 1:
+        await ctx.send(stocks.get_quote_yahoo(f'{symbol[0]}-USD'))
+    else:
+        await ctx.send(stocks.get_crypto_yahoo())
     
 @bot.command()
 async def frink(ctx, *query:str):
