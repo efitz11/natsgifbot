@@ -44,11 +44,16 @@ def _find_player_id(name):
     if len(players) > 0:
         teamids = mymlbstats.get_mlb_teamid_list()
         p = None
+        milb_p = None
         for player in players:
             if player['teamId'] == 120:
                 return player['playerId']
             elif p is None and player['teamId'] in teamids:
                 p = player['playerId'] # don't just return here to keep searching for Nats
+            elif milb_p is None:
+                milb_p = player['playerId'] # if we don't match a major leaguer, just return a minor leaguer
+        if p is None:
+            return milb_p
         return p
 
 def _new_player_search(name, type=None):
