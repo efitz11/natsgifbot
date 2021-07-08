@@ -911,42 +911,36 @@ def list_scoring_plays(team,delta=None,lastonly=False):
 def get_div_standings(div, year=None):
     wc = False
     div = div.lower()
-    idx = []
-    if div in ['ale','alc','alw','al','alwc']:
-        id = 103
-        if div == "ale":
-            idx.append(1)
-        elif div == "alc":
-            idx.append(2)
-        elif div == "alw":
-            idx.append(0)
-        elif div == "al":
-            idx.extend([1,2,0])
-        elif div == "alwc":
-            idx.append(0)
-            wc = True
-    elif div in ['nle','nlc','nlw','nl','nlwc']:
-        id = 104
-        if div == "nle":
-            idx.append(2)
-        elif div == "nlc":
-            idx.append(0)
-        elif div == "nlw":
-            idx.append(1)
-        elif div == "nl":
-            idx.extend([2,0,1])
-        elif div == "nlwc":
-            idx.append(0)
-            wc = True
+    # idx = []
+    divid = -1
+    al = {'ale':201, 'alc':202, 'alw':200, 'al':103, 'alwc':0}
+    nl = {'nle':204, 'nlc':205, 'nlw':203, 'nl':104, 'nlwc':0}
+
+    if div in al:
+        id = al['al']
+        divid = al[div]
+    elif div in nl:
+        id = nl['nl']
+        divid = nl[div]
     else:
         return
 
     standings = get_lg_standings(id,wc=wc, year=year)
     output = ""
     uselegend = False
-    for i in idx:
+    divisions = list()
+    if divid == 0:
+        divisions.extend(standings['records'])
+    elif divid in [103,104]:
+        for record in standings['records']:
+            divisions.append(record)
+    else:
+        for record in standings['records']:
+            if record['division']['id'] == divid:
+                divisions.append(record)
+                break
+    for div in divisions:
         output = output + "```python\n"
-        div = standings['records'][i]
         teams = []
         for team in div['teamRecords']:
             l = dict()
