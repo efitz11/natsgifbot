@@ -925,15 +925,16 @@ def get_div_standings(div, year=None):
     else:
         return
 
+    if divid == 0:
+        wc = True
     standings = get_lg_standings(id,wc=wc, year=year)
     output = ""
     uselegend = False
     divisions = list()
     if divid == 0:
-        divisions.extend(standings['records'])
+        divisions.append(standings['records'][0])
     elif divid in [103,104]:
-        for record in standings['records']:
-            divisions.append(record)
+        divisions.extend(standings['records'])
     else:
         for record in standings['records']:
             if record['division']['id'] == divid:
