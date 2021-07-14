@@ -1091,6 +1091,7 @@ def print_games(args, delta=None):
     elif len(args) > 0:
         add_last_play = True
         teamid = mymlbstats.get_teamid(args)
+        print(teamid)
         if teamid is None:
             return "Could not find team", 0
         else:
