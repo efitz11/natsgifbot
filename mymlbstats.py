@@ -125,6 +125,11 @@ def get_milb_teamid(search, extradata=False):
 def get_teamid(search, extradata=False):
     search = search.replace('barves','braves')
     print(search)
+    if search == "al":
+        return 159
+    elif search == "nl":
+        print('eef')
+        return 160
     abvs,names = get_mlb_teams()
     if search in abvs:
         if not extradata:
