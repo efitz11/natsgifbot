@@ -58,9 +58,9 @@ def _find_player_id(name):
 
 def _get_player_by_id(id, type=None, milb=False):
     if type is None:
-        url = API_LINK + "people/%s?hydrate=currentTeam,team,stats(type=[yearByYear,yearByYearAdvanced,careerRegularSeason,careerAdvanced,availableStats](team(league)),leagueListId=%s)" % (id, 'mlb_milb' if milb else 'mlb_hist')
+        url = API_LINK + "people/%s?hydrate=currentTeam,team,stats(type=[yearByYear,yearByYearAdvanced,careerRegularSeason,careerAdvanced,availableStats](team(league,sport)),leagueListId=%s)" % (id, 'mlb_milb' if milb else 'mlb_hist')
     else:
-        url = API_LINK + "people/%s?hydrate=currentTeam,team,stats(type=[yearByYear,yearByYearAdvanced,careerRegularSeason,careerAdvanced,availableStats](team(league)),leagueListId=%s,group=%s)" % (id, 'mlb_milb' if milb else 'mlb_hist', type)
+        url = API_LINK + "people/%s?hydrate=currentTeam,team,stats(type=[yearByYear,yearByYearAdvanced,careerRegularSeason,careerAdvanced,availableStats](team(league,sport)),leagueListId=%s,group=%s)" % (id, 'mlb_milb' if milb else 'mlb_hist', type)
     return utils.get_json(url)['people'][0]
 
 def _new_player_search(name, type=None):
@@ -380,7 +380,8 @@ def get_player_season_stats(name, type=None, year=None, career=None, reddit=None
                 season = split['stat']
                 if 'season' in split:
                     season['season'] = split['season']
-                if 'team' in split:
+                # if 'team' in split:
+                if not milb:
                     season['team'] = split['team']['abbreviation']
                     teams.append(season['team'])
                 else:
@@ -394,7 +395,10 @@ def get_player_season_stats(name, type=None, year=None, career=None, reddit=None
     elif type == "pitching":
         stats = ['wins', 'losses', 'gamesPlayed', 'gamesStarted', 'saveOpportunities', 'saves', 'inningsPitched', 'strikeOuts', 'baseOnBalls', 'homeRuns', 'era', 'whip']
     if len(seasons) > 1:
-        stats = ['season', 'team'] + stats
+        if milb:
+            stats = ['season', 'team'] + stats
+        else:
+            stats = ['season', 'team'] + stats
     repl = {'atBats':'ab', 'plateAppearances':'pa','hits':'h','doubles':'2B','triples':'3b','homeRuns':'hr', 'runs':'r', 'baseOnBalls':'bb','strikeOuts':'so', 'stolenBases':'sb', 'caughtStealing':'cs',
             'wins':'w', 'losses':'l', 'gamesPlayed':'g', 'gamesStarted':'gs', 'saveOpportunities':'svo', 'saves':'sv', 'inningsPitched':'ip'}
 
