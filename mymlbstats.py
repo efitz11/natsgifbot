@@ -1539,78 +1539,81 @@ def milb_player_search(name,parent=None):
                     return player
         return s['row'][0]
 
-def get_milb_season_stats(name, type="hitting",year=None):
-    if 'parent=' in name:
-        parentteam = name[name.find('=')+1:]
-        print(parentteam)
-        name = name[:name.find('parent=')]
-        player = milb_player_search(name,parentteam)
-    else:
-        player = milb_player_search(name)
-    if player is None:
-        return "No player found"
-    name = player['name_first_last']
-    teamabv = player['team_name_abbrev']
-    level = player['level']
-    parent = player['parent_team']
-    id = player['player_id']
-    try:
-        pos = int(player['primary_position'])
-        if pos == 1:
-            type = "pitching"
-    except:
-        print("%s is an OF" % name)
-    url = "http://lookup-service-prod.mlb.com/lookup/json/named.sport_"+type+"_composed.bam?" \
-          "game_type=%27R%27&league_list_id=%27mlb_milb%27&sort_by=%27season_asc%27&player_id="+ id
-    print(url)
-    req = Request(url, headers={'User-Agent' : "ubuntu"})
-    s = json.loads(urlopen(req).read().decode("utf-8"))['sport_'+type+'_composed']['sport_'+type+'_tm']['queryResults']
+def get_milb_season_stats(name, type=None,year=None):
+    return newmlbstats.get_player_season_stats(name, type=type, year=year, milb=True)
 
-    statsapi_url = "https://statsapi.mlb.com/api/v1/people/" + id + "?hydrate=draft"
-    pres = utils.get_json(statsapi_url)
-    if len(pres['people']) > 0 and 'draftYear' in pres['people'][0]:
-        draftyear = pres['people'][0]['draftYear']
-        drafts = pres['people'][0]['drafts']
-        for d in drafts:
-            if d['year'] == str(draftyear):
-                draftinfo = d
-    else:
-        draftyear = None
-        draftinfo = None
-
-    leagues = []
-    now = datetime.now()
-    season = str(now.year)
-    if year is not None:
-        season = year
-    if s['totalSize'] == "1":
-        leagues.append(s['row'])
-    else:
-        if 'row' in s:
-            for i in s['row']:
-                if i['season'] == str(season) and i['sport'] != "MLB":
-                    leagues.append(i)
-    output = "%s Season stats for %s (%s-%s, %s):\n" % (season, name, teamabv, level, parent)
-    teamid = player['team_id']
-    url = "http://lookup-service-prod.mlb.com/lookup/json/named.roster_all.bam?team_id=" + teamid
-    req = Request(url, headers={'User-Agent' : "ubuntu"})
-    t = json.loads(urlopen(req).read().decode("utf-8"))['roster_all']['queryResults']['row']
-    for player2 in t:
-        if player2['player_id'] == id:
-            output = output + "  " + _get_player_info_line(player2)
-            if year is None:
-                output = output + " | Age: " + str(_calc_age(player['player_birth_date'])) + "\n"
-            else:
-                output = output + " | Age: " + str(_calc_age(player['player_birth_date'],year=season)) + "\n"
-    if draftinfo is not None:
-        output = output + "  Draft: %d | Round: %s | Pick: %d | School: %s\n" % \
-                 (draftyear, str(draftinfo['pickRound']), draftinfo['roundPickNumber'], draftinfo['school']['name'])
-    if type == "hitting":
-        stats = ['sport','ab','h','d','t','hr','r','rbi','bb','so','sb','cs','avg','obp','slg','ops']
-    elif type == "pitching":
-        stats = ['sport','w','l','g','svo','sv','ip','so','bb','hr','era','whip']
-    output = output + "\n" + _print_table(stats,leagues,repl_map={'d':'2B','t':'3B','sport':'lev'})
-    return output
+# def get_milb_season_stats(name, type="hitting",year=None):
+#     if 'parent=' in name:
+#         parentteam = name[name.find('=')+1:]
+#         print(parentteam)
+#         name = name[:name.find('parent=')]
+#         player = milb_player_search(name,parentteam)
+#     else:
+#         player = milb_player_search(name)
+#     if player is None:
+#         return "No player found"
+#     name = player['name_first_last']
+#     teamabv = player['team_name_abbrev']
+#     level = player['level']
+#     parent = player['parent_team']
+#     id = player['player_id']
+#     try:
+#         pos = int(player['primary_position'])
+#         if pos == 1:
+#             type = "pitching"
+#     except:
+#         print("%s is an OF" % name)
+#     url = "http://lookup-service-prod.mlb.com/lookup/json/named.sport_"+type+"_composed.bam?" \
+#           "game_type=%27R%27&league_list_id=%27mlb_milb%27&sort_by=%27season_asc%27&player_id="+ id
+#     print(url)
+#     req = Request(url, headers={'User-Agent' : "ubuntu"})
+#     s = json.loads(urlopen(req).read().decode("utf-8"))['sport_'+type+'_composed']['sport_'+type+'_tm']['queryResults']
+#
+#     statsapi_url = "https://statsapi.mlb.com/api/v1/people/" + id + "?hydrate=draft"
+#     pres = utils.get_json(statsapi_url)
+#     if len(pres['people']) > 0 and 'draftYear' in pres['people'][0]:
+#         draftyear = pres['people'][0]['draftYear']
+#         drafts = pres['people'][0]['drafts']
+#         for d in drafts:
+#             if d['year'] == str(draftyear):
+#                 draftinfo = d
+#     else:
+#         draftyear = None
+#         draftinfo = None
+#
+#     leagues = []
+#     now = datetime.now()
+#     season = str(now.year)
+#     if year is not None:
+#         season = year
+#     if s['totalSize'] == "1":
+#         leagues.append(s['row'])
+#     else:
+#         if 'row' in s:
+#             for i in s['row']:
+#                 if i['season'] == str(season) and i['sport'] != "MLB":
+#                     leagues.append(i)
+#     output = "%s Season stats for %s (%s-%s, %s):\n" % (season, name, teamabv, level, parent)
+#     teamid = player['team_id']
+#     url = "http://lookup-service-prod.mlb.com/lookup/json/named.roster_all.bam?team_id=" + teamid
+#     req = Request(url, headers={'User-Agent' : "ubuntu"})
+#     t = json.loads(urlopen(req).read().decode("utf-8"))['roster_all']['queryResults']['row']
+#     for player2 in t:
+#         if player2['player_id'] == id:
+#             output = output + "  " + _get_player_info_line(player2)
+#             if year is None:
+#                 output = output + " | Age: " + str(_calc_age(player['player_birth_date'])) + "\n"
+#             else:
+#                 output = output + " | Age: " + str(_calc_age(player['player_birth_date'],year=season)) + "\n"
+#     if draftinfo is not None:
+#         output = output + "  Draft: %d | Round: %s | Pick: %d | School: %s\n" % \
+#                  (draftyear, str(draftinfo['pickRound']), draftinfo['roundPickNumber'], draftinfo['school']['name'])
+#     if type == "hitting":
+#         stats = ['sport','ab','h','d','t','hr','r','rbi','bb','so','sb','cs','avg','obp','slg','ops']
+#     elif type == "pitching":
+#         stats = ['sport','w','l','g','svo','sv','ip','so','bb','hr','era','whip']
+#     output = output + "\n" + _print_table(stats,leagues,repl_map={'d':'2B','t':'3B','sport':'lev'})
+#     return output
 
 def get_milb_line(name, delta=None):
     player = milb_player_search(name)
