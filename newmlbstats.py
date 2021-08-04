@@ -114,7 +114,7 @@ def _get_stats_string(stats, group=None, include_gp=False):
 
     return utils.format_table(labels, statrows, repl_map=repl)
 
-def _get_multiple_stats_string(playerlist, group=None, include_gp=False, reddit=False):
+def _get_multiple_stats_string(playerlist, group=None, include_gp=False, reddit=False, include_team=False):
     output = ""
     while group is None:
         if 'stats' in playerlist[0]:
@@ -149,18 +149,25 @@ def _get_multiple_stats_string(playerlist, group=None, include_gp=False, reddit=
                     insert_season = True
 
                 for i in rnge:
-                    if g['group']['displayName'] == group and ('sport' not in g['splits'][i] or g['splits'][i]['sport']['id'] != 0):
+                    # if g['group']['displayName'] == group and ('sport' not in g['splits'][i] or g['splits'][i]['sport']['id'] != 0):
+                    if g['group']['displayName'] == group:
                         row = g['splits'][i]['stat']
                         # row['season'] = g['splits'][i]['season']
                         row['lastName'] = player['lastName']
                         if not reddit:
                             row['lastName'] = row['lastName'][:5]
+                        if 'team' in g['splits'][i]:
+                            row['team'] = g['splits'][i]['team']['abbreviation']
+                        else:
+                            row['team'] = g['splits'][i]['sport']['abbreviation']
                         statrows.append(row)
         else:
             output += "No stats for %s\n" % player['fullName']
             removelist.append(player)
 
-    if insert_season:
+    if len(statrows) > 1 and statrows[0]['team'] != statrows[1]['team']:
+        labels.insert(0, 'team')
+    if insert_season and 'season' in statrows[0]:
         labels.insert(0, 'season')
     for player in removelist:
         playerlist.remove(player)
