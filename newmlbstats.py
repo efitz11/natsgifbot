@@ -382,8 +382,11 @@ def get_player_season_stats(name, type=None, year=None, career=None, reddit=None
                     season['season'] = split['season']
                 # if 'team' in split:
                 if not milb:
-                    season['team'] = split['team']['abbreviation']
-                    teams.append(season['team'])
+                    if 'team' in split:
+                        season['team'] = split['team']['abbreviation']
+                        teams.append(season['team'])
+                    else:
+                        season['team'] = "MLB"
                 else:
                     if 'sport' in split:
                         season['team'] = split['sport']['abbreviation']
