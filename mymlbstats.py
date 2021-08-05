@@ -1365,9 +1365,11 @@ def get_player_season_splits(name, split, type='hitting', year=None, active='Y',
             splits = [split]
 
     if type == "hitting":
-        stats = ['situation', 'ab', 'h', 'd', 't', 'hr', 'r', 'rbi', 'bb', 'so', 'sb', 'cs', 'avg', 'obp', 'slg', 'ops']
+        # stats = ['situation', 'ab', 'h', 'd', 't', 'hr', 'r', 'rbi', 'bb', 'so', 'sb', 'cs', 'avg', 'obp', 'slg', 'ops']
+        stats = ['situation'] + newmlbstats._get_common_stats_list()
     else:
-        stats = ['situation', 'w', 'l', 'g', 'svo', 'sv', 'ip', 'h', 'r', 'so', 'bb', 'hr', 'era', 'whip']
+        # stats = ['situation', 'w', 'l', 'g', 'svo', 'sv', 'ip', 'h', 'r', 'so', 'bb', 'hr', 'era', 'whip']
+        stats = ['situation'] + newmlbstats._get_common_stats_list(pitching=True)
 
     results = []
     for player in players:
@@ -1375,13 +1377,22 @@ def get_player_season_splits(name, split, type='hitting', year=None, active='Y',
         for split in splits:
             if split != 'months' and split not in splitsmap:
                 return "split %s not found" % split
-            url = "http://lookup-service-prod.mlb.com/json/named.sport_" + type + "_sits_composed.bam?league_list_id=%27mlb_hist%27&game_type=%27R%27" \
-                  "&season=" + year + "&player_id=" + player['player_id'] + "&sit_code=%27" + splitsmap[split] + "%27"
-            print(url)
+            # url = "http://lookup-service-prod.mlb.com/json/named.sport_" + type + "_sits_composed.bam?league_list_id=%27mlb_hist%27&game_type=%27R%27" \
+            #       "&season=" + year + "&player_id=" + player['player_id'] + "&sit_code=%27" + splitsmap[split] + "%27"
+            # f"&sitCodes=h,a,d,n,g,t,3,4,5,6,7,8,9,10,preas,posas,vl,vr,r0,r1,r2,r3,r12,r13,r23,r123,risp,o0,o1,o2,i01,i02,i03,i04,i05,i06,i07,i08,i09,ix,b1,b2,b3,b4,b5,b6,b7,b8,b9,lo,lc,ac,bc,sp,rp,h1,h2" \
+            url = f"https://statsapi.mlb.com/api/v1/people/{player['player_id']}/stats?stats=statSplits,statsSingleSeason&leagueListId=mlb_hist&group={type}&gameType=R" \
+                  f"&sitCodes={splitsmap[split]}" \
+                  f"&hydrate=team&season={year}&language=en"
             try:
-                json = _get_json(url)['sport_'+type+'_sits_composed']['sport_'+type+'_sits_total']['queryResults']['row']
-                json['name'] = player['fullName']
-                results.append(json)
+                # json = _get_json(url)['sport_'+type+'_sits_composed']['sport_'+type+'_sits_total']['queryResults']['row']
+                # json['name'] = player['fullName']
+                json = utils.get_json(url)['stats'][0]['splits']
+                if len(json) > 0:
+                    s = dict(json[0]['stat'])
+                    s['situation'] = json[0]['split']['description']
+                    s['name'] = player['fullName']
+                    s['season'] = json[0]['season']
+                    results.append(s)
             except KeyError as e:
                 print('KeyError:', e)
                 print(player)
@@ -1390,13 +1401,15 @@ def get_player_season_splits(name, split, type='hitting', year=None, active='Y',
         if len(players) == 1 and len(results) > 0:
             if len(splits) == 1:
                 output = output + "%s's %s splits (%s):\n\n" % (player['fullName'], results[0]['situation'], results[0]['season'])
-                stats.pop(0)
+                stats.pop(0) # remove 'situation' from table
             else:
                 output = output + "%s's splits (%s):\n\n" % (player['fullName'], results[0]['season'])
 
     if len(players) > 1:
         stats.insert(0, 'name')
-    output = output + utils.format_table(stats,results,repl_map={'situation':'split'}, left_list=['name', 'situation'], reddit=reddit, bold=True)
+    repl = newmlbstats._get_common_replace_map()
+    repl['situation'] = 'split'
+    output = output + utils.format_table(stats,results,repl_map=repl, left_list=['name', 'situation'], reddit=reddit, bold=True)
     return output
 
 def get_player_trailing_splits(name, days=None, forcebatting=False, forcepitching=False, reddit=False):
