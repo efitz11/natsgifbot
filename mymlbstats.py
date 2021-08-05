@@ -1141,37 +1141,31 @@ def get_player_gamelogs(name, num=5, forcebatting=False, reddit=False):
     if forcebatting:
         pitching = False
     now = datetime.now()
-    url = "http://lookup-service-prod.mlb.com/json/named.sport_hitting_game_log_composed.bam?game_type=%27R%27&league_list_id=%27mlb_hist%27" \
-            "&player_id="+ player['player_id'] +"&season=" + str(now.year) + "&sit_code=%271%27&sit_code=%272%27&sit_code=%273%27&sit_code=%274%27&sit_code=%275%27&sit_code=%276%27&sit_code=%277%27&sit_code=%278%27&sit_code=%279%27&sit_code=%2710%27&sit_code=%2711%27&sit_code=%2712%27"
+    url = f"https://statsapi.mlb.com/api/v1/people/{player['player_id']}/stats?stats=gameLog&group=hitting&gameType=R&sitCodes=1,2,3,4,5,6,7,8,9,10,11,12&hydrate=team&season={str(now.year)}&language=en"
     type = "hitting"
     if pitching:
-        url = "http://lookup-service-prod.mlb.com/json/named.sport_pitching_game_log_composed.bam?game_type=%27R%27&league_list_id=%27mlb_hist%27" \
-              "&player_id=" + player['player_id'] + "&season=" + str(now.year) + "&sit_code=%271%27&sit_code=%272%27&sit_code=%273%27&sit_code=%274%27&sit_code=%275%27&sit_code=%276%27&sit_code=%277%27&sit_code=%278%27&sit_code=%279%27&sit_code=%2710%27&sit_code=%2711%27&sit_code=%2712%27"
+        url = f"https://statsapi.mlb.com/api/v1/people/{player['player_id']}/stats?stats=gameLog&group=pitching&gameType=R&sitCodes=1,2,3,4,5,6,7,8,9,10,11,12&hydrate=team&season={str(now.year)}&language=en"
         type = "pitching"
     print(url)
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     s = json.loads(urlopen(req).read().decode("utf-8"))
-    gamelog = s['sport_%s_game_log_composed' % type]['sport_%s_game_log' % type]['queryResults']
-    totalsize = int(gamelog['totalSize'])
+    # gamelog = s['sport_%s_game_log_composed' % type]['sport_%s_game_log' % type]['queryResults']
+    totalsize = len(s['stats'][0]['splits'])
     if totalsize == 0:
         return "No games played"
-    games = []
-    if totalsize == 1:
-        games.append(gamelog['row'])
-        num = 1
-    else:
-        gamelog = gamelog['row']
-        if num > len(gamelog):
-            num = len(gamelog)
-        for i in range(num):
-            game = gamelog[-i-1]
-            games.append(game)
+    gamelog = s['stats'][0]['splits'][-num:]
+    games = list()
+    for game in gamelog:
+        g = game['stat']
+        g['day'] = game['date'][5:]
+        g['opp'] = game['opponent']['abbreviation']
+        games.append(g)
     output = "Game Log for %s's last %d games:\n\n" % (player['name_display_first_last'], num)
     if not pitching:
-        stats = ['game_day','opponent_abbrev','ab','h','d','t','hr','r','rbi','bb','so','sb','cs','avg','obp','slg','ops']
+        stats = ['day', 'opp'] + newmlbstats._get_common_stats_list()
     else:
-        stats = ['game_day','opponent_abbrev','w','l','svo','sv','ip','h','r','er','bb','so','hr','era','whip', 'np']
-    repl_map = {'game_day':'day','opponent_abbrev':'opp', 'd':'2B', 't':'3B'}
+        stats = ['day', 'opp'] + newmlbstats._get_common_stats_list(pitching=True)
+    repl_map = newmlbstats._get_common_replace_map()
     # output = output + _print_labeled_list(stats,game,header=(i==0),repl_map=repl_map) + "\n"
     # output = output + _print_table(stats,games,repl_map=repl_map) + "\n"
     output += utils.format_table(stats, games, repl_map=repl_map, reddit=reddit) + "\n"
