@@ -15,6 +15,15 @@ def _get_common_replace_map():
             'inningsPitched':'ip', 'lastName':'name'}
     return repl
 
+def _get_common_stats_list(pitching=False):
+    if not pitching:
+        labels = ['atBats', 'hits', 'doubles', 'triples', 'homeRuns', 'runs', 'rbi', 'baseOnBalls', 'strikeOuts',
+              'stolenBases', 'caughtStealing', 'avg', 'obp', 'slg', 'ops']
+    else:
+        labels = ['wins', 'losses', 'gamesPlayed', 'gamesStarted', 'saveOpportunities', 'saves', 'inningsPitched',
+                  'strikeOuts', 'baseOnBalls', 'homeRuns', 'era', 'whip']
+    return labels
+
 def _convert_date_to_mlb_str(date):
     """converts mm/dd</yyyy> to yyyy-mm-dd"""
     if isinstance(date, datetime):
