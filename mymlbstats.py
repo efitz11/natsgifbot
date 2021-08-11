@@ -1166,6 +1166,10 @@ def get_player_gamelogs(name, num=5, forcebatting=False, reddit=False):
     else:
         stats = ['day', 'opp'] + newmlbstats._get_common_stats_list(pitching=True)
     repl_map = newmlbstats._get_common_replace_map()
+
+    # most recent games on top
+    games.reverse()
+
     # output = output + _print_labeled_list(stats,game,header=(i==0),repl_map=repl_map) + "\n"
     # output = output + _print_table(stats,games,repl_map=repl_map) + "\n"
     output += utils.format_table(stats, games, repl_map=repl_map, reddit=reddit) + "\n"
@@ -1380,6 +1384,7 @@ def get_player_season_splits(name, split, type='hitting', year=None, active='Y',
             # url = "http://lookup-service-prod.mlb.com/json/named.sport_" + type + "_sits_composed.bam?league_list_id=%27mlb_hist%27&game_type=%27R%27" \
             #       "&season=" + year + "&player_id=" + player['player_id'] + "&sit_code=%27" + splitsmap[split] + "%27"
             # f"&sitCodes=h,a,d,n,g,t,3,4,5,6,7,8,9,10,preas,posas,vl,vr,r0,r1,r2,r3,r12,r13,r23,r123,risp,o0,o1,o2,i01,i02,i03,i04,i05,i06,i07,i08,i09,ix,b1,b2,b3,b4,b5,b6,b7,b8,b9,lo,lc,ac,bc,sp,rp,h1,h2" \
+            # TODO: combine these url calls into one if multiple splits
             url = f"https://statsapi.mlb.com/api/v1/people/{player['player_id']}/stats?stats=statSplits,statsSingleSeason&leagueListId=mlb_hist&group={type}&gameType=R" \
                   f"&sitCodes={splitsmap[split]}" \
                   f"&hydrate=team&season={year}&language=en"
