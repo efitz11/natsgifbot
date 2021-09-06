@@ -1155,16 +1155,27 @@ def get_player_gamelogs(name, num=5, forcebatting=False, reddit=False):
         return "No games played"
     gamelog = s['stats'][0]['splits'][-num:]
     games = list()
+    dec_map = {'wins': 'W', 'losses': 'L', 'saves': 'SV', 'blownSaves': 'BS', 'holds': 'H'}
     for game in gamelog:
         g = game['stat']
         g['day'] = game['date'][5:]
         g['opp'] = game['opponent']['abbreviation']
+
+        # figure out decisions
+        dec = ""
+        for key in dec_map.keys():
+            if g[key] > 0:
+                dec += dec_map[key] + ","
+        if len(dec) > 0:
+            dec = dec[:-1]
+        g['dec'] = dec
         games.append(g)
     output = "Game Log for %s's last %d games:\n\n" % (player['name_display_first_last'], num)
     if not pitching:
         stats = ['day', 'opp'] + newmlbstats._get_common_stats_list()
     else:
-        stats = ['day', 'opp'] + newmlbstats._get_common_stats_list(pitching=True)
+        # stats = ['day', 'opp'] + newmlbstats._get_common_stats_list(pitching=True)
+        stats = ['day', 'opp'] + newmlbstats._get_common_stats_list(pitching=True, pitching_game=True) + ['dec']
     repl_map = newmlbstats._get_common_replace_map()
 
     # most recent games on top
