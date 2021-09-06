@@ -12,13 +12,16 @@ def _get_common_replace_map():
     repl = {'atBats':'ab', 'plateAppearances':'pa','hits':'h','doubles':'2B','triples':'3b','homeRuns':'hr', 'runs':'r',
             'baseOnBalls':'bb','strikeOuts':'so', 'stolenBases':'sb', 'caughtStealing':'cs',
             'wins':'w', 'losses':'l', 'gamesPlayed':'g', 'gamesStarted':'gs', 'saveOpportunities':'svo', 'saves':'sv',
-            'inningsPitched':'ip', 'lastName':'name'}
+            'inningsPitched':'ip', 'lastName':'name', 'earnedRuns':'er', 'pitchesThrown':'p', 'strikes':'s'}
     return repl
 
-def _get_common_stats_list(pitching=False):
+def _get_common_stats_list(pitching=False, pitching_game=False):
+    '''pitching_game returns game level stats instead of season level'''
     if not pitching:
         labels = ['atBats', 'hits', 'doubles', 'triples', 'homeRuns', 'runs', 'rbi', 'baseOnBalls', 'strikeOuts',
               'stolenBases', 'caughtStealing', 'avg', 'obp', 'slg', 'ops']
+    elif pitching_game:
+        labels = ['inningsPitched', 'hits', 'runs', 'earnedRuns','homeRuns','baseOnBalls', 'strikeOuts', 'pitchesThrown', 'strikes']
     else:
         labels = ['wins', 'losses', 'gamesPlayed', 'gamesStarted', 'saveOpportunities', 'saves', 'inningsPitched',
                   'strikeOuts', 'baseOnBalls', 'homeRuns', 'era', 'whip']
