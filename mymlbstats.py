@@ -1176,6 +1176,8 @@ def get_player_gamelogs(name, num=5, forcebatting=False, reddit=False):
     else:
         # stats = ['day', 'opp'] + newmlbstats._get_common_stats_list(pitching=True)
         stats = ['day', 'opp'] + newmlbstats._get_common_stats_list(pitching=True, pitching_game=True) + ['dec']
+        # why i have to do this, idk, thanks mlb, be consistent for once
+        stats[stats.index('pitchesThrown')] = 'numberOfPitches'
     repl_map = newmlbstats._get_common_replace_map()
 
     # most recent games on top
