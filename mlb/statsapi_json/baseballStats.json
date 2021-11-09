@@ -298,7 +298,7 @@
   } ],
   "orgTypes" : [ ]
 }, {
-  "name" : "hitByPitches",
+  "name" : "hitByPitch",
   "lookupParam" : "hbp",
   "isCounting" : true,
   "label" : "HBP",
@@ -542,7 +542,7 @@
   } ],
   "orgTypes" : [ ]
 }, {
-  "name" : "sacrificeBunts",
+  "name" : "sacBunts",
   "lookupParam" : "sac",
   "isCounting" : true,
   "label" : "SAC",
@@ -553,7 +553,7 @@
   } ],
   "orgTypes" : [ ]
 }, {
-  "name" : "sacrificeFlies",
+  "name" : "sacFlies",
   "lookupParam" : "sf",
   "isCounting" : true,
   "label" : "SF",
@@ -630,7 +630,7 @@
   } ],
   "orgTypes" : [ ]
 }, {
-  "name" : "strikeouts",
+  "name" : "strikeOuts",
   "lookupParam" : "so",
   "isCounting" : true,
   "statGroups" : [ {
@@ -695,8 +695,8 @@
   } ],
   "orgTypes" : [ ]
 }, {
-  "name" : "totalPlateAppearances",
-  "lookupParam" : "tpa",
+  "name" : "plateAppearances",
+  "lookupParam" : "pa",
   "isCounting" : true,
   "statGroups" : [ {
     "displayName" : "hitting"
@@ -733,7 +733,7 @@
   } ],
   "orgTypes" : [ ]
 }, {
-  "name" : "walks",
+  "name" : "baseOnBalls",
   "lookupParam" : "bb",
   "isCounting" : true,
   "statGroups" : [ {

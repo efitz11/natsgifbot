@@ -141,7 +141,10 @@ def get_game(team,delta=None,runagain=True,type=TYPE,liveonly=False):
         team2 = html.unescape(event['competitions'][0]['competitors'][1]['team']['location'])
         tid2 = event['competitions'][0]['competitors'][1]['id']
         score2 = event['competitions'][0]['competitors'][1]['score']
-        team2abv = event['competitions'][0]['competitors'][1]['team']['abbreviation']
+        try:
+            team2abv = event['competitions'][0]['competitors'][1]['team']['abbreviation']
+        except KeyError:
+            continue
         
         rank1 = event['competitions'][0]['competitors'][0]['curatedRank']
         rank2 = event['competitions'][0]['competitors'][1]['curatedRank']

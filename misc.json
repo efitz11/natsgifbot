@@ -27,7 +27,9 @@
         "THE MODS",
         "THE PHILLIES",
         "BREGMAN",
-        "JIRA"
+        "JIRA",
+        "MASAN",
+        "THE REPLAY BOOTH"
     ],
     "links": {
         "dont": "https://twitter.com/rayknight25/status/921599441152434176?s=21",
@@ -51,7 +53,16 @@
         "shawn": "https://twitter.com/kelleytime27/status/1011628030404505601?s=19",
         "don't": "https://twitter.com/rayknight25/status/921599441152434176?s=21",
         "maxwhoa": "https://i.imgur.com/12d4wuM.png",
-        "bruh": "https://twitter.com/TheCUTCH22/status/1287885538922500101?s=20"
+        "bruh": "https://twitter.com/TheCUTCH22/status/1287885538922500101?s=20",
+        "dong": "https://streamable.com/62bnx"
     },
-    "countdown": []
+    "countdown": [],
+    "hamms": {
+        "fitz": 1,
+        "vasolinetigers": 0,
+        "kalimaaa84": 1,
+        "vaforlovers": 1,
+        "WORLD SERIES CHAMPION DEMON FROG": 0,
+        "Gummy_Joe": 1
+    }
 }
