@@ -143,8 +143,8 @@ def get_game(team,delta=None,runagain=True,type=TYPE,liveonly=False):
         score2 = event['competitions'][0]['competitors'][1]['score']
         team2abv = event['competitions'][0]['competitors'][1]['team']['abbreviation']
         
-        rank1 = event['competitions'][0]['competitors'][0]['curatedRank']
-        rank2 = event['competitions'][0]['competitors'][1]['curatedRank']
+        rank1 = event['competitions'][0]['competitors'][0].get('curatedRank','')
+        rank2 = event['competitions'][0]['competitors'][1].get('curatedRank','')
         
         game['odds'] = ""
         if 'odds' in event['competitions'][0]:
