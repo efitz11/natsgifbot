@@ -108,7 +108,7 @@ def get_quote_yahoo(symbol):
     return output
 
 def get_crypto_yahoo():
-    url = "https://query1.finance.yahoo.com/v7/finance/quote?symbols=btc-usd,eth-usd,ltc-usd,xlm-usd,doge-usd"
+    url = "https://query1.finance.yahoo.com/v7/finance/quote?symbols=btc-usd,eth-usd,ltc-usd,xlm-usd,doge-usd,bnb-usd"
     results = utils.get_json(url)['quoteResponse']['result']
 
     if len(results) > 0:

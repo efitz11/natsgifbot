@@ -54,7 +54,7 @@ def get_game(team, delta=0,fcs=False):
     seasontype = "2"
     now = datetime.now()
     year = now.year
-    if (now.month == 12 and now.day > 10) or (now.month == 1):
+    if (now.month == 12 and now.day > 20) or (now.month == 1):
         seasontype = "3"
         if now.month == 1:
             year = now.year-1

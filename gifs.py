@@ -23,7 +23,7 @@ def gif(query):
         include_bryce = True
 
     for s in name:
-        patterns.append(re.compile(s,re.IGNORECASE))
+        patterns.append(re.compile(re.escape(s),re.IGNORECASE))
 
     f = open(file,'r')
     for line in f:
