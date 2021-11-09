@@ -5,6 +5,7 @@ tokens-rel.txt
 *.pyc
 cfbtest.py
 channelids.txt
+*.bak
 *.txt
 *.log
 .idea/*
