@@ -1,4 +1,6 @@
-
+mlb/.fitz.json
+*.swp
+*.swo
 tokens.txt
 tokens-dev.txt
 tokens-rel.txt
