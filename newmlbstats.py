@@ -51,6 +51,15 @@ def _convert_mlb_date_to_datetime(date):
     return datetime.strptime(date, '%Y-%m-%d')
 
 def _find_player_id(name):
+    teamid = None
+    if "(" in name and ")" in name:
+        open = name.find('(')
+        close = name.find(')')
+        teamsrch = name.split('(', 1)[1].split(')')[0]
+        teamid = mymlbstats.get_teamid(teamsrch)
+        name = name[:open] + name[close+1:]
+        name = name.strip()
+
     url = "https://typeahead.mlb.com/api/v1/typeahead/suggestions/%s" % urllib.parse.quote(name)
     players = utils.get_json(url)['players']
     if len(players) > 0:
@@ -58,12 +67,16 @@ def _find_player_id(name):
         p = None
         milb_p = None
         for player in players:
-            if player['teamId'] == 120:
-                return player['playerId']
-            elif p is None and player['teamId'] in teamids:
-                p = player['playerId'] # don't just return here to keep searching for Nats
-            elif milb_p is None:
-                milb_p = player['playerId'] # if we don't match a major leaguer, just return a minor leaguer
+            if teamid is None:
+                if player['teamId'] == 120:
+                    return player['playerId']
+                elif p is None and player['teamId'] in teamids:
+                    p = player['playerId'] # don't just return here to keep searching for Nats
+                elif milb_p is None:
+                    milb_p = player['playerId'] # if we don't match a major leaguer, just return a minor leaguer
+            else:
+                if player['teamId'] == teamid:
+                    return player['playerId']
         if p is None:
             return milb_p
         return p
@@ -1256,4 +1269,4 @@ if __name__ == "__main__":
     # print(print_games("lad"))
     # print(print_stat_streaks(['hitting'], redditpost=True))
     # print(get_player_season_stats("starling marte"))
-    print(_new_player_search("trea"))
+    print(_new_player_search("will smith (lad)"))
