@@ -89,16 +89,25 @@ def get_quote_yahoo(symbol):
     output += "```python\n"
     if quote['marketState'] in ["POST", "POSTPOST"]:
         if "postMarketChange" in quote:
-            output += "After Hours:  %.02f (%.02f, %.02f%%) (%s)\n" % (quote.get("postMarketPrice"), quote.get("postMarketChange"), quote.get("postMarketChangePercent"), datetime.fromtimestamp(quote.get("postMarketTime")))
+            if quote['postMarketPrice'] > 0.1:
+                output += "After Hours:  %.02f (%.02f, %.02f%%) (%s)\n" % (quote.get("postMarketPrice"), quote.get("postMarketChange"), quote.get("postMarketChangePercent"), datetime.fromtimestamp(quote.get("postMarketTime")))
+            else:
+                output += "After Hours:  %s (%s, %.02f%%) (%s)\n" % ("{:.2e}".format(quote["postMarketPrice"]), "{:.2e}".format(quote["postMarketChange"]), quote.get("postMarketChangePercent"), datetime.fromtimestamp(quote.get("postMarketTime")))
         output += "Market Close: %.02f (%.02f, %.02f%%) (%s)\n" % (quote.get("regularMarketPrice"), quote.get("regularMarketChange"), quote.get("regularMarketChangePercent"), datetime.fromtimestamp(quote.get("regularMarketTime")))
     elif quote['marketState'] in ["PRE"]:
         if "preMarketPrice" in quote:
-            output += "PreMarket:    %.02f (%.02f, %.02f%%) (%s)\n" % (
-                quote.get("preMarketPrice"), quote.get("preMarketChange"), quote.get("preMarketChangePercent"), datetime.fromtimestamp(quote.get("preMarketTime")))
+            if quote['preMarketPrice'] > 0.1:
+                output += "PreMarket:    %.02f (%.02f, %.02f%%) (%s)\n" % (
+                    quote.get("preMarketPrice"), quote.get("preMarketChange"), quote.get("preMarketChangePercent"), datetime.fromtimestamp(quote.get("preMarketTime")))
+            else:
+                output += "PreMarket:    %s (%s, %.02f%%) (%s)\n" % ("{:.2e}".format(quote["preMarketPrice"]), "{:.2e}".format(quote["preMarketChange"]), quote.get("preMarketChangePercent"), datetime.fromtimestamp(quote.get("preMarketTime")))
         output += "Market Close: %.02f (%.02f, %.02f%%) (%s)\n" % (
             quote.get("regularMarketPrice"), quote.get("regularMarketChange"), quote.get("regularMarketChangePercent"), datetime.fromtimestamp(quote.get("regularMarketTime")))
     else:
-        output += "Market Hours: %.02f (%.02f, %.02f%%) (%s)\n" % (quote.get("regularMarketPrice"), quote.get("regularMarketChange"), quote.get("regularMarketChangePercent"), datetime.fromtimestamp(quote.get("regularMarketTime")))
+        if quote['regularMarketPrice'] > 0.1:
+            output += "Market Hours: %.02f (%.02f, %.02f%%) (%s)\n" % (quote.get("regularMarketPrice"), quote.get("regularMarketChange"), quote.get("regularMarketChangePercent"), datetime.fromtimestamp(quote.get("regularMarketTime")))
+        else:
+            output += "Market Hours: %s (%s, %.02f%%) (%s)\n" % ("{:.2e}".format(quote["regularMarketPrice"]), "{:.2e}".format(quote.get("regularMarketChange")), quote.get("regularMarketChangePercent"), datetime.fromtimestamp(quote.get("regularMarketTime")))
     output += "Day volume: %s (%s 10 day avg)\n" % (simpleMarketCap(quote.get("regularMarketVolume")), simpleMarketCap(quote.get("averageDailyVolume10Day")))
     output += "Day range: {regularMarketDayRange}\n".format_map(quote)
     output += "52w range: {fiftyTwoWeekRange}\n".format_map(quote)
@@ -115,9 +124,14 @@ def get_crypto_yahoo():
         for res in results:
             price = res['regularMarketPrice']
             if price < 1.0:
-                res['regularMarketPrice'] = str(round(price, 3))
-                res['regularMarketDayLow'] = str(round(res['regularMarketDayLow'], 3))
-                res['regularMarketDayHigh'] = str(round(res['regularMarketDayHigh'], 3))
+                if price > 0.1:
+                    res['regularMarketPrice'] = str(round(price, 3))
+                    res['regularMarketDayLow'] = str(round(res['regularMarketDayLow'], 3))
+                    res['regularMarketDayHigh'] = str(round(res['regularMarketDayHigh'], 3))
+                else:
+                    res['regularMarketPrice'] = "{:.2e}".format(price)
+                    res['regularMarketDayLow'] = "{:.2e}".format(res['regularMarketDayLow'], 3)
+                    res['regularMarketDayHigh'] = "{:.2e}".format(res['regularMarketDayHigh'], 3)
             else:
                 res['regularMarketPrice'] = int(price)
                 res['regularMarketDayLow'] = int(res['regularMarketDayLow'])
