@@ -446,7 +446,7 @@ async def radar(ctx, *query):
 async def snow(ctx):
     """show NWS snow probability image"""
     randstr = "?%d" % random.randint(0,9999)
-    await ctx.send("https://www.weather.gov/images/lwx/winter/StormTotalSnowWeb1.png" + randstr)
+    await ctx.send("https://www.weather.gov/images/lwx/winter/StormTotalSnowWeb1.jpg" + randstr)
 
 @bot.command()
 async def metar(ctx, airport_code:str):
