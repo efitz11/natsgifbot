@@ -20,7 +20,7 @@ prefixes = ['!', '?', 'bot ', 'Bot']
 
 extensions = ["baseball","sports","reddit","temporary"]
 
-auth_users = ['fitz#6390']
+auth_users = ['fitz#0001']
 hamms_auth_users = auth_users + ['vasolinetigers#3888']
 
 pattern69 = re.compile('(^|[\s\.]|\$)[6][\.]*[9]([\s\.]|x|%|$|th)')
