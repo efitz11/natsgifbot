@@ -136,7 +136,7 @@ def get_lat_lon(search):
             url = url + key
             req = Request(url, headers={'User-Agent' : "ubuntu"})
             s = json.loads(urlopen(req).read().decode("utf-8"))
-            # print(s)
+            print(s)
             lat = s['results'][0]['geometry']['location']['lat']
             lon = s['results'][0]['geometry']['location']['lng']
 

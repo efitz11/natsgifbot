@@ -447,9 +447,13 @@ async def snow(ctx, *location:str):
     """show NWS snow probability image"""
     location = ' '.join(location)
     if len(location) == 0:
-        location = "lwx"
+        fieldoffice = "lwx"
+    else:
+        lat, lon, loc = weathermodule.get_lat_lon(location)
+        resp = utils.get_json("https://api.weather.gov/points/%.4f,%.4f" % (lat, lon))
+        fieldoffice = resp['properties']['gridId'].lower()
     randstr = "?%d" % random.randint(0,9999)
-    await ctx.send("https://www.weather.gov/images/" + location + "/winter/StormTotalSnowWeb1.jpg" + randstr)
+    await ctx.send("https://www.weather.gov/images/" + fieldoffice + "/winter/StormTotalSnowWeb1.jpg" + randstr)
 
 @bot.command()
 async def metar(ctx, airport_code:str):
