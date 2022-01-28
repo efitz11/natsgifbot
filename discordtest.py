@@ -1,13 +1,16 @@
+import io
+
+import aiohttp
 import discord
+import requests
 from discord.ext import commands
 import random
-from datetime import datetime, timedelta, time
+from datetime import datetime
 import re, json, os
 import asyncio
 import utils
-import sched
 
-import mymlbgame, cfbgame, nflgame, xmlreader, nhlscores, cbbgame, stocks, olympics, gifs, gfycat
+import    xmlreader,   stocks,  gifs, gfycat
 import mymlbstats, newmlbstats
 import odds as oddsmod
 import weather as weathermodule
@@ -452,8 +455,14 @@ async def snow(ctx, *location:str):
         lat, lon, loc = weathermodule.get_lat_lon(location)
         resp = utils.get_json("https://api.weather.gov/points/%.4f,%.4f" % (lat, lon))
         fieldoffice = resp['properties']['gridId'].lower()
-    randstr = "?%d" % random.randint(0,9999)
-    await ctx.send("https://www.weather.gov/images/" + fieldoffice + "/winter/StormTotalSnowWeb1.jpg" + randstr)
+    url = "https://www.weather.gov/images/" + fieldoffice + "/winter/StormTotalSnowWeb1.jpg"
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as resp:
+            if resp.status != 200:
+                return await ctx.send("error")
+            data = io.BytesIO(await resp.read())
+            await ctx.send(file=discord.File(data, 'snow.jpg'))
+    # await ctx.send("https://www.weather.gov/images/" + fieldoffice + "/winter/StormTotalSnowWeb1.jpg" + randstr)
 
 @bot.command()
 async def metar(ctx, airport_code:str):
