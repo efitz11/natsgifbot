@@ -185,10 +185,12 @@ def get_game(team,delta=None,runagain=True,type=TYPE,liveonly=False):
     if all:
         output = ""
         for game in games:
-            ar = game['awayrank']['current']
-            hr = game['homerank']['current']
+            ar = game['awayrank']
+            hr = game['homerank']
             awayr = "("+str(ar)+")" if (ar <= 25 and ar > 0) else ""
             homer = "("+str(hr)+")" if (hr <= 25 and hr > 0) else ""
+            game['awayscore'] = str(game['awayscore'])
+            game['homescore'] = str(game['homescore'])
             if len(games) >= 10:
                 output = output + "%s %s %s @ %s %s %s # %s%s%s\n" % (awayr.rjust(4),game['awayabv'].rjust(5), game['awayscore'].rjust(2), homer.rjust(4),game['homeabv'].rjust(5), game['homescore'].rjust(2), game['time'],game['broadcast'],game['odds'])
             else:
