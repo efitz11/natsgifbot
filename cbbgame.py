@@ -96,13 +96,14 @@ def get_game(team,delta=None,runagain=True,type=TYPE,liveonly=False):
         else:
             return "```python\n%s```" % ret
 
+    print(url)
     req = Request(url)
     req.headers["User-Agent"] = "windows 10 bot"
     # Load data
     scoreData = urlopen(req).read().decode("utf-8")
-    scoreData = scoreData[scoreData.find('window.espn.scoreboardData 	= ')+len('window.espn.scoreboardData 	= '):]
-    scoreData = json.loads(scoreData[:scoreData.find('};')+1])
-    #print(scoreData)
+    scoreData = scoreData[scoreData.find('window[\'__espnfitt__\']=')+len('window[\'__espnfitt__\']='):]
+    scoreData = json.loads(scoreData[:scoreData.find('};')+1])['page']['content']['scoreboard']
+    # print(scoreData)
     #f = open('espnout.txt','w')
     #f.write(json.dumps(scoreData))
     #f.close()
@@ -110,7 +111,7 @@ def get_game(team,delta=None,runagain=True,type=TYPE,liveonly=False):
     games = []
     if delta is None:
         try:
-            date = scoreData['events'][0]['date']
+            date = scoreData['evts'][0]['date']
         except IndexError:
             if runagain:
                 return get_game(team, delta, runagain=False, type="100")
@@ -118,56 +119,53 @@ def get_game(team,delta=None,runagain=True,type=TYPE,liveonly=False):
         date = date[1] + "/" + date[2] + "/" + date[0]
     else:
         date = str(now.month) + "/" + str(now.day) + "/" + str(now.year)
-    for event in scoreData['events']:
+    for event in scoreData['evts']:
         game = dict()
 
         game["date"] = event['date']
-        status = event['status']['type']['state']
+        status = event['status']['state']
+        game['odds'] = ""
         if liveonly and status != "in":
             continue
         if status == "pre":
             game['status'] = GAME_STATUS_PRE
-            game['time'] = event['status']['type']['shortDetail']
+            game['time'] = event['status']['detail']
+
+            if 'odds' in event:
+                game['odds'] = " - " + event['odds'].get('details', 'no odds')
         elif status == "in":
             game['status'] = GAME_STATUS_IN
-            game['time'] = event['status']['type']['shortDetail']
+            game['time'] = event['status']['detail']
         else:
             game['status'] = GAME_STATUS_POST
             game['time'] = "FINAL"
-        team1 = html.unescape(event['competitions'][0]['competitors'][0]['team']['location'])
-        tid1 = event['competitions'][0]['competitors'][0]['id']
-        score1 = event['competitions'][0]['competitors'][0]['score']
-        team1abv = event['competitions'][0]['competitors'][0]['team']['abbreviation']
-        team2 = html.unescape(event['competitions'][0]['competitors'][1]['team']['location'])
-        tid2 = event['competitions'][0]['competitors'][1]['id']
-        score2 = event['competitions'][0]['competitors'][1]['score']
+        team1 = html.unescape(event['competitors'][0]['location'])
+        tid1 = event['competitors'][0]['id']
+        score1 = event['competitors'][0].get('score','')
+        team1abv = event['competitors'][0]['abbrev']
+        team2 = html.unescape(event['competitors'][1]['location'])
+        tid2 = event['competitors'][1]['id']
+        score2 = event['competitors'][1].get('score','')
         try:
-            team2abv = event['competitions'][0]['competitors'][1]['team']['abbreviation']
+            team2abv = event['competitors'][1]['abbrev']
         except KeyError:
             continue
-        
-        rank1 = event['competitions'][0]['competitors'][0].get('curatedRank','')
-        rank2 = event['competitions'][0]['competitors'][1].get('curatedRank','')
-        
-        game['odds'] = ""
-        if 'odds' in event['competitions'][0]:
-            if 'details' in event['competitions'][0]['odds'][0]:
-                game['odds'] = " - " + event['competitions'][0]['odds'][0]['details']
-        
+
+        rank1 = event['competitors'][0].get('rank','')
+        rank2 = event['competitors'][1].get('rank','')
+
         # Hawaii workaround
         if team1 == "Hawai'i":
             team1 = "Hawaii"
         if team2 == "Hawai'i":
             team2 = "Hawaii"
             
-        homestatus = event['competitions'][0]['competitors'][0]['homeAway']
-        for l in event['links']:
-            if l['text'] == "Summary":
-                game['link'] = l['href']
+        homestatus = 'home' if event['competitors'][0]['isHome'] else 'away'
+        game['link'] = "https://espn.com" + event['link']
         game['broadcast'] = ""
-        for b in event['competitions'][0]['broadcasts']:
-            if b['market'] == 'national':
-                game['broadcast'] = " - " + b['names'][0]
+        for b in event['broadcasts']:
+            if b['market'] == 'National':
+                game['broadcast'] = " - " + b['name']
                 break
 
         if homestatus == 'home':
@@ -214,8 +212,8 @@ def get_game(team,delta=None,runagain=True,type=TYPE,liveonly=False):
     return "game not found"
 
 def pretty_print_game(game):
-    ar = game['awayrank']['current']
-    hr = game['homerank']['current']
+    ar = game['awayrank']
+    hr = game['homerank']
     awayr = "("+str(ar)+")" if (ar <= 25 and ar > 0) else ""
     homer = "("+str(hr)+")" if (hr <= 25 and hr > 0) else ""
     namejust = max(len(game['awayabv']), len(game['homeabv']))
@@ -225,6 +223,8 @@ def pretty_print_game(game):
     else:
         gdate = ""
         gtime = game['time']
+    game['awayscore'] = str(game['awayscore'])
+    game['homescore'] = str(game['homescore'])
     output = "%s %s %s # %s\n%s %s %s # %s%s%s\n" % (awayr.rjust(4),game['awayabv'].rjust(namejust), game['awayscore'].rjust(2), gdate, homer.rjust(4),game['homeabv'].rjust(namejust), game['homescore'].rjust(2), gtime, game['broadcast'], game['odds'])
     return output
     
