@@ -115,8 +115,11 @@ def get_game(team,delta=None,runagain=True,type=TYPE,liveonly=False):
         except IndexError:
             if runagain:
                 return get_game(team, delta, runagain=False, type="100")
-        date = date[:date.find('T')].split('-')
-        date = date[1] + "/" + date[2] + "/" + date[0]
+        # date = date[:date.find('T')].split('-')
+        # date = date[1] + "/" + date[2] + "/" + date[0]
+        dt = datetime.strptime(date,"%Y-%m-%dT%H:%MZ") # 2022-03-18T02:00Z
+        dt = dt - timedelta(hours=5)
+        date = dt.strftime("%m/%d/%Y")
     else:
         date = str(now.month) + "/" + str(now.day) + "/" + str(now.year)
     for event in scoreData['evts']:
