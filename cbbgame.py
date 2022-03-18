@@ -128,6 +128,11 @@ def get_game(team,delta=None,runagain=True,type=TYPE,liveonly=False):
         game["date"] = event['date']
         status = event['status']['state']
         game['odds'] = ""
+        game['broadcast'] = ""
+        for b in event['broadcasts']:
+            if b['market'] == 'National':
+                game['broadcast'] = " - " + b['name']
+                break
         if liveonly and status != "in":
             continue
         if status == "pre":
@@ -142,6 +147,7 @@ def get_game(team,delta=None,runagain=True,type=TYPE,liveonly=False):
         else:
             game['status'] = GAME_STATUS_POST
             game['time'] = "FINAL"
+            game['broadcast'] = ''
         team1 = html.unescape(event['competitors'][0]['location'])
         tid1 = event['competitors'][0]['id']
         score1 = event['competitors'][0].get('score','')
@@ -165,11 +171,6 @@ def get_game(team,delta=None,runagain=True,type=TYPE,liveonly=False):
             
         homestatus = 'home' if event['competitors'][0]['isHome'] else 'away'
         game['link'] = "https://espn.com" + event['link']
-        game['broadcast'] = ""
-        for b in event['broadcasts']:
-            if b['market'] == 'National':
-                game['broadcast'] = " - " + b['name']
-                break
 
         if homestatus == 'home':
             game['hometeam'], game['homeid'], game['homeabv'], game['homescore'], game['awayteam'], game['awayid'], game['awayabv'], game['awayscore'], game['homerank'], game['awayrank']=\
