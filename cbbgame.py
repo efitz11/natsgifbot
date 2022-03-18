@@ -79,10 +79,10 @@ def get_game(team,delta=None,runagain=True,type=TYPE,liveonly=False):
     else:        
         url = "http://espn.go.com/mens-college-basketball/scoreboard/_/group/" + type + "/year/"+str(now.year)+"/seasontype/2/?t=" + str(time.time())
         if team == None or team == "" or team.lower() == "none":
-            url = "http://www.espn.com/mens-college-basketball/scoreboard/_/year/" + str(now.year)+"/seasontype/2"
+            url = "http://www.espn.com/mens-college-basketball/scoreboard/_/year/" + str(now.year)+"/seasontype/2?t=" + str(time.time())
             all = True
         elif team.lower() in groupmap:
-            url = "http://www.espn.com/mens-college-basketball/scoreboard/_/group/" + groupmap[team.lower()] + "/year/"+str(now.year)+"/seasontype/2/"
+            url = "http://www.espn.com/mens-college-basketball/scoreboard/_/group/" + groupmap[team.lower()] + "/year/"+str(now.year)+"/seasontype/2?t=" + str(time.time())
             all = True
 
     # for printing a team's odds
