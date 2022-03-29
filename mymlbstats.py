@@ -1045,14 +1045,14 @@ def _get_player_search(name, active='Y'):
 
 def get_player_line(name, delta=None, player=None, schedule=None):
     if player is None:
-        player = _get_player_search(name)
+        player = newmlbstats._new_player_search(name)
     if player is None:
         return "No matching player found"
-    teamid = int(player['team_id'])
-    pid = player['player_id']
-    disp_name = player['name_display_first_last']
+    teamid = int(player['currentTeam']['id'])
+    pid = player['id']
+    disp_name = player['fullName']
     if schedule is None:
-        s = get_day_schedule(delta,teamid=teamid)
+        s = get_day_schedule(delta)
     else:
         s = schedule
     try:
@@ -1066,10 +1066,12 @@ def get_player_line(name, delta=None, player=None, schedule=None):
             opp = game['teams']['home']['team']['abbreviation']
             team_abbr = game['teams']['away']['team']['abbreviation']
             side = 'away'
-        else:
+        elif game['teams']['home']['team']['id'] == teamid:
             opp = game['teams']['away']['team']['abbreviation']
             team_abbr = game['teams']['home']['team']['abbreviation']
             side = 'home'
+        else:
+            continue
         useDH = False
         if game['teams']['home']['team']['league']['id'] == 103:
             useDH = True
