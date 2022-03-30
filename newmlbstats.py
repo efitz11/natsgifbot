@@ -83,9 +83,9 @@ def _find_player_id(name):
 
 def _get_player_by_id(id, type=None, milb=False):
     if type is None:
-        url = API_LINK + "people/%s?hydrate=currentTeam,team,stats(type=[yearByYear,yearByYearAdvanced,careerRegularSeason,careerAdvanced,availableStats](team(league,sport)),leagueListId=%s)" % (id, 'mlb_milb' if milb else 'mlb_hist')
+        url = API_LINK + "people/%s?hydrate=currentTeam,team,draft,stats(type=[yearByYear,yearByYearAdvanced,careerRegularSeason,careerAdvanced,availableStats](team(league,sport)),leagueListId=%s)" % (id, 'mlb_milb' if milb else 'mlb_hist')
     else:
-        url = API_LINK + "people/%s?hydrate=currentTeam,team,stats(type=[yearByYear,yearByYearAdvanced,careerRegularSeason,careerAdvanced,availableStats](team(league,sport)),leagueListId=%s,group=%s)" % (id, 'mlb_milb' if milb else 'mlb_hist', type)
+        url = API_LINK + "people/%s?hydrate=currentTeam,team,draft,stats(type=[yearByYear,yearByYearAdvanced,careerRegularSeason,careerAdvanced,availableStats](team(league,sport)),leagueListId=%s,group=%s)" % (id, 'mlb_milb' if milb else 'mlb_hist', type)
     return utils.get_json(url)['people'][0]
 
 def _new_player_search(name, type=None):
@@ -374,8 +374,11 @@ def get_player_season_stats(name, type=None, year=None, career=None, reddit=None
     # pid = player['id']
     disp_name = player['fullName']
     pos = player['primaryPosition']['abbreviation']
-    # if milb:
     infoline = _get_player_info_line(player, seasons=year)
+    if milb:
+        draft = player['drafts'][-1]
+        infoline += "\n  Draft: %s | Round: %s | Pick: %d | School: %s\n" % \
+                 (draft['year'], str(draft['pickRound']), draft['roundPickNumber'], draft['school']['name'])
     now = datetime.now()
 
     if year is None:
