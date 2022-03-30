@@ -377,7 +377,7 @@ def get_player_season_stats(name, type=None, year=None, career=None, reddit=None
     infoline = _get_player_info_line(player, seasons=year)
     if milb:
         draft = player['drafts'][-1]
-        infoline += "\n  Draft: %s | Round: %s | Pick: %d | School: %s\n" % \
+        infoline += "\n  Draft: %s | Round: %s | Pick: %d | School: %s" % \
                  (draft['year'], str(draft['pickRound']), draft['roundPickNumber'], draft['school']['name'])
     now = datetime.now()
 
