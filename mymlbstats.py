@@ -1748,40 +1748,49 @@ def get_milb_aff_scores(teamid=120, delta=None):
     month = str(now.month)
     day = str(now.day)
     date = str(now.year) + "-" + str(now.month).zfill(2) + "-" + str(now.day).zfill(2)
-    url = "http://lookup-service-prod.mlb.com/lookup/json/named.schedule_vw_complete_affiliate.bam?" \
-          "game_date=%27" + year + "/" + month + "/" + day + "%27&season=" + year + "&org_id=" + str(teamid)
-    print(url)
-    req = Request(url, headers={'User-Agent' : "ubuntu"})
-    s = json.loads(urlopen(req).read().decode("utf-8"))['schedule_vw_complete_affiliate']['queryResults']
+    # url = "http://lookup-service-prod.mlb.com/lookup/json/named.schedule_vw_complete_affiliate.bam?" \
+    #       "game_date=%27" + year + "/" + month + "/" + day + "%27&season=" + year + "&org_id=" + str(teamid)
+    # print(url)
+    # req = Request(url, headers={'User-Agent' : "ubuntu"})
+    # s = json.loads(urlopen(req).read().decode("utf-8"))['schedule_vw_complete_affiliate']['queryResults']
+    f = open('affiliates.json')
+    aff_ids = json.load(f)['affiliates'][str(teamid)]
+    aff_ids = ','.join([str(x) for x in aff_ids])
+    url = "https://statsapi.mlb.com/api/v1/schedule?sportId=11,12,13,14&date=" + date + "&gameTypes=A,R,F,D,L,W,C&" \
+         "hydrate=team,linescore,flags,liveLookin,review,game(content(summary,media(epg)),tickets),xrefId," \
+         "seriesStatus(useOverride=true),broadcasts(all)&useLatestGames=false&language=en&teamId=" + aff_ids
+    s = utils.get_json(url)
     import calendar
     output = "For %s, %d/%d/%d:\n\n" % (calendar.day_name[now.weekday()],now.month,now.day,now.year)
-    if s['totalSize'] == '1':
-        affs = [s['row']]
-    else:
-        affs = s['row']
+    # if s['totalSize'] == '1':
+    #     affs = [s['row']]
+    # else:
+    #     affs = s['row']
 
-    sportmap = {'aaa':11, 'aax':12, 'afa':13, 'afx':14, 'asx':15, 'rok':16}
-    for aff in sorted(affs, key=lambda x: sportmap[x['home_sport_code']]):
-        sportcode = aff['home_sport_code']
-        homeid = aff['home_team_id']
-        gamepk = aff['game_pk']
-        url = "http://statsapi.mlb.com/api/v1/schedule?gamePk=" + gamepk + "&date=" + date
-        hydrates = "&hydrate=probablePitcher,person,decisions,team,stats,flags,linescore(matchup,runners),previousPlay"
-        url = url + hydrates
-        print(url)
-        req = Request(url, headers={'User-Agent' : "ubuntu"})
-        s = json.loads(urlopen(req).read().decode("utf-8"))['dates']
-        matched = False
-        for d in s:
-            if d['date'] == date:
-                s = d['games']
-                matched = True
-                break
-        if not matched:
-            s = s[0]['games']
-        for game in s:
-            output = output + get_single_game_info(gamepk, game) + "\n"
-
+    # sportmap = {'aaa':11, 'aax':12, 'afa':13, 'afx':14, 'asx':15, 'rok':16}
+    # for aff in sorted(aff_ids, key=lambda x: sportmap[x['home_sport_code']]):
+    #     sportcode = aff['home_sport_code']
+    #     homeid = aff['home_team_id']
+    #     gamepk = aff['game_pk']
+    #     url = "http://statsapi.mlb.com/api/v1/schedule?gamePk=" + gamepk + "&date=" + date
+    #     hydrates = "&hydrate=probablePitcher,person,decisions,team,stats,flags,linescore(matchup,runners),previousPlay"
+    #     url = url + hydrates
+    #     print(url)
+    #     req = Request(url, headers={'User-Agent' : "ubuntu"})
+    #     s = json.loads(urlopen(req).read().decode("utf-8"))['dates']
+    #     matched = False
+    #     for d in s:
+    #         if d['date'] == date:
+    #             s = d['games']
+    #             matched = True
+    #             break
+    #     if not matched:
+    #         s = s[0]['games']
+    #     for game in s:
+    #         output = output + get_single_game_info(gamepk, game) + "\n"
+    #
+    for game in s["dates"][0]["games"]:
+        output = output + get_single_game_info(game['gamePk'], game) + "\n"
     return output
 
 def get_milb_box(team, part='batting', teamid=120, delta=None):

@@ -50,7 +50,7 @@ def _convert_date_to_mlb_str(date):
 def _convert_mlb_date_to_datetime(date):
     return datetime.strptime(date, '%Y-%m-%d')
 
-def _find_player_id(name):
+def _find_player_id(name, milb=False):
     teamid = None
     if "(" in name and ")" in name:
         open = name.find('(')
@@ -63,23 +63,33 @@ def _find_player_id(name):
     url = "https://typeahead.mlb.com/api/v1/typeahead/suggestions/%s" % urllib.parse.quote(name)
     players = utils.get_json(url)['players']
     if len(players) > 0:
-        teamids = mymlbstats.get_mlb_teamid_list()
-        p = None
-        milb_p = None
-        for player in players:
-            if teamid is None:
-                if player['teamId'] == 120:
+        if not milb:
+            teamids = mymlbstats.get_mlb_teamid_list()
+            print(teamids)
+            p = None
+            milb_p = None
+            for player in players:
+                if teamid is None:
+                    if player['teamId'] == 120:
+                        return player['playerId']
+                    elif p is None and player['teamId'] in teamids:
+                        p = player['playerId'] # don't just return here to keep searching for Nats
+                    elif milb_p is None:
+                        milb_p = player['playerId'] # if we don't match a major leaguer, just return a minor leaguer
+                else:
+                    if player['teamId'] == teamid:
+                        return player['playerId']
+            if p is None:
+                return milb_p
+            return p
+        else:
+            nats_teamids = [534, 547, 426, 436]
+            for player in players:
+                if player['teamId'] in nats_teamids:
                     return player['playerId']
-                elif p is None and player['teamId'] in teamids:
-                    p = player['playerId'] # don't just return here to keep searching for Nats
-                elif milb_p is None:
-                    milb_p = player['playerId'] # if we don't match a major leaguer, just return a minor leaguer
-            else:
-                if player['teamId'] == teamid:
-                    return player['playerId']
-        if p is None:
-            return milb_p
-        return p
+            for player in players:
+                return player['playerId']
+
 
 def _get_player_by_id(id, type=None, milb=False):
     if type is None:
@@ -88,7 +98,7 @@ def _get_player_by_id(id, type=None, milb=False):
         url = API_LINK + "people/%s?hydrate=currentTeam,team,draft,stats(type=[yearByYear,yearByYearAdvanced,careerRegularSeason,careerAdvanced,availableStats](team(league,sport)),leagueListId=%s,group=%s)" % (id, 'mlb_milb' if milb else 'mlb_hist', type)
     return utils.get_json(url)['people'][0]
 
-def _new_player_search(name, type=None):
+def _new_player_search(name, type=None, milb=False):
     post = False
     spring = False
     if 'postseason' in name:
@@ -97,7 +107,7 @@ def _new_player_search(name, type=None):
     elif 'spring ' in name:
         name = name.replace('spring ', '').strip()
         spring = True
-    p = _find_player_id(name)
+    p = _find_player_id(name, milb=milb)
     if type is None:
         url = API_LINK + "people/%s?hydrate=currentTeam,team,stats(type=[yearByYear,yearByYearAdvanced,careerRegularSeason,careerAdvanced,availableStats](team(league)),leagueListId=mlb_hist)" % p
     else:
@@ -365,7 +375,7 @@ def get_player_season_stats(name, type=None, year=None, career=None, reddit=None
         except:
             return "Error finding player %s" % name
     else:
-        player = mymlbstats.milb_player_search(name)
+        player = _new_player_search(name, milb=True)
         player = _get_player_by_id(player["player_id"], milb=True)
     if player is None:
         return "No matching player found"
