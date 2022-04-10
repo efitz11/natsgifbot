@@ -2581,11 +2581,11 @@ def print_dongs(type, delta=None, reddit=False):
     return out + utils.format_table(labs, sorteddongs, repl_map=repl_map, left_list=left, reddit=reddit)
 
 def print_at_bats(name, delta=None):
-    player = _get_player_search(name)
+    player = newmlbstats._new_player_search(name)
     if player is None:
         return "No matching player found"
-    teamid = player['team_id']
-    playerid = int(player['player_id'])
+    teamid = player['currentTeam']['id']
+    playerid = int(player['id'])
     schedule = get_day_schedule(teamid=teamid, delta=delta)
     games = schedule['dates'][0]['games']
     date = _get_date_from_delta(delta)
