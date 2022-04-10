@@ -111,8 +111,8 @@ def print_player_abs(player, delta=None):
     p = mymlbstats._get_player_search(player)
     if p is None:
         return "No matching player found"
-    teamid = int(p['team_id'])
-    return get_player(get_game(find_gamepks(None,teamid=teamid, delta=delta)[0]), int(p['player_id']))
+    teamid = int(p['currentTeam']['id'])
+    return get_player(get_game(find_gamepks(None,teamid=teamid, delta=delta)[0]), int(p['id']))
 
 def print_player_or_team(query, delta=None):
     teamid = mymlbstats.get_teamid(query)
@@ -120,8 +120,8 @@ def print_player_or_team(query, delta=None):
         p = mymlbstats._get_player_search(query)
         if p is None:
             return "Query did not match team or player"
-        teamid = int(p['team_id'])
-        return get_player(get_game(find_gamepks(None, teamid=teamid, delta=delta)[0]), int(p['player_id']))
+        teamid = int(p['currentTeam']['id'])
+        return get_player(get_game(find_gamepks(None, teamid=teamid, delta=delta)[0]), int(p['id']))
     else:
         return get_five(get_game(find_gamepks(None, teamid=teamid, delta=delta)[0]))
 
@@ -145,7 +145,7 @@ def get_player_savant_stats(player):
     p = mymlbstats._get_player_search(player)
     if p is None:
         return "No matching player found"
-    url = f"https://baseballsavant.mlb.com/savant-player/{p['player_id']}'"
+    url = f"https://baseballsavant.mlb.com/savant-player/{p['id']}'"
     page = utils.get_page(url)
     page = page[page.rfind("var serverVals = {"):]
     page = page[page.find('{'):page.rfind("};\n")+1]

@@ -2643,8 +2643,8 @@ def print_pitches_by_inning(team, delta=None):
         player = _get_player_search(team)
         if player is None:
             return "No matching player or team found"
-        teamid = int(player['team_id'])
-        playerid = int(player['player_id'])
+        teamid = int(player['currentTeam']['id'])
+        playerid = int(player['id'])
         useteam = False
     schedule = get_day_schedule(teamid=teamid, delta=delta)
 

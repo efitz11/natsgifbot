@@ -115,6 +115,7 @@ def _new_player_search(name, type=None, milb=False):
     player = utils.get_json(url)['people'][0]
     # for backwards compat
     player['player_id'] = str(player['id'])
+    player['team_id'] = player['currentTeam']['id']
     if post:
         url = API_LINK + "people/%s/stats?stats=yearByYear,career&gameType=P&leagueListId=mlb_hist&hydrate=team" % p
         stats = utils.get_json(url)
