@@ -1136,10 +1136,10 @@ def get_player_gamelogs(name, num=5, forcebatting=False, reddit=False):
     # cap at 15
     if num > 15:
         num = 15
-    player = _get_player_search(name)
+    player = newmlbstats._new_player_search(name)
     if player is None:
         return "No matching player found"
-    pitching = player['position'] == 'P'
+    pitching = player['primaryPosition']['abbreviation'] == 'P'
     if forcebatting:
         pitching = False
     now = datetime.now()
@@ -1164,15 +1164,16 @@ def get_player_gamelogs(name, num=5, forcebatting=False, reddit=False):
         g['opp'] = game['opponent']['abbreviation']
 
         # figure out decisions
-        dec = ""
-        for key in dec_map.keys():
-            if g[key] > 0:
-                dec += dec_map[key] + ","
-        if len(dec) > 0:
-            dec = dec[:-1]
-        g['dec'] = dec
+        if pitching:
+            dec = ""
+            for key in dec_map.keys():
+                if g[key] > 0:
+                    dec += dec_map[key] + ","
+            if len(dec) > 0:
+                dec = dec[:-1]
+            g['dec'] = dec
         games.append(g)
-    output = "Game Log for %s's last %d games:\n\n" % (player['name_display_first_last'], num)
+    output = "Game Log for %s's last %d games:\n\n" % (player['fullName'], num)
     if not pitching:
         stats = ['day', 'opp'] + newmlbstats._get_common_stats_list()
     else:
