@@ -1024,24 +1024,25 @@ def get_stat_leader(stat):
     return players
 
 def _get_player_search(name, active='Y'):
-    # find player id
-    name = name.replace(' ', '+').upper()
-    url = "http://lookup-service-prod.mlb.com/json/named.search_player_all.bam?sport_code=%27mlb%27&name_part=%27"+ \
-          name+"%25%27&active_sw=%27" + active + "%27"
-    print(url)
-    req = Request(url, headers={'User-Agent' : "ubuntu"})
-    s = json.loads(urlopen(req).read().decode("latin1"))
-    result = s['search_player_all']['queryResults']
-    size = int(result['totalSize'])
-    if size > 1:
-        for p in result['row']:
-            if p['team_id'] == '120':
-                return p
-        return result['row'][0]
-    elif size == 1:
-        return result['row']
-    else:
-        return None
+    return newmlbstats._new_player_search(name)
+    # # find player id
+    # name = name.replace(' ', '+').upper()
+    # url = "http://lookup-service-prod.mlb.com/json/named.search_player_all.bam?sport_code=%27mlb%27&name_part=%27"+ \
+    #       name+"%25%27&active_sw=%27" + active + "%27"
+    # print(url)
+    # req = Request(url, headers={'User-Agent' : "ubuntu"})
+    # s = json.loads(urlopen(req).read().decode("latin1"))
+    # result = s['search_player_all']['queryResults']
+    # size = int(result['totalSize'])
+    # if size > 1:
+    #     for p in result['row']:
+    #         if p['team_id'] == '120':
+    #             return p
+    #     return result['row'][0]
+    # elif size == 1:
+    #     return result['row']
+    # else:
+    #     return None
 
 def get_player_line(name, delta=None, player=None, schedule=None):
     if player is None:
@@ -1207,24 +1208,24 @@ def _get_player_info_line(player):
     return "%s | B/T: %s/%s | %s | %s" % (pos, bats,throws, height, weight)
 
 def batter_or_pitcher_vs(name, team, year=None, reddit=False):
-    player = _get_player_search(name)
+    player = newmlbstats._new_player_search(name)
     if player is None:
         return "No matching player found"
-    if player['position'] == 'P':
+    if player['primaryPosition']['abbreviation'] == 'P':
         return pitcher_vs_team(name,team, player=player, reddit=reddit)
     else:
         return player_vs_team(name,team, year=year, reddit=reddit)
 
 def player_vs_pitcher(player1, player2, reddit=False):
-    p1 = _get_player_search(player1)
-    p2 = _get_player_search(player2)
+    p1 = newmlbstats._new_player_search(player1)
+    p2 = newmlbstats._new_player_search(player2)
     url = "https://statsapi.mlb.com/api/v1/people/" + p1['player_id'] + "/stats?stats=vsPlayer&" \
           "opposingPlayerId=" + p2['player_id'] + "&language=en&hydrate=person"
     try:
         res = utils.get_json(url)['stats']
     except urllib.error.HTTPError:
         return "format:\n!mlb bvp <batter> <pitcher>"
-    output = "%s vs %s:\n\n" % (p1['name_display_first_last'], p2['name_display_first_last'])
+    output = "%s vs %s:\n\n" % (p1['fullName'], p2['fullName'])
     seasons = []
     pa_or_ab = "plateAppearances"
     for s in res:
@@ -1248,7 +1249,7 @@ def player_vs_pitcher(player1, player2, reddit=False):
 def pitcher_vs_team(name, team, player=None, reddit=False):
     teamid, teamdata = get_teamid(team, extradata=True)
     if player is None:
-        player = _get_player_search(name)
+        player = newmlbstats._new_player_search(name)
     if player is None:
         return "No matching player found"
     now = datetime.now()
@@ -1307,7 +1308,7 @@ def pitcher_vs_team(name, team, player=None, reddit=False):
 
 def player_vs_team(name, team, year=None, reddit=False):
     teamid = get_teamid(team)
-    player = _get_player_search(name)
+    player = newmlbstats._new_player_search(name)
     if player is None:
         return "No matching player found"
     if year is None:
@@ -1317,7 +1318,7 @@ def player_vs_team(name, team, year=None, reddit=False):
           "league_list_id=%27mlb_hist%27&game_type=%27R%27&player_id=" + player['player_id'] \
           + "&opp_team_id=" + str(teamid) + "&season=" + year
     pitching = False
-    if player['position'] == 'P':
+    if player['primaryPosition']['abbreviation'] == 'P':
         pitching = True
         url = "http://lookup-service-prod.mlb.com/json/named.stats_batter_vs_pitcher_composed.bam?" \
               "league_list_id=%27mlb_hist%27&game_type=%27R%27&pitcher_id=" + player['player_id'] \
@@ -1330,7 +1331,7 @@ def player_vs_team(name, team, year=None, reddit=False):
     if int(json['totalSize']) == 1:
         pitchers.append(json['row'])
     elif int(json['totalSize']) == 0:
-        return "No stats for %s." % (player['name_display_first_last'])
+        return "No stats for %s." % (player['fullName'])
     else:
         for row in json['row']:
             pitchers.append(row)
