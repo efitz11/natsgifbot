@@ -175,7 +175,7 @@ class Baseball(commands.Cog):
             await ctx.send("```python\n%s```" % mymlbstats.list_home_runs(teamname, delta=delta))
             return
         elif team[0] == 'line':
-            player = '+'.join(team[1:])
+            player = ' '.join(team[1:])
             if len(player) == 0:
                 out = get_daily_leaders(delta=delta)
                 await ctx.send("ESPN's daily leaders:\n```%s```"% out)
