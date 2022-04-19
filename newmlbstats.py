@@ -1169,14 +1169,15 @@ def print_games(args, delta=None):
             if len(games) == 0:
                 return "No games found for %s" % args, 0
             # check doubleheader
-            is_dh_live = False
-            for game in games:
-                if game['doubleHeader'] in ["Y", "S"] and game['status']['abstractGameCode'] == 'L':
-                    is_dh_live = True
-            if is_dh_live:
+            if delta is None:
+                is_dh_live = False
                 for game in games:
-                    if game['doubleHeader'] in ["Y", "S"] and game['status']['abstractGameCode'] != 'L':
-                        games.remove(game)
+                    if game['doubleHeader'] in ["Y", "S"] and game['status']['abstractGameCode'] == 'L':
+                        is_dh_live = True
+                if is_dh_live:
+                    for game in games:
+                        if game['doubleHeader'] in ["Y", "S"] and game['status']['abstractGameCode'] != 'L':
+                            games.remove(game)
 
     output = ""
     show_on_deck = False
