@@ -1171,11 +1171,11 @@ def print_games(args, delta=None):
             # check doubleheader
             is_dh_live = False
             for game in games:
-                if game['doubleHeader'] == "Y" and game['status']['abstractGameCode'] == 'L':
+                if game['doubleHeader'] in ["Y", "S"] and game['status']['abstractGameCode'] == 'L':
                     is_dh_live = True
             if is_dh_live:
                 for game in games:
-                    if game['doubleHeader'] == "Y" and game['status']['abstractGameCode'] != 'L':
+                    if game['doubleHeader'] in ["Y", "S"] and game['status']['abstractGameCode'] != 'L':
                         games.remove(game)
 
     output = ""
