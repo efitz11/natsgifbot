@@ -811,7 +811,8 @@ def print_birthdays(team, delta=None, reddit=False):
     birthdays = list()
     if delta is None:
         today = datetime.today()
-        todayyear = 2021 # use this until it's actually updated to 2021 i guess
+        todayyear = today.year
+        # todayyear = 2021 # use this until it's actually updated to 2021 i guess
     else:
         today = mymlbstats._get_date_from_delta(delta, offset=False)
     todaystr = "%02d-%02d" % (today.month, today.day)
