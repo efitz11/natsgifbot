@@ -1759,7 +1759,7 @@ def get_milb_aff_scores(teamid=120, delta=None):
     aff_ids = json.load(f)['affiliates'][str(teamid)]
     aff_ids = ','.join([str(x) for x in aff_ids])
     url = "https://statsapi.mlb.com/api/v1/schedule?sportId=11,12,13,14&date=" + date + "&gameTypes=A,R,F,D,L,W,C&" \
-         "hydrate=team,linescore,flags,liveLookin,review,game(content(summary,media(epg)),tickets),xrefId," \
+         "hydrate=team,person,linescore,flags,liveLookin,review,game(content(summary,media(epg)),tickets),xrefId," \
          "seriesStatus(useOverride=true),broadcasts(all)&useLatestGames=false&language=en&teamId=" + aff_ids
     s = utils.get_json(url)
     import calendar
