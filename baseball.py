@@ -331,7 +331,7 @@ class Baseball(commands.Cog):
                 team = team[:-1]
             else:
                 num=5
-            player = '+'.join(team[1:])
+            player = ' '.join(team[1:])
             await ctx.send("```%s```" % mymlbstats.get_player_gamelogs(player,num,forcebatting=forcebatting, reddit=reddit))
             return
         elif team[0] in ["leaders", "losers"]:
