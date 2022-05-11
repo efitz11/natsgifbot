@@ -158,6 +158,8 @@ def get_single_game_info(gamepk, gamejson, show_on_deck=False, liveonly=False, c
     detailstatus = game['status']['detailedState']
     awayabv = game['teams']['away']['team']['abbreviation'].ljust(3)
     homeabv = game['teams']['home']['team']['abbreviation'].ljust(3)
+    awayclub = game['teams']['away']['team']['clubName']
+    homeclub = game['teams']['home']['team']['clubName']
     pregame_statuses = ['Warmup']
     if abstractstatus == "Live" and detailstatus not in pregame_statuses:
         ls = game['linescore']
@@ -387,7 +389,7 @@ def get_single_game_info(gamepk, gamejson, show_on_deck=False, liveonly=False, c
                     bb = bs.players[pitcher]['stats']['pitching']['baseOnBalls']
                     pitchers.append(bs.players[pitcher]['person']['fullName'] + ", %s IP, %s BB" % (ip, bb))
                 output = output + "\t##############################\n"
-                output = output + "\t" + homeabv + " %s\n" % (special)
+                output = output + "\t" + homeclub + " %s\n" % (special)
                 output = output + "\t" + '\n\t'.join(pitchers) + "\n"
                 output = output + "\t##############################\n"
             if special is not None and homehits == 0:
@@ -397,7 +399,7 @@ def get_single_game_info(gamepk, gamejson, show_on_deck=False, liveonly=False, c
                     bb = bs.players[pitcher]['stats']['pitching']['baseOnBalls']
                     pitchers.append(bs.players[pitcher]['person']['fullName'] + ", %s IP, %s BB" % (ip, bb))
                 output = output + "\t##############################\n"
-                output = output + "\t" + awayabv + " %s\n" % (special)
+                output = output + "\t" + awayclub + " %s\n" % (special)
                 output = output + "\t" + '\n\t'.join(pitchers) + "\n"
                 output = output + "\t##############################\n"
         except KeyError as e:
