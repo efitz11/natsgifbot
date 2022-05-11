@@ -244,13 +244,19 @@ def get_single_game_info(gamepk, gamejson, show_on_deck=False, liveonly=False, c
             special = "NO H*TTER"
         if game['flags']['perfectGame']:
             special = "P*RFECT GAME"
-        if special is not None and awayhits == 0:
+        if special is not None:
+            bs = BoxScore.BoxScore(get_boxscore(str(game['gamePk'])))
+            pitchers = list()
+            side = "home" if awayhits == 0 else "away"
+            club = homeclub if awayhits == 0 else awayclub
+            for pitcher in bs.box['teams'][side]['pitchers']:
+                ip = bs.players[pitcher]['stats']['pitching']['inningsPitched']
+                bb = bs.players[pitcher]['stats']['pitching']['baseOnBalls']
+                pitchers.append(bs.players[pitcher]['person']['fullName'] + ", %s IP, %s BB" % (ip, bb))
+
             output = output + "\t##############################\n"
-            output = output + "\t" + homeabv + " IS THROWING A %s\n" % (special)
-            output = output + "\t##############################\n"
-        if special is not None and homehits == 0:
-            output = output + "\t##############################\n"
-            output = output + "\t" + awayabv + " IS THROWING A %s\n" % (special)
+            output = output + "\t" + club.upper() + " IS THROWING A %s\n" % (special)
+            output = output + "\t" + '\n\t'.join(pitchers) + "\n"
             output = output + "\t##############################\n"
     elif liveonly or closeonly:
         return ""
@@ -381,25 +387,18 @@ def get_single_game_info(gamepk, gamejson, show_on_deck=False, liveonly=False, c
                 special = "NO HITTER"
             if game['flags']['perfectGame']:
                 special = "PERFECT GAME"
-            bs = BoxScore.BoxScore(get_boxscore(str(game['gamePk'])))
-            if special is not None and awayhits == 0:
+            if special is not None:
+                bs = BoxScore.BoxScore(get_boxscore(str(game['gamePk'])))
                 pitchers = list()
-                for pitcher in bs.box['teams']['home']['pitchers']:
+                side = "home" if awayhits == 0 else "away"
+                club = homeclub if awayhits == 0 else awayclub
+                for pitcher in bs.box['teams'][side]['pitchers']:
                     ip = bs.players[pitcher]['stats']['pitching']['inningsPitched']
                     bb = bs.players[pitcher]['stats']['pitching']['baseOnBalls']
                     pitchers.append(bs.players[pitcher]['person']['fullName'] + ", %s IP, %s BB" % (ip, bb))
+
                 output = output + "\t##############################\n"
-                output = output + "\t" + homeclub + " %s\n" % (special)
-                output = output + "\t" + '\n\t'.join(pitchers) + "\n"
-                output = output + "\t##############################\n"
-            if special is not None and homehits == 0:
-                pitchers = list()
-                for pitcher in bs.box['teams']['away']['pitchers']:
-                    ip = bs.players[pitcher]['stats']['pitching']['inningsPitched']
-                    bb = bs.players[pitcher]['stats']['pitching']['baseOnBalls']
-                    pitchers.append(bs.players[pitcher]['person']['fullName'] + ", %s IP, %s BB" % (ip, bb))
-                output = output + "\t##############################\n"
-                output = output + "\t" + awayclub + " %s\n" % (special)
+                output = output + "\t" + club.upper() + " %s\n" % (special)
                 output = output + "\t" + '\n\t'.join(pitchers) + "\n"
                 output = output + "\t##############################\n"
         except KeyError as e:
