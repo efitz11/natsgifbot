@@ -250,13 +250,16 @@ def get_single_game_info(gamepk, gamejson, show_on_deck=False, liveonly=False, c
             side = "home" if awayhits == 0 else "away"
             club = homeclub if awayhits == 0 else awayclub
             for pitcher in bs.box['teams'][side]['pitchers']:
-                ip = bs.players[pitcher]['stats']['pitching']['inningsPitched']
-                bb = bs.players[pitcher]['stats']['pitching']['baseOnBalls']
-                pitchers.append(bs.players[pitcher]['person']['fullName'] + ", %s IP, %s BB" % (ip, bb))
+                p = dict()
+                p["ip"] = bs.players[pitcher]['stats']['pitching']['inningsPitched']
+                p["bb"] = bs.players[pitcher]['stats']['pitching']['baseOnBalls']
+                p["pitcher"] = bs.players[pitcher]['person']['fullName']
+                pitchers.append(p)
 
-            output = output + "\t##############################\n"
+            labels = ['pitcher', 'ip', 'bb']
+            output = output + "\t##############################\n\n"
             output = output + "\t" + club.upper() + " IS THROWING A %s\n" % (special)
-            output = output + "\t" + '\n\t'.join(pitchers) + "\n"
+            output = output + "\t" + utils.format_table(labels, pitchers, left_list=["pitcher"]).replace('\n', '\n\t') + "\n"
             output = output + "\t##############################\n"
     elif liveonly or closeonly:
         return ""
@@ -393,13 +396,16 @@ def get_single_game_info(gamepk, gamejson, show_on_deck=False, liveonly=False, c
                 side = "home" if awayhits == 0 else "away"
                 club = homeclub if awayhits == 0 else awayclub
                 for pitcher in bs.box['teams'][side]['pitchers']:
-                    ip = bs.players[pitcher]['stats']['pitching']['inningsPitched']
-                    bb = bs.players[pitcher]['stats']['pitching']['baseOnBalls']
-                    pitchers.append(bs.players[pitcher]['person']['fullName'] + ", %s IP, %s BB" % (ip, bb))
+                    p = dict()
+                    p["ip"] = bs.players[pitcher]['stats']['pitching']['inningsPitched']
+                    p["bb"] = bs.players[pitcher]['stats']['pitching']['baseOnBalls']
+                    p["pitcher"] = bs.players[pitcher]['person']['fullName']
+                    pitchers.append(p)
 
-                output = output + "\t##############################\n"
+                labels = ['pitcher', 'ip', 'bb']
+                output = output + "\t##############################\n\n"
                 output = output + "\t" + club.upper() + " %s\n" % (special)
-                output = output + "\t" + '\n\t'.join(pitchers) + "\n"
+                output = output + "\t" + utils.format_table(labels, pitchers, left_list=["pitcher"]).replace('\n', '\n\t') + "\n"
                 output = output + "\t##############################\n"
         except KeyError as e:
             print(e)
