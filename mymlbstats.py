@@ -258,7 +258,7 @@ def get_single_game_info(gamepk, gamejson, show_on_deck=False, liveonly=False, c
 
             labels = ['pitcher', 'ip', 'bb']
             output = output + "\t##############################\n"
-            output = output + "\t" + club.upper() + " IS THROWING A %s\n\n" % (special)
+            output = output + "\t" + club.upper() + " THROWING A %s\n\n" % (special)
             output = output + "\t" + utils.format_table(labels, pitchers, left_list=["pitcher"]).replace('\n', '\n\t') + "\n"
             output = output + "\t##############################\n"
     elif liveonly or closeonly:
