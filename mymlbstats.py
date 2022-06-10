@@ -1093,9 +1093,9 @@ def get_player_line(name, delta=None, player=None, schedule=None):
             side = 'home'
         else:
             continue
-        useDH = False
-        if game['teams']['home']['team']['league']['id'] == 103:
-            useDH = True
+        # useDH = False
+        # if game['teams']['home']['team']['league']['id'] == 103:
+        #     useDH = True
         box = get_boxscore(str(gamepk))
         try:
             stats = box['teams'][side]['players']['ID' + str(pid)]['stats']
@@ -1127,7 +1127,8 @@ def get_player_line(name, delta=None, player=None, schedule=None):
                                                                    s['pitchesThrown'],
                                                                    s['strikes'],
                                                                    dec)
-        if 'atBats' in stats['batting'] and (not pitcher or (pitcher and not useDH)):
+        # if 'atBats' in stats['batting'] and (not pitcher or (pitcher and not useDH)):
+        if 'atBats' in stats['batting']:
             hasstats=True
             s = stats['batting']
             gameoutput += "AB H 2B 3B HR R RBI BB SO SB CS\n"
