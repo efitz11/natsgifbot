@@ -2508,7 +2508,7 @@ def print_dongs(type, delta=None, reddit=False):
             if find_videos:
                 url = "https://statsapi.mlb.com/api/v1/game/" + str(gamepk) + "/content"
                 print(url)
-                content = _get_json(url)['highlights']['highlights']['items']
+                content = _get_json(url)['highlights'].get('highlights').get('items',[])
             for p in sp:
                 if p['result']['eventType'] == "home_run":
                     h = dict()
