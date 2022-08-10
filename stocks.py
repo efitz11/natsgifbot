@@ -190,10 +190,12 @@ def get_indexes():
     indexes = {'Dow','S&P 500','Nasdaq'}
     labels = ['Index','Last','Change','%']
     left = [labels[0]]
-    url = "https://money.cnn.com/data/markets"
+    url = "https://cnn.com/markets"
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     data = urlopen(req).read().decode('utf-8')
     soup = BeautifulSoup(data, 'html.parser')
+    # with open('output.txt','w', encoding='utf-8') as f:
+    #     f.write(data)
     l = soup.find("ul", class_="three-equal-columns wsod")
     # print(l)
     items = l.findAll('li')
@@ -221,6 +223,25 @@ def get_indexes():
     #         rows.append(idx)
     return "```%s\n  Updated: %s```" % (utils.format_table(labels,rows, left_list=left), t)
 
+def get_yahoo_indexes():
+    indexes = {'^GSPC':'S&P 500', '^DJI':'Dow 30', '^IXIC':'Nasdaq'}
+    url = "https://query1.finance.yahoo.com/v7/finance/quote?symbols="
+    for index in indexes.keys():
+        url = url + index + ","
+    url = url[:-1]  # remove trailing comma
+    data = utils.get_json(url)
+    idxs = list()
+    for future in data['quoteResponse']['result']:
+        idx = dict()
+        idx['name'] = indexes[future['symbol']]
+        idx['price'] = "%.2f" % future['regularMarketPrice']
+        idx['change'] = "%.2f" % future['regularMarketChange']
+        idx['%'] = "%.2f" % future['regularMarketChangePercent']
+        idxs.append(idx)
+    labels = ['name','price','change','%']
+    left = ['name']
+    return "```%s```" % (utils.format_table(labels,idxs,left_list=left))
+
 def get_index_futures():
     indexes = {'ES=F':'S&P Futures', 'YM=F':'Dow Futures', 'NQ=F':'Nasdaq Futures'}
     url = "https://query1.finance.yahoo.com/v7/finance/quote?symbols="
@@ -242,7 +263,7 @@ def get_index_futures():
 
 if __name__ == "__main__":
     # print(get_quote("msft"))
-    # print(get_indexes())
+    print(get_yahoo_indexes())
     # print(get_index_futures())
     # print(get_quote_yahoo("btc-usd"))
-    print(get_crypto_yahoo())
+    # print(get_crypto_yahoo())
