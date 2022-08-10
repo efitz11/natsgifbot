@@ -560,7 +560,7 @@ async def countdown(ctx, *addlist):
 async def stock(ctx, *symbol:str):
     """Get a stock quote. Only works for stocks and ETFs"""
     if len(symbol) == 0:
-        await ctx.send(stocks.get_indexes())
+        await ctx.send(stocks.get_yahoo_indexes())
         return
     out = stocks.get_quote_yahoo(symbol[0])
     await ctx.send(out)
