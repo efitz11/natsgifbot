@@ -1002,7 +1002,7 @@ mlbtr = xmlreader.XmlReader()
 bot.loop.create_task(dongs_poster())
 bot.loop.create_task(birthday_poster())
 # temp variable
-bot.loop.create_task(check_covid_numbers())
+#bot.loop.create_task(check_covid_numbers())
 for ext in extensions:
     bot.load_extension(ext)
 bot.run(discord_token)
