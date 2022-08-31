@@ -28,7 +28,7 @@ def get_twiki_page(query):
     return data[3][0]
 
 def get_stswiki_page(query):
-    url = "https://slay-the-spire.fandom.com/wiki/" + urllib.parse.quote(query)
+    url = "https://slay-the-spire.fandom.com/wiki/" + urllib.parse.quote(query.capitalize())
     return url
 
 def search_untappd(beer_name):
