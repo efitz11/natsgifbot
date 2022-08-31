@@ -616,10 +616,15 @@ async def wiki(ctx, *query:str):
     """get a link to wikipedia's first search result for your query"""
     await ctx.send(web.get_wiki_page(' '.join(query)))
 
+#@bot.command()
+#async def twiki(ctx, *query:str):
+#    """get a link to The Official Terraria Wiki's first search result for your query"""
+#    await ctx.send(web.get_twiki_page(' '.join(query)))
+
 @bot.command()
-async def twiki(ctx, *query:str):
-    """get a link to The Official Terraria Wiki's first search result for your query"""
-    await ctx.send(web.get_twiki_page(' '.join(query)))
+async def sts(ctx, *query:str):
+    """get a link to the Slay the Spire wiki page for your query"""
+    await ctx.send(web.get_stswiki_page(' '.join(query)))
 
 @bot.command()
 async def beer(ctx, *beer_name):

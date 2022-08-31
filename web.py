@@ -26,7 +26,11 @@ def get_twiki_page(query):
     url = "https://terraria.gamepedia.com/api.php?action=opensearch&format=json&formatversion=2&search=" + urllib.parse.quote_plus(query) + "&namespace=0%7C110&limit=10&suggest=true"
     data = utils.get_json(url)
     return data[3][0]
-    
+
+def get_stswiki_page(query):
+    url = "https://slay-the-spire.fandom.com/wiki/" + urllib.parse.quote(query)
+    return url
+
 def search_untappd(beer_name):
     """search untappd for a beer"""
     keys = get_keys("untappd")
@@ -315,4 +319,5 @@ if __name__ == "__main__":
     # print(kym("wednesday my dudes"))
     # print(kym("iphone"))
     # print(check_tweet_verified("https://twitter.com/JeffFletcherOCR/status/1224883361388195840?s=19"))
-    print(search_youtube("he man 10 hours"))
+    # print(search_youtube("he man 10 hours"))
+    print(get_stswiki_page('pandora\'s box'))
