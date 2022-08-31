@@ -4,7 +4,7 @@ from urllib.request import urlopen, Request
 import urllib.parse
 from bs4 import BeautifulSoup
 import tweepy
-import utils
+import utils, string
 import re
 from os import path
 
@@ -28,7 +28,7 @@ def get_twiki_page(query):
     return data[3][0]
 
 def get_stswiki_page(query):
-    url = "https://slay-the-spire.fandom.com/wiki/" + urllib.parse.quote(query.capitalize())
+    url = "https://slay-the-spire.fandom.com/wiki/" + urllib.parse.quote(string.capwords(query))
     return url
 
 def search_untappd(beer_name):
