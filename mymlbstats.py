@@ -2126,7 +2126,11 @@ def get_game_highlights_plays(gamepk, new=False):
     url = "https://statsapi.mlb.com/api/v1/game/" + str(gamepk) + "/content"
     print(url)
     if new:
-        items = _get_json(url)['highlights']['highlights']['items']
+        items = _get_json(url)
+        if items['highlights']['highlights'] is not None:
+            items = items['highlights']['highlights']['items']
+        else:
+            items = []
     else:
         items = _get_json(url)['highlights']['live']['items']
     plays = dict()
@@ -2936,7 +2940,7 @@ if __name__ == "__main__":
     # print(player_vs_pitcher("samardzija", "kendrick"))
     # print(get_game_highlights_plays("530753"))
     # print(get_inning_plays("sea", 10, delta=-1))
-    print(compare_player_stats(["bell", "trea"], career=True))
+    # print(compare_player_stats(["bell", "trea"], career=True))
     # print(print_roster('wsh',hitters=False))
     # print(get_milb_aff_scores(delta="-1"))
     # print(get_milb_box('syr'))
@@ -2946,7 +2950,7 @@ if __name__ == "__main__":
     # print(list_home_runs('tex', delta="-1"))
     # print(print_dongs("recent", delta="-1"))
     # print(batter_or_pitcher_vs("strasburg","nym"))
-    # print(print_at_bats("Chris Davis", delta="-1"))
+    print(print_at_bats("Judge"))
     # print(get_all_game_highlights("565905"))
     # print(find_game_highlights('wsh', delta="-1"))
     # print(print_pitches_by_inning('wsh'))
