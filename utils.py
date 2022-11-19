@@ -4,7 +4,7 @@ import json
 import os
 import datetime,time
 import csv
-import requests
+# import requests
 import math
 # import pandas as pd
 # from pandas.plotting import table
@@ -299,10 +299,10 @@ def prettydate(d, utc=False):
     else:
         return '{:.0f} hours ago'.format(s/3600)
 
-def csv_to_dicts(url):
-    r = requests.get(url)
-    text = r.iter_lines(decode_unicode=True)
-    return [{k: v for k, v in row.items()} for row in csv.DictReader(text)]
+# def csv_to_dicts(url):
+#     r = requests.get(url)
+#     text = r.iter_lines(decode_unicode=True)
+#     return [{k: v for k, v in row.items()} for row in csv.DictReader(text)]
 
 def human_format(n):
     """adapted from stack overflow"""
