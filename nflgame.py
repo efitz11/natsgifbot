@@ -45,15 +45,10 @@ def get_game(team, sport):
     f = open('espnout.txt','w',encoding="utf-8")
     f.write(json.dumps(scoreData))
     f.close()
-    # searchstr = 'window[\'__espnfitt__\']='
-    # scoreData = scoreData[scoreData.find(searchstr)+len(searchstr):]
     searchstr = "{\"app\":{"
     scoreData = scoreData[scoreData.find(searchstr):]
-    # scoreData = scoreData[scoreData.find('= ')+len('= '):]
-    # scoreData = scoreData[:scoreData.find('};')+1]
     scoreData = json.loads(scoreData[:scoreData.find('};')+1])
     
-    print(scoreData)
     f = open('espnout.txt','w')
     f.write(json.dumps(scoreData, indent=2))
     f.close()
@@ -66,46 +61,46 @@ def get_game(team, sport):
         teamw = NFL_TEAM_WIDTH
     
     games = []
-    for event in scoreData['events']:
+    for event in scoreData['page']['content']['scoreboard']['evts']:
         game = dict()
 
         game["date"] = event['date']
-        status = event['status']['type']['state']
+        status = event['status']['state']
         if status == "pre":
             game['status'] = GAME_STATUS_PRE
-            game['time'] = event['status']['type']['shortDetail']
+            game['time'] = event['status']['detail']
         elif status == "in":
             game['status'] = GAME_STATUS_IN
-            game['time'] = event['status']['type']['shortDetail']
+            game['time'] = event['status']['detail']
         else:
             game['status'] = GAME_STATUS_POST
             game['time'] = "FINAL"
-        team1 = html.unescape(event['competitions'][0]['competitors'][0]['team']['location'])
-        tid1 = event['competitions'][0]['competitors'][0]['id']
-        score1 = int(event['competitions'][0]['competitors'][0]['score'])
-        team1abv = event['competitions'][0]['competitors'][0]['team']['abbreviation']
-        team2 = html.unescape(event['competitions'][0]['competitors'][1]['team']['location'])
-        tid2 = event['competitions'][0]['competitors'][1]['id']
-        score2 = int(event['competitions'][0]['competitors'][1]['score'])
-        team2abv = event['competitions'][0]['competitors'][1]['team']['abbreviation']
+        team1 = html.unescape(event['competitors'][0]['location'])
+        tid1 = event['competitors'][0]['id']
+        score1 = event['competitors'][0].get(('score'),'')
+        team1abv = event['competitors'][0]['abbrev']
+        team2 = html.unescape(event['competitors'][1]['location'])
+        tid2 = event['competitors'][1]['id']
+        score2 = event['competitors'][1].get(('score'),'')
+        team2abv = event['competitors'][1]['abbrev']
             
-        homestatus = event['competitions'][0]['competitors'][0]['homeAway']
-        name1 = event['competitions'][0]['competitors'][0]['team']['shortDisplayName']
-        name2 = event['competitions'][0]['competitors'][1]['team']['shortDisplayName']
-        game['homeid'] = event['competitions'][0]['competitors'][0]['id']
-        game['awayid'] = event['competitions'][0]['competitors'][1]['id']
+        homestatus = event['competitors'][0]['isHome']
+        name1 = event['competitors'][0]['shortDisplayName']
+        name2 = event['competitors'][1]['shortDisplayName']
+        game['homeid'] = event['competitors'][0]['id']
+        game['awayid'] = event['competitors'][1]['id']
         
         for l in event['links']:
-            if l['text'] == "Summary":
+            if l['rel'] == "Summary":
                 game['link'] = l['href']
         
         game['odds'] = ""
-        if 'odds' in event['competitions'][0]:
-            if 'details' in event['competitions'][0]['odds'][0]:
-                game['odds'] = " - " + event['competitions'][0]['odds'][0]['details']
+        if 'odds' in event:
+            if 'details' in event['odds']:
+                game['odds'] = " - " + event['odds']['details']
         game['broadcast'] = ""
         if game['status'] != GAME_STATUS_POST:
-            for b in event['competitions'][0]['broadcasts']:
+            for b in event['broadcasts']:
                 if b['market'] == 'national':
                     game['broadcast'] = b['names'][0]
                     break
