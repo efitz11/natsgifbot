@@ -45,15 +45,18 @@ def get_game(team, sport):
     f = open('espnout.txt','w',encoding="utf-8")
     f.write(json.dumps(scoreData))
     f.close()
-    searchstr = 'window.espn.scoreboardData'
-    scoreData = scoreData[scoreData.find(searchstr)+len(searchstr):]
-    scoreData = scoreData[scoreData.find('= ')+len('= '):]    
+    # searchstr = 'window[\'__espnfitt__\']='
+    # scoreData = scoreData[scoreData.find(searchstr)+len(searchstr):]
+    searchstr = "{\"app\":{"
+    scoreData = scoreData[scoreData.find(searchstr):]
+    # scoreData = scoreData[scoreData.find('= ')+len('= '):]
+    # scoreData = scoreData[:scoreData.find('};')+1]
     scoreData = json.loads(scoreData[:scoreData.find('};')+1])
     
-    # print(scoreData)
-    # f = open('espnout.txt','w')
-    # f.write(json.dumps(scoreData, indent=2))
-    # f.close()
+    print(scoreData)
+    f = open('espnout.txt','w')
+    f.write(json.dumps(scoreData, indent=2))
+    f.close()
     
     if sport == "nba":
         scorew = NBA_SCORE_WIDTH
@@ -213,3 +216,5 @@ def get_nfl_scores(team):
     return output + "```"
 
     
+if __name__ == "__main__":
+    print(get_game("","nba"))
