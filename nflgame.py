@@ -106,19 +106,19 @@ def get_game(team, sport):
                     break
         if sport == "nfl":
             try:
-                game['possteam'] = event['competitions'][0]['situation']['possession']
+                game['possteam'] = event['situation']['possession']
             except:
                 game['possteam'] = None
-            if 'leaders' in event['competitions'][0]:
-                leaders = event['competitions'][0]['leaders'][0]['leaders']
+            if 'leaders' in event:
+                leaders = event['ldrs']
                 if leaders[0] is not None:
-                    game['passleader'] = leaders[0]['athlete']['displayName'] + " - " + str(leaders[0]['value']) + " yds"
-                leaders = event['competitions'][0]['leaders'][1]['leaders']
+                    game['passleader'] = leaders[0]['shortName'] + " - " + str(leaders[0]['value']) + " yds"
+                leaders = event['ldrs'][1]
                 if leaders[0] is not None:
-                    game['rushleader'] = leaders[0]['athlete']['displayName'] + " - " + str(leaders[0]['value']) + " yds"
-                leaders = event['competitions'][0]['leaders'][2]['leaders']
+                    game['rushleader'] = leaders[0]['shortName'] + " - " + str(leaders[0]['value']) + " yds"
+                leaders = event['ldrs'][2]
                 if leaders[0] is not None:
-                    game['recleader'] = leaders[0]['athlete']['displayName'] + " - " + str(leaders[0]['value']) + " yds"
+                    game['recleader'] = leaders[0]['shortName'] + " - " + str(leaders[0]['value']) + " yds"
             try:
                 game['situation'] = event['competitions'][0]['situation']['downDistanceText']
             except:
@@ -135,9 +135,9 @@ def get_game(team, sport):
         games.append(game)
     if len(team) == 0:
         if sport == "nfl":
-            week = scoreData['week']['number']
-            output = "Week %s games:" % week
-        else:
+        #   week = scoreData['week']['number']
+        #    output = "Week %s games:" % week
+        #else:
             output = "Today's games:"
         output = output + "\n```python\n"
         for game in games:
@@ -212,4 +212,4 @@ def get_nfl_scores(team):
 
     
 if __name__ == "__main__":
-    print(get_game("","nba"))
+    print(get_game("","nfl"))

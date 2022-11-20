@@ -10,7 +10,7 @@ import math
 # from pandas.plotting import table
 # import matplotlib.pyplot as plt
 # import numpy as np
-import plotly.graph_objects as go
+# import plotly.graph_objects as go
 
 def get_json(url, encoding="utf-8"):
     print(url)
@@ -220,26 +220,26 @@ def format_table(labels, dicts, repl_map={}, showlabels=True, linebreaknum=0, li
 #     df = pd.DataFrame(l)
 #     return df
 
-def list_to_plotly(labels, dicts, repl_map={}, left_list=[]):
-    # get a list of columns
-    cols = list()
-    for label in labels:
-        col = list()
-        for d in dicts:
-            if label in d:
-                col.append(d[label])
-            else:
-                col.append("")
-        cols.append(col)
+# def list_to_plotly(labels, dicts, repl_map={}, left_list=[]):
+#     # get a list of columns
+#     cols = list()
+#     for label in labels:
+#         col = list()
+#         for d in dicts:
+#             if label in d:
+#                 col.append(d[label])
+#             else:
+#                 col.append("")
+#         cols.append(col)
 
-    newlabs = [x if x not in repl_map else repl_map[x] for x in labels]
-    aligns = ["left" if x in left_list else "right" for x in labels]
-    fig = go.Figure(data=go.Table(header=dict(values=newlabs),
-                                  cells=dict(values=cols, align=aligns)))
-    height = 27 + 20*len(dicts)
-    width = 500
-    fig.update_layout(margin=dict(l=0,r=0,t=0,b=0))
-    fig.write_image("table.png", height=height, width=width)
+#     newlabs = [x if x not in repl_map else repl_map[x] for x in labels]
+#     aligns = ["left" if x in left_list else "right" for x in labels]
+#     fig = go.Figure(data=go.Table(header=dict(values=newlabs),
+#                                   cells=dict(values=cols, align=aligns)))
+#     height = 27 + 20*len(dicts)
+#     width = 500
+#     fig.update_layout(margin=dict(l=0,r=0,t=0,b=0))
+#     fig.write_image("table.png", height=height, width=width)
 
 # def create_pandas_image(df, filename):
 #     ax = plt.subplot(911, frame_on=False)
