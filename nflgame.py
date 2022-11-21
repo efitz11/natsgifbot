@@ -134,11 +134,11 @@ def get_game(team, sport):
         #print (game)
         games.append(game)
     if len(team) == 0:
-        if sport == "nfl":
+        # if sport == "nfl":
         #   week = scoreData['week']['number']
         #    output = "Week %s games:" % week
         #else:
-            output = "Today's games:"
+        output = "Today's games:"
         output = output + "\n```python\n"
         for game in games:
             output = output + "%s %s @ %s %s # %s - %s%s\n" % (game['awayabv'].ljust(teamw), str(game['awayscore']).rjust(scorew),game['homeabv'].ljust(teamw), str(game['homescore']).rjust(scorew), game['time'], game['broadcast'], game['odds'])
@@ -212,4 +212,4 @@ def get_nfl_scores(team):
 
     
 if __name__ == "__main__":
-    print(get_game("","nfl"))
+    print(get_game("","nba"))
