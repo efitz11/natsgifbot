@@ -141,7 +141,7 @@ def get_recaps(return_both=False):
         vids = dict()
         vids['title'] = deftitle
 
-        highlights = ['Recap', 'Highlights', 'highlights', 'Must C:', 'Statcast', 'CG:']
+        highlights = ['Recap', 'Highlights', 'highlights', 'Must C:', 'Statcast', 'CG:', 'condensed', 'Condensed']
         recapstr = ""
         cgstr = ""
         for item in c['highlights']['highlights']['items']:
@@ -158,7 +158,7 @@ def get_recaps(return_both=False):
                     if 'Recap' in title or 'highlights' in title.lower():
                         recapstr = "[%s](%s) - %s\n" % (title, link, duration)
                         vids["recap"] = "[recap](%s) - %s" % (link, duration)
-                    elif 'CG:' in title:
+                    elif 'CG:' in title or 'condensed' in title.lower():
                         cgstr = "[Condensed game](%s) - %s\n" % (link, duration)
                         vids["cg"] = "[condensed](%s) - %s" % (link, duration)
                     elif 'Must C:' in title:
