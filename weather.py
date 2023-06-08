@@ -43,9 +43,13 @@ def get_current_weatherbit(text):
               "%s in %s, %s, %s:\n" \
               "  Temp: %.1f (Feels like: %.1f)\n" \
               "  Humidity: %d%%\n" \
-              "  Observed: %s at station: %s```" % (loc, data['weather']['description'], data['city_name'], data['state_code'], data['country_code'],
+              "  Observed: %s at station: %s" % (loc, data['weather']['description'], data['city_name'], data['state_code'], data['country_code'],
                                      data['temp'], data['app_temp'], data['rh'],
                                      utils.prettydate(obsdatetime, utc=True), data['station'])
+        if data['aqi'] > 50:
+            ret += "\n  AQI: %d```" % (data['aqi'])
+        else:
+            ret += "```"
         return ret
 
 def get_current_weather(text):
