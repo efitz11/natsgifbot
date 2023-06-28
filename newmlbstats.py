@@ -92,10 +92,10 @@ def _find_player_id(name, milb=False):
 
 
 def _get_player_by_id(id, type=None, milb=False):
-    if type is None:
-        url = API_LINK + "people/%s?hydrate=currentTeam,team,draft,stats(type=[yearByYear,yearByYearAdvanced,careerRegularSeason,careerAdvanced,availableStats](team(league,sport)),leagueListId=%s)" % (id, 'mlb_milb' if milb else 'mlb_hist')
-    else:
-        url = API_LINK + "people/%s?hydrate=currentTeam,team,draft,stats(type=[yearByYear,yearByYearAdvanced,careerRegularSeason,careerAdvanced,availableStats](team(league,sport)),leagueListId=%s,group=%s)" % (id, 'mlb_milb' if milb else 'mlb_hist', type)
+    # if type is None:
+    #     url = API_LINK + "people/%s?hydrate=currentTeam,team,draft,stats(type=[yearByYear,yearByYearAdvanced,careerRegularSeason,careerAdvanced,availableStats](team(league,sport)),leagueListId=%s)" % (id, 'mlb_milb' if milb else 'mlb_hist')
+    # else:
+    url = API_LINK + "people/%s?hydrate=currentTeam,team,draft,stats(type=[yearByYear,yearByYearAdvanced,careerRegularSeason,careerAdvanced,availableStats](team(league,sport)),leagueListId=%s,group=%s)" % (id, 'mlb_milb' if milb else 'mlb_hist', '[hitting,pitching]')
     return utils.get_json(url)['people'][0]
 
 def _new_player_search(name, type=None, milb=False):
@@ -108,10 +108,10 @@ def _new_player_search(name, type=None, milb=False):
         name = name.replace('spring ', '').strip()
         spring = True
     p = _find_player_id(name, milb=milb)
-    if type is None:
-        url = API_LINK + "people/%s?hydrate=currentTeam,team,stats(type=[yearByYear,yearByYearAdvanced,careerRegularSeason,careerAdvanced,availableStats](team(league)),leagueListId=mlb_hist)" % p
-    else:
-        url = API_LINK + "people/%s?hydrate=currentTeam,team,stats(type=[yearByYear,yearByYearAdvanced,careerRegularSeason,careerAdvanced,availableStats](team(league)),leagueListId=mlb_hist,group=%s)" % (p, type)
+    # if type is None:
+    #     url = API_LINK + "people/%s?hydrate=currentTeam,team,stats(type=[yearByYear,yearByYearAdvanced,careerRegularSeason,careerAdvanced,availableStats](team(league)),leagueListId=mlb_hist)" % p
+    # else:
+    url = API_LINK + "people/%s?hydrate=currentTeam,team,stats(type=[yearByYear,yearByYearAdvanced,careerRegularSeason,careerAdvanced,availableStats](team(league)),leagueListId=mlb_hist,group=%s)" % (p, '[hitting,pitching]')
     player = utils.get_json(url)['people'][0]
     # for backwards compat
     player['player_id'] = str(player['id'])
@@ -405,7 +405,7 @@ def get_player_season_stats(name, type=None, year=None, career=None, reddit=None
 
     if type is None and pos == 'P':
         type = "pitching"
-    elif type is None and pos != 'P':
+    elif type is None:
         type = "hitting"
 
     stattype = 'yearByYear'
@@ -414,8 +414,9 @@ def get_player_season_stats(name, type=None, year=None, career=None, reddit=None
 
     seasons = []
     teams = []
+    seasons_pitching = []
     for stat in player['stats']:
-        if stat['type']['displayName'] == stattype and 'displayName' in stat['group'] and stat['group']['displayName'] == type:
+        if stat['type']['displayName'] == stattype and 'displayName' in stat['group']:
             if career:
                 for cstat in player['stats']:
                     if cstat['type']['displayName'] == 'yearByYear' and 'displayName' in cstat['group'] and cstat['group']['displayName'] == type:
@@ -439,16 +440,19 @@ def get_player_season_stats(name, type=None, year=None, career=None, reddit=None
                         season['team'] = split['sport']['abbreviation']
                     else:
                         season['team'] = "MLB"
-                seasons.append(split['stat'])
-    if type == "hitting":
-        stats = ['atBats', 'hits', 'doubles', 'triples', 'homeRuns', 'runs', 'rbi', 'baseOnBalls', 'strikeOuts', 'stolenBases', 'caughtStealing', 'avg', 'obp', 'slg' ,'ops']
-    elif type == "pitching":
-        stats = ['wins', 'losses', 'gamesPlayed', 'gamesStarted', 'saveOpportunities', 'saves', 'inningsPitched', 'strikeOuts', 'baseOnBalls', 'homeRuns', 'era', 'whip']
+                if stat['group']['displayName'] == 'hitting':
+                    seasons.append(split['stat'])
+                else:
+                    seasons_pitching.append(split['stat'])
+    hitting_stats = ['atBats', 'hits', 'doubles', 'triples', 'homeRuns', 'runs', 'rbi', 'baseOnBalls', 'strikeOuts', 'stolenBases', 'caughtStealing', 'avg', 'obp', 'slg' ,'ops']
+    pitching_stats = ['wins', 'losses', 'gamesPlayed', 'gamesStarted', 'saveOpportunities', 'saves', 'inningsPitched', 'strikeOuts', 'baseOnBalls', 'homeRuns', 'era', 'whip']
     if len(seasons) > 1:
-        if milb:
-            stats = ['season', 'team'] + stats
-        else:
-            stats = ['season', 'team'] + stats
+        hitting_stats = ['season', 'team'] + hitting_stats
+        pitching_stats = ['season', 'team'] + pitching_stats
+    if type == "hitting":
+        stats = hitting_stats
+    elif type == "pitching":
+        stats = pitching_stats
     repl = {'atBats':'ab', 'plateAppearances':'pa','hits':'h','doubles':'2B','triples':'3b','homeRuns':'hr', 'runs':'r', 'baseOnBalls':'bb','strikeOuts':'so', 'stolenBases':'sb', 'caughtStealing':'cs',
             'wins':'w', 'losses':'l', 'gamesPlayed':'g', 'gamesStarted':'gs', 'saveOpportunities':'svo', 'saves':'sv', 'inningsPitched':'ip'}
 
@@ -472,7 +476,13 @@ def get_player_season_stats(name, type=None, year=None, career=None, reddit=None
     if career:
         output = "Career %s stats for %s (%s):" % (stats_type, disp_name, years)
     output = "%s\n  %s\n\n" % (output, infoline)
-    output = output + utils.format_table(stats, seasons, repl_map=repl, reddit=reddit)
+    if type == 'hitting':
+        output = output + utils.format_table(stats, seasons, repl_map=repl, reddit=reddit)
+    else:
+        output = output + utils.format_table(stats, seasons_pitching, repl_map=repl, reddit=reddit)
+    if pos == 'TWP':
+        stats = pitching_stats
+        output = output + '\n\n' + utils.format_table(stats, seasons_pitching, repl_map=repl, reddit=reddit)
     return output
 
 def get_scoring_plays(gamepk):
@@ -1285,5 +1295,5 @@ if __name__ == "__main__":
     # print(print_games('wsh'))
     # print(print_games("lad"))
     # print(print_stat_streaks(['hitting'], redditpost=True))
-    # print(get_player_season_stats("starling marte"))
-    print(_new_player_search("will smith (lad)"))
+    print(get_player_season_stats("ohtani"))
+    # print(_new_player_search("will smith (lad)"))
