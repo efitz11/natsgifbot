@@ -791,7 +791,6 @@ async def cocktail(ctx, *query):
 @bot.command(pass_context=True)
 async def log(ctx, numlines=5):
     """print the last few lines of the bot log to see errors"""
-    print(ctx.message.author)
     if str(ctx.message.author) in auth_users:
         from collections import deque
         out = ""
@@ -840,8 +839,6 @@ async def odds(ctx, *query):
 
 @bot.event
 async def on_message(message):
-    print(message)
-    print(message.content)
     channel = message.channel
     if message.author == bot.user:
         if patterntwitter.search(message.content):
