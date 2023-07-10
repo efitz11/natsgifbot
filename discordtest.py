@@ -23,7 +23,7 @@ prefixes = ['!', '?', 'bot ', 'Bot']
 
 extensions = ["baseball","sports","reddit","temporary"]
 
-auth_users = ['fitz#0001']
+auth_users = ['efitz11#0']
 hamms_auth_users = auth_users + ['vasolinetigers#3888']
 
 pattern69 = re.compile('(^|[\s\.]|\$)[6][\.]*[9]([\s\.]|x|%|$|th)')
@@ -791,6 +791,7 @@ async def cocktail(ctx, *query):
 @bot.command(pass_context=True)
 async def log(ctx, numlines=5):
     """print the last few lines of the bot log to see errors"""
+    print(ctx.message.author)
     if str(ctx.message.author) in auth_users:
         from collections import deque
         out = ""
@@ -839,6 +840,8 @@ async def odds(ctx, *query):
 
 @bot.event
 async def on_message(message):
+    print(message)
+    print(message.content)
     channel = message.channel
     if message.author == bot.user:
         if patterntwitter.search(message.content):
