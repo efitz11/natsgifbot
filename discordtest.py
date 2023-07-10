@@ -756,10 +756,10 @@ async def hq(ctx, *text:str):
 #     """get the latest instagram post by the user"""
 #     await ctx.send(web.get_latest_ig_post(username))
 
-@bot.command()
-async def tweet(ctx, username:str):
-    """get the latest tweet by the user"""
-    await ctx.send(web.get_latest_tweet(username))
+# @bot.command()
+# async def tweet(ctx, username:str):
+#     """get the latest tweet by the user"""
+#     await ctx.send(web.get_latest_tweet(username))
 
 @bot.command()
 async def imdb(ctx, *query):
@@ -897,12 +897,13 @@ async def on_message(message):
             query = message.content[match.end():]
             await channel.send(web.search_youtube(query.strip()))
 
-        if patterntwitter.search(message.content):
-            verified, api = web.check_tweet_verified(re.search(patterntwitter, message.content).group(1))
-            if verified:
-                await message.add_reaction(u"\u2611")
-            else:
-                await message.add_reaction(u"\u274C")
+        # if patterntwitter.search(message.content):
+        #     print('checking verified')
+        #     verified, api = web.check_tweet_verified(re.search(patterntwitter, message.content).group(1))
+        #     if verified:
+        #         await message.add_reaction(u"\u2611")
+        #     else:
+        #         await message.add_reaction(u"\u274C")
             # check age of tweet
             # age = web.check_tweet_age(re.search(patterntwitterstatus, message.content).group(2), api=api)
             # await channel.send(age)
