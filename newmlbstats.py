@@ -52,43 +52,55 @@ def _convert_mlb_date_to_datetime(date):
 
 def _find_player_id(name, milb=False):
     teamid = None
+    name_display = None
     if "(" in name and ")" in name:
         open = name.find('(')
         close = name.find(')')
         teamsrch = name.split('(', 1)[1].split(')')[0]
-        teamid = mymlbstats.get_teamid(teamsrch)
+        teamid, team = mymlbstats.get_teamid(teamsrch, extradata=True)
+        name_display = team['teamName']
         name = name[:open] + name[close+1:]
         name = name.strip()
 
-    url = "https://typeahead.mlb.com/api/v1/typeahead/suggestions/%s" % urllib.parse.quote(name)
-    players = utils.get_json(url)['players']
+    # url = "https://typeahead.mlb.com/api/v1/typeahead/suggestions/%s" % urllib.parse.quote(name)
+    url = "https://baseballsavant.mlb.com/player/search-all?search=%s" % urllib.parse.quote(name)
+    players = utils.get_json(url)
     if len(players) > 0:
         if not milb:
-            teamids = mymlbstats.get_mlb_teamid_list()
-            print(teamids)
+            # teamids = mymlbstats.get_mlb_teamid_list()
             p = None
             milb_p = None
             for player in players:
                 if teamid is None:
-                    if player['teamId'] == 120:
-                        return player['playerId']
-                    elif p is None and player['teamId'] in teamids:
-                        p = player['playerId'] # don't just return here to keep searching for Nats
+                    # if player['teamId'] == 120:
+                    if player['name_display_club'] == "Nationals":
+                        # return player['playerId']
+                        return player['id']
+                    # elif p is None and player['teamId'] in teamids:
+                    elif p is None and player['mlb'] == 1:
+                        # p = player['playerId'] # don't just return here to keep searching for Nats
+                        p = player['id'] # don't just return here to keep searching for Nats
                     elif milb_p is None:
-                        milb_p = player['playerId'] # if we don't match a major leaguer, just return a minor leaguer
+                        # milb_p = player['playerId'] # if we don't match a major leaguer, just return a minor leaguer
+                        milb_p = player['id'] # if we don't match a major leaguer, just return a minor leaguer
                 else:
-                    if player['teamId'] == teamid:
-                        return player['playerId']
+                    # if player['teamId'] == teamid:
+                    if player['name_display_club'] == name_display:
+                        # return player['playerId']
+                        return player['id']
             if p is None:
                 return milb_p
             return p
         else:
-            nats_teamids = [534, 547, 426, 436]
+            # nats_teamids = [534, 547, 426, 436]
             for player in players:
-                if player['teamId'] in nats_teamids:
-                    return player['playerId']
+                # if player['teamId'] in nats_teamids:
+                if player['parent_team'] == "WAS":
+                    # return player['playerId']
+                    return player['id']
             for player in players:
-                return player['playerId']
+                # return player['playerId']
+                return player['id']
 
 
 def _get_player_by_id(id, type=None, milb=False):
@@ -1295,5 +1307,5 @@ if __name__ == "__main__":
     # print(print_games('wsh'))
     # print(print_games("lad"))
     # print(print_stat_streaks(['hitting'], redditpost=True))
-    print(get_player_season_stats("ohtani"))
+    print(get_player_season_stats("de la cruz"))
     # print(_new_player_search("will smith (lad)"))
