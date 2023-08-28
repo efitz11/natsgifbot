@@ -2644,7 +2644,7 @@ def print_at_bats(name, delta=None):
                                         url = playback['url']
                                         break
                                 # output = output + " -- %s: <" % blurb + url + ">\n\n"
-                                output = output = " -- <[%s](%s)>\n\n" % (blurb, url)
+                                output = output + " -- <[%s](%s)>\n\n" % (blurb, url)
                             else:
                                 for playback in content[playevent['playId']]['playbacks']:
                                     if playback['name'] == "FLASH_2500K_1280X720":
