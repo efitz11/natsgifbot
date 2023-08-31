@@ -453,12 +453,12 @@ def get_player_season_stats(name, type=None, year=None, career=None, reddit=None
                     else:
                         season['team'] = "MLB"
                 if stat['group']['displayName'] == 'hitting':
-                    seasons.append(split['stat'])
+                    seasons.append(season)
                 else:
-                    seasons_pitching.append(split['stat'])
+                    seasons_pitching.append(season)
     hitting_stats = ['atBats', 'hits', 'doubles', 'triples', 'homeRuns', 'runs', 'rbi', 'baseOnBalls', 'strikeOuts', 'stolenBases', 'caughtStealing', 'avg', 'obp', 'slg' ,'ops']
     pitching_stats = ['wins', 'losses', 'gamesPlayed', 'gamesStarted', 'saveOpportunities', 'saves', 'inningsPitched', 'strikeOuts', 'baseOnBalls', 'homeRuns', 'era', 'whip']
-    if len(seasons) > 1:
+    if len(seasons) > 1 or len(seasons_pitching) > 1:
         hitting_stats = ['season', 'team'] + hitting_stats
         pitching_stats = ['season', 'team'] + pitching_stats
     if type == "hitting":
@@ -1307,5 +1307,5 @@ if __name__ == "__main__":
     # print(print_games('wsh'))
     # print(print_games("lad"))
     # print(print_stat_streaks(['hitting'], redditpost=True))
-    print(get_player_season_stats("de la cruz"))
+    print(get_player_season_stats("giolito"))
     # print(_new_player_search("will smith (lad)"))
