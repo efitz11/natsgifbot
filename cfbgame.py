@@ -270,7 +270,8 @@ def get_game_str(scoreData, team=None):
             if status == 'pre':
                 if 'odds' in game:
                     # home['status'] = game['odds'][0]['details']
-                    home['status'] = game['odds']['details']
+                    if 'details' in game['odds']:
+                        home['status'] = game['odds']['details']
                 teamlistpre.extend([away,home])
             else:
                 if 'linescores' in awayjson:
@@ -320,6 +321,6 @@ def get_game_str(scoreData, team=None):
 
 
 if __name__ == "__main__":
-    print(get_game(""))
+    print(get_game("acc"))
     # print(get_game("vt",delta=-2))
     # print(get_game("vt",delta=1))
