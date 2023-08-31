@@ -84,8 +84,13 @@ def get_game(team, delta=0,fcs=False):
     req.headers["User-Agent"] = "windows 10 bot"
     # Load data
     scoreData = urlopen(req).read().decode("utf-8")
-    scoreData = scoreData[scoreData.find('window.espn.scoreboardData 	= ')+len('window.espn.scoreboardData 	= '):]
-    scoreData = json.loads(scoreData[:scoreData.find('};')+1])
+    with open("espnout.txt", 'w') as f:
+        f.write(scoreData)
+    # searchstr = 'window.espn.scoreboardData 	= '
+    searchstr = "window['__espnfitt__']="
+    scoreData = scoreData[scoreData.find(searchstr)+len(searchstr):]
+    # scoreData = scoreData[scoreData.find('window.espn.scoreboardData 	= ')+len('window.espn.scoreboardData 	= '):]
+    scoreData = json.loads(scoreData[:scoreData.find('};')+1])['page']['content']['scoreboard']
     # print(scoreData)
     # f = open('espnout.txt','w')
     # f.write(json.dumps(scoreData))
@@ -97,7 +102,8 @@ def get_game(team, delta=0,fcs=False):
         return "```python\n%s\n```" % get_game_str(scoreData, team=team)
 
     games = []
-    for event in scoreData['events']:
+    # for event in scoreData['events']:
+    for event in scoreData['evts']:
         game = dict()
 
         game["date"] = event['date']
@@ -111,22 +117,32 @@ def get_game(team, delta=0,fcs=False):
         else:
             game['status'] = GAME_STATUS_POST
             game['time'] = "FINAL"
-        team1 = html.unescape(event['competitions'][0]['competitors'][0]['team']['location'])
-        tid1 = event['competitions'][0]['competitors'][0]['id']
-        score1 = event['competitions'][0]['competitors'][0]['score']
-        team1abv = event['competitions'][0]['competitors'][0]['team']['abbreviation']
-        team2 = html.unescape(event['competitions'][0]['competitors'][1]['team']['location'])
-        tid2 = event['competitions'][0]['competitors'][1]['id']
-        score2 = event['competitions'][0]['competitors'][1]['score']
-        team2abv = event['competitions'][0]['competitors'][1]['team']['abbreviation']
+        # team1 = html.unescape(event['competitions'][0]['competitors'][0]['team']['location'])
+        # tid1 = event['competitions'][0]['competitors'][0]['id']
+        # score1 = event['competitions'][0]['competitors'][0]['score']
+        # team1abv = event['competitions'][0]['competitors'][0]['team']['abbreviation']
+        # team2 = html.unescape(event['competitions'][0]['competitors'][1]['team']['location'])
+        # tid2 = event['competitions'][0]['competitors'][1]['id']
+        # score2 = event['competitions'][0]['competitors'][1]['score']
+        # team2abv = event['competitions'][0]['competitors'][1]['team']['abbreviation']
+        team1 = html.unescape(event['competitors'][0]['location'])
+        tid1 = event['competitors'][0]['id']
+        score1 = event['competitors'][0]['score']
+        team1abv = event['competitors'][0]['abbrev']
+        team2 = html.unescape(event['competitors'][1]['location'])
+        tid2 = event['competitors'][1]['id']
+        score2 = event['competitors'][1]['score']
+        team2abv = event['competitors'][1]['abbrev']
         
-        rank1 = event['competitions'][0]['competitors'][0]['curatedRank']
-        rank2 = event['competitions'][0]['competitors'][1]['curatedRank']
+        # rank1 = event['competitors'][0]['curatedRank']
+        # rank2 = event['competitors'][1]['curatedRank']
+        rank1 = event['competitors'][0]['rank']
+        rank2 = event['competitors'][1]['rank']
         
         game['odds'] = ""
-        if 'odds' in event['competitions'][0]:
-            if 'details' in event['competitions'][0]['odds'][0]:
-                game['odds'] = " - " + event['competitions'][0]['odds'][0]['details']
+        if 'odds' in event:
+            if 'details' in event['odds'][0]:
+                game['odds'] = " - " + event['odds'][0]['details']
         
         # Hawaii workaround
         if team1 == "Hawai'i":
@@ -134,7 +150,8 @@ def get_game(team, delta=0,fcs=False):
         if team2 == "Hawai'i":
             team2 = "Hawaii"
             
-        homestatus = event['competitions'][0]['competitors'][0]['homeAway']
+        # homestatus = event['competitions'][0]['competitors'][0]['homeAway']
+        homestatus = event['competitors'][0]['isHome']
         
         if homestatus == 'home':
             game['hometeam'], game['homeid'], game['homeabv'], game['homescore'], game['awayteam'], game['awayid'], game['awayabv'], game['awayscore'], game['homerank'], game['awayrank']=\
@@ -183,11 +200,15 @@ def get_game_str(scoreData, team=None):
     teamlistin = []
     teamlistpost = []
     longest_qtr = 0 # number of quarters in the longest game so far
-    for event in scoreData['events']:
-        teams = [html.unescape(event['competitions'][0]['competitors'][0]['team']['location']).lower(),
-                 html.unescape(event['competitions'][0]['competitors'][1]['team']['location']).lower(),
-                 event['competitions'][0]['competitors'][0]['team']['abbreviation'].lower(),
-                 event['competitions'][0]['competitors'][1]['team']['abbreviation'].lower()]
+    for event in scoreData['evts']:
+        # teams = [html.unescape(event['competitions'][0]['competitors'][0]['team']['location']).lower(),
+                 # html.unescape(event['competitions'][0]['competitors'][1]['team']['location']).lower(),
+                 # event['competitions'][0]['competitors'][0]['team']['abbreviation'].lower(),
+                 # event['competitions'][0]['competitors'][1]['team']['abbreviation'].lower()]
+        teams = [html.unescape(event['competitors'][0]['location']).lower(),
+                 html.unescape(event['competitors'][1]['location']).lower(),
+                 event['competitors'][0]['abbrev'].lower(),
+                 event['competitors'][1]['abbrev'].lower()]
         teams = [t.replace("hawai'i","hawaii") for t in teams]
         if team is not None:
             team = team.lower()
@@ -195,8 +216,9 @@ def get_game_str(scoreData, team=None):
             away = dict()
             home = dict()
 
-            game = event['competitions'][0]
-            if game['competitors'][0]['homeAway'] == 'away':
+            # game = event['competitions'][0]
+            game = event
+            if game['competitors'][0]['isHome'] == 'away':
                 awayjson = game['competitors'][0]
                 homejson = game['competitors'][1]
                 away['name'], home['name'] = teams[0], teams[1]
@@ -208,12 +230,17 @@ def get_game_str(scoreData, team=None):
                 away['abv'], home['abv'] = teams[3].upper(), teams[2].upper()
 
             away['id'], home['id'] = awayjson['id'], homejson['id']
-            away['rank'], home['rank'] = _fix_rank(awayjson['curatedRank']['current']), _fix_rank(homejson['curatedRank']['current'])
+            # away['rank'], home['rank'] = _fix_rank(awayjson['curatedRank']['current']), _fix_rank(homejson['curatedRank']['current'])
+            away['rank'], home['rank'] = _fix_rank(awayjson['rank']), _fix_rank(homejson['rank'])
 
             away = _add_linescores(away, awayjson)
             home = _add_linescores(home, homejson)
-            away['score'] = awayjson['score']
-            home['score'] = homejson['score']
+            if 'score' in away:
+                away['score'] = awayjson['score']
+                home['score'] = homejson['score']
+            else:
+                away['score'] = ""
+                home['score'] = ""
             away['sep'], home['sep'] = '│','│'
             try:
                 if game['situation']['possession'] == away['id']:
@@ -225,11 +252,15 @@ def get_game_str(scoreData, team=None):
                 pass
 
             # g = [away, home]
-            status = event['status']['type']['state']
-            away['status'] = event['status']['type']['shortDetail']
+            # status = event['status']['type']['state']
+            status = event['status']['state']
+            # away['status'] = event['status']['type']['shortDetail']
+            away['status'] = event['status']['detail']
             if status == 'pre':
                 if 'odds' in game:
-                    home['status'] = game['odds'][0]['details']
+                    print(game['odds'])
+                    # home['status'] = game['odds'][0]['details']
+                    home['status'] = game['odds']['details']
                 teamlistpre.extend([away,home])
             else:
                 if 'linescores' in awayjson:
@@ -279,6 +310,6 @@ def get_game_str(scoreData, team=None):
 
 
 if __name__ == "__main__":
-    # print(get_game("vt"))
+    print(get_game("vt"))
     # print(get_game("vt",delta=-2))
-    print(get_game("vt",delta=1))
+    # print(get_game("vt",delta=1))
