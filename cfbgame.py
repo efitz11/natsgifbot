@@ -107,13 +107,16 @@ def get_game(team, delta=0,fcs=False):
         game = dict()
 
         game["date"] = event['date']
-        status = event['status']['type']['state']
+        # status = event['status']['type']['state']
+        status = event['status']['state']
         if status == "pre":
             game['status'] = GAME_STATUS_PRE
-            game['time'] = event['status']['type']['shortDetail']
+            # game['time'] = event['status']['type']['shortDetail']
+            game['time'] = event['status']['detail']
         elif status == "in":
             game['status'] = GAME_STATUS_IN
-            game['time'] = event['status']['type']['shortDetail']
+            # game['time'] = event['status']['type']['shortDetail']
+            game['time'] = event['status']['detail']
         else:
             game['status'] = GAME_STATUS_POST
             game['time'] = "FINAL"
@@ -127,11 +130,15 @@ def get_game(team, delta=0,fcs=False):
         # team2abv = event['competitions'][0]['competitors'][1]['team']['abbreviation']
         team1 = html.unescape(event['competitors'][0]['location'])
         tid1 = event['competitors'][0]['id']
-        score1 = event['competitors'][0]['score']
+        if 'score' in event['competitors'][0]:
+            score1 = str(event['competitors'][0]['score'])
+            score2 = str(event['competitors'][1]['score'])
+        else:
+            score1 = ""
+            score2 = ""
         team1abv = event['competitors'][0]['abbrev']
         team2 = html.unescape(event['competitors'][1]['location'])
         tid2 = event['competitors'][1]['id']
-        score2 = event['competitors'][1]['score']
         team2abv = event['competitors'][1]['abbrev']
         
         # rank1 = event['competitors'][0]['curatedRank']
@@ -141,8 +148,8 @@ def get_game(team, delta=0,fcs=False):
         
         game['odds'] = ""
         if 'odds' in event:
-            if 'details' in event['odds'][0]:
-                game['odds'] = " - " + event['odds'][0]['details']
+            if 'details' in event['odds']:
+                game['odds'] = " - " + event['odds']['details']
         
         # Hawaii workaround
         if team1 == "Hawai'i":
@@ -165,14 +172,18 @@ def get_game(team, delta=0,fcs=False):
     if all:
         output = "```python\n"
         for game in games:
-            awayr = "("+str(game['awayrank']['current'])+")" if game['awayrank']['current'] <= 25 else ""
-            homer = "("+str(game['homerank']['current'])+")" if game['homerank']['current'] <= 25 else ""
+            # awayr = "("+str(game['awayrank']['current'])+")" if game['awayrank']['current'] <= 25 else ""
+            # homer = "("+str(game['homerank']['current'])+")" if game['homerank']['current'] <= 25 else ""
+            awayr = "("+str(game['awayrank'])+")" if game['awayrank'] <= 25 else ""
+            homer = "("+str(game['homerank'])+")" if game['homerank'] <= 25 else ""
             output = output +  "%s %s %s @ %s %s %s # %s%s\n" % (awayr.rjust(4),game['awayabv'].ljust(5), game['awayscore'].rjust(2), homer.rjust(4),game['homeabv'].ljust(5), game['homescore'].rjust(2), game['time'],game['odds'])
         return (output+"```")
     for game in games:
         if game['hometeam'].lower() == team.lower() or game['homeabv'].lower() == team.lower() or game['awayteam'].lower() == team.lower() or game['awayabv'].lower() == team.lower():
-            awayr = "("+str(game['awayrank']['current'])+") " if game['awayrank']['current'] <= 25 else ""
-            homer = "("+str(game['homerank']['current'])+") " if game['homerank']['current'] <= 25 else ""
+            # awayr = "("+str(game['awayrank']['current'])+") " if game['awayrank']['current'] <= 25 else ""
+            # homer = "("+str(game['homerank']['current'])+") " if game['homerank']['current'] <= 25 else ""
+            awayr = "("+str(game['awayrank'])+")" if game['awayrank'] <= 25 else ""
+            homer = "("+str(game['homerank'])+")" if game['homerank'] <= 25 else ""
             return "```python\n%s%s %s @ %s%s %s # %s%s```" % (awayr,game['awayabv'], game['awayscore'], homer,game['homeabv'], game['homescore'], game['time'], game['odds'])
     return "game not found"
 
@@ -258,7 +269,6 @@ def get_game_str(scoreData, team=None):
             away['status'] = event['status']['detail']
             if status == 'pre':
                 if 'odds' in game:
-                    print(game['odds'])
                     # home['status'] = game['odds'][0]['details']
                     home['status'] = game['odds']['details']
                 teamlistpre.extend([away,home])
@@ -310,6 +320,6 @@ def get_game_str(scoreData, team=None):
 
 
 if __name__ == "__main__":
-    print(get_game("vt"))
+    print(get_game(""))
     # print(get_game("vt",delta=-2))
     # print(get_game("vt",delta=1))
