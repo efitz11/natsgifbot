@@ -1,4 +1,4 @@
-import loosejson
+import loosejson, json
 import utils, mymlbstats
 from datetime import datetime, timedelta
 
@@ -145,7 +145,7 @@ def get_player_savant_stats(player):
     p = mymlbstats._get_player_search(player)
     if p is None:
         return "No matching player found"
-    url = f"https://baseballsavant.mlb.com/savant-player/{p['id']}'"
+    url = f"https://baseballsavant.mlb.com/savant-player/{p['id']}"
     page = utils.get_page(url)
     page = page[page.rfind("var serverVals = {"):]
     page = page[page.find('{'):page.rfind("};\n")+1]
@@ -153,11 +153,12 @@ def get_player_savant_stats(player):
 
 def print_savant_advanced_stats(savant_json, year=None, reddit=None):
     type = None
+    print(json.dumps(savant_json['statcast'], indent=2))
     if savant_json['statcast'][0]['grouping_cat'] == "Batter":
-        labels = ['ba','xba','woba','xwoba','wobadif','bb_percent','k_percent']
+        labels = ['ba','xba','woba','xwoba','wobadiff','bb_percent','k_percent']
         type = "batting"
     elif savant_json['statcast'][0]['grouping_cat'] == "Pitcher":
-        labels = ['woba','xwoba','wobadif','bb_percent','k_percent','era','xera']
+        labels = ['woba','xwoba','wobadiff','bb_percent','k_percent','era','xera']
         type = "pitching"
     if type is None:
         return "Error getting advanced stats"
@@ -200,13 +201,19 @@ def print_player_rankings(player, year=None):
     stats = None
     if type == "Pitcher":
         stats = ["percent_rank_exit_velocity_avg",
+                 "percent_rank_launch_angle_avg",
                  "percent_rank_barrel_batted_rate",
                  "percent_rank_xwoba",
                  "percent_rank_xera",
                  "percent_rank_k_percent",
                  "percent_rank_bb_percent",
                  "percent_rank_chase_percent",
-                 "percent_rank_whiff_percent"]
+                 "percent_rank_groundballs_percent",
+                 "percent_rank_whiff_percent",
+                 "percent_rank_pitch_run_value_fastball",
+                 "percent_rank_pitch_run_value_breaking",
+                 "percent_rank_pitch_run_value_offspeed"
+                 ]
     elif type == "Batter":
         stats = ["percent_rank_exit_velocity_avg",
                  "percent_rank_barrel_batted_rate",
@@ -217,7 +224,11 @@ def print_player_rankings(player, year=None):
                  "percent_rank_chase_percent",
                  "percent_rank_whiff_percent",
                  "percent_rank_sprint_speed",
+                 "percent_speed_order",
                  "percent_rank_oaa",
+                 "percent_rank_fielding_run_value",
+                 "percent_rank_swing_take_run_value",
+                 "percent_rank_runner_run_value",
                  "percent_rank_framing"]
     if stats is None:
         return "error getting player rankings"
@@ -234,7 +245,8 @@ def print_player_rankings(player, year=None):
     for stat in stats:
         if stat in stats_dict and stats_dict[stat] is not None:
             d = dict()
-            d['stat'] = stat.replace("percent_rank_", "")
+            d['stat'] = stat.replace("percent_rank_", "").replace("percent_speed_order","sprint_speed")
+            d['stat'] = d['stat'].replace("swing_take","batting")
             d['value'] = int(stats_dict[stat])
             table_rows.append(d)
     # sort by value (desc)
@@ -251,5 +263,5 @@ if __name__ == "__main__":
     # print(get_oaa_leaders())
     # print(print_savant_advanced_stats(get_player_savant_json(),year="2016-2021"))
     # print(print_savant_advanced_stats(get_player_savant_stats("josh bell")))
-    # print_savant_advanced_stats("")
-    print(print_player_rankings("grandal"))
+    # print(print_player_advanced_stats("juan soto"))
+    print(print_player_rankings("juan soto"))
