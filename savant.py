@@ -230,6 +230,8 @@ def print_player_rankings(player, year=None):
                  "percent_rank_swing_take_run_value",
                  "percent_rank_runner_run_value",
                  "percent_rank_framing"]
+    raw_replace = {'oaa':'outs_above_average',
+                   'chase_percent':'oz_swing_percent'}
     if stats is None:
         return "error getting player rankings"
     if year is None:
@@ -248,11 +250,17 @@ def print_player_rankings(player, year=None):
             d['stat'] = stat.replace("percent_rank_", "").replace("percent_speed_order","sprint_speed")
             d['stat'] = d['stat'].replace("swing_take","batting")
             d['value'] = int(stats_dict[stat])
+            raw = stat.replace('percent_rank_','')
+            if raw in raw_replace:
+                raw = raw_replace[raw]
+            d['raw'] = stats_dict[raw]
+            if isinstance(d['raw'], float):
+                d['raw'] = round(d['raw'], 2)
             table_rows.append(d)
     # sort by value (desc)
     table_rows = sorted(table_rows, key=lambda i: i["value"], reverse=True)
     player_line = f"{year} {type} percentile rankings for {savant_json['playerName']}"
-    table_output = utils.format_table(['stat','value'], table_rows, showlabels=False)
+    table_output = utils.format_table(['stat','value','raw'], table_rows, showlabels=False)
     return f"```python\n{player_line}\n\n{table_output}```"
 
 if __name__ == "__main__":
@@ -264,4 +272,4 @@ if __name__ == "__main__":
     # print(print_savant_advanced_stats(get_player_savant_json(),year="2016-2021"))
     # print(print_savant_advanced_stats(get_player_savant_stats("josh bell")))
     # print(print_player_advanced_stats("juan soto"))
-    print(print_player_rankings("juan soto"))
+    print(print_player_rankings("corbin"))
