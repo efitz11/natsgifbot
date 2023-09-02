@@ -84,13 +84,14 @@ def get_game(team, delta=0,fcs=False):
     req.headers["User-Agent"] = "windows 10 bot"
     # Load data
     scoreData = urlopen(req).read().decode("utf-8")
-    with open("espnout.txt", 'w') as f:
-        f.write(scoreData)
     # searchstr = 'window.espn.scoreboardData 	= '
     searchstr = "window['__espnfitt__']="
     scoreData = scoreData[scoreData.find(searchstr)+len(searchstr):]
+    scoreData = scoreData[:scoreData.find('};')+1]
     # scoreData = scoreData[scoreData.find('window.espn.scoreboardData 	= ')+len('window.espn.scoreboardData 	= '):]
-    scoreData = json.loads(scoreData[:scoreData.find('};')+1])['page']['content']['scoreboard']
+    with open("espnout.txt", 'w') as f:
+        f.write(scoreData)
+    scoreData = json.loads(scoreData)['page']['content']['scoreboard']
     # print(scoreData)
     # f = open('espnout.txt','w')
     # f.write(json.dumps(scoreData))
@@ -205,6 +206,17 @@ def _add_linescores(d, teamjson):
             count += 1
     return d
 
+def _add_linescores_side(d, quarters):
+    count = 1
+    for quarter in quarters:
+        letter = 'q'
+        if count > 4:
+            letter = 'o'
+        d[letter + str(count)] = quarter
+        count += 1
+    return d
+
+
 def get_game_str(scoreData, team=None):
     output = ""
     teamlistpre = []
@@ -229,7 +241,8 @@ def get_game_str(scoreData, team=None):
 
             # game = event['competitions'][0]
             game = event
-            if game['competitors'][0]['isHome'] == 'away':
+            # if game['competitors'][0]['isHome'] == 'away':
+            if not game['competitors'][0]['isHome']:
                 awayjson = game['competitors'][0]
                 homejson = game['competitors'][1]
                 away['name'], home['name'] = teams[0], teams[1]
@@ -244,9 +257,13 @@ def get_game_str(scoreData, team=None):
             # away['rank'], home['rank'] = _fix_rank(awayjson['curatedRank']['current']), _fix_rank(homejson['curatedRank']['current'])
             away['rank'], home['rank'] = _fix_rank(awayjson['rank']), _fix_rank(homejson['rank'])
 
-            away = _add_linescores(away, awayjson)
-            home = _add_linescores(home, homejson)
-            if 'score' in away:
+            if 'lnescrs' in game:
+                away = _add_linescores_side(away, game['lnescrs']['awy'])
+                home = _add_linescores_side(home, game['lnescrs']['hme'])
+            # away = _add_linescores(away, awayjson)
+            # home = _add_linescores(home, homejson)
+            # if 'score' in away:
+            if 'score' in awayjson:
                 away['score'] = awayjson['score']
                 home['score'] = homejson['score']
             else:
@@ -274,8 +291,10 @@ def get_game_str(scoreData, team=None):
                         home['status'] = game['odds']['details']
                 teamlistpre.extend([away,home])
             else:
-                if 'linescores' in awayjson:
-                    longest_qtr = max(longest_qtr, len(awayjson['linescores']))
+                # if 'linescores' in awayjson:
+                #     longest_qtr = max(longest_qtr, len(awayjson['linescores']))
+                if 'lnescrs' in game:
+                    longest_qtr = max(longest_qtr, len(game['lnescrs'])+1)
                 if status == 'in':
                     teamlistin.extend([away,home])
                 else:
