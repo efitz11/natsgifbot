@@ -271,6 +271,7 @@ def get_game_str(scoreData, team=None):
                 home['score'] = ""
             away['sep'], home['sep'] = '│','│'
             try:
+                home['status'] = ''
                 # if game['situation']['possession'] == away['id']:
                 if game['situation']['possesion'] == 'away':
                     home['status'] = "%s 🏈" % away['abv']
