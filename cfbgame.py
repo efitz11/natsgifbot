@@ -271,9 +271,11 @@ def get_game_str(scoreData, team=None):
                 home['score'] = ""
             away['sep'], home['sep'] = '│','│'
             try:
-                if game['situation']['possession'] == away['id']:
+                # if game['situation']['possession'] == away['id']:
+                if game['situation']['possesion'] == 'away':
                     home['status'] = "%s 🏈" % away['abv']
-                elif game['situation']['possession'] == home['id']:
+                # elif game['situation']['possession'] == home['id']:
+                elif game['situation']['possesion'] == 'home':
                     home['status'] = "%s 🏈" % home['abv']
                 home['status'] = "%s %s" % (home['status'], game['situation']['downDistanceText'])
             except KeyError:
@@ -340,6 +342,6 @@ def get_game_str(scoreData, team=None):
 
 
 if __name__ == "__main__":
-    print(get_game("acc"))
+    print(get_game("stan"))
     # print(get_game("vt",delta=-2))
     # print(get_game("vt",delta=1))
