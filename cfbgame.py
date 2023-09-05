@@ -1,7 +1,8 @@
 from urllib.request import urlopen, Request
 import time, json,html
 from datetime import datetime
-import utils
+from datetime import timedelta
+import utils, os
 '''
 borrowed some code from /r/cfb's IRC bot, thank you
 https://github.com/diagonalfish/FootballBotX2
@@ -44,23 +45,58 @@ groupmap = {"acc":"1",
             "southern":"29",
             "southland":"30"}
 
+def convert_espn_datetime(time_str):
+    return datetime.strptime(time_str, '%Y-%m-%dT%H:%MZ')
+
+def get_current_calendar_block(cal_json, delta=0):
+    for item in cal_json:
+        startdate = convert_espn_datetime(item['startDate'])
+        enddate = convert_espn_datetime(item['endDate'])
+        if delta == 0:
+            now = datetime.now()
+        else:
+            now = datetime.now() + timedelta(days=7*delta)
+        if now > startdate and now < enddate:
+            return item
+        
 def get_game(team, delta=0,fcs=False):
+    calendar_json = "espn_cfb_calendar.json"
     if team == "conferences":
         output = ""
         for t in groupmap:
             output = output + t + ", "
         return output
 
-    seasontype = "2"
     now = datetime.now()
     year = now.year
-    if (now.month == 12 and now.day > 20) or (now.month == 1):
-        seasontype = "3"
-        if now.month == 1:
-            year = now.year-1
-    # week2 = datetime(2023,9,5)
-    week1 = datetime(2023,8,28)
-    week = int((now - week1).days/7 + delta)
+
+    if os.path.exists(calendar_json):
+        with open(calendar_json, 'r') as f:
+            cal = json.load(f)
+    else:
+        url = "https://www.espn.com/college-football/scoreboard"
+        req = Request(url)
+        req.headers["User-Agent"] = "windows 10 bot"
+        # Load data
+        scoreData = urlopen(req).read().decode("utf-8")
+        # searchstr = 'window.espn.scoreboardData 	= '
+        searchstr = "window['__espnfitt__']="
+        scoreData = scoreData[scoreData.find(searchstr)+len(searchstr):]
+        scoreData = scoreData[:scoreData.find('};')+1]
+        # scoreData = scoreData[scoreData.find('window.espn.scoreboardData 	= ')+len('window.espn.scoreboardData 	= '):]
+        scoreData = json.loads(scoreData)['page']['content']['scoreboard']
+
+        with open(calendar_json,'w') as f:
+            f.write(json.dumps(scoreData['calendar'], indent=2))
+        cal = scoreData['calendar']
+    
+    cal_block = get_current_calendar_block(cal, delta=delta)
+    seasontype = cal_block["value"]
+    week = -1
+
+    if cal_block["value"] == '2':
+        week_block = get_current_calendar_block(cal_block["entries"], delta=delta)
+        week = int(week_block['value'])
 
     # url = "http://espn.go.com/college-football/scoreboard/_/group/" + type + "/year/"+str(year)+"/seasontype/"+seasontype+"/?t=" + str(time.time())
     url = "http://espn.go.com/college-football/scoreboard/_/group/" + type + "/year/"+str(year)+"/seasontype/"+seasontype
@@ -76,7 +112,8 @@ def get_game(team, delta=0,fcs=False):
         # all = True
         conf = True
 
-    if delta != 0:
+    # if delta != 0:
+    if week != -1:
         url = url + "/week/" + str(week)
     url = url + "/?t=" + str(time.time())
 
@@ -92,6 +129,8 @@ def get_game(team, delta=0,fcs=False):
     # scoreData = scoreData[scoreData.find('window.espn.scoreboardData 	= ')+len('window.espn.scoreboardData 	= '):]
     with open("espnout.txt", 'w') as f:
         f.write(scoreData)
+    with open(calendar_json,'w') as f:
+        f.write(json.dumps(scoreData['calendar'], indent=2))
     scoreData = json.loads(scoreData)['page']['content']['scoreboard']
     # print(scoreData)
     # f = open('espnout.txt','w')
@@ -347,4 +386,6 @@ def get_game_str(scoreData, team=None):
 if __name__ == "__main__":
     # print(get_game("stan"))
     # print(get_game("vt",delta=-2))
-    print(get_game("vt",delta=1))
+    # print(get_game("vt",delta=1))
+    print(get_game(""))
+    # print(get_game("vt"))
