@@ -85,10 +85,10 @@ def get_game(team, delta=0,fcs=False):
         scoreData = scoreData[:scoreData.find('};')+1]
         # scoreData = scoreData[scoreData.find('window.espn.scoreboardData 	= ')+len('window.espn.scoreboardData 	= '):]
         scoreData = json.loads(scoreData)['page']['content']['scoreboard']
+        cal = scoreData['calendar']
 
         with open(calendar_json,'w') as f:
-            f.write(json.dumps(scoreData['calendar'], indent=2))
-        cal = scoreData['calendar']
+            f.write(json.dumps(cal, indent=2))
     
     cal_block = get_current_calendar_block(cal, delta=delta)
     seasontype = cal_block["value"]
@@ -129,9 +129,10 @@ def get_game(team, delta=0,fcs=False):
     # scoreData = scoreData[scoreData.find('window.espn.scoreboardData 	= ')+len('window.espn.scoreboardData 	= '):]
     with open("espnout.txt", 'w') as f:
         f.write(scoreData)
-    with open(calendar_json,'w') as f:
-        f.write(json.dumps(scoreData['calendar'], indent=2))
     scoreData = json.loads(scoreData)['page']['content']['scoreboard']
+    cal = scoreData['calendar']
+    with open(calendar_json,'w') as f:
+        f.write(json.dumps(cal, indent=2))
     # print(scoreData)
     # f = open('espnout.txt','w')
     # f.write(json.dumps(scoreData))
