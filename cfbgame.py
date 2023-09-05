@@ -58,8 +58,9 @@ def get_game(team, delta=0,fcs=False):
         seasontype = "3"
         if now.month == 1:
             year = now.year-1
-    week2 = datetime(2023,9,5)
-    week = int(2 + (now - week2).days/7 + delta)
+    # week2 = datetime(2023,9,5)
+    week1 = datetime(2023,8,29)
+    week = int((now - week1).days/7 + delta)
 
     # url = "http://espn.go.com/college-football/scoreboard/_/group/" + type + "/year/"+str(year)+"/seasontype/"+seasontype+"/?t=" + str(time.time())
     url = "http://espn.go.com/college-football/scoreboard/_/group/" + type + "/year/"+str(year)+"/seasontype/"+seasontype
