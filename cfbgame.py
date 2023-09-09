@@ -127,16 +127,16 @@ def get_game(team, delta=0,fcs=False):
     scoreData = scoreData[scoreData.find(searchstr)+len(searchstr):]
     scoreData = scoreData[:scoreData.find('};')+1]
     # scoreData = scoreData[scoreData.find('window.espn.scoreboardData 	= ')+len('window.espn.scoreboardData 	= '):]
-    with open("espnout.txt", 'w') as f:
-        f.write(scoreData)
+    # with open("espnout.txt", 'w') as f:
+    #     f.write(scoreData)
     scoreData = json.loads(scoreData)['page']['content']['scoreboard']
     cal = scoreData['calendar']
     with open(calendar_json,'w') as f:
         f.write(json.dumps(cal, indent=2))
     # print(scoreData)
-    # f = open('espnout.txt','w')
-    # f.write(json.dumps(scoreData))
-    # f.close()
+    f = open('espnout.txt','w')
+    f.write(json.dumps(scoreData))
+    f.close()
 
     if conf:
         return "```python\n%s\n```" % get_game_str(scoreData)
@@ -321,6 +321,8 @@ def get_game_str(scoreData, team=None):
                     home['status'] = "%s 🏈" % home['abv']
                 # home['status'] = "%s %s" % (home['status'], game['situation']['downDistanceText'])
                 home['status'] = "%s %s" % (home['status'], game['situation']['downAndDistance'])
+                if 'lstPly' in game:
+                    home['lastplay'] = "[%s] %s" % (game['lstPly']['tmAbbrv'], game['lstPly']['lstPlyTxt'])
             except KeyError:
                 pass
 
@@ -368,6 +370,9 @@ def get_game_str(scoreData, team=None):
     labels_post.extend(['sep','status'])
     if len(teamlistin) > 0:
         output = output + utils.format_table(labels_post, teamlistin, showlabels=False, linebreaknum=2, linebreak=LINE_SEP, left_list=left)
+        if len(teamlistin) == 2: # 2 teams is 1 game
+            if 'lastplay' in home:
+                output = output + "\n" + "Last Play: %s" % home['lastplay']
         if len(teamlistpost) > 0 or len(teamlistpre) > 0:
             output = output + "\n" + LINE_SEP + "\n"
     if len(teamlistpre) > 0:
@@ -388,5 +393,5 @@ if __name__ == "__main__":
     # print(get_game("stan"))
     # print(get_game("vt",delta=-2))
     # print(get_game("vt",delta=1))
-    print(get_game(""))
-    # print(get_game("vt"))
+    # print(get_game(""))
+    print(get_game("vt"))
