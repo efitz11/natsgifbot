@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from urllib.request import urlopen, Request
 import urllib.parse
 from bs4 import BeautifulSoup
-import tweepy
+# import tweepy
 import utils, string
 import re
 from os import path
@@ -245,10 +245,13 @@ def cocktail(query):
         lines = []
         for i in range(1,15):
             ingredient = drink['strIngredient%d' % i]
-            if ingredient == "":
+            if ingredient == "" or ingredient is None:
                 break
             measure = drink['strMeasure%d' % i]
+            if measure == None:
+                measure = ""
             lines.append([measure, ingredient])
+        print(lines)
         output = "%s```%s```" % (output, _print_table(lines))
         output = "%s\n%s\n\n" % (output, drink['strInstructions'].strip())
         output = "%s%s" % (output, drink['strDrinkThumb'])
@@ -315,9 +318,9 @@ if __name__ == "__main__":
     # print(get_latest_tweet("chelsea_janes"))
     # print(ud_def("word"))
     # search_imdb("ryan reynolds")
-    # print(cocktail("margarita"))
+    print(cocktail("margarita"))
     # print(kym("wednesday my dudes"))
     # print(kym("iphone"))
     # print(check_tweet_verified("https://twitter.com/JeffFletcherOCR/status/1224883361388195840?s=19"))
     # print(search_youtube("he man 10 hours"))
-    print(get_stswiki_page('pandora\'s box'))
+    # print(get_stswiki_page('pandora\'s box'))
