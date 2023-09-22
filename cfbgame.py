@@ -130,6 +130,8 @@ def get_game(team, delta=0,fcs=False):
     # with open("espnout.txt", 'w') as f:
     #     f.write(scoreData)
     scoreData = json.loads(scoreData)['page']['content']['scoreboard']
+    with open("espnout.json", 'w') as f:
+        f.write(json.dumps(scoreData))
     cal = scoreData['calendar']
     with open(calendar_json,'w') as f:
         f.write(json.dumps(cal, indent=2))
@@ -336,6 +338,11 @@ def get_game_str(scoreData, team=None):
                     # home['status'] = game['odds'][0]['details']
                     if 'details' in game['odds']:
                         home['status'] = game['odds']['details']
+                    if 'broadcasts' in game:
+                        if len(home['status']) > 1:
+                            home['status'] = game['broadcasts'][0]['name'] + " | " + home['status']
+                        else:
+                            home['status'] = game['broadcasts'][0]['name']
                 teamlistpre.extend([away,home])
             else:
                 # if 'linescores' in awayjson:
@@ -394,4 +401,4 @@ if __name__ == "__main__":
     # print(get_game("vt",delta=-2))
     # print(get_game("vt",delta=1))
     # print(get_game(""))
-    print(get_game("vt"))
+    print(get_game("acc"))
