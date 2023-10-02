@@ -338,7 +338,7 @@ def get_game_str(scoreData, team=None):
                     # home['status'] = game['odds'][0]['details']
                     if 'details' in game['odds']:
                         home['status'] = game['odds']['details']
-                    if 'broadcasts' in game:
+                    if 'broadcasts' in game and len(game['broadcasts']) > 0:
                         if len(home['status']) > 1:
                             home['status'] = game['broadcasts'][0]['name'] + " | " + home['status']
                         else:
