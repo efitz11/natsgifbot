@@ -299,6 +299,8 @@ def get_game_str(scoreData, team=None):
             away['id'], home['id'] = awayjson['id'], homejson['id']
             # away['rank'], home['rank'] = _fix_rank(awayjson['curatedRank']['current']), _fix_rank(homejson['curatedRank']['current'])
             away['rank'], home['rank'] = _fix_rank(awayjson['rank']), _fix_rank(homejson['rank'])
+            away['record'] = "(%s)" % (awayjson['records'][0]['summary'])
+            home['record'] = "(%s)" % (homejson['records'][0]['summary'])
 
             if 'lnescrs' in game:
                 away = _add_linescores_side(away, game['lnescrs']['awy'])
@@ -369,7 +371,7 @@ def get_game_str(scoreData, team=None):
             # if team is None:
             #     output += LINE_SEP
 
-    labels_pre = ['rank','abv','sep','status']
+    labels_pre = ['rank','abv','record','sep','status']
     labels_post = ['rank','abv','score','pos','sep']
     quarters = ['q1','q2','q3','q4','o1','o2','o3','o4','o5','o6']
     left = ['status']
@@ -399,6 +401,6 @@ def get_game_str(scoreData, team=None):
 if __name__ == "__main__":
     # print(get_game("stan"))
     # print(get_game("vt",delta=-2))
-    # print(get_game("vt",delta=1))
+    # print(get_game("vt",delta=3))
     # print(get_game(""))
     print(get_game("acc"))
