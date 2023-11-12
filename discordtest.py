@@ -844,7 +844,6 @@ async def odds(ctx, *query):
 async def on_message(message):
     channel = message.channel
     # if message.author == bot.user:
-    print(message.content)
     if message.author != bot.user:
         if patterntwitter.search(message.content):
             print("match")
