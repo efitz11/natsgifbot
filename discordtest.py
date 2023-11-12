@@ -37,8 +37,9 @@ patternmasn = re.compile('masn', re.IGNORECASE)
 # patterneaton = re.compile('(?<!(Miami University Great ))(Adam Eaton)', re.IGNORECASE)
 # patterntwitter = re.compile('https://*.twitter.com/([^/?]+)*')
 # patterntwitter = re.compile('https://\btwitter.com/[^/?]+/status/[0-9]+')
-patterntwitter = re.compile('(?:https?:\/\/(?:twitter|x)\.com)(\/(?:#!\/)?(\w+)\/status(es)?\/(\d+))')
+patterntwitter = re.compile(r'(?:https?:\/\/(www\.)?(?:twitter|x)\.com)(\/(?:#!\/)?(\w+)\/status(es)?\/(\d+))')
 patternx = re.compile('https://.*\bx.com/([^/?]+)/status/([0-9]+)')
+patternig = re.compile(r"https?://(www\.)?instagram\.com/p/.{11}")
 # patterntwitterstatus = re.compile('https://.*twitter.com/([^/?]+)/status/([0-9]+)')
 masn_time = datetime.now()
 
@@ -853,6 +854,8 @@ async def on_message(message):
                 # else:
                 #     await message.add_reaction(u"\u274C")
             return
+        if patternig.search(message.content):
+            await channel.send("embed fixed link: %s" % (re.search(patternig, message.content).group(0).replace("inst", "ddinst")))
     if message.content.lower().startswith('bot ') or message.content.lower().startswith("hey alexa "):
         if message.content.lower().startswith('bot'):
             message.content = '!' + message.content[4:]
