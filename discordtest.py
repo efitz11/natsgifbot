@@ -35,8 +35,11 @@ patternalexaplay = re.compile('alexa play', re.IGNORECASE)
 patternshitbot = re.compile('shit bot', re.IGNORECASE)
 patternmasn = re.compile('masn', re.IGNORECASE)
 # patterneaton = re.compile('(?<!(Miami University Great ))(Adam Eaton)', re.IGNORECASE)
-patterntwitter = re.compile('https://.*twitter.com/([^/?]+)*')
-patterntwitterstatus = re.compile('https://.*twitter.com/([^/?]+)/status/([0-9]+)')
+# patterntwitter = re.compile('https://*.twitter.com/([^/?]+)*')
+# patterntwitter = re.compile('https://\btwitter.com/[^/?]+/status/[0-9]+')
+patterntwitter = re.compile('(?:https?:\/\/(?:twitter|x)\.com)(\/(?:#!\/)?(\w+)\/status(es)?\/(\d+))')
+patternx = re.compile('https://.*\bx.com/([^/?]+)/status/([0-9]+)')
+# patterntwitterstatus = re.compile('https://.*twitter.com/([^/?]+)/status/([0-9]+)')
 masn_time = datetime.now()
 
 pidfile = 'discordbotpid.txt'
@@ -840,14 +843,18 @@ async def odds(ctx, *query):
 @bot.event
 async def on_message(message):
     channel = message.channel
-    if message.author == bot.user:
+    # if message.author == bot.user:
+    print(message.content)
+    if message.author != bot.user:
         if patterntwitter.search(message.content):
-            verified = web.check_tweet_verified(re.search(patterntwitter, message.content).group(1))
-            if verified:
-                await message.add_reaction(u"\u2611")
-            else:
-                await message.add_reaction(u"\u274C")
-        return
+            print("match")
+            await channel.send("embed fixed link: %s" % (re.search(patterntwitter, message.content).group(0).replace('twitter.com', 'fxtwitter.com').replace("x.com", "fixupx.com")))
+                # verified = web.check_tweet_verified(re.search(patterntwitter, message.content).group(1))
+                # if verified:
+                #     await message.add_reaction(u"\u2611")
+                # else:
+                #     await message.add_reaction(u"\u274C")
+            return
     if message.content.lower().startswith('bot ') or message.content.lower().startswith("hey alexa "):
         if message.content.lower().startswith('bot'):
             message.content = '!' + message.content[4:]
