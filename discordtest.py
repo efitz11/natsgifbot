@@ -846,7 +846,6 @@ async def on_message(message):
     # if message.author == bot.user:
     if message.author != bot.user:
         if patterntwitter.search(message.content):
-            print("match")
             await channel.send("embed fixed link: %s" % (re.search(patterntwitter, message.content).group(0).replace('twitter.com', 'fxtwitter.com').replace("x.com", "fixupx.com")))
                 # verified = web.check_tweet_verified(re.search(patterntwitter, message.content).group(1))
                 # if verified:
