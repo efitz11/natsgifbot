@@ -32,7 +32,7 @@ def get_stswiki_page(query):
     return url
 
 def get_balatrowiki_page(query):
-    url = "https://balatrogame.fandom.com/wiki/" + urllib.parse.quote(string.capwords(query))
+    url = "https://balatrogame.fandom.com/wiki/" + urllib.parse.quote(query.title())
     return url
 
 def search_untappd(beer_name):
