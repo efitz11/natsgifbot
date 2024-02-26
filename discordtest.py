@@ -631,6 +631,11 @@ async def sts(ctx, *query:str):
     await ctx.send(web.get_stswiki_page(' '.join(query)))
 
 @bot.command()
+async def balatro(ctx, *query:str):
+    """get a link to the balatro wiki page for your query"""
+    await ctx.send(web.get_balatrowiki_page(' '.join(query)))
+
+@bot.command()
 async def beer(ctx, *beer_name):
     """get untappd info on a beer"""
     await ctx.send(web.search_untappd(' '.join(beer_name)))

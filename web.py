@@ -31,6 +31,10 @@ def get_stswiki_page(query):
     url = "https://slay-the-spire.fandom.com/wiki/" + urllib.parse.quote(string.capwords(query))
     return url
 
+def get_balatrowiki_page(query):
+    url = "https://balatrograme.fandom.com/wiki/" + urllib.parse.quote(string.capwords(query))
+    return url
+
 def search_untappd(beer_name):
     """search untappd for a beer"""
     keys = get_keys("untappd")
