@@ -846,6 +846,8 @@ async def on_message(message):
     channel = message.channel
     # if message.author == bot.user:
     if message.author != bot.user:
+        if patternig.search(message.content):
+            await channel.send("embed fixed link: %s" % (re.search(patternig, message.content).group(0).replace("inst", "ddinst")))
         # if patterntwitter.search(message.content):
             # await channel.send("embed fixed link: %s" % (re.search(patterntwitter, message.content).group(0).replace('twitter.com', 'fxtwitter.com').replace("x.com", "fixupx.com")))
                 # verified = web.check_tweet_verified(re.search(patterntwitter, message.content).group(1))
@@ -854,8 +856,6 @@ async def on_message(message):
                 # else:
                 #     await message.add_reaction(u"\u274C")
             return
-        if patternig.search(message.content):
-            await channel.send("embed fixed link: %s" % (re.search(patternig, message.content).group(0).replace("inst", "ddinst")))
     if message.content.lower().startswith('bot ') or message.content.lower().startswith("hey alexa "):
         if message.content.lower().startswith('bot'):
             message.content = '!' + message.content[4:]
