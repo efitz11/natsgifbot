@@ -2965,7 +2965,7 @@ if __name__ == "__main__":
     # print(print_roster('wsh',hitters=False))
     # print(get_milb_aff_scores(delta="-1"))
     # print(get_milb_box('syr'))
-    print(get_milb_line("joan adon", delta=-1))
+    print(get_milb_line("wood", delta=-1))
     # print(print_broadcasts("wsh"))
     # print(get_player_season_stats("max scherzer"))
     # print(list_home_runs('tex', delta="-1"))

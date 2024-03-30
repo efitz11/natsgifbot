@@ -100,9 +100,10 @@ def _find_player_id(name, milb=False):
             for player in players:
                 # if player['teamId'] in nats_teamids:
                 # if player['parent_team'] == "WAS":
-                if player['currentTeam']['parentOrgId'] == 120:
-                    # return player['playerId']
-                    return player['id']
+                if 'parentOrgId' in player['currentTeam']:
+                    if player['currentTeam']['parentOrgId'] == 120:
+                        # return player['playerId']
+                        return player['id']
             for player in players:
                 # return player['playerId']
                 return player['id']
@@ -141,6 +142,7 @@ def _new_player_search(name, type=None, milb=False):
         url = API_LINK + "people/%s/stats?stats=yearByYear,career&gameType=S&leagueListId=mlb_hist&hydrate=team" % p
         stats = utils.get_json(url)
         player['stats'] = stats['stats']
+    print("Query \"%s\" matched player %s" % (name, player['fullName']))
     return player
 
 def _get_stats_string(stats, group=None, include_gp=False):
