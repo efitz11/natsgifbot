@@ -63,8 +63,12 @@ def _find_player_id(name, milb=False):
         name = name.strip()
 
     # url = "https://typeahead.mlb.com/api/v1/typeahead/suggestions/%s" % urllib.parse.quote(name)
-    url = "https://baseballsavant.mlb.com/player/search-all?search=%s" % urllib.parse.quote(name)
-    players = utils.get_json(url)
+    if milb:
+        url = "https://statsapi.mlb.com/api/v1/people/search?names=%s&sportIds=11,12,13,14,15,5442,16&active=true&hydrate=currentTeam,team" % urllib.parse.quote(name)
+        players = utils.get_json(url)['people']
+    else:
+        url = "https://baseballsavant.mlb.com/player/search-all?search=%s" % urllib.parse.quote(name)
+        players = utils.get_json(url)
     if len(players) > 0:
         if not milb:
             # teamids = mymlbstats.get_mlb_teamid_list()
@@ -95,7 +99,8 @@ def _find_player_id(name, milb=False):
             # nats_teamids = [534, 547, 426, 436]
             for player in players:
                 # if player['teamId'] in nats_teamids:
-                if player['parent_team'] == "WAS":
+                # if player['parent_team'] == "WAS":
+                if player['currentTeam']['parentOrgId'] == 120:
                     # return player['playerId']
                     return player['id']
             for player in players:
@@ -1307,5 +1312,5 @@ if __name__ == "__main__":
     # print(print_games('wsh'))
     # print(print_games("lad"))
     # print(print_stat_streaks(['hitting'], redditpost=True))
-    print(get_player_season_stats("giolito"))
+    print(get_player_season_stats("holliday", milb=True))
     # print(_new_player_search("will smith (lad)"))
