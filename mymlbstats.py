@@ -500,7 +500,7 @@ def get_team_dl(team):
         output = output + "\n"
     return output
 
-def get_day_schedule(delta=None,teamid=None,scoringplays=False,hydrates=None):
+def get_day_schedule(delta=None,teamid=None,scoringplays=False,hydrates=None, sportids=None):
     now = _get_date_from_delta(delta)
     date = str(now.year) + "-" + str(now.month).zfill(2) + "-" + str(now.day).zfill(2)
     if hydrates is None:
@@ -510,7 +510,10 @@ def get_day_schedule(delta=None,teamid=None,scoringplays=False,hydrates=None):
     team = ""
     if teamid is not None:
         team = "&teamId=" + str(teamid)
-    url = "https://statsapi.mlb.com/api/v1/schedule?sportId=1" + team + "&date=" + date + hydrates
+    if not sportids:
+        url = "https://statsapi.mlb.com/api/v1/schedule?sportId=1" + team + "&date=" + date + hydrates
+    else:
+        url = "https://statsapi.mlb.com/api/v1/schedule?sportId=%s" % sportids + team + "&date=" + date + hydrates
     print(url)
     req = Request(url, headers={'User-Agent' : "ubuntu"})
     s = json.loads(urlopen(req).read().decode("utf-8"))
@@ -1670,13 +1673,19 @@ def get_milb_line(name, delta=None):
     player = milb_player_search(name)
     if player is None:
         return "No player found"
-    name = player['name_first_last']
-    teamabv = player['team_name_abbrev']
-    teamid = player['team_id']
-    orgid = player['parent_team_id']
-    level = player['level']
-    parent = player['parent_team']
-    id = int(player['player_id'])
+    # name = player['name_first_last']
+    name = player['fullName']
+    # teamabv = player['team_name_abbrev']
+    teamabv = player['currentTeam']['abbreviation']
+    # teamid = player['team_id']
+    teamid = player['currentTeam']['id']
+    # orgid = player['parent_team_id']
+    orgid = player['currentTeam']['parentOrgId']
+    # level = player['level']
+    level = player['currentTeam']['sport']['name']
+    # parent = player['parent_team']
+    # id = int(player['player_id'])
+    id = player['id']
     try:
         pos = int(player['primary_position'])
         if pos == 1:
@@ -1694,23 +1703,32 @@ def get_milb_line(name, delta=None):
 
     output = "%s game line for %s (%s - %s):\n\n" % (date, name, teamabv, level)
 
-    url = "http://lookup-service-prod.mlb.com/lookup/json/named.schedule_vw_complete_affiliate.bam?" \
-          "game_date=%27" + year + "/" + month + "/" + day + "%27&season=" + year + "&org_id=" + str(orgid)
-    print(url)
-    req = Request(url, headers={'User-Agent' : "ubuntu"})
-    s = json.loads(urlopen(req).read().decode("utf-8"))['schedule_vw_complete_affiliate']['queryResults']
-    if s['totalSize'] == '1':
-        affs = [s['row']]
-    else:
-        affs = s['row']
-    gamepks = []
-    for aff in affs:
-        if aff['home_team_id'] == teamid or aff['away_team_id'] == teamid:
-            if aff['home_team_id'] == teamid:
-                side = 'home'
-            else:
-                side = 'away'
-            gamepks.append((aff['game_pk'], side))
+    # url = "http://lookup-service-prod.mlb.com/lookup/json/named.schedule_vw_complete_affiliate.bam?" \
+    #       "game_date=%27" + year + "/" + month + "/" + day + "%27&season=" + year + "&org_id=" + str(orgid)
+
+    s = get_day_schedule(delta=delta,teamid=teamid, sportids="11,12,13,14,15,5442,16")
+    gamepks = list()
+    for game in s['dates'][0]['games']:
+        if game['teams']['away']['team']['id'] == teamid:
+            side = "away"
+        else:
+            side = "home"
+        gamepks.append((game['gamePk'], side))
+    # print(url)
+    # req = Request(url, headers={'User-Agent' : "ubuntu"})
+    # s = json.loads(urlopen(req).read().decode("utf-8"))['schedule_vw_c0omplete_affiliate']['queryResults']
+    # if s['totalSize'] == '1':
+    #     affs = [s['row']]
+    # else:
+    #     affs = s['row']
+    # gamepks = []
+    # for aff in affs:
+    #     if aff['home_team_id'] == teamid or aff['away_team_id'] == teamid:
+    #         if aff['home_team_id'] == teamid:
+    #             side = 'home'
+    #         else:
+    #             side = 'away'
+    #         gamepks.append((aff['game_pk'], side))
     if len(gamepks) == 0:
         return "No games found for team"
     for gamepk, side in gamepks:
@@ -2947,13 +2965,13 @@ if __name__ == "__main__":
     # print(print_roster('wsh',hitters=False))
     # print(get_milb_aff_scores(delta="-1"))
     # print(get_milb_box('syr'))
-    # print(get_milb_line("kershaw", delta="-1"))
+    print(get_milb_line("holliday"))
     # print(print_broadcasts("wsh"))
     # print(get_player_season_stats("max scherzer"))
     # print(list_home_runs('tex', delta="-1"))
     # print(print_dongs("recent", delta="-1"))
     # print(batter_or_pitcher_vs("strasburg","nym"))
-    print(print_at_bats("kieboom", delta="-3"))
+    # print(print_at_bats("kieboom", delta="-3"))
     # print(get_all_game_highlights("565905"))
     # print(find_game_highlights('wsh', delta="-1"))
     # print(print_pitches_by_inning('wsh'))
