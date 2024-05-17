@@ -253,10 +253,12 @@ def get_single_game_info(gamepk, gamejson, show_on_deck=False, liveonly=False, c
                 p = dict()
                 p["ip"] = bs.players[pitcher]['stats']['pitching']['inningsPitched']
                 p["bb"] = bs.players[pitcher]['stats']['pitching']['baseOnBalls']
+                p["so"] = bs.players[pitcher]['stats']['pitching']['strikeOuts']
                 p["pitcher"] = bs.players[pitcher]['person']['fullName']
+                p["np"] = bs.players[pitcher]['stats']['pitching']['pitchesThrown']
                 pitchers.append(p)
 
-            labels = ['pitcher', 'ip', 'bb']
+            labels = ['pitcher', 'ip', 'bb', 'so', 'np']
             output = output + "\t##############################\n"
             output = output + "\t" + club.upper() + " THROWING A %s\n\n" % (special)
             output = output + "\t" + utils.format_table(labels, pitchers, left_list=["pitcher"]).replace('\n', '\n\t') + "\n"
