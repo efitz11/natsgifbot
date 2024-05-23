@@ -1163,21 +1163,22 @@ def get_ohtani_line(delta=None):
     # return get_player_line("shohei ohtani", delta=delta)
     return print_at_bats("shohei ohtani", delta=delta)
 
-def get_player_gamelogs(name, num=5, forcebatting=False, reddit=False):
+def get_player_gamelogs(name, num=5, forcebatting=False, reddit=False, milb=False):
     # cap at 15
     if num > 15:
         num = 15
-    player = newmlbstats._new_player_search(name)
+    player = newmlbstats._new_player_search(name, milb=milb)
     if player is None:
         return "No matching player found"
     pitching = player['primaryPosition']['abbreviation'] == 'P'
     if forcebatting:
         pitching = False
     now = datetime.now()
-    url = f"https://statsapi.mlb.com/api/v1/people/{player['player_id']}/stats?stats=gameLog&group=hitting&gameType=R&sitCodes=1,2,3,4,5,6,7,8,9,10,11,12&hydrate=team&season={str(now.year)}&language=en"
+    sportid = player['currentTeam']['sport']['id']
+    url = f"https://statsapi.mlb.com/api/v1/people/{player['player_id']}/stats?stats=gameLog&group=hitting&gameType=R&sitCodes=1,2,3,4,5,6,7,8,9,10,11,12&hydrate=team&season={str(now.year)}&language=en&sportId={sportid}"
     type = "hitting"
     if pitching:
-        url = f"https://statsapi.mlb.com/api/v1/people/{player['player_id']}/stats?stats=gameLog&group=pitching&gameType=R&sitCodes=1,2,3,4,5,6,7,8,9,10,11,12&hydrate=team&season={str(now.year)}&language=en"
+        url = f"https://statsapi.mlb.com/api/v1/people/{player['player_id']}/stats?stats=gameLog&group=pitching&gameType=R&sitCodes=1,2,3,4,5,6,7,8,9,10,11,12&hydrate=team&season={str(now.year)}&language=en&sportId={sportid}"
         type = "pitching"
     print(url)
     req = Request(url, headers={'User-Agent' : "ubuntu"})
@@ -2973,7 +2974,7 @@ if __name__ == "__main__":
     # print(get_milb_aff_scores(delta="-1"))
     # print(get_milb_box('syr'))
     # print(get_milb_line("wood", delta=-1))
-    print(print_at_bats("wood", milb=True))
+    print(get_player_gamelogs("wood", milb=False))
     # print(print_broadcasts("wsh"))
     # print(get_player_season_stats("max scherzer"))
     # print(list_home_runs('tex', delta="-1"))

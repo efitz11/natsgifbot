@@ -555,10 +555,10 @@ class Baseball(commands.Cog):
         if query[-1].isdigit():
             num = query[-1]
             player = ' '.join(query[:-1])
-            await ctx.send("```%s```" % mymlbstats.get_milb_log(player,number=num))
+            await ctx.send("```%s```" % mymlbstats.get_player_gamelogs(player,number=num, milb=True))
         else:
             player = ' '.join(query)
-            await ctx.send("```%s```" % mymlbstats.get_milb_log(player))
+            await ctx.send("```%s```" % mymlbstats.get_player_gamelogs(player, milb=True))
 
     @milb.command()
     async def batting(self, ctx, *query:str):
