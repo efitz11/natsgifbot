@@ -2632,13 +2632,14 @@ def print_dongs(type, delta=None, reddit=False):
 
     return out + utils.format_table(labs, sorteddongs, repl_map=repl_map, left_list=left, reddit=reddit)
 
-def print_at_bats(name, delta=None):
-    player = newmlbstats._new_player_search(name)
+def print_at_bats(name, delta=None, milb=False):
+    player = newmlbstats._new_player_search(name, milb=milb)
     if player is None:
         return "No matching player found"
     teamid = player['currentTeam']['id']
+    sportid = int(player['currentTeam']['sport']['id'])
     playerid = int(player['id'])
-    schedule = get_day_schedule(teamid=teamid, delta=delta)
+    schedule = get_day_schedule(teamid=teamid, delta=delta, sportids=sportid)
     games = schedule['dates'][0]['games']
     date = _get_date_from_delta(delta)
     output = "%s\n" % get_player_line(name, delta=delta, player=player, schedule=schedule)
@@ -2972,7 +2973,7 @@ if __name__ == "__main__":
     # print(get_milb_aff_scores(delta="-1"))
     # print(get_milb_box('syr'))
     # print(get_milb_line("wood", delta=-1))
-    print(get_player_line("wood", milb=True))
+    print(print_at_bats("wood", milb=True))
     # print(print_broadcasts("wsh"))
     # print(get_player_season_stats("max scherzer"))
     # print(list_home_runs('tex', delta="-1"))

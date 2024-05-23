@@ -541,6 +541,14 @@ class Baseball(commands.Cog):
         await ctx.send("%s" % mymlbstats.get_player_line(player, delta=delta, milb=True))
 
     @milb.command()
+    async def abs(self, ctx, *query:str):
+        """get a minor league player's at bats lists
+        !milb abs <player> [delta]"""
+        delta, query = self._find_delta(query)
+        player = ' '.join(query)
+        await ctx.send("%s" % mymlbstats.print_at_bats(player, delta=delta, milb=True))
+
+    @milb.command()
     async def log(self, ctx, *query:str):
         """get a minor league player's game logs
         !milb log <player> [num] - num defaults to last 5 games, maximum of 15"""
