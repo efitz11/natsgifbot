@@ -538,7 +538,7 @@ class Baseball(commands.Cog):
         delta, query = self._find_delta(query)
         player = ' '.join(query)
         # await ctx.send("```%s```" % mymlbstats.get_milb_line(player, delta=delta))
-        await ctx.send("```%s```" % mymlbstats.get_player_line(player, delta=delta, milb=True))
+        await ctx.send("%s" % mymlbstats.get_player_line(player, delta=delta, milb=True))
 
     @milb.command()
     async def log(self, ctx, *query:str):
