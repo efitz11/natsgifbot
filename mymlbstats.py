@@ -1069,16 +1069,20 @@ def _get_player_search(name, active='Y'):
     # else:
     #     return None
 
-def get_player_line(name, delta=None, player=None, schedule=None):
+def get_player_line(name, delta=None, player=None, schedule=None, milb=False):
     if player is None:
-        player = newmlbstats._new_player_search(name)
+        player = newmlbstats._new_player_search(name, milb=milb)
     if player is None:
         return "No matching player found"
     teamid = int(player['currentTeam']['id'])
+    sportid = int(player['currentTeam']['sport']['id'])
     pid = player['id']
     disp_name = player['fullName']
     if schedule is None:
-        s = get_day_schedule(delta)
+        if not milb:
+            s = get_day_schedule(delta)
+        else:
+            s = get_day_schedule(delta, teamid=teamid, sportids=sportid)
     else:
         s = schedule
     try:
@@ -2967,7 +2971,8 @@ if __name__ == "__main__":
     # print(print_roster('wsh',hitters=False))
     # print(get_milb_aff_scores(delta="-1"))
     # print(get_milb_box('syr'))
-    print(get_milb_line("wood", delta=-1))
+    # print(get_milb_line("wood", delta=-1))
+    print(get_player_line("wood", milb=True))
     # print(print_broadcasts("wsh"))
     # print(get_player_season_stats("max scherzer"))
     # print(list_home_runs('tex', delta="-1"))
