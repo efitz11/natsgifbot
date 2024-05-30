@@ -90,6 +90,12 @@ def get_mlb_teams():
         abbrevmap[s['abbreviation'].lower()] = (s['id'], s)
     return (abbrevmap, teammap)
 
+def get_team_by_id(teamid):
+    teams = _get_mlb_team_json()['teams']
+    for team in teams:
+        if teamid == team['id']:
+            return team
+
 def get_mlb_teamid_list():
     s = _get_mlb_team_json()
     teams = s['teams']

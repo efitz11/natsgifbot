@@ -212,7 +212,10 @@ def _get_multiple_stats_string(playerlist, group=None, include_gp=False, reddit=
                         if not reddit:
                             row['lastName'] = row['lastName'][:5]
                         if 'team' in g['splits'][i]:
-                            row['team'] = g['splits'][i]['team']['abbreviation']
+                            if 'abbreviation' in g['splits'][i]['team']:
+                                row['team'] = g['splits'][i]['team']['abbreviation']
+                            else:
+                                row['team'] = mymlbstats.get_team_by_id(g['splits'][i]['team']['id'])['abbreviation']
                         else:
                             row['team'] = g['splits'][i]['sport']['abbreviation']
                         statrows.append(row)
