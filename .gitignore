@@ -16,3 +16,4 @@ twitter_accounts.json
 errors/
 /venv/
 *.json
+cache/
