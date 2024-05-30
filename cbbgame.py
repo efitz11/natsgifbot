@@ -56,7 +56,7 @@ groupmap = {
             "wac":"30",
             "wcc":"29"}
 
-def get_game(team,delta=None,runagain=True,type=TYPE,liveonly=False):
+def get_game(team,delta=None,runagain=True,type=TYPE,liveonly=False, second=False):
     if team == "conferences":
         output = ""
         for t in groupmap:
@@ -183,6 +183,10 @@ def get_game(team,delta=None,runagain=True,type=TYPE,liveonly=False):
         games.append(game)
     #output = "Games on " + str(now.month) + "/" + str(now.day) + "/" + str(now.year)
     dateline = "Games on " + date
+
+    if not second:
+        return get_game(team, delta, runagain=False, type=type, second=True)
+
     if all:
         output = ""
         for game in games:
@@ -245,4 +249,4 @@ def pretty_print_games(games):
             pregame.append(game)
 
 if __name__ == "__main__":
-    print(get_game("md"))
+    print(get_game("baylor"))
