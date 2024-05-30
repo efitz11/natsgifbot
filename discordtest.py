@@ -107,71 +107,71 @@ async def on_ready():
     print(bot.user.id)
     print('------')
 
-@bot.command()
-async def gif(ctx, *name : str):
-    """returns a nationals gif matching the search query"""
-    # await ctx.send(gifs.fuzzygif(' '.join(name)))
-    await ctx.send(gifs.gif(' '.join(name)))
+#@bot.command()
+#async def gif(ctx, *name : str):
+#    """returns a nationals gif matching the search query"""
+#    # await ctx.send(gifs.fuzzygif(' '.join(name)))
+#    await ctx.send(gifs.gif(' '.join(name)))
 
-@bot.command()
-async def gfy(ctx, *name : str):
-    """returns a gif from efitz111 on gfycat"""
-    await ctx.send(gfycat.search_gfys(' '.join(name)))
+#@bot.command()
+#async def gfy(ctx, *name : str):
+#    """returns a gif from efitz111 on gfycat"""
+#    await ctx.send(gfycat.search_gfys(' '.join(name)))
 
-@bot.command()
-async def gfyall(ctx, *name : str):
-    """returns up to 30 gifs from efitz111 on gfycat"""
-    if 'bot' in str(ctx.message.channel):
-        await ctx.send(gfycat.search_gfys(' '.join(name), num=30))
-    else:
-        await ctx.send("this command is only allowed in the bot channel")
-
-@bot.command()
-async def mlbgif(ctx, *name : str):
-    """returns a nationals gif matching the search query"""
-    await ctx.send(gifs.get_mlb_gif(' '.join(name)))
+#@bot.command()
+#async def gfyall(ctx, *name : str):
+#    """returns up to 30 gifs from efitz111 on gfycat"""
+#    if 'bot' in str(ctx.message.channel):
+#        await ctx.send(gfycat.search_gfys(' '.join(name), num=30))
+#    else:
+#        await ctx.send("this command is only allowed in the bot channel")
+#
+#@bot.command()
+#async def mlbgif(ctx, *name : str):
+#    """returns a nationals gif matching the search query"""
+#    await ctx.send(gifs.get_mlb_gif(' '.join(name)))
     
-@bot.command()
-async def gifall(ctx, *name:str):
-    """returns all gifs matching the search query"""
-    if 'bot' not in str(ctx.message.channel):
-        await ctx.send("this command is only allowed in the bot channel")
-        return
-    matches = []
-    patterns = []
-    query = ""
-    for s in name:
-        patterns.append(re.compile(s,re.IGNORECASE))
-        query = query + " " + s
-    f = open('postlist.csv','r')
-    for line in f:
-        search = ','.join(line.split(',')[:-1])
-        matched = True
-        for pat in patterns:
-            if not re.search(pat,search):
-                matched = False
-                break
-        if matched:
-            matches.append(line)
-    f.close()
-    if len(matches) == 0:
-        await ctx.send("No matches")
-        return
-    else:
-        output = ""
-        for m in matches:
-            m=m.strip()
-            cpos = m.rfind(',') + 1
-            output = output + m[:cpos] + "<" + m[cpos:] + ">\n"
-
-            # if len(output) > 1850:
-            #     output = output + "... more gifs not displayed due to char limit"
-            #     break
-        for m in utils.split_long_message(output):
-            await ctx.send(m)
-        # await ctx.send(output.strip())
-        
-    return
+#@bot.command()
+#async def gifall(ctx, *name:str):
+#    """returns all gifs matching the search query"""
+#    if 'bot' not in str(ctx.message.channel):
+#        await ctx.send("this command is only allowed in the bot channel")
+#        return
+#    matches = []
+#    patterns = []
+#    query = ""
+#    for s in name:
+#        patterns.append(re.compile(s,re.IGNORECASE))
+#        query = query + " " + s
+#    f = open('postlist.csv','r')
+#    for line in f:
+#        search = ','.join(line.split(',')[:-1])
+#        matched = True
+#        for pat in patterns:
+#            if not re.search(pat,search):
+#                matched = False
+#                break
+#        if matched:
+#            matches.append(line)
+#    f.close()
+#    if len(matches) == 0:
+#        await ctx.send("No matches")
+#        return
+#    else:
+#        output = ""
+#        for m in matches:
+#            m=m.strip()
+#            cpos = m.rfind(',') + 1
+#            output = output + m[:cpos] + "<" + m[cpos:] + ">\n"
+#
+#            # if len(output) > 1850:
+#            #     output = output + "... more gifs not displayed due to char limit"
+#            #     break
+#        for m in utils.split_long_message(output):
+#            await ctx.send(m)
+#        # await ctx.send(output.strip())
+#        
+#    return
 
 def mockify_text(text):
     last = False

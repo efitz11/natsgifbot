@@ -67,8 +67,11 @@ def _find_player_id(name, milb=False):
         url = "https://statsapi.mlb.com/api/v1/people/search?names=%s&sportIds=11,12,13,14,15,5442,16&active=true&hydrate=currentTeam,team" % urllib.parse.quote(name)
         players = utils.get_json(url)['people']
     else:
-        url = "https://baseballsavant.mlb.com/player/search-all?search=%s" % urllib.parse.quote(name)
-        players = utils.get_json(url)
+        #url = "https://statsapi.mlb.com/api/v1/people/search?names=%s&sportIds=1&active=true&hydrate=currentTeam,team" % urllib.parse.quote(name)
+        url = "https://statsapi.mlb.com/api/v1/people/search?names=%s&sportIds=1&hydrate=currentTeam,team" % urllib.parse.quote(name)
+        players = utils.get_json(url)['people']
+        #url = "https://baseballsavant.mlb.com/player/search-all?search=%s" % urllib.parse.quote(name)
+        #players = utils.get_json(url)
     if len(players) > 0:
         if not milb:
             # teamids = mymlbstats.get_mlb_teamid_list()
@@ -76,20 +79,20 @@ def _find_player_id(name, milb=False):
             milb_p = None
             for player in players:
                 if teamid is None:
-                    # if player['teamId'] == 120:
-                    if player['name_display_club'] == "Nationals":
+                    if player['currentTeam']['id'] == 120:
+                    #if player['name_display_club'] == "Nationals":
                         # return player['playerId']
                         return player['id']
                     # elif p is None and player['teamId'] in teamids:
-                    elif p is None and player['mlb'] == 1:
+                    elif p is None and player['currentTeam']['sport']['id'] == 1:
                         # p = player['playerId'] # don't just return here to keep searching for Nats
                         p = player['id'] # don't just return here to keep searching for Nats
                     elif milb_p is None:
                         # milb_p = player['playerId'] # if we don't match a major leaguer, just return a minor leaguer
                         milb_p = player['id'] # if we don't match a major leaguer, just return a minor leaguer
                 else:
-                    # if player['teamId'] == teamid:
-                    if player['name_display_club'] == name_display:
+                    if player['currentTeam']['id'] == teamid:
+                        #if player['name_display_club'] == name_display:
                         # return player['playerId']
                         return player['id']
             if p is None:
@@ -347,14 +350,20 @@ def _get_player_info_line(player, seasons=None):
     bdate = player['birthDate'].split("-")
     bdatetime = datetime.strptime(player['birthDate'], "%Y-%m-%d")
     today = datetime.today()
+    living = not 'deathDate' in player
     if seasons is None or seasons == str(today.year):
         t = datetime(today.year, 7, 1)
         curage = today.year - bdatetime.year - ((today.month, today.day) < (bdatetime.month, bdatetime.day))
         sznage = t.year - bdatetime.year - ((t.month, t.day) < (bdatetime.month, bdatetime.day))
-        if curage != sznage:
+        if curage != sznage and player['active']:
             age = "%d (now %d)" % (sznage, curage)
         else:
-            age = curage
+            if 'deathDate' in player:
+                ddate = player['deathDate'].split("-")
+                ddatetime = datetime.strptime(player['deathDate'], "%Y-%m-%d")
+                age = ddatetime.year - bdatetime.year - ((ddatetime.month, ddatetime.day) < (bdatetime.month, bdatetime.day))
+            else:
+                age = curage
 
     elif '-' not in seasons:
         t = datetime(int(seasons), 7, 1)
@@ -367,7 +376,10 @@ def _get_player_info_line(player, seasons=None):
         age2 = t2.year - bdatetime.year - ((t2.month, t2.day) < (bdatetime.month, bdatetime.day))
         age = "%d-%d" % (age1, age2)
 
-    ret = "%s | %s/%s | %s %s | Age: %s" % (pos, bats, throws, height, weight, age)
+    if living:
+        ret = "%s | %s/%s | %s %s | Age: %s" % (pos, bats, throws, height, weight, age)
+    else:
+        ret = "%s | %s/%s | %s %s | Died: %s (%s)" % (pos, bats, throws, height, weight, ddatetime.year, age)
     if nick is not None:
         ret += " | \"%s\"" % nick
 
@@ -391,12 +403,12 @@ def get_player_season_stats(name, type=None, year=None, career=None, reddit=None
     postseason = True if 'postseason' in name else False
     spring = True if 'spring ' in name else False
     if not milb:
-        try:
-            player = _new_player_search(name, type=type)
-            teamid = player['currentTeam']['id']
+        #    try:
+        player = _new_player_search(name, type=type)
+        teamid = player['currentTeam']['id']
             # team = get_team_info(teamid)
-        except:
-            return "Error finding player %s" % name
+        #except:
+        #    return "Error finding player %s" % name
     else:
         player = _new_player_search(name, milb=True)
         player = _get_player_by_id(player["player_id"], milb=True)
@@ -452,7 +464,7 @@ def get_player_season_stats(name, type=None, year=None, career=None, reddit=None
                     season['season'] = split['season']
                 # if 'team' in split:
                 if not milb:
-                    if 'team' in split:
+                    if 'team' in split and 'abbreviation' in split['team']:
                         season['team'] = split['team']['abbreviation']
                         teams.append(season['team'])
                     else:
