@@ -405,6 +405,8 @@ def get_player_season_stats(name, type=None, year=None, career=None, reddit=None
     if not milb:
         #    try:
         player = _new_player_search(name, type=type)
+        if year is None and not player['active']:
+            career=True
         teamid = player['currentTeam']['id']
             # team = get_team_info(teamid)
         #except:
