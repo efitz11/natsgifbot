@@ -1180,11 +1180,14 @@ def get_player_gamelogs(name, num=5, forcebatting=False, reddit=False, milb=Fals
     if forcebatting:
         pitching = False
     now = datetime.now()
-    sportid = player['currentTeam']['sport']['id']
-    url = f"https://statsapi.mlb.com/api/v1/people/{player['player_id']}/stats?stats=gameLog&group=hitting&gameType=R&sitCodes=1,2,3,4,5,6,7,8,9,10,11,12&hydrate=team&season={str(now.year)}&language=en&sportId={sportid}"
+    # sportid = player['currentTeam']['sport']['id']
+    league_list_id = "mlb"
+    if milb:
+        league_list_id = "mlb_milb"
+    url = f"https://statsapi.mlb.com/api/v1/people/{player['player_id']}/stats?stats=gameLog&group=hitting&gameType=R&sitCodes=1,2,3,4,5,6,7,8,9,10,11,12&hydrate=team&season={str(now.year)}&language=en&leagueListId={league_list_id}"
     type = "hitting"
     if pitching:
-        url = f"https://statsapi.mlb.com/api/v1/people/{player['player_id']}/stats?stats=gameLog&group=pitching&gameType=R&sitCodes=1,2,3,4,5,6,7,8,9,10,11,12&hydrate=team&season={str(now.year)}&language=en&sportId={sportid}"
+        url = f"https://statsapi.mlb.com/api/v1/people/{player['player_id']}/stats?stats=gameLog&group=pitching&gameType=R&sitCodes=1,2,3,4,5,6,7,8,9,10,11,12&hydrate=team&season={str(now.year)}&language=en&leagueListId={league_list_id}"
         type = "pitching"
     print(url)
     req = Request(url, headers={'User-Agent' : "ubuntu"})
