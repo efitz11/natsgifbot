@@ -84,6 +84,8 @@ def _find_player_id(name, milb=False):
                         # return player['playerId']
                         return player['id']
                     # elif p is None and player['teamId'] in teamids:
+                    elif 'parentOrgId' in player['currentTeam'] and player['currentTeam']['parentOrgId'] == 120:
+                        return player['id']
                     elif p is None and player['currentTeam']['sport']['id'] == 1:
                         # p = player['playerId'] # don't just return here to keep searching for Nats
                         p = player['id'] # don't just return here to keep searching for Nats
@@ -1331,5 +1333,5 @@ if __name__ == "__main__":
     # print(print_games('wsh'))
     # print(print_games("lad"))
     # print(print_stat_streaks(['hitting'], redditpost=True))
-    print(get_player_season_stats("holliday", milb=True))
+    print(print_contract_info("hoskins"))
     # print(_new_player_search("will smith (lad)"))
