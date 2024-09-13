@@ -880,7 +880,7 @@ async def on_message(message):
         #     for url in urls:
         #         print(url)
         #         await bot.send_message(message.channel, "```%s```" % bot.cogs['Reddit'].get_comment(url))
-        if pattern69.search(message.content):
+        if message.author != bot.user and pattern69.search(message.content):
             await message.add_reaction(emoji_letter_map['n'])
             await message.add_reaction(emoji_letter_map['i'])
             await message.add_reaction(emoji_letter_map['c'])
