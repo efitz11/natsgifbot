@@ -26,9 +26,9 @@ def get_game(team, sport):
     except ValueError:
         pass
     if isint:
-        link = "http://espn.go.com/"+sport+"/scoreboard/_/year/" + str(datetime.now().year) + "/seasontype/2/week/" + str(w)
+        link = "http://espn.com/"+sport+"/scoreboard/_/year/" + str(datetime.now().year) + "/seasontype/2/week/" + str(w)
     else:
-        link = "http://espn.go.com/"+sport+"/scoreboard"
+        link = "http://espn.com/"+sport+"/scoreboard"
 
     if team.startswith("odds"):
         team = team[4:].strip()
@@ -36,7 +36,8 @@ def get_game(team, sport):
             team = None
         return "```python\n%s```" % odds.get_odds_pp(sport, team=team).rstrip()
 
-    link = link + "/?t=" + str(time.time())
+    if sport != "wnba":
+        link = link + "/?t=" + str(time.time())
     print(link)
     req = Request(link)
     req.headers["User-Agent"] = "windows 10 bot"
@@ -53,7 +54,7 @@ def get_game(team, sport):
     f.write(json.dumps(scoreData, indent=2))
     f.close()
     
-    if sport == "nba":
+    if "nba" in sport:
         scorew = NBA_SCORE_WIDTH
         teamw = NBA_TEAM_WIDTH
     elif sport == "nfl":

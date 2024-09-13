@@ -67,6 +67,12 @@ class Sports(commands.Cog):
         await ctx.send(nflgame.get_game(t,'nfl'))
         
     @commands.command()
+    async def wnba(self, ctx, *team:str):
+        """display score(s) of nba game"""
+        t = ' '.join(team)
+        await ctx.send(nflgame.get_game(t,'wnba'))
+
+    @commands.command()
     async def nba(self, ctx, *team:str):
         """display score(s) of nba game"""
         t = ' '.join(team)
