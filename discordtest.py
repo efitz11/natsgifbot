@@ -40,6 +40,7 @@ patternmasn = re.compile('masn', re.IGNORECASE)
 patterntwitter = re.compile(r'(?:https?:\/\/(www\.)?(?:twitter|x)\.com)(\/(?:#!\/)?(\w+)\/status(es)?\/(\d+))')
 patternx = re.compile('https://.*\bx.com/([^/?]+)/status/([0-9]+)')
 patternig = re.compile(r"https?://(www\.)?instagram\.com/p/.{11}")
+patternbsky = re.compile(r"https?://(www\.)?bsky\.app/profile/.*/post/.*")
 # patterntwitterstatus = re.compile('https://.*twitter.com/([^/?]+)/status/([0-9]+)')
 masn_time = datetime.now()
 
@@ -55,6 +56,10 @@ f.close()
 
 f = open('channelids.txt')
 main_chid = int(f.readline().strip())
+f.close()
+
+f = open('serverid.txt')
+guildid = int(f.readline().strip())
 f.close()
 
 #write pid file
@@ -459,7 +464,8 @@ async def snow(ctx, *location:str):
         lat, lon, loc = weathermodule.get_lat_lon(location)
         resp = utils.get_json("https://api.weather.gov/points/%.4f,%.4f" % (lat, lon))
         fieldoffice = resp['properties']['gridId'].lower()
-    url = "https://www.weather.gov/images/" + fieldoffice + "/winter/StormTotalSnowWeb1.jpg"
+    #url = "https://www.weather.gov/images/" + fieldoffice + "/winter/StormTotalSnowWeb1.jpg"
+    url = "https://www.weather.gov/images/" + fieldoffice + "/winter/StormTotalSnow.jpg"
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as resp:
             if resp.status != 200:
@@ -550,7 +556,7 @@ async def countdown(ctx, *addlist):
     for event in removelist:
         s['countdown'].remove(event)
 
-    dayslist.sort()
+    dayslist.sort(key=lambda x: x[0])
     sortedlist = []
     for d, value in dayslist:
         sortedlist.append(value)
@@ -853,6 +859,12 @@ async def on_message(message):
     if message.author != bot.user:
         if patternig.search(message.content):
             await channel.send("embed fixed link: %s" % (re.search(patternig, message.content).group(0).replace("inst", "ddinst")))
+        # elif patternbsky.search(message.content):
+        #     if len(message.embeds) > 0:
+        #         for embed in message.embeds:
+        #             print(str(embed))
+        #         if not any('image' == embed.type for embed in message.embeds):
+        #             await channel.send("embed fixed link: %s" % (re.search(patternbsky, message.content).group(0).replace("bsky", "bskyx", 1)))
         # if patterntwitter.search(message.content):
             # await channel.send("embed fixed link: %s" % (re.search(patterntwitter, message.content).group(0).replace('twitter.com', 'fxtwitter.com').replace("x.com", "fixupx.com")))
                 # verified = web.check_tweet_verified(re.search(patterntwitter, message.content).group(1))
@@ -997,6 +1009,7 @@ async def dongs_poster():
 async def birthday_poster():
     await bot.wait_until_ready()
     channel = bot.get_channel(id=main_chid)
+    guild = bot.get_guild(guildid)
     while not bot.is_closed():
         now_time = datetime.now()
         post_hour, post_min = 8, 0
@@ -1006,6 +1019,18 @@ async def birthday_poster():
                 await channel.send("```%s```" % output)
             else:
                 print('no bday output')
+            
+            with open("birthdays.json",'r') as f:
+                data = json.load(f)
+                today = datetime.today()
+                today_str = f"{today.month}/{today.day}"
+                for item in data:
+                    if today_str == item["date"]:
+                        #await channel.send(f"Happy Birthday {item['name']}!")
+                        member = await guild.fetch_member(int(item['userid']))
+                        if member is not None:
+                            await channel.send(f"Happy Birthday {member.mention}!")
+
         post_time = datetime(now_time.year, now_time.month, now_time.day, hour=post_hour, minute=post_min)
         # sleep until post time
         if post_time > now_time:

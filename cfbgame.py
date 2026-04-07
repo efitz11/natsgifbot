@@ -85,6 +85,8 @@ def get_game(team, delta=0,fcs=False):
         scoreData = scoreData[:scoreData.find('};')+1]
         # scoreData = scoreData[scoreData.find('window.espn.scoreboardData 	= ')+len('window.espn.scoreboardData 	= '):]
         scoreData = json.loads(scoreData)['page']['content']['scoreboard']
+        with open("espnout.json", 'w') as f:
+            f.write(json.dumps(scoreData))
         cal = scoreData['calendar']
 
         with open(calendar_json,'w') as f:

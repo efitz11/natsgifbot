@@ -1,4 +1,5 @@
-from datetime import datetime
+from datetime import datetime,date,time
+from backports.zoneinfo import ZoneInfo
 import json
 import time
 from urllib.request import urlopen, Request
@@ -33,18 +34,36 @@ def get_current_weatherbit(text):
     key = utils.get_keys("weatherbit")['key']
     lat,lon,loc = get_lat_lon(text)
     url = url + "?key=%s&units=I&lat=%f&lon=%f" % (key, lat, lon)
+    print(url)
     resp = utils.get_json(url)
     if len(resp['data']) > 0:
         data = resp['data'][0]
         obstime = data['ob_time']
         obsdatetime = datetime.strptime(obstime, '%Y-%m-%d %H:%M')
+
+        utc_rise = datetime.strptime(data['sunrise'], "%H:%M").time()
+        utc_set = datetime.strptime(data['sunset'], "%H:%M").time()
+
+        # Create a datetime using today's date in UTC
+        utc_rise = datetime.combine(date.today(), utc_rise, tzinfo=ZoneInfo("UTC"))
+        utc_set = datetime.combine(date.today(), utc_set, tzinfo=ZoneInfo("UTC"))
+
+        local_sunrise = utc_rise.astimezone(ZoneInfo(data['timezone']))
+        local_sunrise = local_sunrise.strftime('%-I:%M %p %Z')
+        local_sunset = utc_set.astimezone(ZoneInfo(data['timezone']))
+        local_sunset = local_sunset.strftime('%-I:%M %p %Z')
+
+        # Convert to America/New_York local time
         ret = "```python\n" \
               "Location search result: %s\n" \
               "%s in %s, %s, %s:\n" \
               "  Temp: %.1f (Feels like: %.1f)\n" \
               "  Humidity: %d%%\n" \
+              "  Sunrise: %s\n" \
+              "  Sunset:  %s\n" \
               "  Observed: %s at station: %s" % (loc, data['weather']['description'], data['city_name'], data['state_code'], data['country_code'],
                                      data['temp'], data['app_temp'], data['rh'],
+                                     local_sunrise,local_sunset,
                                      utils.prettydate(obsdatetime, utc=True), data['station'])
         if data['aqi'] > 50:
             ret += "\n  AQI: %d```" % (data['aqi'])

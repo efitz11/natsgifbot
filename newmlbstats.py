@@ -78,25 +78,30 @@ def _find_player_id(name, milb=False):
             p = None
             milb_p = None
             for player in players:
-                if teamid is None:
-                    if player['currentTeam']['id'] == 120:
-                    #if player['name_display_club'] == "Nationals":
-                        # return player['playerId']
-                        return player['id']
-                    # elif p is None and player['teamId'] in teamids:
-                    elif 'parentOrgId' in player['currentTeam'] and player['currentTeam']['parentOrgId'] == 120:
-                        return player['id']
-                    elif p is None and player['currentTeam']['sport']['id'] == 1:
-                        # p = player['playerId'] # don't just return here to keep searching for Nats
-                        p = player['id'] # don't just return here to keep searching for Nats
-                    elif milb_p is None:
-                        # milb_p = player['playerId'] # if we don't match a major leaguer, just return a minor leaguer
-                        milb_p = player['id'] # if we don't match a major leaguer, just return a minor leaguer
+                if 'currentTeam' in player:
+                    if teamid is None:
+                        if player['currentTeam']['id'] == 120:
+                        #if player['name_display_club'] == "Nationals":
+                            # return player['playerId']
+                            return player['id']
+                        # elif p is None and player['teamId'] in teamids:
+                        elif 'parentOrgId' in player['currentTeam'] and player['currentTeam']['parentOrgId'] == 120:
+                            return player['id']
+                        elif p is None and player['currentTeam']['sport']['id'] == 1:
+                            # p = player['playerId'] # don't just return here to keep searching for Nats
+                            p = player['id'] # don't just return here to keep searching for Nats
+                        elif milb_p is None:
+                            # milb_p = player['playerId'] # if we don't match a major leaguer, just return a minor leaguer
+                            milb_p = player['id'] # if we don't match a major leaguer, just return a minor leaguer
+                    else:
+                        if player['currentTeam']['id'] == teamid:
+                            #if player['name_display_club'] == name_display:
+                            # return player['playerId']
+                            return player['id']
                 else:
-                    if player['currentTeam']['id'] == teamid:
-                        #if player['name_display_club'] == name_display:
-                        # return player['playerId']
-                        return player['id']
+                    # no team data so lets just get the first one
+                    if len(players) > 0:
+                        p = players[0]['id']
             if p is None:
                 return milb_p
             return p
@@ -138,13 +143,14 @@ def _new_player_search(name, type=None, milb=False):
     player = utils.get_json(url)['people'][0]
     # for backwards compat
     player['player_id'] = str(player['id'])
-    player['team_id'] = player['currentTeam']['id']
+    if 'currentTeam' in player:
+        player['team_id'] = player['currentTeam']['id']
     if post:
-        url = API_LINK + "people/%s/stats?stats=yearByYear,career&gameType=P&leagueListId=mlb_hist&hydrate=team" % p
+        url = API_LINK + "people/%s/stats?stats=yearByYear,career&group=hitting,pitching&gameType=P&leagueListId=mlb_hist&hydrate=team" % p
         stats = utils.get_json(url)
         player['stats'] = stats['stats']
     elif spring:
-        url = API_LINK + "people/%s/stats?stats=yearByYear,career&gameType=S&leagueListId=mlb_hist&hydrate=team" % p
+        url = API_LINK + "people/%s/stats?stats=yearByYear,career&group=hitting,pitching&gameType=S&leagueListId=mlb_hist&hydrate=team" % p
         stats = utils.get_json(url)
         player['stats'] = stats['stats']
     print("Query \"%s\" matched player %s" % (name, player['fullName']))
@@ -409,7 +415,8 @@ def get_player_season_stats(name, type=None, year=None, career=None, reddit=None
         player = _new_player_search(name, type=type)
         if year is None and not player['active']:
             career=True
-        teamid = player['currentTeam']['id']
+        if 'currentTeam' in player:
+            teamid = player['currentTeam']['id']
             # team = get_team_info(teamid)
         #except:
         #    return "Error finding player %s" % name
