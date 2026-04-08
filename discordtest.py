@@ -2,10 +2,10 @@ import io
 
 import aiohttp
 import discord
-import requests
+# import requests
 from discord.ext import commands
 import random
-from datetime import datetime
+from datetime import datetime, timedelta
 import re, json, os
 import asyncio
 import utils
@@ -1018,7 +1018,7 @@ mlbtr = xmlreader.XmlReader()
 #print(reddit.read_only)
 # bot.loop.create_task(my_bg_task())
 #bot.loop.create_task(update_mlbtr())
-bot.loop.create_task(dongs_poster())
+# bot.loop.create_task(dongs_poster())
 bot.loop.create_task(birthday_poster())
 # temp variable
 #bot.loop.create_task(check_covid_numbers())
