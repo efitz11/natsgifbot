@@ -19,13 +19,29 @@ class MLBSlash(commands.Cog):
         games = await self.bot.mlb_client.get_todays_games(team_abbrev=team)
 
         if games:
-            output = "\n\n".join([game.format_score_line() for game in games])
+            embeds = []
+            current_embed = discord.Embed(title="MLB Scores", color=discord.Color.blue())
             
-            # Truncate if the output exceeds Discord's 2000 character limit (optional safeguard)
-            if len(output) > 1900:
-                output = output[:1900] + "\n... (truncated for Discord)"
-            
-            await interaction.followup.send(f"```python\n{output}\n```")
+            for game in games:
+                # Use emojis in the field title to indicate game status
+                if game.abstract_state == "Live":
+                    name = f"🔴 {game.away.abbreviation} @ {game.home.abbreviation} - Live"
+                elif game.abstract_state == "Final":
+                    name = f"🏁 {game.away.abbreviation} @ {game.home.abbreviation} - Final"
+                else:
+                    name = f"🗓️ {game.away.abbreviation} @ {game.home.abbreviation} - {game.status}"
+
+                value = f"```python\n{game.format_score_line()}\n```"
+                
+                # Discord limits embeds to 25 fields and 6000 total characters
+                if len(current_embed.fields) >= 25 or len(current_embed) + len(name) + len(value) > 5900:
+                    embeds.append(current_embed)
+                    current_embed = discord.Embed(title="MLB Scores (Cont.)", color=discord.Color.blue())
+                    
+                current_embed.add_field(name=name, value=value, inline=False)
+                
+            embeds.append(current_embed)
+            await interaction.followup.send(embeds=embeds)
         else:
             await interaction.followup.send("No games found.")
 

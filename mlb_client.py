@@ -170,6 +170,44 @@ class Game:
         else:
             return f"{self.away.abbreviation.ljust(3)} {str(self.away.score).rjust(2)} | {self.status}\n{self.home.abbreviation.ljust(3)} {str(self.home.score).rjust(2)} |"
 
+    def format_modern_score_line(self) -> str:
+        """A modern Discord markdown formatter for the game score."""
+        away_line = f"**{self.away.abbreviation} {self.away.score}** ({self.away.hits}H, {self.away.errors}E)"
+        home_line = f"**{self.home.abbreviation} {self.home.score}** ({self.home.hits}H, {self.home.errors}E)"
+        
+        if self.abstract_state == "Live" and self.status != "Delayed":
+            outs_str = (int(self.outs) * '●') + ((3 - int(self.outs)) * '○')
+            inning_half_str = "▲" if self.is_top_inning else "▼"
+            
+            bases_emojis = ""
+            bases_emojis += "⚾" if self.bases[0] == "1" else "♢"
+            bases_emojis += "⚾" if self.bases[1] == "2" else "♢"
+            bases_emojis += "⚾" if self.bases[2] == "3" else "♢"
+            
+            pitcher_str = f"**P:** {self.pitcher}" + (f" ({self.pitch_count}P)" if self.pitch_count > 0 else "")
+            batter_str = f"**B:** {self.batter}"
+            
+            output = f"{away_line} @ {home_line}\n"
+            output += f"**{inning_half_str} {self.inning}** | **Outs:** {outs_str} | **Count:** {self.balls}-{self.strikes} | **Bases:** {bases_emojis}\n"
+            output += f"{pitcher_str} | {batter_str}\n"
+            
+            if self.last_play_desc:
+                output += f"*{self.last_play_desc}*\n"
+                
+                pitch_info = []
+                if self.last_pitch_type:
+                    pitch_info.append(f"{self.last_pitch_type} ({self.last_pitch_speed:.1f} mph)")
+                if self.statcast_dist > 0 or self.statcast_speed > 0:
+                    pitch_info.append(f"{self.statcast_dist:.1f}ft / {self.statcast_speed:.1f}mph / {self.statcast_angle:.1f}°")
+                
+                if pitch_info:
+                    output += f"> {' | '.join(pitch_info)}"
+            return output
+        elif self.abstract_state == "Final":
+            return f"{away_line} @ {home_line} | **Final**"
+        else:
+            return f"{away_line} @ {home_line} | **{self.status}**"
+
 class MLBClient:
     BASE_URL = "https://statsapi.mlb.com/api/v1"
 
