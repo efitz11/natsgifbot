@@ -166,7 +166,8 @@ class Game:
                     output += "\n" + "\n".join(pitch_info)
             return output
         elif self.abstract_state == "Final":
-            return f"{away_base} | F\n{home_base} |"
+            final_str = f"F/{self.inning}" if self.inning != 9 and self.inning > 0 else "F"
+            return f"{away_base} | {final_str}\n{home_base} |"
         else:
             return f"{self.away.abbreviation.ljust(3)} {str(self.away.score).rjust(2)} | {self.status}\n{self.home.abbreviation.ljust(3)} {str(self.home.score).rjust(2)} |"
 
@@ -204,7 +205,8 @@ class Game:
                     output += f"> {' | '.join(pitch_info)}"
             return output
         elif self.abstract_state == "Final":
-            return f"{away_line} @ {home_line} | **Final**"
+            final_str = f"Final/{self.inning}" if self.inning != 9 and self.inning > 0 else "Final"
+            return f"{away_line} @ {home_line} | **{final_str}**"
         else:
             return f"{away_line} @ {home_line} | **{self.status}**"
 
@@ -224,10 +226,12 @@ class MLBClient:
         if self._session and not self._session.closed:
             await self._session.close()
 
-    async def get_todays_games(self, team_abbrev: str = None) -> List[Game]:
+    async def get_todays_games(self, team_abbrev: str = None, date: str = None) -> List[Game]:
         session = await self.get_session()
         # Request all the expanded data your old bot was using
         url = f"{self.BASE_URL}/schedule?sportId=1&hydrate=team,linescore(matchup,runners),previousPlay,person,stats,lineups"
+        if date:
+            url += f"&date={date}"
         print(url)  # Debug: Print the URL being requested
         
         async with session.get(url) as resp:
