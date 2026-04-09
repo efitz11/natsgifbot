@@ -107,31 +107,44 @@ class MLBSlash(commands.Cog):
 
         s_type = stat_type.value if stat_type else None
 
-        season_stats = await self.bot.mlb_client.get_player_season_stats(player, stat_type=s_type, year=year, career=career)
+        season_stats_list = await self.bot.mlb_client.get_player_season_stats(player, stat_type=s_type, year=year, career=career)
 
-        if not season_stats:
+        if not season_stats_list:
             await interaction.followup.send("Could not find stats for that player.")
             return
 
         embed = discord.Embed(color=discord.Color.blue())
         
-        display_team = season_stats.team_abbrev
-        if not season_stats.is_career and season_stats.stats:
+        first_stats = season_stats_list[0]
+        display_team = first_stats.team_abbrev
+        if not first_stats.is_career and first_stats.stats:
             teams = []
-            for s in season_stats.stats:
+            for s in first_stats.stats:
                 t = s.get('team')
                 if t and t != 'MLB' and t not in teams:
                     teams.append(t)
             if teams:
                 display_team = "/".join(teams)
 
-        if season_stats.is_career:
-            embed.title = f"Career {season_stats.stat_type.capitalize()} Stats for {season_stats.player_name} ({display_team})"
+        if first_stats.is_career:
+            if len(season_stats_list) > 1:
+                embed.title = f"Career Stats for {first_stats.player_name} ({display_team})"
+            else:
+                embed.title = f"Career {first_stats.stat_type.capitalize()} Stats for {first_stats.player_name} ({display_team})"
         else:
-            embed.title = f"{season_stats.years} {season_stats.stat_type.capitalize()} Stats for {season_stats.player_name} ({display_team})"
+            if len(season_stats_list) > 1:
+                embed.title = f"{first_stats.years} Stats for {first_stats.player_name} ({display_team})"
+            else:
+                embed.title = f"{first_stats.years} {first_stats.stat_type.capitalize()} Stats for {first_stats.player_name} ({display_team})"
             
-        description = f"**{season_stats.info_line}**\n\n```python\n{season_stats.format_discord_code_block()}\n```"
-        embed.description = description
+        description = f"**{first_stats.info_line}**\n\n"
+        for st in season_stats_list:
+            if len(season_stats_list) > 1:
+                prefix = "Career " if st.is_career else f"{st.years} "
+                description += f"*{prefix}{st.stat_type.capitalize()}*\n"
+            description += f"```python\n{st.format_discord_code_block()}\n```\n"
+            
+        embed.description = description.strip()
         
         await interaction.followup.send(embed=embed)
 

@@ -404,7 +404,7 @@ class MLBClient:
             
         return results
 
-    async def get_player_season_stats(self, player_id_or_name: str, stat_type: str = None, year: str = None, career: bool = False) -> Optional[PlayerSeasonStats]:
+    async def get_player_season_stats(self, player_id_or_name: str, stat_type: str = None, year: str = None, career: bool = False) -> List[PlayerSeasonStats]:
         session = await self.get_session()
         player_id = None
         player_name = player_id_or_name
@@ -414,7 +414,7 @@ class MLBClient:
         else:
             players = await self.search_players(player_id_or_name)
             if not players:
-                return None
+                return []
             player_id = str(players[0]['id'])
             player_name = players[0]['name']
 
@@ -423,7 +423,7 @@ class MLBClient:
             person_data = await resp.json()
 
         if not person_data.get('people'):
-            return None
+            return []
 
         person = person_data['people'][0]
         player_name = person.get('fullName', player_name)
@@ -441,59 +441,78 @@ class MLBClient:
         info_line = f"{pos}  |  B/T: {person.get('batSide', {}).get('code', '')}/{person.get('pitchHand', {}).get('code', '')}  |  {person.get('height', '')}  |  {person.get('weight', '')} lbs  |  {age_str}"
 
         if not stat_type:
-            stat_type = "pitching" if pos == "P" else "hitting"
+            if pos == "TWP":
+                stat_types_to_fetch = ["hitting", "pitching"]
+            else:
+                stat_types_to_fetch = ["pitching"] if pos == "P" else ["hitting"]
+        else:
+            stat_types_to_fetch = [stat_type]
 
         api_stat_types = ["careerRegularSeason", "career"] if career else ["yearByYear"]
         target_year = str(year) if year else None
         
         all_stats = person.get('stats', [])
-        found_stats = []
-        
-        for stat_group in all_stats:
-            if stat_group['group']['displayName'] == stat_type and stat_group['type']['displayName'] in api_stat_types:
-                splits = stat_group.get('splits', [])
-                if not splits:
-                    continue
-                    
-                if career:
-                    career_split = splits[-1]
-                    for sp in splits:
-                        if 'team' not in sp:
-                            career_split = sp
-                            break
-                            
-                    s = career_split.get('stat', {})
-                    s['season'] = "Career"
-                    s['team'] = "MLB"
-                    found_stats.append(s)
-                    target_year = "Career"
-                    break
-                else:
-                    if not target_year:
-                        target_year = splits[-1].get('season', str(datetime.now().year))
-                        
-                    for split in splits:
-                        season = split.get('season', '')
-                        if season == target_year:
-                            s = split.get('stat', {})
-                            s['season'] = season
-                            s['team'] = split.get('team', {}).get('abbreviation', 'MLB')
-                            found_stats.append(s)
-
-        if not found_stats:
-            return PlayerSeasonStats(player_name, "", stat_type, target_year or str(year), career, info_line, [], info_message="No stats found for this player.")
-
+        results = []
         team_abbrev = person.get('currentTeam', {}).get('abbreviation', 'FA')
 
-        return PlayerSeasonStats(
-            player_name=player_name,
-            team_abbrev=team_abbrev,
-            stat_type=stat_type,
-            years=target_year,
-            is_career=career,
-            info_line=info_line,
-            stats=found_stats
-        )
+        for st in stat_types_to_fetch:
+            found_stats = []
+            current_target_year = target_year
+
+            for stat_group in all_stats:
+                if stat_group['group']['displayName'] == st and stat_group['type']['displayName'] in api_stat_types:
+                    splits = stat_group.get('splits', [])
+                    if not splits:
+                        continue
+                        
+                    if career:
+                        career_split = splits[-1]
+                        for sp in splits:
+                            if 'team' not in sp:
+                                career_split = sp
+                                break
+                                
+                        s = career_split.get('stat', {})
+                        s['season'] = "Career"
+                        s['team'] = "MLB"
+                        found_stats.append(s)
+                        current_target_year = "Career"
+                        break
+                    else:
+                        if not current_target_year:
+                            current_target_year = splits[-1].get('season', str(datetime.now().year))
+                            
+                        for split in splits:
+                            season = split.get('season', '')
+                            if season == current_target_year:
+                                s = split.get('stat', {})
+                                s['season'] = season
+                                s['team'] = split.get('team', {}).get('abbreviation', 'MLB')
+                                found_stats.append(s)
+
+            if found_stats:
+                results.append(PlayerSeasonStats(
+                    player_name=player_name,
+                    team_abbrev=team_abbrev,
+                    stat_type=st,
+                    years=current_target_year or str(year),
+                    is_career=career,
+                    info_line=info_line,
+                    stats=found_stats
+                ))
+            elif stat_type or len(stat_types_to_fetch) == 1:
+                results.append(PlayerSeasonStats(
+                    player_name=player_name,
+                    team_abbrev=team_abbrev,
+                    stat_type=st,
+                    years=current_target_year or str(year),
+                    is_career=career,
+                    info_line=info_line,
+                    stats=[],
+                    info_message=f"No {st} stats found for this player."
+                ))
+
+        return results
 
     async def get_todays_games(self, team_query: str = None, date: str = None) -> List[Game]:
         session = await self.get_session()
