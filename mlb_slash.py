@@ -93,6 +93,52 @@ class MLBSlash(commands.Cog):
         # Combine and return up to 25 matches for Discord's popup menu
         return (nats_choices + other_choices)[:25]
 
+    @mlb.command(name="stats", description="Get a player's season or career stats")
+    @app_commands.describe(player="The player to search for")
+    @app_commands.describe(year="A specific year (e.g. 2023). Leave blank for most recent.")
+    @app_commands.describe(stat_type="Hitting or Pitching. Leave blank for default.")
+    @app_commands.describe(career="Get career totals instead of a single season")
+    @app_commands.choices(stat_type=[
+        app_commands.Choice(name="Hitting", value="hitting"),
+        app_commands.Choice(name="Pitching", value="pitching")
+    ])
+    async def stats(self, interaction: discord.Interaction, player: str, year: str = None, stat_type: app_commands.Choice[str] = None, career: bool = False):
+        await interaction.response.defer()
+
+        s_type = stat_type.value if stat_type else None
+
+        season_stats = await self.bot.mlb_client.get_player_season_stats(player, stat_type=s_type, year=year, career=career)
+
+        if not season_stats:
+            await interaction.followup.send("Could not find stats for that player.")
+            return
+
+        embed = discord.Embed(color=discord.Color.blue())
+        
+        display_team = season_stats.team_abbrev
+        if not season_stats.is_career and season_stats.stats:
+            teams = []
+            for s in season_stats.stats:
+                t = s.get('team')
+                if t and t != 'MLB' and t not in teams:
+                    teams.append(t)
+            if teams:
+                display_team = "/".join(teams)
+
+        if season_stats.is_career:
+            embed.title = f"Career {season_stats.stat_type.capitalize()} Stats for {season_stats.player_name} ({display_team})"
+        else:
+            embed.title = f"{season_stats.years} {season_stats.stat_type.capitalize()} Stats for {season_stats.player_name} ({display_team})"
+            
+        description = f"**{season_stats.info_line}**\n\n```python\n{season_stats.format_discord_code_block()}\n```"
+        embed.description = description
+        
+        await interaction.followup.send(embed=embed)
+
+    @stats.autocomplete('player')
+    async def stats_player_autocomplete(self, interaction: discord.Interaction, current: str):
+        return await self.player_autocomplete(interaction, current)
+
     @mlb.command(name="score", description="Get today's MLB games or a specific team's game")
     @app_commands.describe(team="The team abbreviation or name to search for (e.g. wsh, nationals, lad). Leave blank for all.")
     @app_commands.describe(date="A specific date (e.g. 4/7/26, yesterday, +2, -5)")
