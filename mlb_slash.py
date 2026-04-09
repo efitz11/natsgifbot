@@ -41,7 +41,7 @@ class MLBSlash(commands.Cog):
     mlb = app_commands.Group(name="mlb", description="MLB stats and scores commands")
 
     @mlb.command(name="score", description="Get today's MLB games or a specific team's game")
-    @app_commands.describe(team="The team abbreviation to search for (e.g. wsh, lad). Leave blank for all.")
+    @app_commands.describe(team="The team abbreviation or name to search for (e.g. wsh, nationals, lad). Leave blank for all.")
     @app_commands.describe(date="A specific date (e.g. 4/7/26, yesterday, +2, -5)")
     async def score(self, interaction: discord.Interaction, team: str = None, date: str = None):
         # Defer the response immediately. The MLB API might take longer than 3 seconds to respond.
@@ -51,7 +51,7 @@ class MLBSlash(commands.Cog):
         parsed_date = parse_date(date)
 
         # Fetch the games using our new async API client
-        games = await self.bot.mlb_client.get_todays_games(team_abbrev=team, date=parsed_date)
+        games = await self.bot.mlb_client.get_todays_games(team_query=team, date=parsed_date)
 
         if games:
             embeds = []

@@ -226,7 +226,7 @@ class MLBClient:
         if self._session and not self._session.closed:
             await self._session.close()
 
-    async def get_todays_games(self, team_abbrev: str = None, date: str = None) -> List[Game]:
+    async def get_todays_games(self, team_query: str = None, date: str = None) -> List[Game]:
         session = await self.get_session()
         # Request all the expanded data your old bot was using
         url = f"{self.BASE_URL}/schedule?sportId=1&hydrate=team,linescore(matchup,runners),previousPlay,person,stats,lineups"
@@ -245,11 +245,22 @@ class MLBClient:
         for game_data in data['dates'][0]['games']:
             game = Game.from_api_json(game_data)
             
-            # Filter by team if a search parameter was provided
-            if team_abbrev:
-                team_lower = team_abbrev.lower()
-                if (game.away.abbreviation.lower() != team_lower and 
-                    game.home.abbreviation.lower() != team_lower):
+            # Filter by team if a search query was provided
+            if team_query:
+                query = team_query.lower()
+                
+                # Common aliases mapping to catch nicknames your old bot used
+                aliases = {"nats": "nationals", "yanks": "yankees", "cards": "cardinals", "dbacks": "diamondbacks", "barves": "braves"}
+                if query in aliases:
+                    query = aliases[query]
+                    
+                away_name = game.away.name.lower()
+                home_name = game.home.name.lower()
+                away_abbr = game.away.abbreviation.lower()
+                home_abbr = game.home.abbreviation.lower()
+                
+                if (query != away_abbr and query != home_abbr and 
+                    query not in away_name and query not in home_name):
                     continue
             
             games.append(game)
