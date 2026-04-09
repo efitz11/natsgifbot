@@ -1,5 +1,6 @@
 import aiohttp
 import asyncio
+import urllib.parse
 from dataclasses import dataclass
 from typing import List, Optional
 
@@ -210,6 +211,36 @@ class Game:
         else:
             return f"{away_line} @ {home_line} | **{self.status}**"
 
+@dataclass
+class PlayerGameStats:
+    player_name: str
+    team_abbrev: str
+    opp_abbrev: str
+    is_home: bool
+    date: str
+    batting_stats: Optional[dict] = None
+    pitching_stats: Optional[dict] = None
+    pitching_dec: str = ""
+    info_message: str = ""
+
+    def format_discord_code_block(self) -> str:
+        if self.info_message:
+            return self.info_message
+
+        output = ""
+
+        if self.pitching_stats:
+            s = self.pitching_stats
+            output += " IP  H  R ER HR BB SO  P-S\n"
+            output += f"{str(s.get('inningsPitched', '0.0')):>3} {s.get('hits', 0):>2} {s.get('runs', 0):>2} {s.get('earnedRuns', 0):>2} {s.get('homeRuns', 0):>2} {s.get('baseOnBalls', 0):>2} {s.get('strikeOuts', 0):>2} {s.get('pitchesThrown', 0):>2}-{s.get('strikes', 0)} {self.pitching_dec}\n\n"
+
+        if self.batting_stats:
+            s = self.batting_stats
+            output += "AB H 2B 3B HR R RBI BB SO SB CS\n"
+            output += f"{s.get('atBats', 0):>2} {s.get('hits', 0)} {s.get('doubles', 0):>2} {s.get('triples', 0):>2} {s.get('homeRuns', 0):>2} {s.get('runs', 0)} {s.get('rbi', 0):>3} {s.get('baseOnBalls', 0):>2} {s.get('strikeOuts', 0):>2} {s.get('stolenBases', 0):>2} {s.get('caughtStealing', 0):>2}\n\n"
+
+        return output.strip()
+
 class MLBClient:
     BASE_URL = "https://statsapi.mlb.com/api/v1"
 
@@ -225,6 +256,106 @@ class MLBClient:
         """Closes the aiohttp session properly."""
         if self._session and not self._session.closed:
             await self._session.close()
+
+    async def search_players(self, query: str) -> List[dict]:
+        """Queries the Baseball Savant search API for autocomplete."""
+        session = await self.get_session()
+        url = f"https://baseballsavant.mlb.com/player/search-all?search={urllib.parse.quote(query)}"
+        try:
+            async with session.get(url) as resp:
+                return await resp.json()
+        except Exception:
+            return []
+
+    async def get_player_game_stats(self, player_id_or_name: str, date: str = None) -> List[PlayerGameStats]:
+        session = await self.get_session()
+        player_id = None
+        player_name = player_id_or_name
+
+        # If autocomplete was used, this will be the player's ID digits. 
+        # If the user typed it manually and hit enter, we look them up first!
+        if player_id_or_name.isdigit():
+            player_id = player_id_or_name
+        else:
+            players = await self.search_players(player_id_or_name)
+            if not players:
+                return []
+            player_id = str(players[0]['id'])
+            player_name = players[0]['name']
+
+        # Fetch player info to find out what team they are currently on
+        person_url = f"{self.BASE_URL}/people/{player_id}?hydrate=currentTeam"
+        async with session.get(person_url) as resp:
+            person_data = await resp.json()
+
+        if not person_data.get('people'):
+            return []
+
+        person = person_data['people'][0]
+        player_name = person.get('fullName', player_name)
+        if 'currentTeam' not in person:
+            return [PlayerGameStats(player_name, "FA", "N/A", False, date or "Today", info_message="Player is not currently on a team.")]
+
+        team_id = person['currentTeam']['id']
+        team_abbrev = person['currentTeam'].get('abbreviation', 'TEAM')
+
+        # Fetch the team's schedule for the target date to get the gamePk(s)
+        schedule_url = f"{self.BASE_URL}/schedule?sportId=1&teamId={team_id}"
+        if date: schedule_url += f"&date={date}"
+
+        async with session.get(schedule_url) as resp:
+            sched_data = await resp.json()
+
+        if not sched_data.get('dates') or not sched_data['dates'][0].get('games'):
+            return [PlayerGameStats(player_name, team_abbrev, "N/A", False, date or "Today", info_message="No games scheduled for this date.")]
+
+        results = []
+        games = sched_data['dates'][0]['games']
+        game_date = sched_data['dates'][0]['date']
+        game_date_formatted = f"{int(game_date[5:7])}/{int(game_date[8:10])}"
+
+        # Loop through all games that day (handles doubleheaders cleanly)
+        for game in games:
+            is_home = (game['teams']['home']['team']['id'] == team_id)
+            side = 'home' if is_home else 'away'
+            
+            # Fetch the Boxscore for that game
+            box_url = f"{self.BASE_URL}/game/{game['gamePk']}/boxscore"
+            async with session.get(box_url) as resp:
+                box_data = await resp.json()
+                
+            box_away = box_data['teams']['away']['team']
+            box_home = box_data['teams']['home']['team']
+            team_abbrev = box_home.get('abbreviation', team_abbrev) if is_home else box_away.get('abbreviation', team_abbrev)
+            opp_abbrev = box_away.get('abbreviation', "OPP") if is_home else box_home.get('abbreviation', "OPP")
+                
+            players_dict = box_data['teams'][side]['players']
+            player_key = f"ID{player_id}"
+            
+            if player_key not in players_dict:
+                results.append(PlayerGameStats(player_name, team_abbrev, opp_abbrev, is_home, game_date_formatted, info_message="Player did not play in this game."))
+                continue
+                
+            player_stats = players_dict[player_key]['stats']
+            batting = player_stats.get('batting')
+            pitching = player_stats.get('pitching')
+            
+            # Pitchers usually have empty hitting dicts even in the DH era, so we filter them out
+            if batting and batting.get('atBats', 0) == 0 and batting.get('plateAppearances', 0) == 0:
+                batting = None
+            if pitching and pitching.get('inningsPitched', '0.0') == '0.0':
+                pitching = None
+                
+            if not batting and not pitching:
+                results.append(PlayerGameStats(player_name, team_abbrev, opp_abbrev, is_home, game_date_formatted, info_message="Player played but recorded no stats (e.g., pinch runner or defensive sub)."))
+                continue
+                
+            results.append(PlayerGameStats(
+                player_name=player_name, team_abbrev=team_abbrev, opp_abbrev=opp_abbrev, is_home=is_home,
+                date=game_date_formatted, batting_stats=batting, pitching_stats=pitching, pitching_dec=pitching.get('note', '') if pitching else ""
+            ))
+            
+        return results
 
     async def get_todays_games(self, team_query: str = None, date: str = None) -> List[Game]:
         session = await self.get_session()

@@ -40,6 +40,54 @@ class MLBSlash(commands.Cog):
     # Create a slash command group: /mlb
     mlb = app_commands.Group(name="mlb", description="MLB stats and scores commands")
 
+    @mlb.command(name="line", description="Get a player's stat line for today or a specific date")
+    @app_commands.describe(player="The player to search for")
+    @app_commands.describe(date="A specific date (e.g. 4/7/26, yesterday, +2, -5)")
+    async def line(self, interaction: discord.Interaction, player: str, date: str = None):
+        await interaction.response.defer()
+        parsed_date = parse_date(date)
+
+        # Because we linked autocomplete below, "player" will typically contain the exact Player ID
+        stats_list = await self.bot.mlb_client.get_player_game_stats(player, date=parsed_date)
+
+        if not stats_list:
+            await interaction.followup.send("Could not find stats for that player.")
+            return
+
+        embed = discord.Embed(color=discord.Color.blue())
+        
+        if len(stats_list) == 1:
+            stats = stats_list[0]
+            embed.title = f"{stats.player_name} ({stats.team_abbrev}) {stats.date} {'vs' if stats.is_home else '@'} {stats.opp_abbrev}"
+            embed.description = f"```python\n{stats.format_discord_code_block()}\n```"
+        else:
+            stats = stats_list[0]
+            embed.title = f"{stats.player_name} ({stats.team_abbrev}) - {stats.date}"
+            for i, s in enumerate(stats_list, 1):
+                name = f"Game {i}: {'vs' if s.is_home else '@'} {s.opp_abbrev}"
+                embed.add_field(name=name, value=f"```python\n{s.format_discord_code_block()}\n```", inline=False)
+                
+        await interaction.followup.send(embed=embed)
+
+    @line.autocomplete('player')
+    async def player_autocomplete(self, interaction: discord.Interaction, current: str):
+        if len(current) < 3:
+            return []
+        players = await self.bot.mlb_client.search_players(current)
+        
+        # Return up to 25 matches for Discord's popup menu
+        choices = []
+        for p in players:
+            team = p.get('name_display_club')
+            # The Savant API returns mlb=1 for active Major Leaguers
+            if team and p.get('mlb') == 1:
+                name = p.get('name', 'Unknown')
+                choices.append(app_commands.Choice(name=f"{name} ({team})"[:100], value=str(p.get('id', ''))))
+                
+                if len(choices) >= 25:
+                    break
+        return choices
+
     @mlb.command(name="score", description="Get today's MLB games or a specific team's game")
     @app_commands.describe(team="The team abbreviation or name to search for (e.g. wsh, nationals, lad). Leave blank for all.")
     @app_commands.describe(date="A specific date (e.g. 4/7/26, yesterday, +2, -5)")
