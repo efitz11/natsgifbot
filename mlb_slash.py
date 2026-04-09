@@ -67,6 +67,9 @@ class MLBSlash(commands.Cog):
                 name = f"Game {i}: {'vs' if s.is_home else '@'} {s.opp_abbrev}"
                 embed.add_field(name=name, value=f"```python\n{s.format_discord_code_block()}\n```", inline=False)
                 
+        if stats_list[0].headshot_url:
+            embed.set_thumbnail(url=stats_list[0].headshot_url)
+                
         await interaction.followup.send(embed=embed)
 
     @line.autocomplete('player')
@@ -145,6 +148,8 @@ class MLBSlash(commands.Cog):
             description += f"```python\n{st.format_discord_code_block()}\n```\n"
             
         embed.description = description.strip()
+        if first_stats.headshot_url:
+            embed.set_thumbnail(url=first_stats.headshot_url)
         
         await interaction.followup.send(embed=embed)
 

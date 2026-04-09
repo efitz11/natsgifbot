@@ -223,6 +223,7 @@ class PlayerGameStats:
     pitching_stats: Optional[dict] = None
     pitching_dec: str = ""
     info_message: str = ""
+    headshot_url: str = ""
 
     def format_discord_code_block(self) -> str:
         if self.info_message:
@@ -252,6 +253,7 @@ class PlayerSeasonStats:
     info_line: str
     stats: List[dict]
     info_message: str = ""
+    headshot_url: str = ""
 
     def format_discord_code_block(self) -> str:
         if self.info_message:
@@ -329,6 +331,8 @@ class MLBClient:
                 return []
             player_id = str(players[0]['id'])
             player_name = players[0]['name']
+        
+        headshot_url = f"https://securea.mlb.com/mlb/images/players/head_shot/{player_id}@3x.jpg"
 
         # Fetch player info to find out what team they are currently on
         person_url = f"{self.BASE_URL}/people/{player_id}?hydrate=currentTeam,team"
@@ -341,7 +345,7 @@ class MLBClient:
         person = person_data['people'][0]
         player_name = person.get('fullName', player_name)
         if 'currentTeam' not in person:
-            return [PlayerGameStats(player_name, "FA", "N/A", False, date or "Today", info_message="Player is not currently on a team.")]
+            return [PlayerGameStats(player_name, "FA", "N/A", False, date or "Today", info_message="Player is not currently on a team.", headshot_url=headshot_url)]
 
         team_id = person['currentTeam']['id']
         team_abbrev = person['currentTeam'].get('abbreviation', 'TEAM')
@@ -354,7 +358,7 @@ class MLBClient:
             sched_data = await resp.json()
 
         if not sched_data.get('dates') or not sched_data['dates'][0].get('games'):
-            return [PlayerGameStats(player_name, team_abbrev, "N/A", False, date or "Today", info_message="No games scheduled for this date.")]
+            return [PlayerGameStats(player_name, team_abbrev, "N/A", False, date or "Today", info_message="No games scheduled for this date.", headshot_url=headshot_url)]
 
         results = []
         games = sched_data['dates'][0]['games']
@@ -380,7 +384,7 @@ class MLBClient:
             player_key = f"ID{player_id}"
             
             if player_key not in players_dict:
-                results.append(PlayerGameStats(player_name, team_abbrev, opp_abbrev, is_home, game_date_formatted, info_message="Player did not play in this game."))
+                results.append(PlayerGameStats(player_name, team_abbrev, opp_abbrev, is_home, game_date_formatted, info_message="Player did not play in this game.", headshot_url=headshot_url))
                 continue
                 
             player_stats = players_dict[player_key]['stats']
@@ -394,12 +398,13 @@ class MLBClient:
                 pitching = None
                 
             if not batting and not pitching:
-                results.append(PlayerGameStats(player_name, team_abbrev, opp_abbrev, is_home, game_date_formatted, info_message="Player played but recorded no stats (e.g., pinch runner or defensive sub)."))
+                results.append(PlayerGameStats(player_name, team_abbrev, opp_abbrev, is_home, game_date_formatted, info_message="Player played but recorded no stats (e.g., pinch runner or defensive sub).", headshot_url=headshot_url))
                 continue
                 
             results.append(PlayerGameStats(
                 player_name=player_name, team_abbrev=team_abbrev, opp_abbrev=opp_abbrev, is_home=is_home,
-                date=game_date_formatted, batting_stats=batting, pitching_stats=pitching, pitching_dec=pitching.get('note', '') if pitching else ""
+                date=game_date_formatted, batting_stats=batting, pitching_stats=pitching, pitching_dec=pitching.get('note', '') if pitching else "",
+                headshot_url=headshot_url
             ))
             
         return results
@@ -417,6 +422,8 @@ class MLBClient:
                 return []
             player_id = str(players[0]['id'])
             player_name = players[0]['name']
+
+        headshot_url = f"https://securea.mlb.com/mlb/images/players/head_shot/{player_id}@3x.jpg"
 
         person_url = f"{self.BASE_URL}/people/{player_id}?hydrate=currentTeam,team,stats(type=[yearByYear,careerRegularSeason,career](team(league)),leagueListId=mlb_hist,group=[hitting,pitching])"
         async with session.get(person_url) as resp:
@@ -498,7 +505,8 @@ class MLBClient:
                     years=current_target_year or str(year),
                     is_career=career,
                     info_line=info_line,
-                    stats=found_stats
+                    stats=found_stats,
+                    headshot_url=headshot_url
                 ))
             elif stat_type or len(stat_types_to_fetch) == 1:
                 results.append(PlayerSeasonStats(
@@ -509,7 +517,8 @@ class MLBClient:
                     is_career=career,
                     info_line=info_line,
                     stats=[],
-                    info_message=f"No {st} stats found for this player."
+                    info_message=f"No {st} stats found for this player.",
+                    headshot_url=headshot_url
                 ))
 
         return results
