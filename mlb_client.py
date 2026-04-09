@@ -418,7 +418,7 @@ class MLBClient:
             player_id = str(players[0]['id'])
             player_name = players[0]['name']
 
-        person_url = f"{self.BASE_URL}/people/{player_id}?hydrate=currentTeam,team,stats(type=[yearByYear,careerRegularSeason](team(league)),leagueListId=mlb_hist,group=[hitting,pitching])"
+        person_url = f"{self.BASE_URL}/people/{player_id}?hydrate=currentTeam,team,stats(type=[yearByYear,careerRegularSeason,career](team(league)),leagueListId=mlb_hist,group=[hitting,pitching])"
         async with session.get(person_url) as resp:
             person_data = await resp.json()
 
@@ -443,27 +443,37 @@ class MLBClient:
         if not stat_type:
             stat_type = "pitching" if pos == "P" else "hitting"
 
-        api_stat_type = "careerRegularSeason" if career else "yearByYear"
+        api_stat_types = ["careerRegularSeason", "career"] if career else ["yearByYear"]
         target_year = str(year) if year else None
         
         all_stats = person.get('stats', [])
         found_stats = []
         
         for stat_group in all_stats:
-            if stat_group['group']['displayName'] == stat_type and stat_group['type']['displayName'] == api_stat_type:
+            if stat_group['group']['displayName'] == stat_type and stat_group['type']['displayName'] in api_stat_types:
                 splits = stat_group.get('splits', [])
-                if not career and not target_year and splits:
-                    target_year = splits[-1].get('season', str(datetime.now().year))
+                if not splits:
+                    continue
                     
-                for split in splits:
-                    season = split.get('season', '')
-                    if career:
-                        s = split.get('stat', {})
-                        s['season'] = "Career"
-                        s['team'] = "MLB"
-                        found_stats.append(s)
-                        target_year = "Career"
-                    else:
+                if career:
+                    career_split = splits[-1]
+                    for sp in splits:
+                        if 'team' not in sp:
+                            career_split = sp
+                            break
+                            
+                    s = career_split.get('stat', {})
+                    s['season'] = "Career"
+                    s['team'] = "MLB"
+                    found_stats.append(s)
+                    target_year = "Career"
+                    break
+                else:
+                    if not target_year:
+                        target_year = splits[-1].get('season', str(datetime.now().year))
+                        
+                    for split in splits:
+                        season = split.get('season', '')
                         if season == target_year:
                             s = split.get('stat', {})
                             s['season'] = season
