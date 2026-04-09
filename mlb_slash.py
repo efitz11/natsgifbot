@@ -75,18 +75,23 @@ class MLBSlash(commands.Cog):
             return []
         players = await self.bot.mlb_client.search_players(current)
         
-        # Return up to 25 matches for Discord's popup menu
-        choices = []
+        nats_choices = []
+        other_choices = []
+        
         for p in players:
             team = p.get('name_display_club')
             # The Savant API returns mlb=1 for active Major Leaguers
             if team and p.get('mlb') == 1:
                 name = p.get('name', 'Unknown')
-                choices.append(app_commands.Choice(name=f"{name} ({team})"[:100], value=str(p.get('id', ''))))
+                choice = app_commands.Choice(name=f"{name} ({team})"[:100], value=str(p.get('id', '')))
                 
-                if len(choices) >= 25:
-                    break
-        return choices
+                if "nationals" in team.lower():
+                    nats_choices.append(choice)
+                else:
+                    other_choices.append(choice)
+                    
+        # Combine and return up to 25 matches for Discord's popup menu
+        return (nats_choices + other_choices)[:25]
 
     @mlb.command(name="score", description="Get today's MLB games or a specific team's game")
     @app_commands.describe(team="The team abbreviation or name to search for (e.g. wsh, nationals, lad). Leave blank for all.")
