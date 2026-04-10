@@ -472,6 +472,26 @@ class MLBClient:
         results = []
         team_abbrev = person.get('currentTeam', {}).get('abbreviation', 'FA')
 
+        career_years_str = ""
+        if career:
+            career_years = []
+            career_teams = []
+            for stat_group in all_stats:
+                if stat_group['type']['displayName'] == 'yearByYear':
+                    for split in stat_group.get('splits', []):
+                        season = split.get('season')
+                        if season and season not in career_years:
+                            career_years.append(season)
+                        t_abbrev = split.get('team', {}).get('abbreviation')
+                        if t_abbrev and t_abbrev != 'MLB':
+                            if t_abbrev not in career_teams:
+                                career_teams.append(t_abbrev)
+            
+            if career_years:
+                career_years_str = f"{min(career_years)}-{max(career_years)}" if len(career_years) > 1 else min(career_years)
+            if career_teams:
+                info_line += f"\n\n{'-'.join(career_teams)}"
+
         for st in stat_types_to_fetch:
             found_stats = []
             current_target_year = target_year
@@ -493,7 +513,7 @@ class MLBClient:
                         s['season'] = "Career"
                         s['team'] = "MLB"
                         found_stats.append(s)
-                        current_target_year = "Career"
+                        current_target_year = career_years_str or "Career"
                         break
                     else:
                         if not current_target_year:

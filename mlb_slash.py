@@ -130,10 +130,11 @@ class MLBSlash(commands.Cog):
                 display_team = "/".join(teams)
 
         if first_stats.is_career:
+            years_str = f" ({first_stats.years})" if first_stats.years and first_stats.years != "Career" else ""
             if len(season_stats_list) > 1:
-                embed.title = f"Career Stats for {first_stats.player_name} ({display_team})"
+                embed.title = f"Career Stats for {first_stats.player_name}{years_str}"
             else:
-                embed.title = f"Career {first_stats.stat_type.capitalize()} Stats for {first_stats.player_name} ({display_team})"
+                embed.title = f"Career {first_stats.stat_type.capitalize()} Stats for {first_stats.player_name}{years_str}"
         else:
             if len(season_stats_list) > 1:
                 embed.title = f"{first_stats.years} Stats for {first_stats.player_name} ({display_team})"
