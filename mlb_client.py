@@ -453,6 +453,9 @@ class MLBClient:
             age_str = ""
 
         info_line = f"{pos}  |  B/T: {person.get('batSide', {}).get('code', '')}/{person.get('pitchHand', {}).get('code', '')}  |  {person.get('height', '')}  |  {person.get('weight', '')} lbs  |  {age_str}"
+        
+        if person.get('nickName'):
+            info_line += f"  |  \"{person['nickName']}\""
 
         if not stat_type:
             if pos == "TWP":
