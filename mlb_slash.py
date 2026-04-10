@@ -39,6 +39,7 @@ class MLBSlash(commands.Cog):
 
     # Create a slash command group: /mlb
     mlb = app_commands.Group(name="mlb", description="MLB stats and scores commands")
+    milb = app_commands.Group(name="milb", description="MiLB stats and scores commands")
 
     @mlb.command(name="line", description="Get a player's stat line for today or a specific date")
     @app_commands.describe(player="The player to search for")
@@ -124,7 +125,7 @@ class MLBSlash(commands.Cog):
             teams = []
             for s in first_stats.stats:
                 t = s.get('team')
-                if t and t != 'MLB' and t not in teams:
+                if t and t not in ['MLB', 'MiLB'] and t not in teams:
                     teams.append(t)
             if teams:
                 display_team = "/".join(teams)
@@ -141,7 +142,7 @@ class MLBSlash(commands.Cog):
             else:
                 embed.title = f"{first_stats.years} {first_stats.stat_type.capitalize()} Stats for {first_stats.player_name} ({display_team})"
             
-        description = f"**{first_stats.info_line}**\n\n"
+        description = f"{first_stats.info_line}\n\n"
         for st in season_stats_list:
             if len(season_stats_list) > 1:
                 prefix = "Career " if st.is_career else f"{st.years} "
@@ -157,6 +158,60 @@ class MLBSlash(commands.Cog):
     @stats.autocomplete('player')
     async def stats_player_autocomplete(self, interaction: discord.Interaction, current: str):
         return await self.player_autocomplete(interaction, current)
+
+    @milb.command(name="stats", description="Get a minor league player's season or career stats")
+    @app_commands.describe(player="The minor league player to search for")
+    @app_commands.describe(year="A specific year (e.g. 2023). Leave blank for most recent.")
+    @app_commands.describe(stat_type="Hitting or Pitching. Leave blank for default.")
+    @app_commands.describe(career="Get career totals instead of a single season")
+    @app_commands.choices(stat_type=[
+        app_commands.Choice(name="Hitting", value="hitting"),
+        app_commands.Choice(name="Pitching", value="pitching")
+    ])
+    async def milb_stats(self, interaction: discord.Interaction, player: str, year: str = None, stat_type: app_commands.Choice[str] = None, career: bool = False):
+        await interaction.response.defer()
+        s_type = stat_type.value if stat_type else None
+        season_stats_list = await self.bot.mlb_client.get_player_season_stats(player, stat_type=s_type, year=year, career=career, milb=True)
+
+        if not season_stats_list:
+            await interaction.followup.send("Could not find stats for that minor league player.")
+            return
+
+        embed = discord.Embed(color=discord.Color.blue())
+        first_stats = season_stats_list[0]
+        display_team = first_stats.team_abbrev
+        if not first_stats.is_career and first_stats.stats:
+            teams = [s.get('team') for s in first_stats.stats if s.get('team') and s.get('team') not in ['MLB', 'MiLB']]
+            if teams:
+                display_team = "/".join(dict.fromkeys(teams)) # Removes duplicates while preserving order
+                
+        if first_stats.parent_org_abbrev:
+            display_team = f"{display_team}-{first_stats.parent_org_abbrev}"
+
+        years_str = f" ({first_stats.years})" if first_stats.years and first_stats.years != "Career" else ""
+        embed.title = f"{'Career' if first_stats.is_career else first_stats.years} Stats for {first_stats.player_name}{years_str if first_stats.is_career else ' (' + display_team + ')'}"
+            
+        description = f"{first_stats.info_line}\n\n"
+        for st in season_stats_list:
+            if len(season_stats_list) > 1:
+                description += f"*{'Career ' if st.is_career else st.years + ' '}{st.stat_type.capitalize()}*\n"
+            description += f"```python\n{st.format_discord_code_block()}\n```\n"
+            
+        embed.description = description.strip()
+        if first_stats.headshot_url:
+            embed.set_thumbnail(url=first_stats.headshot_url)
+        await interaction.followup.send(embed=embed)
+
+    @milb_stats.autocomplete('player')
+    async def milb_stats_player_autocomplete(self, interaction: discord.Interaction, current: str):
+        if len(current) < 3: return []
+        players = await self.bot.mlb_client.search_players(current, milb=True)
+        nats_choices, other_choices = [], []
+        for p in players:
+            team, name = p.get('name_display_club', 'Unknown'), p.get('name', 'Unknown')
+            choice = app_commands.Choice(name=f"{name} ({team})"[:100], value=str(p.get('id', '')))
+            nats_choices.append(choice) if any(aff in team.lower() for aff in ['nationals', 'senators', 'red wings', 'blue rocks', 'frednats', 'rochester', 'harrisburg', 'wilmington', 'fredericksburg']) else other_choices.append(choice)
+        return (nats_choices + other_choices)[:25]
 
     @mlb.command(name="score", description="Get today's MLB games or a specific team's game")
     @app_commands.describe(team="The team abbreviation or name to search for (e.g. wsh, nationals, lad). Leave blank for all.")

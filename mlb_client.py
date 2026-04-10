@@ -254,6 +254,7 @@ class PlayerSeasonStats:
     stats: List[dict]
     info_message: str = ""
     headshot_url: str = ""
+    parent_org_abbrev: str = ""
 
     def format_discord_code_block(self) -> str:
         if self.info_message:
@@ -316,15 +317,28 @@ class MLBClient:
         if self._session and not self._session.closed:
             await self._session.close()
 
-    async def search_players(self, query: str) -> List[dict]:
-        """Queries the Baseball Savant search API for autocomplete."""
+    async def search_players(self, query: str, milb: bool = False) -> List[dict]:
+        """Queries the MLB APIs for autocomplete."""
         session = await self.get_session()
-        url = f"https://baseballsavant.mlb.com/player/search-all?search={urllib.parse.quote(query)}"
-        try:
-            async with session.get(url) as resp:
-                return await resp.json()
-        except Exception:
-            return []
+        if milb:
+            url = f"{self.BASE_URL}/people/search?names={urllib.parse.quote(query)}&sportIds=11,12,13,14,15,5442,16&active=true&hydrate=currentTeam,team"
+            try:
+                async with session.get(url) as resp:
+                    data = await resp.json()
+                    results = []
+                    for p in data.get('people', []):
+                        team_name = p.get('currentTeam', {}).get('name', 'FA')
+                        results.append({'id': p['id'], 'name': p['fullName'], 'name_display_club': team_name, 'mlb': 1})
+                    return results
+            except Exception:
+                return []
+        else:
+            url = f"https://baseballsavant.mlb.com/player/search-all?search={urllib.parse.quote(query)}"
+            try:
+                async with session.get(url) as resp:
+                    return await resp.json()
+            except Exception:
+                return []
 
     async def get_player_game_stats(self, player_id_or_name: str, date: str = None) -> List[PlayerGameStats]:
         session = await self.get_session()
@@ -419,7 +433,7 @@ class MLBClient:
             
         return results
 
-    async def get_player_season_stats(self, player_id_or_name: str, stat_type: str = None, year: str = None, career: bool = False) -> List[PlayerSeasonStats]:
+    async def get_player_season_stats(self, player_id_or_name: str, stat_type: str = None, year: str = None, career: bool = False, milb: bool = False) -> List[PlayerSeasonStats]:
         session = await self.get_session()
         player_id = None
         player_name = player_id_or_name
@@ -427,7 +441,7 @@ class MLBClient:
         if player_id_or_name.isdigit():
             player_id = player_id_or_name
         else:
-            players = await self.search_players(player_id_or_name)
+            players = await self.search_players(player_id_or_name, milb=milb)
             if not players:
                 return []
             player_id = str(players[0]['id'])
@@ -435,7 +449,8 @@ class MLBClient:
 
         headshot_url = f"https://securea.mlb.com/mlb/images/players/head_shot/{player_id}@3x.jpg"
 
-        person_url = f"{self.BASE_URL}/people/{player_id}?hydrate=currentTeam,team,stats(type=[yearByYear,careerRegularSeason,career](team(league)),leagueListId=mlb_hist,group=[hitting,pitching])"
+        league_list_id = "mlb_milb" if milb else "mlb_hist"
+        person_url = f"{self.BASE_URL}/people/{player_id}?hydrate=currentTeam,team,draft,stats(type=[yearByYear,careerRegularSeason,career](team(league,sport)),leagueListId={league_list_id},group=[hitting,pitching])"
         async with session.get(person_url) as resp:
             person_data = await resp.json()
 
@@ -459,6 +474,25 @@ class MLBClient:
         
         if person.get('nickName'):
             info_line += f"  |  \"{person['nickName']}\""
+            
+        if milb and 'drafts' in person and person['drafts']:
+            draft = person['drafts'][-1]
+            d_year = draft.get('year', 'N/A')
+            d_round = draft.get('pickRound', 'N/A')
+            d_pick = draft.get('roundPickNumber', 'N/A')
+            d_school_obj = draft.get('school') or {}
+            d_school = d_school_obj.get('name', 'N/A')
+            info_line += f"\n  Draft: {d_year} | Round: {d_round} | Pick: {d_pick} | School: {d_school}"
+            
+        parent_org_abbrev = ""
+        if milb:
+            parent_org_id = person.get('currentTeam', {}).get('parentOrgId')
+            if parent_org_id:
+                async with session.get(f"{self.BASE_URL}/teams/{parent_org_id}") as resp:
+                    if resp.status == 200:
+                        team_data = await resp.json()
+                        if team_data.get('teams'):
+                            parent_org_abbrev = team_data['teams'][0].get('abbreviation', '')
 
         if not stat_type:
             if pos == "TWP":
@@ -485,8 +519,11 @@ class MLBClient:
                         season = split.get('season')
                         if season and season not in career_years:
                             career_years.append(season)
-                        t_abbrev = split.get('team', {}).get('abbreviation')
-                        if t_abbrev and t_abbrev != 'MLB':
+                        if milb:
+                            t_abbrev = split.get('sport', {}).get('abbreviation')
+                        else:
+                            t_abbrev = split.get('team', {}).get('abbreviation')
+                        if t_abbrev and t_abbrev not in ['MLB', 'MiLB']:
                             if t_abbrev not in career_teams:
                                 career_teams.append(t_abbrev)
             
@@ -527,7 +564,10 @@ class MLBClient:
                             if season == current_target_year:
                                 s = split.get('stat', {})
                                 s['season'] = season
-                                s['team'] = split.get('team', {}).get('abbreviation', 'MLB')
+                                if milb:
+                                    s['team'] = split.get('sport', {}).get('abbreviation', 'MiLB')
+                                else:
+                                    s['team'] = split.get('team', {}).get('abbreviation', 'MLB')
                                 found_stats.append(s)
 
             if found_stats:
@@ -539,7 +579,8 @@ class MLBClient:
                     is_career=career,
                     info_line=info_line,
                     stats=found_stats,
-                    headshot_url=headshot_url
+                    headshot_url=headshot_url,
+                    parent_org_abbrev=parent_org_abbrev
                 ))
             elif stat_type or len(stat_types_to_fetch) == 1:
                 results.append(PlayerSeasonStats(
@@ -551,7 +592,8 @@ class MLBClient:
                     info_line=info_line,
                     stats=[],
                     info_message=f"No {st} stats found for this player.",
-                    headshot_url=headshot_url
+                    headshot_url=headshot_url,
+                    parent_org_abbrev=parent_org_abbrev
                 ))
 
         return results
