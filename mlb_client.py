@@ -260,35 +260,42 @@ class PlayerSeasonStats:
             return self.info_message
 
         if self.stat_type == "hitting":
-            labels = ['season', 'team', 'atBats', 'hits', 'doubles', 'triples', 'homeRuns', 'runs', 'rbi', 'baseOnBalls', 'strikeOuts', 'stolenBases', 'caughtStealing', 'avg', 'obp', 'slg', 'ops']
+            labels_list = [
+                ['season', 'team', 'atBats', 'runs', 'hits', 'doubles', 'triples', 'homeRuns', 'rbi', 'baseOnBalls', 'strikeOuts', 'stolenBases', 'caughtStealing'],
+                ['season', 'team', 'avg', 'obp', 'slg', 'ops']
+            ]
             repl = {'season':'YEAR', 'team':'TM', 'atBats':'AB', 'hits':'H', 'doubles':'2B', 'triples':'3B', 'homeRuns':'HR', 'runs':'R', 'rbi':'RBI', 'baseOnBalls':'BB', 'strikeOuts':'SO', 'stolenBases':'SB', 'caughtStealing':'CS', 'avg':'AVG', 'obp':'OBP', 'slg':'SLG', 'ops':'OPS'}
         else:
-            labels = ['season', 'team', 'wins', 'losses', 'gamesPlayed', 'gamesStarted', 'saveOpportunities', 'saves', 'inningsPitched', 'strikeOuts', 'baseOnBalls', 'homeRuns', 'era', 'whip']
-            repl = {'season':'YEAR', 'team':'TM', 'wins':'W', 'losses':'L', 'gamesPlayed':'G', 'gamesStarted':'GS', 'saveOpportunities':'SVO', 'saves':'SV', 'inningsPitched':'IP', 'strikeOuts':'SO', 'baseOnBalls':'BB', 'homeRuns':'HR', 'era':'ERA', 'whip':'WHIP'}
+            labels_list = [
+                ['season', 'team', 'wins', 'losses', 'gamesPlayed', 'gamesStarted', 'saves',],
+                ['season', 'team', 'inningsPitched', 'hits', 'runs', 'earnedRuns', 'baseOnBalls', 'strikeOuts', 'homeRuns', 'era', 'whip']
+            ]
+            repl = {'season':'YEAR', 'team':'TM', 'wins':'W', 'losses':'L', 'gamesPlayed':'G', 'gamesStarted':'GS', 'saves':'SV', 'inningsPitched':'IP', 'strikeOuts':'SO', 'baseOnBalls':'BB', 'homeRuns':'HR', 'era':'ERA', 'whip':'WHIP', 'hits':'H', 'runs':'R', 'earnedRuns':'ER'}
 
         if len(self.stats) == 1:
-            labels.remove('season')
-            labels.remove('team')
+            for labels in labels_list:
+                if 'season' in labels: labels.remove('season')
+                if 'team' in labels: labels.remove('team')
         elif len(self.stats) > 1:
-            labels.remove('season')
+            for labels in labels_list:
+                if 'season' in labels: labels.remove('season')
 
-        lines = [''] * (len(self.stats) + 1)
-        for label in labels:
-            display_label = repl.get(label, label.upper())
-            width = len(display_label)
-            for row in self.stats:
-                width = max(width, len(str(row.get(label, ""))))
-            
-            if label in ['team']:
-                lines[0] += display_label.ljust(width) + " "
-                for i, row in enumerate(self.stats):
-                    lines[i+1] += str(row.get(label, "")).ljust(width) + " "
-            else:
+        blocks = []
+        for labels in labels_list:
+            lines = [''] * (len(self.stats) + 1)
+            for label in labels:
+                display_label = repl.get(label, label.upper())
+                width = len(display_label)
+                for row in self.stats:
+                    width = max(width, len(str(row.get(label, ""))))
+                
                 lines[0] += display_label.rjust(width) + " "
                 for i, row in enumerate(self.stats):
                     lines[i+1] += str(row.get(label, "")).rjust(width) + " "
+            # Use .strip('\n') to prevent Python from deleting the leading spaces on your headers!
+            blocks.append("\n".join([line.rstrip() for line in lines]).strip('\n'))
 
-        return "\n".join([line.rstrip() for line in lines]).strip()
+        return "\n\n".join(blocks)
 
 class MLBClient:
     BASE_URL = "https://statsapi.mlb.com/api/v1"
