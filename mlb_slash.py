@@ -234,9 +234,9 @@ class MLBSlash(commands.Cog):
             for game in games:
                 # Use emojis in the field title to indicate game status
                 if game.abstract_state == "Live":
-                    name = f"🔴 {game.away.abbreviation} @ {game.home.abbreviation} - Live"
+                    name = f"🔴 {game.away.abbreviation} @ {game.home.abbreviation} - {game.status}"
                 elif game.abstract_state == "Final":
-                    final_str = f"Final/{game.inning}" if game.inning != 9 and game.inning > 0 else "Final"
+                    final_str = f"{game.status}/{game.inning}" if game.inning != 9 and game.inning > 0 else game.status
                     name = f"🏁 {game.away.abbreviation} @ {game.home.abbreviation} - {final_str}"
                 else:
                     name = f"🗓️ {game.away.abbreviation} @ {game.home.abbreviation} - {game.status}"

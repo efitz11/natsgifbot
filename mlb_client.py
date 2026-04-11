@@ -3,7 +3,7 @@ import asyncio
 import urllib.parse
 from dataclasses import dataclass
 from typing import List, Optional
-from datetime import datetime
+from datetime import datetime, timedelta
 
 @dataclass
 class Team:
@@ -13,6 +13,7 @@ class Team:
     score: int
     hits: int = 0
     errors: int = 0
+    record: str = ""
 
 @dataclass
 class Game:
@@ -40,6 +41,17 @@ class Game:
     statcast_dist: float = 0.0
     statcast_speed: float = 0.0
     statcast_angle: float = 0.0
+    away_probable: str = ""
+    home_probable: str = ""
+    away_probable_stats: str = ""
+    home_probable_stats: str = ""
+    win_pitcher: str = ""
+    loss_pitcher: str = ""
+    save_pitcher: str = ""
+    win_pitcher_note: str = ""
+    loss_pitcher_note: str = ""
+    save_pitcher_note: str = ""
+    game_time_str: str = ""
 
     @classmethod
     def from_api_json(cls, data: dict):
@@ -48,13 +60,17 @@ class Game:
         home_data = data['teams']['home']
         ls = data.get('linescore', {})
         
+        away_record = f"({away_data.get('leagueRecord', {}).get('wins', 0)}-{away_data.get('leagueRecord', {}).get('losses', 0)})"
+        home_record = f"({home_data.get('leagueRecord', {}).get('wins', 0)}-{home_data.get('leagueRecord', {}).get('losses', 0)})"
+        
         away_team = Team(
             id=away_data['team']['id'],
             name=away_data['team']['name'],
             abbreviation=away_data['team'].get('abbreviation', away_data['team']['name'][:3].upper()),
             score=away_data.get('score', 0),
             hits=ls.get('teams', {}).get('away', {}).get('hits', 0),
-            errors=ls.get('teams', {}).get('away', {}).get('errors', 0)
+            errors=ls.get('teams', {}).get('away', {}).get('errors', 0),
+            record=away_record
         )
         
         home_team = Team(
@@ -63,7 +79,8 @@ class Game:
             abbreviation=home_data['team'].get('abbreviation', home_data['team']['name'][:3].upper()),
             score=home_data.get('score', 0),
             hits=ls.get('teams', {}).get('home', {}).get('hits', 0),
-            errors=ls.get('teams', {}).get('home', {}).get('errors', 0)
+            errors=ls.get('teams', {}).get('home', {}).get('errors', 0),
+            record=home_record
         )
         
         game = cls(
@@ -133,6 +150,57 @@ class Game:
                     game.statcast_speed = hd.get('launchSpeed') or 0.0
                     game.statcast_angle = hd.get('launchAngle') or 0.0
         
+        game.away_probable = away_data.get('probablePitcher', {}).get('lastName', '')
+        game.home_probable = home_data.get('probablePitcher', {}).get('lastName', '')
+        
+        if 'stats' in away_data.get('probablePitcher', {}):
+            for st in away_data['probablePitcher']['stats']:
+                if st.get('type', {}).get('displayName') == 'statsSingleSeason' and st.get('group', {}).get('displayName') == 'pitching':
+                    s = st.get('stats', {})
+                    game.away_probable_stats = f"({s.get('wins', 0)}-{s.get('losses', 0)}) {s.get('era', '-.--')}"
+                    break
+                    
+        if 'stats' in home_data.get('probablePitcher', {}):
+            for st in home_data['probablePitcher']['stats']:
+                if st.get('type', {}).get('displayName') == 'statsSingleSeason' and st.get('group', {}).get('displayName') == 'pitching':
+                    s = st.get('stats', {})
+                    game.home_probable_stats = f"({s.get('wins', 0)}-{s.get('losses', 0)}) {s.get('era', '-.--')}"
+                    break
+        
+        decisions = data.get('decisions', {})
+        
+        winner = decisions.get('winner', {})
+        game.win_pitcher = winner.get('lastName', '')
+        for st in winner.get('stats', []):
+            if st.get('type', {}).get('displayName') == 'gameLog' and 'note' in st.get('stats', {}):
+                game.win_pitcher_note = st['stats']['note']
+            elif st.get('type', {}).get('displayName') == 'statsSingleSeason' and not game.win_pitcher_note:
+                game.win_pitcher_note = f"(W, {st.get('stats', {}).get('wins', 0)}-{st.get('stats', {}).get('losses', 0)})"
+                
+        loser = decisions.get('loser', {})
+        game.loss_pitcher = loser.get('lastName', '')
+        for st in loser.get('stats', []):
+            if st.get('type', {}).get('displayName') == 'gameLog' and 'note' in st.get('stats', {}):
+                game.loss_pitcher_note = st['stats']['note']
+            elif st.get('type', {}).get('displayName') == 'statsSingleSeason' and not game.loss_pitcher_note:
+                game.loss_pitcher_note = f"(L, {st.get('stats', {}).get('wins', 0)}-{st.get('stats', {}).get('losses', 0)})"
+                
+        save = decisions.get('save', {})
+        game.save_pitcher = save.get('lastName', '')
+        for st in save.get('stats', []):
+            if st.get('type', {}).get('displayName') == 'gameLog' and 'note' in st.get('stats', {}):
+                game.save_pitcher_note = st['stats']['note']
+            elif st.get('type', {}).get('displayName') == 'statsSingleSeason' and not game.save_pitcher_note:
+                game.save_pitcher_note = f"(SV, {st.get('stats', {}).get('saves', 0)})"
+        
+        if 'gameDate' in data:
+            try:
+                dt = datetime.strptime(data['gameDate'], "%Y-%m-%dT%H:%M:%SZ")
+                dt = dt - timedelta(hours=4)  # ET offset for baseball season
+                game.game_time_str = dt.strftime("%I:%M %p").lstrip('0') + " ET"
+            except ValueError:
+                pass
+
         return game
 
     def format_score_line(self) -> str:
@@ -140,7 +208,7 @@ class Game:
         away_base = f"{self.away.abbreviation.ljust(3)} {str(self.away.score).rjust(2)} {str(self.away.hits).rjust(2)} {self.away.errors}"
         home_base = f"{self.home.abbreviation.ljust(3)} {str(self.home.score).rjust(2)} {str(self.home.hits).rjust(2)} {self.home.errors}"
 
-        if self.abstract_state == "Live" and self.status != "Delayed":
+        if self.abstract_state == "Live" and self.status not in ["Delayed", "Warmup"]:
             outs_str = (int(self.outs) * '●') + ((3 - int(self.outs)) * '○')
             inning_half_str = "▲" if self.is_top_inning else "▼"
             
@@ -169,16 +237,47 @@ class Game:
             return output
         elif self.abstract_state == "Final":
             final_str = f"F/{self.inning}" if self.inning != 9 and self.inning > 0 else "F"
-            return f"{away_base} | {final_str}\n{home_base} |"
+            
+            away_p, home_p, sv_p = "", "", ""
+            if self.win_pitcher:
+                w_str = f"{self.win_pitcher} {self.win_pitcher_note}".strip()
+                l_str = f"{self.loss_pitcher} {self.loss_pitcher_note}".strip()
+                if self.save_pitcher:
+                    sv_p = f"{self.save_pitcher} {self.save_pitcher_note}".strip()
+                
+                if self.away.score > self.home.score:
+                    away_p = w_str
+                    home_p = l_str
+                elif self.home.score > self.away.score:
+                    away_p = l_str
+                    home_p = w_str
+                    
+            away_p_str = f" | {away_p}" if away_p else ""
+            home_p_str = f" | {home_p}" if home_p else ""
+            
+            result = f"{away_base}  {self.away.record.center(7)} | {final_str.ljust(4)}{away_p_str}\n{home_base}  {self.home.record.center(7)} | {' ' * 4}{home_p_str}"
+            if sv_p:
+                spacer = " " * len(f"{home_base}  {self.home.record.center(7)}")
+                result += f"\n{spacer} | {' ' * 4} | {sv_p}"
+                
+            return result
         else:
-            return f"{self.away.abbreviation.ljust(3)} {str(self.away.score).rjust(2)} | {self.status}\n{self.home.abbreviation.ljust(3)} {str(self.home.score).rjust(2)} |"
+            time_str = self.game_time_str if self.status in ["Scheduled", "Pre-Game", "Warmup"] and self.game_time_str else self.status
+            
+            away_prob = f"{self.away_probable.ljust(10)} {self.away_probable_stats}".strip() if self.away_probable else ""
+            home_prob = f"{self.home_probable.ljust(10)} {self.home_probable_stats}".strip() if self.home_probable else ""
+            
+            away_prob_str = f" | {away_prob}" if away_prob else ""
+            home_prob_str = f" | {home_prob}" if home_prob else ""
+            
+            return f"{self.away.abbreviation.ljust(3)} {self.away.record.center(7)} | {time_str.ljust(11)}{away_prob_str}\n{self.home.abbreviation.ljust(3)} {self.home.record.center(7)} | {' ' * 11}{home_prob_str}"
 
     def format_modern_score_line(self) -> str:
         """A modern Discord markdown formatter for the game score."""
         away_line = f"**{self.away.abbreviation} {self.away.score}** ({self.away.hits}H, {self.away.errors}E)"
         home_line = f"**{self.home.abbreviation} {self.home.score}** ({self.home.hits}H, {self.home.errors}E)"
         
-        if self.abstract_state == "Live" and self.status != "Delayed":
+        if self.abstract_state == "Live" and self.status not in ["Delayed", "Warmup"]:
             outs_str = (int(self.outs) * '●') + ((3 - int(self.outs)) * '○')
             inning_half_str = "▲" if self.is_top_inning else "▼"
             
@@ -601,7 +700,7 @@ class MLBClient:
     async def get_todays_games(self, team_query: str = None, date: str = None) -> List[Game]:
         session = await self.get_session()
         # Request all the expanded data your old bot was using
-        url = f"{self.BASE_URL}/schedule?sportId=1&hydrate=team,linescore(matchup,runners),previousPlay,person,stats,lineups"
+        url = f"{self.BASE_URL}/schedule?sportId=1&hydrate=team,linescore(matchup,runners),previousPlay,person,stats,lineups,probablePitcher,decisions"
         if date:
             url += f"&date={date}"
         print(url)  # Debug: Print the URL being requested
