@@ -5,6 +5,27 @@ from dataclasses import dataclass
 from typing import List, Optional
 from datetime import datetime, timedelta
 
+def _bold_play_description(desc: str, play: dict) -> str:
+    if not desc or not play:
+        return desc
+        
+    names = set()
+    matchup = play.get('matchup', {})
+    if matchup.get('batter'): names.add(matchup['batter'].get('fullName'))
+    if matchup.get('pitcher'): names.add(matchup['pitcher'].get('fullName'))
+    
+    for runner in play.get('runners', []):
+        if runner.get('details', {}).get('runner'):
+            names.add(runner['details']['runner'].get('fullName'))
+            
+    names = {n for n in names if n}
+    for name in sorted(names, key=len, reverse=True):
+        # Idempotent replacement to prevent double-bolding if we run this twice
+        desc = desc.replace(f"**{name}**", name)
+        desc = desc.replace(name, f"**{name}**")
+        
+    return desc
+
 @dataclass
 class Team:
     id: int
@@ -137,7 +158,8 @@ class Game:
             
         last_play = data.get('previousPlay', {})
         if last_play and 'result' in last_play:
-            game.last_play_desc = last_play['result'].get('description', '')
+            desc = last_play['result'].get('description', '')
+            game.last_play_desc = _bold_play_description(desc, last_play)
             game.last_play_pitcher = last_play.get('matchup', {}).get('pitcher', {}).get('fullName', '')
             
             play_events = last_play.get('playEvents', [])
@@ -229,7 +251,7 @@ class Game:
             output = f"{away_line}\n{home_line}"
             
             if self.last_play_desc:
-                output += f"\n\nLast Play: With {self.last_play_pitcher} pitching, {self.last_play_desc}\n"
+                output += f"\n\nLast Play: With **{self.last_play_pitcher}** pitching, {self.last_play_desc}\n"
                 pitch_info = []
                 if self.last_pitch_type:
                     pitch_info.append(f"Pitch: {self.last_pitch_type}, {self.last_pitch_speed:.2f} mph")
@@ -581,6 +603,7 @@ class MLBClient:
                 half = play.get('about', {}).get('halfInning', '')
                 inning = f"{'bot' if half == 'bottom' else half} {play.get('about', {}).get('inning', '')}"
                 desc = play.get('result', {}).get('description', 'Scoring play.')
+                desc = _bold_play_description(desc, play)
                 if 'awayScore' in play.get('result', {}): desc += f" ({play['result']['awayScore']}-{play['result']['homeScore']})"
                 vid_url, vid_blurb = "", ""
                 if play.get('playEvents') and (play_id := play['playEvents'][-1].get('playId')) and play_id in content_dict:
@@ -706,6 +729,7 @@ class MLBClient:
                         inning = f"{half} {play.get('about', {}).get('inning', '')}"
                         is_complete = play.get('about', {}).get('isComplete', False)
                         desc = play.get('result', {}).get('description', 'Currently at bat.')
+                        desc = _bold_play_description(desc, play)
                         pitcher = play.get('matchup', {}).get('pitcher', {}).get('fullName', '')
                         is_scoring = play.get('about', {}).get('isScoringPlay', False)
 
@@ -963,7 +987,8 @@ class MLBClient:
                                 if 'result' in last_play and 'description' not in last_play['result'] and len(all_plays) > 1:
                                     last_play = all_plays[-2]
                                 
-                                g.last_play_desc = last_play.get('result', {}).get('description', g.last_play_desc)
+                                desc = last_play.get('result', {}).get('description', g.last_play_desc)
+                                g.last_play_desc = _bold_play_description(desc, last_play)
                                 g.last_play_pitcher = last_play.get('matchup', {}).get('pitcher', {}).get('fullName', g.last_play_pitcher)
                                 
                                 for event in last_play.get('playEvents', []):

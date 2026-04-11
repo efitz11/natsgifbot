@@ -338,8 +338,8 @@ class MLBSlash(commands.Cog):
                         desc += f"**{ab.inning.title()}:** Currently at bat.\n\n"
                         continue
                         
-                    scoring = "**" if ab.is_scoring else ""
-                    ab_text = f"**{ab.inning.title()}:** {scoring}With {ab.pitcher_name} pitching, {ab.description}{scoring}"
+                    scoring = "__" if ab.is_scoring else ""
+                    ab_text = f"**{ab.inning.title()}:** {scoring}With **{ab.pitcher_name}** pitching, {ab.description}{scoring}"
                     
                     if ab.pitch_data or ab.statcast_data:
                         extras = " | ".join(filter(None, [ab.pitch_data, ab.statcast_data]))
