@@ -255,5 +255,66 @@ class MLBSlash(commands.Cog):
         else:
             await interaction.followup.send("No games found.")
 
+    @mlb.command(name="next", description="Get the upcoming games for a team")
+    @app_commands.describe(team="The team abbreviation or name (e.g. wsh, dodgers)")
+    @app_commands.describe(games="Number of games to show (default 3, max 10)")
+    async def next_games(self, interaction: discord.Interaction, team: str, games: int = 3):
+        await self._send_schedule(interaction, team, games, past=False)
+
+    @mlb.command(name="past", description="Get the recently completed games for a team")
+    @app_commands.describe(team="The team abbreviation or name (e.g. wsh, dodgers)")
+    @app_commands.describe(games="Number of games to show (default 3, max 10)")
+    async def past_games(self, interaction: discord.Interaction, team: str, games: int = 3):
+        await self._send_schedule(interaction, team, games, past=True)
+
+    async def _send_schedule(self, interaction: discord.Interaction, team: str, num_games: int, past: bool):
+        await interaction.response.defer()
+        num_games = max(1, min(10, num_games))
+
+        games = await self.bot.mlb_client.get_team_schedule(team, num_games=num_games, past=past)
+
+        if not games:
+            await interaction.followup.send(f"Could not find any {'past' if past else 'upcoming'} games for that team.")
+            return
+
+        direction = "Past" if past else "Next"
+        
+        target_abbr = team.upper()
+        query = team.lower()
+        aliases = {"nats": "nationals", "yanks": "yankees", "cards": "cardinals", "dbacks": "diamondbacks", "barves": "braves"}
+        query = aliases.get(query, query)
+        for g in games:
+            if query == g.away.abbreviation.lower() or query in g.away.name.lower():
+                target_abbr = g.away.abbreviation
+                break
+            elif query == g.home.abbreviation.lower() or query in g.home.name.lower():
+                target_abbr = g.home.abbreviation
+                break
+
+        embeds = []
+        title = f"{direction} {len(games)} Games for {target_abbr}"
+        current_embed = discord.Embed(title=title, color=discord.Color.blue())
+        
+        for game in games:
+            date_str = game.game_date_str or "Unknown Date"
+            if game.abstract_state == "Live":
+                name = f"🔴 {game.away.abbreviation} @ {game.home.abbreviation} - {game.status} ({date_str})"
+            elif game.abstract_state == "Final":
+                final_str = f"{game.status}/{game.inning}" if game.inning != 9 and game.inning > 0 else game.status
+                name = f"🏁 {game.away.abbreviation} @ {game.home.abbreviation} - {final_str} ({date_str})"
+            else:
+                name = f"🗓️ {game.away.abbreviation} @ {game.home.abbreviation} - {game.status} ({date_str})"
+
+            value = f"```python\n{game.format_score_line()}\n```"
+            
+            if len(current_embed.fields) >= 25 or len(current_embed) + len(name) + len(value) > 5900:
+                embeds.append(current_embed)
+                current_embed = discord.Embed(title=f"{title} (Cont.)", color=discord.Color.blue())
+                
+            current_embed.add_field(name=name, value=value, inline=False)
+            
+        embeds.append(current_embed)
+        await interaction.followup.send(embeds=embeds)
+
 async def setup(bot):
     await bot.add_cog(MLBSlash(bot))

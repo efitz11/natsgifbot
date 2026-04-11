@@ -52,6 +52,7 @@ class Game:
     loss_pitcher_note: str = ""
     save_pitcher_note: str = ""
     game_time_str: str = ""
+    game_date_str: str = ""
 
     @classmethod
     def from_api_json(cls, data: dict):
@@ -198,6 +199,7 @@ class Game:
                 dt = datetime.strptime(data['gameDate'], "%Y-%m-%dT%H:%M:%SZ")
                 dt = dt - timedelta(hours=4)  # ET offset for baseball season
                 game.game_time_str = dt.strftime("%I:%M %p").lstrip('0') + " ET"
+                game.game_date_str = dt.strftime("%A, %b %d").replace(" 0", " ")
             except ValueError:
                 pass
 
@@ -438,6 +440,73 @@ class MLBClient:
                     return await resp.json()
             except Exception:
                 return []
+
+    async def get_team_id(self, team_query: str) -> Optional[int]:
+        if not team_query: return None
+        query = team_query.lower()
+        aliases = {"nats": "nationals", "yanks": "yankees", "cards": "cardinals", "dbacks": "diamondbacks", "barves": "braves"}
+        query = aliases.get(query, query)
+        
+        session = await self.get_session()
+        async with session.get(f"{self.BASE_URL}/teams?sportId=1") as resp:
+            data = await resp.json()
+            for team in data.get('teams', []):
+                if (query == team.get('abbreviation', '').lower() or 
+                    query in team.get('name', '').lower() or 
+                    query in team.get('teamName', '').lower()):
+                    return team['id']
+        return None
+
+    async def get_team_schedule(self, team_query: str, num_games: int = 3, past: bool = False) -> List[Game]:
+        team_id = await self.get_team_id(team_query)
+        if not team_id:
+            return []
+
+        now = datetime.utcnow() - timedelta(hours=5)
+        # Use a wide 45-day window to guarantee we find enough games even with rainouts or the All-Star break
+        if past:
+            start_date = (now - timedelta(days=45)).strftime("%Y-%m-%d")
+            end_date = now.strftime("%Y-%m-%d")
+        else:
+            start_date = now.strftime("%Y-%m-%d")
+            end_date = (now + timedelta(days=45)).strftime("%Y-%m-%d")
+
+        session = await self.get_session()
+        url = f"{self.BASE_URL}/schedule?sportId=1&teamId={team_id}&startDate={start_date}&endDate={end_date}&hydrate=team,linescore(matchup,runners),previousPlay,person,stats,lineups,probablePitcher,decisions"
+        
+        async with session.get(url) as resp:
+            data = await resp.json()
+
+        if not data.get('dates'): return []
+
+        games = []
+        for date_obj in data['dates']:
+            for game_data in date_obj['games']:
+                game = Game.from_api_json(game_data)
+                if past:
+                    # Only include games that have completely finished
+                    if game.abstract_state == 'Final' or game.status in ['Suspended', 'Completed Early']:
+                        games.append(game)
+                else:
+                    # Include anything that isn't finished or cancelled (Scheduled, Warmup, Live, Delayed)
+                    if game.abstract_state != 'Final' and game.status not in ['Postponed', 'Cancelled']:
+                        games.append(game)
+
+        # Take the most recent 'N' games from the end of the list (past), or the first 'N' games (next)
+        games = games[-num_games:] if past else games[:num_games]
+            
+        # Fetch PBP if any of these scheduled games happen to be Live right now
+        async def fetch_pbp(g: Game):
+            if g.abstract_state == "Live" and g.status not in ["Delayed", "Warmup"]:
+                try:
+                    async with session.get(f"{self.BASE_URL}/game/{g.game_pk}/playByPlay") as pbp_resp:
+                        if pbp_resp.status == 200:
+                            # Our existing static parse handles everything else, so just poke the endpoint to wake the API up
+                            pass
+                except Exception: pass
+                
+        if games: await asyncio.gather(*(fetch_pbp(g) for g in games))
+        return games
 
     async def get_player_game_stats(self, player_id_or_name: str, date: str = None) -> List[PlayerGameStats]:
         session = await self.get_session()
