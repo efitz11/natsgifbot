@@ -2,6 +2,7 @@ import os
 import discord
 from discord.ext import commands
 from mlb_client import MLBClient
+from dotenv import load_dotenv
 
 # Modern Discord bots require explicit Intents
 intents = discord.Intents.default()
@@ -34,11 +35,11 @@ async def on_ready():
     print('------')
 
 if __name__ == "__main__":
-    # Load the discord token just like in your old discordtest.py
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    tokens_path = os.path.join(base_dir, 'tokens.txt')
-    with open(tokens_path, 'r') as f:
-        tokens = f.read().splitlines()
-        discord_token = tokens[2].strip()
+    # Load environment variables from a .env file if it exists
+    load_dotenv()
+    
+    discord_token = os.getenv("DISCORD_TOKEN")
+    if not discord_token:
+        raise ValueError("No DISCORD_TOKEN found in environment variables. Make sure you have a .env file setup!")
 
     bot.run(discord_token)
