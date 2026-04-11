@@ -213,6 +213,41 @@ class MLBSlash(commands.Cog):
             nats_choices.append(choice) if any(aff in team.lower() for aff in ['nationals', 'senators', 'red wings', 'blue rocks', 'frednats', 'rochester', 'harrisburg', 'wilmington', 'fredericksburg']) else other_choices.append(choice)
         return (nats_choices + other_choices)[:25]
 
+    @milb.command(name="line", description="Get a minor league player's stat line for today or a specific date")
+    @app_commands.describe(player="The minor league player to search for")
+    @app_commands.describe(date="A specific date (e.g. 4/7/26, yesterday, +2, -5)")
+    async def milb_line(self, interaction: discord.Interaction, player: str, date: str = None):
+        await interaction.response.defer()
+        parsed_date = parse_date(date)
+
+        stats_list = await self.bot.mlb_client.get_player_game_stats(player, date=parsed_date, milb=True)
+
+        if not stats_list:
+            await interaction.followup.send("Could not find stats for that minor league player.")
+            return
+
+        embed = discord.Embed(color=discord.Color.blue())
+        
+        if len(stats_list) == 1:
+            stats = stats_list[0]
+            embed.title = f"{stats.player_name} ({stats.team_abbrev}) {stats.date} {'vs' if stats.is_home else '@'} {stats.opp_abbrev}"
+            embed.description = f"```python\n{stats.format_discord_code_block()}\n```"
+        else:
+            stats = stats_list[0]
+            embed.title = f"{stats.player_name} ({stats.team_abbrev}) - {stats.date}"
+            for i, s in enumerate(stats_list, 1):
+                name = f"Game {i}: {'vs' if s.is_home else '@'} {s.opp_abbrev}"
+                embed.add_field(name=name, value=f"```python\n{s.format_discord_code_block()}\n```", inline=False)
+                
+        if stats_list[0].headshot_url:
+            embed.set_thumbnail(url=stats_list[0].headshot_url)
+                
+        await interaction.followup.send(embed=embed)
+
+    @milb_line.autocomplete('player')
+    async def milb_line_player_autocomplete(self, interaction: discord.Interaction, current: str):
+        return await self.milb_stats_player_autocomplete(interaction, current)
+
     @mlb.command(name="score", description="Get today's MLB games or a specific team's game")
     @app_commands.describe(team="The team abbreviation or name to search for (e.g. wsh, nationals, lad). Leave blank for all.")
     @app_commands.describe(date="A specific date (e.g. 4/7/26, yesterday, +2, -5)")

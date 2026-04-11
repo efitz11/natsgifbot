@@ -508,7 +508,7 @@ class MLBClient:
         if games: await asyncio.gather(*(fetch_pbp(g) for g in games))
         return games
 
-    async def get_player_game_stats(self, player_id_or_name: str, date: str = None) -> List[PlayerGameStats]:
+    async def get_player_game_stats(self, player_id_or_name: str, date: str = None, milb: bool = False) -> List[PlayerGameStats]:
         session = await self.get_session()
         player_id = None
         player_name = player_id_or_name
@@ -518,7 +518,7 @@ class MLBClient:
         if player_id_or_name.isdigit():
             player_id = player_id_or_name
         else:
-            players = await self.search_players(player_id_or_name)
+            players = await self.search_players(player_id_or_name, milb=milb)
             if not players:
                 return []
             player_id = str(players[0]['id'])
@@ -543,7 +543,8 @@ class MLBClient:
         team_abbrev = person['currentTeam'].get('abbreviation', 'TEAM')
 
         # Fetch the team's schedule for the target date to get the gamePk(s)
-        schedule_url = f"{self.BASE_URL}/schedule?sportId=1&teamId={team_id}"
+        sport_ids = "11,12,13,14,15,5442,16" if milb else "1"
+        schedule_url = f"{self.BASE_URL}/schedule?sportId={sport_ids}&teamId={team_id}"
         if date: schedule_url += f"&date={date}"
 
         async with session.get(schedule_url) as resp:
