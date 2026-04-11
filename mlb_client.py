@@ -53,6 +53,7 @@ class Game:
     save_pitcher_note: str = ""
     game_time_str: str = ""
     game_date_str: str = ""
+    scoring_plays: List["ScoringPlay"] = None
 
     @classmethod
     def from_api_json(cls, data: dict):
@@ -326,6 +327,13 @@ class AtBat:
     is_complete: bool
 
 @dataclass
+class ScoringPlay:
+    inning: str
+    description: str
+    video_url: str
+    video_blurb: str
+
+@dataclass
 class PlayerGameStats:
     player_name: str
     team_abbrev: str
@@ -519,6 +527,67 @@ class MLBClient:
                 except Exception: pass
                 
         if games: await asyncio.gather(*(fetch_pbp(g) for g in games))
+        return games
+
+    async def get_games_with_scoring_plays(self, team_query: str, date: str = None) -> List[Game]:
+        # 1. Find the game(s) for the team
+        games = await self.get_todays_games(team_query=team_query, date=date)
+        if not games:
+            return []
+        
+        team_id = await self.get_team_id(team_query)
+        if not team_id:
+            return games
+
+        session = await self.get_session()
+
+        async def process_game(game: Game):
+            # 2. Fetch PBP and Content
+            pbp_url = f"{self.BASE_URL}/game/{game.game_pk}/playByPlay"
+            content_url = f"{self.BASE_URL}/game/{game.game_pk}/content"
+            
+            try:
+                async with session.get(pbp_url) as resp:
+                    pbp_data = await resp.json() if resp.status == 200 else {}
+                async with session.get(content_url) as resp:
+                    content_data = await resp.json() if resp.status == 200 else {}
+            except Exception as e:
+                print(f"Error fetching scoring play data for game {game.game_pk}: {e}")
+                return
+
+            # 3. Process scoring plays
+            game.scoring_plays = []
+            
+            team_side = 'away' if game.away.id == team_id else 'home'
+            team_half = 'top' if team_side == 'away' else 'bottom'
+
+            content_dict = {}
+            highlights = content_data.get('highlights', {}).get('highlights', {}).get('items', [])
+            for item in highlights:
+                if 'guid' in item:
+                    for pb in item.get('playbacks', []):
+                        if pb.get('name') == 'mp4Avc':
+                            content_dict[item['guid']] = {'url': pb['url'], 'blurb': item.get('headline', item.get('blurb', ''))}
+                            break
+
+            scoring_play_indices = pbp_data.get('scoringPlays', [])
+            if not scoring_play_indices: return
+            all_plays = pbp_data.get('allPlays', [])
+
+            for play_index in scoring_play_indices:
+                play = all_plays[play_index]
+                if play.get('about', {}).get('halfInning') != team_half: continue
+
+                half = play.get('about', {}).get('halfInning', '')
+                inning = f"{'bot' if half == 'bottom' else half} {play.get('about', {}).get('inning', '')}"
+                desc = play.get('result', {}).get('description', 'Scoring play.')
+                if 'awayScore' in play.get('result', {}): desc += f" ({play['result']['awayScore']}-{play['result']['homeScore']})"
+                vid_url, vid_blurb = "", ""
+                if play.get('playEvents') and (play_id := play['playEvents'][-1].get('playId')) and play_id in content_dict:
+                    vid_url, vid_blurb = content_dict[play_id]['url'], content_dict[play_id]['blurb']
+                game.scoring_plays.append(ScoringPlay(inning, desc, vid_url, vid_blurb))
+
+        await asyncio.gather(*(process_game(g) for g in games))
         return games
 
     async def get_player_game_stats(self, player_id_or_name: str, date: str = None, milb: bool = False, include_abs: bool = False) -> List[PlayerGameStats]:

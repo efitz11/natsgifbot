@@ -107,6 +107,45 @@ class MLBSlash(commands.Cog):
     async def abs_player_autocomplete(self, interaction: discord.Interaction, current: str):
         return await self.player_autocomplete(interaction, current)
 
+    @mlb.command(name="sp", description="Get all scoring plays for a team in a given game.")
+    @app_commands.describe(team="The team to get scoring plays for (e.g. wsh, nationals)")
+    @app_commands.describe(date="A specific date (e.g. 4/7/26, yesterday, +2, -5)")
+    async def scoring_plays(self, interaction: discord.Interaction, team: str, date: str = None):
+        await interaction.response.defer()
+        parsed_date = parse_date(date)
+
+        games = await self.bot.mlb_client.get_games_with_scoring_plays(team, date=parsed_date)
+
+        if not games:
+            await interaction.followup.send("Could not find a game for that team on the specified date.")
+            return
+        
+        embeds = []
+        for i, game in enumerate(games, 1):
+            embed = discord.Embed(color=discord.Color.blue())
+
+            final_str = f"{game.status}/{game.inning}" if game.inning != 9 and game.inning > 0 else game.status
+            title = f"🏁 {game.away.abbreviation} @ {game.home.abbreviation} - {final_str}" if game.abstract_state == "Final" else \
+                    f"🔴 {game.away.abbreviation} @ {game.home.abbreviation} - {game.status}" if game.abstract_state == "Live" else \
+                    f"🗓️ {game.away.abbreviation} @ {game.home.abbreviation} - {game.status}"
+            if len(games) > 1: title += f" (Game {i})"
+            embed.title = title
+            
+            desc = f"```python\n{game.format_score_line()}\n```\n"
+            if game.scoring_plays:
+                desc += "### Scoring Plays\n"
+                for sp in game.scoring_plays:
+                    desc += f"**{sp.inning.title()}:** {sp.description}\n"
+                    if sp.video_url: desc += f"> [🎥 **{sp.video_blurb}**]({sp.video_url})\n"
+                    desc += "\n"
+            else:
+                desc += "\nNo scoring plays found for this team in this game."
+
+            embed.description = desc[:4096].strip()
+            embeds.append(embed)
+
+        await interaction.followup.send(embeds=embeds)
+
     @mlb.command(name="stats", description="Get a player's season or career stats")
     @app_commands.describe(player="The player to search for")
     @app_commands.describe(year="A specific year (e.g. 2023). Leave blank for most recent.")
