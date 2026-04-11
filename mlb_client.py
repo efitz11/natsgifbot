@@ -314,6 +314,18 @@ class Game:
             return f"{away_line} @ {home_line} | **{self.status}**"
 
 @dataclass
+class AtBat:
+    inning: str
+    pitcher_name: str
+    description: str
+    pitch_data: str
+    statcast_data: str
+    video_url: str
+    video_blurb: str
+    is_scoring: bool
+    is_complete: bool
+
+@dataclass
 class PlayerGameStats:
     player_name: str
     team_abbrev: str
@@ -325,6 +337,7 @@ class PlayerGameStats:
     pitching_dec: str = ""
     info_message: str = ""
     headshot_url: str = ""
+    at_bats: List[AtBat] = None
 
     def format_discord_code_block(self) -> str:
         if self.info_message:
@@ -508,7 +521,7 @@ class MLBClient:
         if games: await asyncio.gather(*(fetch_pbp(g) for g in games))
         return games
 
-    async def get_player_game_stats(self, player_id_or_name: str, date: str = None, milb: bool = False) -> List[PlayerGameStats]:
+    async def get_player_game_stats(self, player_id_or_name: str, date: str = None, milb: bool = False, include_abs: bool = False) -> List[PlayerGameStats]:
         session = await self.get_session()
         player_id = None
         player_name = player_id_or_name
@@ -594,10 +607,69 @@ class MLBClient:
                 results.append(PlayerGameStats(player_name, team_abbrev, opp_abbrev, is_home, game_date_formatted, info_message="Player played but recorded no stats (e.g., pinch runner or defensive sub).", headshot_url=headshot_url))
                 continue
                 
+            at_bats = []
+            if include_abs:
+                pbp_url = f"{self.BASE_URL}/game/{game['gamePk']}/playByPlay"
+                content_url = f"{self.BASE_URL}/game/{game['gamePk']}/content"
+                
+                try:
+                    async with session.get(pbp_url) as resp:
+                        pbp_data = await resp.json() if resp.status == 200 else {}
+                    async with session.get(content_url) as resp:
+                        content_data = await resp.json() if resp.status == 200 else {}
+                except Exception as e:
+                    print(f"Error fetching AB data: {e}")
+                    pbp_data, content_data = {}, {}
+                    
+                content_dict = {}
+                highlights = content_data.get('highlights', {}).get('highlights', {}).get('items', [])
+                for item in highlights:
+                    if 'guid' in item:
+                        for pb in item.get('playbacks', []):
+                            if pb.get('name') == 'mp4Avc':
+                                content_dict[item['guid']] = {'url': pb['url'], 'blurb': item.get('headline', item.get('blurb', ''))}
+                                break
+                                
+                for play in pbp_data.get('allPlays', []):
+                    if play.get('matchup', {}).get('batter', {}).get('id') == int(player_id):
+                        half = play.get('about', {}).get('halfInning', '')
+                        if half == 'bottom': half = 'bot'
+                        inning = f"{half} {play.get('about', {}).get('inning', '')}"
+                        is_complete = play.get('about', {}).get('isComplete', False)
+                        desc = play.get('result', {}).get('description', 'Currently at bat.')
+                        pitcher = play.get('matchup', {}).get('pitcher', {}).get('fullName', '')
+                        is_scoring = play.get('about', {}).get('isScoringPlay', False)
+
+                        pitch_str, statcast_str, vid_url, vid_blurb = "", "", "", ""
+
+                        if play.get('playEvents'):
+                            last_event = play['playEvents'][-1]
+                            if 'pitchData' in last_event:
+                                pspeed = last_event['pitchData'].get('startSpeed')
+                                ptype = last_event.get('details', {}).get('type', {}).get('description')
+                                if pspeed and ptype:
+                                    pitch_str = f"{pspeed:.1f} mph {ptype}"
+
+                            if 'hitData' in last_event:
+                                hd = last_event['hitData']
+                                dist, ev, la = hd.get('totalDistance'), hd.get('launchSpeed'), hd.get('launchAngle')
+                                parts = []
+                                if dist: parts.append(f"{dist} ft")
+                                if ev: parts.append(f"{ev} mph")
+                                if la is not None: parts.append(f"{la} degrees")
+                                statcast_str = ", ".join(parts)
+
+                            play_id = last_event.get('playId')
+                            if play_id and play_id in content_dict:
+                                vid_url = content_dict[play_id]['url']
+                                vid_blurb = content_dict[play_id]['blurb']
+
+                        at_bats.append(AtBat(inning, pitcher, desc, pitch_str, statcast_str, vid_url, vid_blurb, is_scoring, is_complete))
+
             results.append(PlayerGameStats(
                 player_name=player_name, team_abbrev=team_abbrev, opp_abbrev=opp_abbrev, is_home=is_home,
                 date=game_date_formatted, batting_stats=batting, pitching_stats=pitching, pitching_dec=pitching.get('note', '') if pitching else "",
-                headshot_url=headshot_url
+                headshot_url=headshot_url, at_bats=at_bats
             ))
             
         return results

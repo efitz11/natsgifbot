@@ -97,6 +97,16 @@ class MLBSlash(commands.Cog):
         # Combine and return up to 25 matches for Discord's popup menu
         return (nats_choices + other_choices)[:25]
 
+    @mlb.command(name="abs", description="Get a player's at-bats and video highlights for today or a specific date")
+    @app_commands.describe(player="The player to search for")
+    @app_commands.describe(date="A specific date (e.g. 4/7/26, yesterday, +2, -5)")
+    async def abs_command(self, interaction: discord.Interaction, player: str, date: str = None):
+        await self._send_player_abs(interaction, player, date, milb=False)
+
+    @abs_command.autocomplete('player')
+    async def abs_player_autocomplete(self, interaction: discord.Interaction, current: str):
+        return await self.player_autocomplete(interaction, current)
+
     @mlb.command(name="stats", description="Get a player's season or career stats")
     @app_commands.describe(player="The player to search for")
     @app_commands.describe(year="A specific year (e.g. 2023). Leave blank for most recent.")
@@ -247,6 +257,69 @@ class MLBSlash(commands.Cog):
     @milb_line.autocomplete('player')
     async def milb_line_player_autocomplete(self, interaction: discord.Interaction, current: str):
         return await self.milb_stats_player_autocomplete(interaction, current)
+
+    @milb.command(name="abs", description="Get a minor league player's at-bats and video highlights")
+    @app_commands.describe(player="The minor league player to search for")
+    @app_commands.describe(date="A specific date (e.g. 4/7/26, yesterday, +2, -5)")
+    async def milb_abs(self, interaction: discord.Interaction, player: str, date: str = None):
+        await self._send_player_abs(interaction, player, date, milb=True)
+
+    @milb_abs.autocomplete('player')
+    async def milb_abs_player_autocomplete(self, interaction: discord.Interaction, current: str):
+        return await self.milb_stats_player_autocomplete(interaction, current)
+
+    async def _send_player_abs(self, interaction: discord.Interaction, player: str, date: str, milb: bool):
+        await interaction.response.defer()
+        parsed_date = parse_date(date)
+
+        stats_list = await self.bot.mlb_client.get_player_game_stats(player, date=parsed_date, milb=milb, include_abs=True)
+
+        if not stats_list:
+            await interaction.followup.send("Could not find stats for that player.")
+            return
+
+        embeds = []
+        for i, stats in enumerate(stats_list, 1):
+            embed = discord.Embed(color=discord.Color.blue())
+            
+            if len(stats_list) == 1:
+                embed.title = f"{stats.player_name} ({stats.team_abbrev}) {stats.date} {'vs' if stats.is_home else '@'} {stats.opp_abbrev}"
+            else:
+                embed.title = f"{stats.player_name} ({stats.team_abbrev}) - {stats.date} (Game {i}: {'vs' if stats.is_home else '@'} {stats.opp_abbrev})"
+                
+            if stats.headshot_url:
+                embed.set_thumbnail(url=stats.headshot_url)
+                
+            desc = f"```python\n{stats.format_discord_code_block()}\n```\n"
+            
+            if stats.at_bats:
+                desc += "### Play-by-Play\n"
+                for ab in stats.at_bats:
+                    if not ab.is_complete:
+                        desc += f"**{ab.inning.title()}:** Currently at bat.\n\n"
+                        continue
+                        
+                    scoring = "**" if ab.is_scoring else ""
+                    ab_text = f"**{ab.inning.title()}:** {scoring}With {ab.pitcher_name} pitching, {ab.description}{scoring}"
+                    
+                    if ab.pitch_data or ab.statcast_data:
+                        extras = " | ".join(filter(None, [ab.pitch_data, ab.statcast_data]))
+                        ab_text += f" *({extras})*"
+                        
+                    desc += ab_text + "\n"
+                    
+                    if ab.video_url:
+                        desc += f"> [🎥 **{ab.video_blurb}**]({ab.video_url})\n"
+                        
+                    desc += "\n"
+                    
+            if len(desc) > 4096:
+                desc = desc[:4093] + "..."
+                
+            embed.description = desc.strip()
+            embeds.append(embed)
+            
+        await interaction.followup.send(embeds=embeds)
 
     @mlb.command(name="score", description="Get today's MLB games or a specific team's game")
     @app_commands.describe(team="The team abbreviation or name to search for (e.g. wsh, nationals, lad). Leave blank for all.")
