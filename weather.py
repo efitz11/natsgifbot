@@ -1,5 +1,5 @@
 from datetime import datetime,date,time
-from backports.zoneinfo import ZoneInfo
+from zoneinfo import ZoneInfo
 import json
 import time
 from urllib.request import urlopen, Request

@@ -257,5 +257,5 @@ class Reddit(commands.Cog):
         for string in self.sub('justFPthings',selfpost=True, limit=250):
             await ctx.send(string)
         
-def setup(bot):
-    bot.add_cog(Reddit(bot))
+async def setup(bot):
+    await bot.add_cog(Reddit(bot))
