@@ -2456,7 +2456,7 @@ def old_print_dongs(type, delta=None, reddit=False):
                         search = "grand slam"
                     elif 'home run' in number:
                         search = "home run"
-                    h['num'] = int(re.search('\(([^)]+)', number[number.index(search):]).group(1))
+                    h['num'] = int(re.search(r'\(([^)]+)', number[number.index(search):]).group(1))
                     h['dist'] = 0
                     h['ev'] = 0
                     h['angle'] = 0
@@ -2579,7 +2579,7 @@ def print_dongs(type, delta=None, reddit=False):
                         search = "grand slam"
                     elif 'home run' in number:
                         search = "home run"
-                    h['num'] = int(re.search('\(([^)]+)', number[number.index(search):]).group(1))
+                    h['num'] = int(re.search(r'\(([^)]+)', number[number.index(search):]).group(1))
                     h['dist'] = 0
                     h['ev'] = 0
                     h['la'] = 0

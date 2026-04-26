@@ -119,5 +119,5 @@ class Sports(commands.Cog):
         else:
             await ctx.send("```%s```" % worldcup.get_todays_scores(team=t))
 
-def setup(bot):
-    bot.add_cog(Sports(bot))
+async def setup(bot):
+    await bot.add_cog(Sports(bot))

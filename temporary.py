@@ -15,5 +15,5 @@ class Temp(commands.Cog):
         #         await ctx.send(covid.get_state(arg[0]))
         await ctx.send(covid.get_usa())
 
-def setup(bot):
-    bot.add_cog(Temp(bot))
+async def setup(bot):
+    await bot.add_cog(Temp(bot))

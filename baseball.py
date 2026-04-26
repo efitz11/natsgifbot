@@ -607,8 +607,8 @@ class Baseball(commands.Cog):
         hydrates = "person(stats(type=season,sportId=%d))" % sportid
         await ctx.send("```%s```" % mymlbstats.print_roster(teamid, hitters=True, teamid=teamid, hydrates=hydrates))
 
-def setup(bot):
-    bot.add_cog(Baseball(bot))
+async def setup(bot):
+    await bot.add_cog(Baseball(bot))
 
 class FG:
     bdash = ['bb%','k%','iso','babip','avg','obp','slg','woba','wrc+','bsr','off','def','fwar',9]

@@ -18,15 +18,12 @@ import frinkiac, web, tacobell
 import hq as hqmod
 import covid
 
-bot = commands.Bot(command_prefix='!')
-prefixes = ['!', '?', 'bot ', 'Bot']
-
 extensions = ["baseball","sports","reddit","temporary"]
 
 auth_users = ['efitz11#0']
 hamms_auth_users = auth_users + ['vasolinetigers#3888']
 
-pattern69 = re.compile('(^|[\s\.]|\$)[6][\.]*[9]([\s\.]|x|%|$|th)')
+pattern69 = re.compile(r'(^|[\s\.]|\$)[6][\.]*[9]([\s\.]|x|%|$|th)')
 patterncheer = re.compile('cheer$', re.IGNORECASE)
 patternpoop = re.compile('mets|phillies|braves',re.IGNORECASE)
 patternperf = re.compile('perfect game',re.IGNORECASE)
@@ -38,7 +35,7 @@ patternmasn = re.compile('masn', re.IGNORECASE)
 # patterntwitter = re.compile('https://*.twitter.com/([^/?]+)*')
 # patterntwitter = re.compile('https://\btwitter.com/[^/?]+/status/[0-9]+')
 patterntwitter = re.compile(r'(?:https?:\/\/(www\.)?(?:twitter|x)\.com)(\/(?:#!\/)?(\w+)\/status(es)?\/(\d+))')
-patternx = re.compile('https://.*\bx.com/([^/?]+)/status/([0-9]+)')
+patternx = re.compile(r'https://.*\bx.com/([^/?]+)/status/([0-9]+)')
 patternig = re.compile(r"https?://(www\.)?instagram\.com/p/.{11}")
 patternbsky = re.compile(r"https?://(www\.)?bsky\.app/profile/.*/post/.*")
 # patterntwitterstatus = re.compile('https://.*twitter.com/([^/?]+)/status/([0-9]+)')
@@ -46,7 +43,7 @@ masn_time = datetime.now()
 
 pidfile = 'discordbotpid.txt'
 miscfile = 'misc.json'
-    
+
 # get tokens from file
 f = open('tokens.txt','r')
 reddit_clientid = f.readline().strip()
@@ -67,6 +64,18 @@ f = open(pidfile,'w')
 f.write(str(os.getpid()))
 f.close()
 
+class MyBot(commands.Bot):
+    async def setup_hook(self):
+        for ext in extensions:
+            await self.load_extension(ext)
+        self.loop.create_task(dongs_poster())
+        self.loop.create_task(birthday_poster())
+
+intents = discord.Intents.default()
+intents.message_content = True
+intents.members = False
+bot = MyBot(command_prefix=['!', '?', 'bot ', 'Bot '], intents=intents)
+prefixes = ['!', '?', 'bot ', 'Bot ']
 
 emoji_letter_map = {'a':u"\U0001F1E6",
 					'b':u"\U0001F1E7",
@@ -234,7 +243,7 @@ def last_replace(s, old, new):
 def uwuify_text(text):
     # borrowed from github.com/zenrac, thanks
     vowels = ['a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U']
-    smileys = [';;w;;', '^w^', '>w<', 'UwU', '(・`ω\´・)', '(´・ω・\`)']
+    smileys = [';;w;;', '^w^', '>w<', 'UwU', r'(・`ω´・)', r'(´・ω・`)']
 
     text = text.replace('L', 'W').replace('l', 'w')
     text = text.replace('R', 'W').replace('r', 'w')
@@ -878,7 +887,7 @@ async def on_message(message):
             message.content = '!' + message.content[4:]
         else:
             message.content = '!' + message.content[10:]
-    if message.content.startswith(bot.command_prefix):
+    if message.content.startswith(tuple(bot.command_prefix)):
         print("%s input command: %s" % (message.author, message.content))
         await bot.process_commands(message)
     elif message.content.split(' ')[0][1:] in bot.all_commands and message.content.startswith('?'):
@@ -957,7 +966,7 @@ async def my_bg_task():
 
 async def update_mlbtr():
     await bot.wait_until_ready()
-    channel = bot.get_channel(id=main_chid)
+    channel = bot.get_channel(main_chid)
     # triviach = discord.utils.find(lambda m: m.name == 'trivia', channel.server.channels)
     while not bot.is_closed():
         # if hqmod.check_hq():
@@ -972,7 +981,7 @@ async def update_mlbtr():
 
 async def check_covid_numbers():
     await bot.wait_until_ready()
-    channel = bot.get_channel(id=main_chid)
+    channel = bot.get_channel(main_chid)
     corona_channel = discord.utils.find(lambda m: 'coronavirus' in m.name, channel.guild.channels)
     while not bot.is_closed():
         now_time = datetime.now()
@@ -989,7 +998,7 @@ async def check_covid_numbers():
 
 async def dongs_poster():
     await bot.wait_until_ready()
-    channel = bot.get_channel(id=main_chid)
+    channel = bot.get_channel(main_chid)
     baseball_channel = discord.utils.find(lambda m: 'baseball' in m.name, channel.guild.channels)
     while not bot.is_closed():
         now_time = datetime.now()
@@ -1008,7 +1017,7 @@ async def dongs_poster():
 
 async def birthday_poster():
     await bot.wait_until_ready()
-    channel = bot.get_channel(id=main_chid)
+    channel = bot.get_channel(main_chid)
     guild = bot.get_guild(guildid)
     while not bot.is_closed():
         now_time = datetime.now()
@@ -1040,13 +1049,9 @@ async def birthday_poster():
 
 mlbtr = xmlreader.XmlReader()
 
-#print(reddit.read_only)
-# bot.loop.create_task(my_bg_task())
-#bot.loop.create_task(update_mlbtr())
-bot.loop.create_task(dongs_poster())
-bot.loop.create_task(birthday_poster())
-# temp variable
-#bot.loop.create_task(check_covid_numbers())
-for ext in extensions:
-    bot.load_extension(ext)
-bot.run(discord_token)
+async def main():
+    async with bot:
+        await bot.start(discord_token)
+
+if __name__ == "__main__":
+    asyncio.run(main())
